@@ -1,0 +1,9 @@
+{
+	"typescript.tsdk": "./node_modules/typescript/lib",
+	"json.schemas": [{
+		"fileMatch": [
+			"/tsconfig.json"
+		],
+		"url": "http://json.schemastore.org/tsconfig?nocache1"
+	}]
+}

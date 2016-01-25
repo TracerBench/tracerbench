@@ -1,0 +1,25 @@
+{
+  "name": "chrome-tracing",
+  "version": "1.0.0",
+  "description": "Parser for chrome traces",
+  "main": "dist/index.js",
+  "typescript": {
+    "definition": "dist/index.d.ts"
+  },
+  "scripts": {
+    "prepublish": "tsc",
+    "compile": "tsc --watch",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "chrome",
+    "tracing"
+  ],
+  "author": "Kris Selden",
+  "license": "MIT",
+  "devDependencies": {
+    "chrome-remote-interface": "^0.11.0",
+    "mktemp": "^0.4.0",
+    "rimraf": "^2.5.1"
+  }
+}
