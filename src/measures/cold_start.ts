@@ -7,13 +7,13 @@ import Trace from "../trace/trace";
 import { TraceEvent } from "../trace/trace_event";
 import { EventEmitter } from "events";
 
-const CHROME = "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"
+const CHROME = "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary";
 const ITERATIONS = 2;
 
-function startChrome(url: string, categories: string, tracefile: string, duration: number = 5) : ChildProcess {
+function startChrome(url: string, categories: string, tracefile: string, duration: number = 5): ChildProcess {
   let userDataDir = mktemp.createDirSync(path.join(process.env.TMPDIR, "user_profile_XXXXXX"));
   let args = [
-    "--user-data-dir="+userDataDir,
+    "--user-data-dir=" + userDataDir,
     "--no-sandbox",
     "--no-experiments",
     "--disable-extensions",
@@ -26,7 +26,7 @@ function startChrome(url: string, categories: string, tracefile: string, duratio
     "--trace-startup-file=" + tracefile,
     url
   ];
-  let chrome = spawn(CHROME, args, { stdio: 'inherit' });
+  let chrome = spawn(CHROME, args, { stdio: "inherit" });
   chrome.on("close", () => {
     rimraf.sync(userDataDir);
   });
@@ -77,7 +77,7 @@ export default class ColdStart extends EventEmitter {
     chrome.on("close", () => {
       let trace = new Trace();
       console.log(tracefile);
-      let data = JSON.parse(fs.readFileSync(tracefile,"utf8"));
+      let data = JSON.parse(fs.readFileSync(tracefile, "utf8"));
       trace.addEvents(data.traceEvents);
       let process = trace.findProcess((process) => {
         return process.labels === "Sample App";

@@ -18,6 +18,7 @@
   "author": "Kris Selden",
   "license": "MIT",
   "devDependencies": {
+    "tslint": "^3.3.0",
     "typescript": "^1.8.0-dev.20160125"
   },
   "dependencies": {
