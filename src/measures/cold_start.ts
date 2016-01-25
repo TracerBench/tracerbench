@@ -4,13 +4,14 @@ import * as path from "path";
 import * as mktemp from "mktemp";
 import * as rimraf from "rimraf";
 import Trace from "../trace/trace";
-import { TraceEvent } from "../trace/trace_event";
+import { TraceEvent, TRACE_EVENT_PHASE_ASYNC_BEGIN } from "../trace/trace_event";
 import { EventEmitter } from "events";
+import { parse as urlParse } from "url";
 
 const CHROME = "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary";
 const ITERATIONS = 2;
 
-function startChrome(url: string, categories: string, tracefile: string, duration: number = 5): ChildProcess {
+function startChrome(url: string, categories: string, tracefile: string, duration): ChildProcess {
   let userDataDir = mktemp.createDirSync(path.join(process.env.TMPDIR, "user_profile_XXXXXX"));
   let args = [
     "--user-data-dir=" + userDataDir,
@@ -69,22 +70,25 @@ export default class ColdStart extends EventEmitter {
   url: string;
   constructor(url: string) {
     super();
-    this.url = url;
+    this.url = urlParse(url).href;
   }
   run() {
+    let url = this.url;
     let tracefile = path.join(process.env.TMPDIR, "sample-app-trace-" + this.dateString + "-" + this.count + ".json");
-    let chrome = startChrome(this.url, "blink.user_timing", tracefile, 3);
+    let chrome = startChrome(this.url, "blink.user_timing,blink.net", tracefile, 3);
     chrome.on("close", () => {
       let trace = new Trace();
       console.log(tracefile);
       let data = JSON.parse(fs.readFileSync(tracefile, "utf8"));
       trace.addEvents(data.traceEvents);
-      let process = trace.findProcess((process) => {
-        return process.labels === "Sample App";
+      let resourceEvent = trace.events.find((event) => {
+        return event.ph === TRACE_EVENT_PHASE_ASYNC_BEGIN &&
+               event.cat === "blink.net" &&
+               event.name === "Resource" &&
+               event.args["url"] === url;
       });
-      let thread = process.findThread((thread) => {
-        return thread.name === "CrRendererMain";
-      });
+      let process = trace.processMap[resourceEvent.pid];
+      let thread = process.threadMap[resourceEvent.tid];
       let navigationStart;
       let firstContentfulPaint;
       thread.markers.forEach((event) => {

@@ -3,7 +3,8 @@ import Bounds from "./bounds";
 import { TraceEvent } from "./trace_event";
 
 export default class Process {
-  threads: { [tid: number]: Thread; } = {};
+  threadMap: { [tid: number]: Thread; } = {};
+  threads: Thread[] = [];
   bounds: Bounds = new Bounds();
   events: TraceEvent[] = [];
 
@@ -18,9 +19,10 @@ export default class Process {
   }
 
   thread(tid: number) {
-    let thread = this.threads[tid];
+    let thread = this.threadMap[tid];
     if (thread === undefined) {
-      this.threads[tid] = thread = new Thread(tid);
+      this.threadMap[tid] = thread = new Thread(tid);
+      this.threads.push(thread);
     }
     return thread;
   }
@@ -29,15 +31,5 @@ export default class Process {
     this.bounds.addEvent(event);
     this.events.push(event);
     this.thread(event.tid).addEvent(event);
-  }
-
-  findThread(predicate: (thread: Thread) => boolean): Thread {
-    let tids = Object.keys(this.threads);
-    for (let i = 0; i < tids.length; i++) {
-      let thread = this.threads[tids[i]];
-      if (predicate(thread)) {
-        return thread;
-      }
-    }
   }
 }

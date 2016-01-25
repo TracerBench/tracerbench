@@ -8,28 +8,20 @@ import {
 } from "./trace_event";
 
 export default class Trace {
-  processes: { [pid: number]: Process; } = {};
+  processMap: { [pid: number]: Process; } = {};
+  processes: Process[] = [];
   bounds: Bounds = new Bounds();
   events: TraceEvent[] = [];
 
   numberOfProcessors: number;
 
   process(pid: number): Process {
-    let process = this.processes[pid];
+    let process = this.processMap[pid];
     if (process === undefined) {
-      this.processes[pid] = process = new Process(pid);
+      this.processMap[pid] = process = new Process(pid);
+      this.processes.push(process);
     }
     return process;
-  }
-
-  findProcess(predicate: (process: Process) => boolean): Process {
-    let pids = Object.keys(this.processes);
-    for (let i = 0; i < pids.length; i++) {
-      let process = this.processes[pids[i]];
-      if (predicate(process)) {
-        return process;
-      }
-    }
   }
 
   thread(pid: number, tid: number): Thread {
@@ -53,7 +45,8 @@ export default class Trace {
   }
 
   addMetadata(event: TraceEvent) {
-    let { pid, tid } = event;
+    let pid = event.pid;
+    let tid = event.tid;
     switch (event.name) {
       case "num_cpus":
         this.numberOfProcessors = event.args["number"];

@@ -25,5 +25,6 @@
     "chrome-remote-interface": "^0.11.0",
     "mktemp": "^0.4.0",
     "rimraf": "^2.5.1"
-  }
+  },
+  "engine": "node >= 4.0.0"
 }
