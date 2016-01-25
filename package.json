@@ -18,12 +18,11 @@
   "author": "Kris Selden",
   "license": "MIT",
   "devDependencies": {
+    "typescript": "^1.8.0-dev.20160125"
+  },
+  "dependencies": {
     "chrome-remote-interface": "^0.11.0",
     "mktemp": "^0.4.0",
     "rimraf": "^2.5.1"
-  },
-  "dependencies": {
-    "JSONStream": "^1.0.7",
-    "typescript": "^1.8.0-dev.20160125"
   }
 }

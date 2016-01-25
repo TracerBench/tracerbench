@@ -3,10 +3,8 @@ import * as fs from "fs";
 import * as path from "path";
 import * as mktemp from "mktemp";
 import * as rimraf from "rimraf";
-import * as JSONStream from "JSONStream";
 import Trace from "../trace/trace";
 import { TraceEvent } from "../trace/trace_event";
-import Process from "../trace/process";
 import { EventEmitter } from "events";
 
 const CHROME = "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"
