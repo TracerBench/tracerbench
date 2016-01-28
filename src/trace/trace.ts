@@ -70,7 +70,7 @@ export default class Trace {
         this.thread(pid, tid).sortIndex = event.args["sort_index"];
         break;
       default:
-        console.warn("unrecognized metadata:", event.name);
+        console.warn("unrecognized metadata:", JSON.stringify(event, null, 2));
         break;
     }
   }

@@ -1,113 +1,140 @@
-import { spawn, ChildProcess } from "child_process";
-import * as fs from "fs";
-import * as path from "path";
-import * as mktemp from "mktemp";
-import * as rimraf from "rimraf";
 import Trace from "../trace/trace";
 import { TraceEvent, TRACE_EVENT_PHASE_ASYNC_BEGIN } from "../trace/trace_event";
 import { EventEmitter } from "events";
-import { parse as urlParse } from "url";
+import * as url from "url";
+import { createSession, Session, Tab } from "chrome-debugging-client";
+import protocol from "../generated/protocol";
+import { default as ProtocolDomains, Page } from "../generated/protocol-domains";
 
-const CHROME = "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary";
-const ITERATIONS = 2;
-
-function startChrome(url: string, categories: string, tracefile: string, duration): ChildProcess {
-  let userDataDir = mktemp.createDirSync(path.join(process.env.TMPDIR, "user_profile_XXXXXX"));
-  let args = [
-    "--user-data-dir=" + userDataDir,
-    "--no-sandbox",
-    "--no-experiments",
-    "--disable-extensions",
-    "--disable-default-apps",
-    "--no-first-run",
-    "--noerrdialogs",
-    "--window-size=320,640",
-    "--trace-startup=" + categories,
-    "--trace-startup-duration=" + duration,
-    "--trace-startup-file=" + tracefile,
-    url
-  ];
-  let chrome = spawn(CHROME, args, { stdio: "inherit" });
-  chrome.on("close", () => {
-    rimraf.sync(userDataDir);
-  });
-  let start = Date.now();
-  let intervalId = setInterval(() => {
-    let stat = statSync(tracefile);
-    if (stat && stat.size) {
-      clearInterval(intervalId);
-      chrome.kill();
-    }
-  }, 200);
-  return chrome;
-}
-
-function statSync(filename) {
-  try {
-    return fs.statSync(filename);
-  } catch (err) {
-    return;
-  }
-}
-
-function pad(n: number): string {
-  if (n < 10) {
-    return "0" + n;
-  }
-  return "" + n;
-}
-
-function dateString(): string {
-  let date = new Date();
-  return date.getUTCFullYear() + pad(date.getUTCMonth() + 1) + pad(date.getUTCDate()) +
-         pad(date.getUTCHours()) + pad(date.getUTCMinutes()) + pad(date.getUTCSeconds());
+function delay(ms: number): Promise<void> {
+  return new Promise<void>(resolve => setTimeout(resolve, ms));
 }
 
 export default class ColdStart extends EventEmitter {
   count: number = 0;
   samples: number[] = [];
-  dateString: string = dateString();
-  url: string;
-  constructor(url: string) {
+  url: url.Url;
+  browserType: string;
+  browserResolverOptions: any;
+
+  constructor(urlStr: string, browserType: string, browserResolverOptions?: any) {
     super();
-    this.url = urlParse(url).href;
+    this.url = url.parse(urlStr);
+    this.browserType = browserType || "canary";
+    this.browserResolverOptions = browserResolverOptions || {};
   }
-  run() {
-    let url = this.url;
-    let tracefile = path.join(process.env.TMPDIR, "sample-app-trace-" + this.dateString + "-" + this.count + ".json");
-    let chrome = startChrome(this.url, "blink.user_timing,blink.net", tracefile, 3);
-    chrome.on("close", () => {
-      let trace = new Trace();
-      console.log(tracefile);
-      let data = JSON.parse(fs.readFileSync(tracefile, "utf8"));
-      trace.addEvents(data.traceEvents);
-      let resourceEvent = trace.events.find((event) => {
-        return event.ph === TRACE_EVENT_PHASE_ASYNC_BEGIN &&
-               event.cat === "blink.net" &&
-               event.name === "Resource" &&
-               event.args["url"] === url;
-      });
-      let process = trace.processMap[resourceEvent.pid];
-      let thread = process.threadMap[resourceEvent.tid];
-      let navigationStart;
-      let firstContentfulPaint;
-      thread.markers.forEach((event) => {
-        if (event.name === "navigationStart") {
-          navigationStart = event.ts;
-        } else if (event.name === "firstContentfulPaint") {
-          firstContentfulPaint = event.ts;
-        }
-      });
-      this.samples.push(firstContentfulPaint - navigationStart);
-      if (this.count < ITERATIONS) {
-        this.count++;
-        this.run();
-      } else {
-        this.emit("end", this.samples);
+
+  run(): Promise<number[]> {
+    return createSession<number[]>(async (session) => {
+      let process = await session.spawn(this.browserType, this.browserResolverOptions);
+      let client = session.createAPIClient("localhost", process.remoteDebuggingPort);
+      let tabs = await client.listTabs();
+      let tab = tabs[0];
+      console.log("make active window");
+      await client.activateTab(tab.id);
+      let debugging = await session.openDebuggingProtocol(tab.webSocketDebuggerUrl);
+      let domains: ProtocolDomains = debugging.domains(protocol);
+      let Page = domains.Page;
+      let HeapProfiler = domains.HeapProfiler;
+      await Page.enable();
+      console.log("give the browser a second");
+      await delay(1000);
+      await this.collectGarbage(domains);
+
+      console.log("starting run...");
+      let results: number[] = [];
+      for (let i = 0; i < 50; i++) {
+        let sample = await this.getSample(domains);
+        results.push(sample);
+        console.log("sample", sample / 1000, "ms");
+
+        await this.navigateToPage(domains, "about:blank");
+        await this.collectGarbage(domains);
+      }
+      await Page.disable();
+      return results;
+    });
+  }
+
+  async navigateToPage(domains: ProtocolDomains, url: string): Promise<void> {
+    let Page = domains.Page;
+    let loadEventFired = new Promise(resolve => {
+      Page.loadEventFired = () => {
+        console.log(url, "loaded");
+        Page.loadEventFired = null;
+        resolve();
+      };
+    });
+    console.log("navigate to", url);
+    await Page.navigate({url});
+    await loadEventFired;
+  }
+
+  async collectGarbage(domains: ProtocolDomains): Promise<void> {
+    let HeapProfiler = domains.HeapProfiler;
+    await HeapProfiler.enable();
+    console.log("collect garbage");
+    await HeapProfiler.collectGarbage();
+    await HeapProfiler.disable();
+  }
+
+  async getSample(domains: ProtocolDomains): Promise<number> {
+    let Tracing = domains.Tracing;
+    let Page = domains.Page;
+
+    let trace = new Trace();
+    Tracing.dataCollected = (evt) => {
+      trace.addEvents(evt.value);
+    };
+
+    let tracingComplete = new Promise((resolve) => {
+      Tracing.tracingComplete = () => {
+        Tracing.tracingComplete = null;
+        resolve();
+      };
+    });
+
+    let loadEventFired = new Promise(resolve => {
+      Page.loadEventFired = () => {
+        Page.loadEventFired = null;
+        resolve();
+      };
+    });
+
+    await Tracing.start({
+      categories: "blink.user_timing,blink.net"
+    });
+
+    await Page.navigate({
+      url: this.url.href
+    });
+
+    await loadEventFired;
+
+    await Tracing.end();
+
+    await tracingComplete;
+
+    Tracing.dataCollected = null;
+
+    let resourceEvent = trace.events.find((event) => {
+      return event.ph === TRACE_EVENT_PHASE_ASYNC_BEGIN &&
+              event.cat === "blink.net" &&
+              event.name === "Resource" &&
+              event.args["url"] === this.url.href;
+    });
+
+    let process = trace.processMap[resourceEvent.pid];
+    let thread = process.threadMap[resourceEvent.tid];
+    let navigationStart;
+    let firstTextPaint;
+    thread.markers.forEach((event) => {
+      if (event.name === "navigationStart") {
+        navigationStart = event.ts;
+      } else if (event.name === "firstTextPaint") {
+        firstTextPaint = event.ts;
       }
     });
-    chrome.on("error", (err) => {
-      this.emit("error", err);
-    });
+    return firstTextPaint - navigationStart;
   }
 }

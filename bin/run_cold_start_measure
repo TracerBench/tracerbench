@@ -2,10 +2,8 @@
 var chrome_tracing = require("../dist/index");
 
 var measure = new chrome_tracing.ColdStartMeasure("http://localhost:4200");
-measure.on("end", (samples) => {
+measure.run().then((samples) => {
   console.log(samples);
-});
-measure.on("error", (err) => {
+}).catch((err) => {
   console.error(err);
 });
-measure.run();

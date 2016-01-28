@@ -7,7 +7,6 @@
     "definition": "dist/index.d.ts"
   },
   "scripts": {
-    "prepublish": "tsc",
     "compile": "tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -19,12 +18,10 @@
   "license": "MIT",
   "devDependencies": {
     "tslint": "^3.3.0",
-    "typescript": "^1.8.0-dev.20160125"
+    "typescript": "^1.8.0"
   },
   "dependencies": {
-    "chrome-remote-interface": "^0.11.0",
-    "mktemp": "^0.4.0",
-    "rimraf": "^2.5.1"
+    "chrome-debugging-client": "^0.1.1"
   },
   "engine": "node >= 4.0.0"
 }

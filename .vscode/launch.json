@@ -21,6 +21,46 @@
 			"sourceMaps": true,
 			"outDir": null
 		},
+    {
+			"name": "list",
+			"type": "node",
+			"request": "launch",
+			"program": "bin/list_tracing_categories",
+			"stopOnEntry": false,
+			"args": [],
+			"cwd": ".",
+			"runtimeExecutable": null,
+			"runtimeArgs": [
+				"--nolazy"
+			],
+			"env": {
+				"NODE_ENV": "development"
+			},
+      "preLaunchTask": "npm",
+			"externalConsole": false,
+			"sourceMaps": true,
+			"outDir": null
+		},
+    {
+			"name": "generate_defs_from_protocol",
+			"type": "node",
+			"request": "launch",
+			"program": "dist/generate_devtools_protocol.js",
+			"stopOnEntry": false,
+			"args": [],
+			"cwd": ".",
+			"runtimeExecutable": null,
+			"runtimeArgs": [
+				"--nolazy"
+			],
+			"env": {
+				"NODE_ENV": "development"
+			},
+      "preLaunchTask": "npm",
+			"externalConsole": false,
+			"sourceMaps": true,
+			"outDir": null
+		},
 		{
 			"name": "Attach",
 			"type": "node",
