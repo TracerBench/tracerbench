@@ -1,9 +1,14 @@
 #!/usr/bin/env node
+"use strict";
 var chrome_tracing = require("../dist/index");
 
-var measure = new chrome_tracing.ColdStartMeasure("http://localhost:4200");
+var measure = new chrome_tracing.ColdStartMeasure("http://localhost:4200", "canary");
 measure.run().then((samples) => {
-  console.log(samples);
+  let samplesMillisecond = samples.map(x => x/1000);
+  let fs = require("fs");
+  fs.writeFileSync("results.R", `ms <- c(${samplesMillisecond.join(",")})
+hist(ms,breaks="FD",labels=TRUE)
+boxplot(ms,notch=TRUE)`);
 }).catch((err) => {
   console.error(err);
 });

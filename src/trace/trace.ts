@@ -12,6 +12,9 @@ export default class Trace {
   processes: Process[] = [];
   bounds: Bounds = new Bounds();
   events: TraceEvent[] = [];
+  browserProcess: Process = null;
+  gpuProcess: Process = null;
+  rendererProcesses: Process[] = [];
 
   numberOfProcessors: number;
 
@@ -52,7 +55,16 @@ export default class Trace {
         this.numberOfProcessors = event.args["number"];
         break;
       case "process_name":
-        this.process(pid).name = event.args["name"];
+        let process_name: string = event.args["name"];
+        let process = this.process(pid);
+        process.name = process_name;
+        if (process_name === "GPU Process") {
+          this.gpuProcess = process;
+        } else if (process_name === "Browser") {
+          this.browserProcess = process;
+        } else if (process_name === "Renderer") {
+          this.rendererProcesses.push(process);
+        }
         break;
       case "process_labels":
         this.process(pid).labels = event.args["labels"];
@@ -64,10 +76,21 @@ export default class Trace {
         this.process(pid).traceBufferOverflowedAt = event.args["overflowed_at_ts"];
         break;
       case "thread_name":
-        this.thread(pid, tid).name = event.args["name"];
+        let thread_name: string = event.args["name"];
+        let thread = this.thread(pid, tid);
+        thread.name = thread_name;
+        if (thread_name.endsWith("Main")) {
+          this.process(pid).mainThread = thread;
+        }
         break;
       case "thread_sort_index":
         this.thread(pid, tid).sortIndex = event.args["sort_index"];
+        break;
+      case "IsTimeTicksHighResolution":
+        this.process(pid).isTimeTicksHighResolution = event.args["value"];
+        break;
+      case "TraceConfig":
+        this.process(pid).traceConfig = event.args["value"];
         break;
       default:
         console.warn("unrecognized metadata:", JSON.stringify(event, null, 2));

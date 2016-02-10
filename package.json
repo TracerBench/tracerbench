@@ -21,7 +21,7 @@
     "typescript": "^1.8.0"
   },
   "dependencies": {
-    "chrome-debugging-client": "^0.1.1"
+    "chrome-debugging-client": "^0.2.0"
   },
   "engine": "node >= 4.0.0"
 }

@@ -5,13 +5,15 @@ import { TraceEvent } from "./trace_event";
 export default class Process {
   threadMap: { [tid: number]: Thread; } = {};
   threads: Thread[] = [];
+  mainThread: Thread = null;
   bounds: Bounds = new Bounds();
   events: TraceEvent[] = [];
-
   name: string;
   labels: string;
   sortIndex: number;
   traceBufferOverflowedAt: number;
+  isTimeTicksHighResolution: boolean;
+  traceConfig: any;
 
   id: number;
   constructor(id: number) {

@@ -12,5 +12,4 @@ let protocol = JSON.parse(fs.readFileSync(path.join(os.homedir(), filename), "ut
 let codegen = new ProtocolCodegen();
 let code = codegen.generate(protocol, filename);
 
-fs.writeFileSync("src/generated/protocol.ts", `export default ${JSON.stringify(protocol, null, 2)};`);
 fs.writeFileSync("src/generated/protocol-domains.ts", code);
