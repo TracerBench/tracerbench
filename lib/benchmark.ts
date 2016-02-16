@@ -1,0 +1,224 @@
+import {
+  createSession,
+  ISession,
+  IBrowserProcess,
+  IAPIClient,
+  VersionInfo,
+  Tab,
+  IDebuggingProtocolClient
+} from "chrome-debugging-client";
+import { Page, Tracing, HeapProfiler, Network } from "./debugging-protocol-domains";
+import { Trace } from "./trace";
+
+export interface IBenchmark<T> {
+  name: string;
+  options: any;
+  /** run benchmark returning result */
+  run(): Promise<T>;
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise<void>(resolve => setTimeout(resolve, ms));
+}
+
+export interface IBenchmarkDSL {
+  /** Browser version info */
+  version: VersionInfo;
+  /** The process id of the tab */
+  pid: number;
+  /** The current frame for the tab */
+  frame: Page.Frame;
+  /** Navigates to the specified url */
+  navigate(url): Promise<void>;
+  /** Start tracing */
+  startTracing(categories: string, options?: string): Promise<ITracing>;
+  /** Clear browser cache and memory cache */
+  clearBrowserCache(): Promise<void>;
+  /** Perform GC */
+  collectGarbage(): Promise<void>;
+}
+
+export interface ITracing {
+  traceComplete: Promise<Trace>;
+  /** end early, normally records for duration or until buffer full  */
+  end(): Promise<void>;
+}
+
+export abstract class Benchmark<T> implements IBenchmark<T> {
+  name: string;
+  options: any;
+
+  constructor(name: string, options: any) {
+    this.name = name;
+    this.options = options || {};
+  }
+
+  // create session, spawn browser, get port
+  // connect to API to get version
+  run(): Promise<T> {
+    return createSession((session: ISession) => {
+      return this.createDSL(session).then((dsl) => {
+        return this.perform(dsl);
+      });
+    });
+  }
+
+  async createDSL(session: ISession): Promise<IBenchmarkDSL> {
+    let opts = this.options;
+    let browser = await session.spawnBrowser(opts.browserType, {
+      chromiumSrcDir: opts.chromiumSrcDir,
+      executablePath: opts.executablePath
+    });
+    await delay(1000);
+    let apiClient = session.createAPIClient("localhost", browser.remoteDebuggingPort);
+    let version = await apiClient.version();
+    let tabs = await apiClient.listTabs();
+    let tab = tabs[0];
+    await apiClient.activateTab(tab.id);
+    let client = await session.openDebuggingProtocol(tab.webSocketDebuggerUrl);
+    let page = new Page(client);
+    await page.enable();
+    let res = await page.getResourceTree();
+    let frame = res.frameTree.frame;
+    let pid = parseInt(frame.id.split(".")[0], 10);
+    return new BenchmarkDSL(session, browser, apiClient, version, client, page, frame, pid);
+  }
+
+  abstract perform(dsl: IBenchmarkDSL): Promise<T>;
+}
+
+class BenchmarkDSL implements IBenchmarkDSL {
+  session: ISession;
+  browser: IBrowserProcess;
+  apiClient: IAPIClient;
+  /** browser version info */
+  version: VersionInfo;
+  client: IDebuggingProtocolClient;
+  page: Page;
+  tracing: Tracing;
+  currentTrace: TracingDSL;
+
+  network: Network;
+  heapProfiler: HeapProfiler;
+  /** The current frame for the tab */
+  frame: Page.Frame;
+  /** The process id of the tab */
+  pid: number;
+
+  constructor(session, browser, apiClient, version, client, page, frame, pid) {
+    this.session = session;
+    this.browser = browser;
+    this.apiClient = apiClient;
+    this.version = version;
+    this.client = client;
+    this.page = page;
+    this.frame = frame;
+    this.pid = pid;
+    this.tracing = new Tracing(client);
+    this.network = new Network(client);
+    this.heapProfiler = new HeapProfiler(client);
+    this.currentTrace = null;
+    page.frameNavigated = (params) => {
+      let frame = params.frame;
+      if (this.frame.id = frame.id) {
+        this.onNavigated(frame);
+      }
+    };
+  }
+
+  onNavigated(frame: Page.Frame) {
+    this.frame = frame;
+    // navigating to "about:blank" a signal to end the current trace
+    if (this.currentTrace && frame.url === "about:blank") {
+      this.currentTrace.end();
+    }
+  }
+
+  /** Navigates to the specified url */
+  async navigate(url): Promise<void> {
+    if (this.frame.url === url) {
+      await this.page.reload({});
+    } else {
+      await this.page.navigate({ url });
+    }
+  }
+
+  /** Start tracing */
+  async startTracing(categories: string, options?: string): Promise<ITracing> {
+    if (this.currentTrace) {
+      throw new Error("already tracing");
+    }
+    let tracing = this.tracing;
+    await tracing.start({
+      categories: categories,
+      options: options,
+      transferMode: "ReportEvents"
+    });
+    let trace = this.currentTrace = new TracingDSL(tracing, this.pid);
+    trace.traceComplete.then(() => {
+      this.currentTrace = null;
+    });
+    return trace;
+  }
+
+  /** Clear browser cache and memory cache */
+  async clearBrowserCache(): Promise<void> {
+    await this.network.enable();
+    let res = await this.network.canClearBrowserCache();
+    if (!res.result) {
+      throw new Error("Cannot clear browser cache");
+    }
+    await this.network.clearBrowserCache();
+    // causes MemoryCache entries to be evicted
+    await this.network.setCacheDisabled({cacheDisabled: true});
+   // await this.network.disable();
+  }
+
+  async collectGarbage(): Promise<void> {
+    await this.heapProfiler.enable();
+    await this.heapProfiler.collectGarbage();
+    await this.heapProfiler.disable();
+  }
+}
+
+class TracingDSL implements ITracing {
+  tracing: Tracing;
+  isTracing: boolean;
+  isComplete: boolean;
+  traceComplete: Promise<Trace>;
+  endPromise: Promise<void>;
+
+  constructor(tracing: Tracing, pid: number) {
+    this.tracing = tracing;
+    this.isTracing = true;
+    this.isComplete = false;
+    let trace = new Trace();
+    tracing.dataCollected = (evt) => {
+      trace.addEvents(evt.value);
+    };
+    this.traceComplete = new Promise<Trace>((resolve) => {
+      // TODO setTimeout
+      tracing.tracingComplete = () => {
+        tracing.dataCollected = null;
+        tracing.tracingComplete = null;
+        this.isTracing = false;
+        this.isComplete = true;
+        trace.mainProcess = trace.processMap[pid];
+        resolve(trace);
+      };
+    });
+  }
+
+  end(): Promise<void> {
+    if (!this.endPromise) {
+      if (this.isTracing) {
+        this.endPromise = this.tracing.end().then(() => {
+          this.isTracing = false;
+        });
+      } else {
+        this.endPromise = Promise.resolve();
+      }
+    }
+    return this.endPromise;
+  }
+}

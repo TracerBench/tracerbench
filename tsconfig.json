@@ -3,13 +3,14 @@
 		"declaration": true,
 		"module": "commonjs",
 		"target": "es6",
-		"rootDir": "src",
 		"outDir": "dist",
 		"sourceMap": true,
     "moduleResolution": "node"
 	},
-	"exclude": [
-		"node_modules",
-    "dist"
-	]
+	"files": [
+    "typings/tape/tape.d.ts",
+    "typings/node/node.d.ts",
+    "index.ts",
+    "test.ts"
+  ]
 }

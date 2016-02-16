@@ -10,6 +10,7 @@ import {
 export default class Trace {
   processMap: { [pid: number]: Process; } = {};
   processes: Process[] = [];
+  mainProcess: Process;
   bounds: Bounds = new Bounds();
   events: TraceEvent[] = [];
   browserProcess: Process = null;
@@ -38,12 +39,12 @@ export default class Trace {
   }
 
   addEvent(event: TraceEvent) {
+    this.events.push(event);
     if (event.ph === TRACE_EVENT_PHASE_METADATA) {
       this.addMetadata(event);
       return;
     }
     this.bounds.addEvent(event);
-    this.events.push(event);
     this.process(event.pid).addEvent(event);
   }
 

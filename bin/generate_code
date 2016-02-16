@@ -3,13 +3,10 @@
 const os = require("os");
 const fs = require("fs");
 const path = require("path");
+
 const ProtocolCodegen = require("chrome-debugging-client").ProtocolCodegen
-
 const filename = "chromium/src/third_party/WebKit/Source/devtools/protocol.json";
-
 let protocol = JSON.parse(fs.readFileSync(path.join(os.homedir(), filename), "utf8"));
-
-let codegen = new ProtocolCodegen();
+let codegen = new ProtocolCodegen({typescript: true});
 let code = codegen.generate(protocol, filename);
-
-fs.writeFileSync("src/generated/protocol-domains.ts", code);
+fs.writeFileSync("lib/debugging-protocol-domains.ts", code);

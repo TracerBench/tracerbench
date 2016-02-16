@@ -1,10 +1,14 @@
+/**
+ * Debugging Protocol 1.1 Domains
+ * Generated on Wed Feb 10 2016 15:20:19 GMT-0800 (PST)
+ */
 import { IDebuggingProtocolClient } from "chrome-debugging-client";
 export class Inspector {
-  _client: IDebuggingProtocolClient;
-  _evaluateForTestInFrontend: Inspector.evaluateForTestInFrontend_Handler;
-  _inspect: Inspector.inspect_Handler;
-  _detached: Inspector.detached_Handler;
-  _targetCrashed: Inspector.targetCrashed_Handler;
+  private _evaluateForTestInFrontend: Inspector.evaluateForTestInFrontend_Handler = undefined;
+  private _inspect: Inspector.inspect_Handler = undefined;
+  private _detached: Inspector.detached_Handler = undefined;
+  private _targetCrashed: Inspector.targetCrashed_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -71,22 +75,22 @@ export namespace Inspector {
   export type evaluateForTestInFrontend_Parameters = {
     testCallId: number;
     script: string;
-  }
+  };
   export type evaluateForTestInFrontend_Handler = (params: evaluateForTestInFrontend_Parameters) => void;
   export type inspect_Parameters = {
     object: Runtime.RemoteObject;
     hints: any;
-  }
+  };
   export type inspect_Handler = (params: inspect_Parameters) => void;
   export type detached_Parameters = {
     /** The reason why connection has been terminated. */
     reason: string;
-  }
+  };
   export type detached_Handler = (params: detached_Parameters) => void;
   export type targetCrashed_Handler = () => void;
 }
 export class Memory {
-  _client: IDebuggingProtocolClient;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -109,36 +113,36 @@ export namespace Memory {
     documents: number;
     nodes: number;
     jsEventListeners: number;
-  }
+  };
   export type setPressureNotificationsSuppressed_Parameters = {
     /** If true, memory pressure notifications will be suppressed. */
     suppressed: boolean;
-  }
+  };
   export type simulatePressureNotification_Parameters = {
     /** Memory pressure level of the notification. */
     level: PressureLevel;
-  }
+  };
 }
 /** Actions and events related to the inspected page belong to the page domain. */
 export class Page {
-  _client: IDebuggingProtocolClient;
-  _domContentEventFired: Page.domContentEventFired_Handler;
-  _loadEventFired: Page.loadEventFired_Handler;
-  _frameAttached: Page.frameAttached_Handler;
-  _frameNavigated: Page.frameNavigated_Handler;
-  _frameDetached: Page.frameDetached_Handler;
-  _frameStartedLoading: Page.frameStartedLoading_Handler;
-  _frameStoppedLoading: Page.frameStoppedLoading_Handler;
-  _frameScheduledNavigation: Page.frameScheduledNavigation_Handler;
-  _frameClearedScheduledNavigation: Page.frameClearedScheduledNavigation_Handler;
-  _frameResized: Page.frameResized_Handler;
-  _javascriptDialogOpening: Page.javascriptDialogOpening_Handler;
-  _javascriptDialogClosed: Page.javascriptDialogClosed_Handler;
-  _screencastFrame: Page.screencastFrame_Handler;
-  _screencastVisibilityChanged: Page.screencastVisibilityChanged_Handler;
-  _colorPicked: Page.colorPicked_Handler;
-  _interstitialShown: Page.interstitialShown_Handler;
-  _interstitialHidden: Page.interstitialHidden_Handler;
+  private _domContentEventFired: Page.domContentEventFired_Handler = undefined;
+  private _loadEventFired: Page.loadEventFired_Handler = undefined;
+  private _frameAttached: Page.frameAttached_Handler = undefined;
+  private _frameNavigated: Page.frameNavigated_Handler = undefined;
+  private _frameDetached: Page.frameDetached_Handler = undefined;
+  private _frameStartedLoading: Page.frameStartedLoading_Handler = undefined;
+  private _frameStoppedLoading: Page.frameStoppedLoading_Handler = undefined;
+  private _frameScheduledNavigation: Page.frameScheduledNavigation_Handler = undefined;
+  private _frameClearedScheduledNavigation: Page.frameClearedScheduledNavigation_Handler = undefined;
+  private _frameResized: Page.frameResized_Handler = undefined;
+  private _javascriptDialogOpening: Page.javascriptDialogOpening_Handler = undefined;
+  private _javascriptDialogClosed: Page.javascriptDialogClosed_Handler = undefined;
+  private _screencastFrame: Page.screencastFrame_Handler = undefined;
+  private _screencastVisibilityChanged: Page.screencastVisibilityChanged_Handler = undefined;
+  private _colorPicked: Page.colorPicked_Handler = undefined;
+  private _interstitialShown: Page.interstitialShown_Handler = undefined;
+  private _interstitialHidden: Page.interstitialHidden_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -500,7 +504,7 @@ export namespace Page {
     /** Child frames. */
     childFrames?: FrameResourceTree[];
     /** Information about frame resources. */
-    resources: { url: string; type: ResourceType; mimeType: string; failed?: boolean; canceled?: boolean }[];
+    resources: { url: string; type: ResourceType; mimeType: string; failed?: boolean; canceled?: boolean; }[];
   }
   /** Unique script identifier. */
   export type ScriptIdentifier = string;
@@ -534,50 +538,50 @@ export namespace Page {
   export type DialogType = "alert" | "confirm" | "prompt" | "beforeunload";
   export type domContentEventFired_Parameters = {
     timestamp: number;
-  }
+  };
   export type domContentEventFired_Handler = (params: domContentEventFired_Parameters) => void;
   export type loadEventFired_Parameters = {
     timestamp: number;
-  }
+  };
   export type loadEventFired_Handler = (params: loadEventFired_Parameters) => void;
   export type frameAttached_Parameters = {
     /** Id of the frame that has been attached. */
     frameId: FrameId;
     /** Parent frame identifier. */
     parentFrameId: FrameId;
-  }
+  };
   export type frameAttached_Handler = (params: frameAttached_Parameters) => void;
   export type frameNavigated_Parameters = {
     /** Frame object. */
     frame: Frame;
-  }
+  };
   export type frameNavigated_Handler = (params: frameNavigated_Parameters) => void;
   export type frameDetached_Parameters = {
     /** Id of the frame that has been detached. */
     frameId: FrameId;
-  }
+  };
   export type frameDetached_Handler = (params: frameDetached_Parameters) => void;
   export type frameStartedLoading_Parameters = {
     /** Id of the frame that has started loading. */
     frameId: FrameId;
-  }
+  };
   export type frameStartedLoading_Handler = (params: frameStartedLoading_Parameters) => void;
   export type frameStoppedLoading_Parameters = {
     /** Id of the frame that has stopped loading. */
     frameId: FrameId;
-  }
+  };
   export type frameStoppedLoading_Handler = (params: frameStoppedLoading_Parameters) => void;
   export type frameScheduledNavigation_Parameters = {
     /** Id of the frame that has scheduled a navigation. */
     frameId: FrameId;
     /** Delay (in seconds) until the navigation is scheduled to begin. The navigation is not guaranteed to start. */
     delay: number;
-  }
+  };
   export type frameScheduledNavigation_Handler = (params: frameScheduledNavigation_Parameters) => void;
   export type frameClearedScheduledNavigation_Parameters = {
     /** Id of the frame that has cleared its scheduled navigation. */
     frameId: FrameId;
-  }
+  };
   export type frameClearedScheduledNavigation_Handler = (params: frameClearedScheduledNavigation_Parameters) => void;
   export type frameResized_Handler = () => void;
   export type javascriptDialogOpening_Parameters = {
@@ -585,12 +589,12 @@ export namespace Page {
     message: string;
     /** Dialog type. */
     type: DialogType;
-  }
+  };
   export type javascriptDialogOpening_Handler = (params: javascriptDialogOpening_Parameters) => void;
   export type javascriptDialogClosed_Parameters = {
     /** Whether dialog was confirmed. */
     result: boolean;
-  }
+  };
   export type javascriptDialogClosed_Handler = (params: javascriptDialogClosed_Parameters) => void;
   export type screencastFrame_Parameters = {
     /** Base64-encoded compressed image. */
@@ -599,82 +603,81 @@ export namespace Page {
     metadata: ScreencastFrameMetadata;
     /** Frame number. */
     sessionId: number;
-  }
+  };
   export type screencastFrame_Handler = (params: screencastFrame_Parameters) => void;
   export type screencastVisibilityChanged_Parameters = {
     /** True if the page is visible. */
     visible: boolean;
-  }
+  };
   export type screencastVisibilityChanged_Handler = (params: screencastVisibilityChanged_Parameters) => void;
   export type colorPicked_Parameters = {
     /** RGBA of the picked color. */
     color: DOM.RGBA;
-  }
+  };
   export type colorPicked_Handler = (params: colorPicked_Parameters) => void;
   export type interstitialShown_Handler = () => void;
   export type interstitialHidden_Handler = () => void;
   export type addScriptToEvaluateOnLoad_Parameters = {
     scriptSource: string;
-  }
+  };
   export type addScriptToEvaluateOnLoad_Return = {
     /** Identifier of the added script. */
     identifier: ScriptIdentifier;
-  }
+  };
   export type removeScriptToEvaluateOnLoad_Parameters = {
     identifier: ScriptIdentifier;
-  }
+  };
   export type reload_Parameters = {
     /** If true, browser cache is ignored (as if the user pressed Shift+refresh). */
     ignoreCache?: boolean;
     /** If set, the script will be injected into all frames of the inspected page after reload. */
     scriptToEvaluateOnLoad?: string;
-  }
+  };
   export type navigate_Parameters = {
     /** URL to navigate the page to. */
     url: string;
-  }
+  };
   export type navigate_Return = {
     /** Frame id that will be navigated. */
     frameId: FrameId;
-  }
-  export type getNavigationHistory_Parameters = {
-  }
+  };
+  export type getNavigationHistory_Parameters = any;
   export type getNavigationHistory_Return = {
     /** Index of the current navigation history entry. */
     currentIndex: number;
     /** Array of navigation history entries. */
     entries: NavigationEntry[];
-  }
+  };
   export type navigateToHistoryEntry_Parameters = {
     /** Unique id of the entry to navigate to. */
     entryId: number;
-  }
+  };
   export type getCookies_Return = {
     /** Array of cookie objects. */
     cookies: Network.Cookie[];
-  }
+  };
   export type deleteCookie_Parameters = {
     /** Name of the cookie to remove. */
     cookieName: string;
     /** URL to match cooke domain and path. */
     url: string;
-  }
+  };
   export type getResourceTree_Return = {
     /** Present frame / resource tree structure. */
     frameTree: FrameResourceTree;
-  }
+  };
   export type getResourceContent_Parameters = {
     /** Frame id to get resource for. */
     frameId: FrameId;
     /** URL of the resource to get content for. */
     url: string;
-  }
+  };
   export type getResourceContent_Return = {
     /** Resource content. */
     content: string;
     /** True, if content was served as base64. */
     base64Encoded: boolean;
-  }
+  };
   export type searchInResource_Parameters = {
     /** Frame id for resource to search in. */
     frameId: FrameId;
@@ -686,17 +689,17 @@ export namespace Page {
     caseSensitive?: boolean;
     /** If true, treats string parameter as regex. */
     isRegex?: boolean;
-  }
+  };
   export type searchInResource_Return = {
     /** List of search matches. */
     result: Debugger.SearchMatch[];
-  }
+  };
   export type setDocumentContent_Parameters = {
     /** Frame id to set HTML for. */
     frameId: FrameId;
     /** HTML content to set. */
     html: string;
-  }
+  };
   export type setDeviceMetricsOverride_Parameters = {
     /** Overriding width value in pixels (minimum 0, maximum 10000000). 0 disables the override. */
     width: number;
@@ -722,7 +725,7 @@ export namespace Page {
     positionX?: number;
     /** Overriding view Y position on screen in pixels (minimum 0, maximum 10000000). Only used for |mobile==true|. */
     positionY?: number;
-  }
+  };
   export type setGeolocationOverride_Parameters = {
     /** Mock latitude */
     latitude?: number;
@@ -730,7 +733,7 @@ export namespace Page {
     longitude?: number;
     /** Mock accuracy */
     accuracy?: number;
-  }
+  };
   export type setDeviceOrientationOverride_Parameters = {
     /** Mock alpha */
     alpha: number;
@@ -738,19 +741,18 @@ export namespace Page {
     beta: number;
     /** Mock gamma */
     gamma: number;
-  }
+  };
   export type setTouchEmulationEnabled_Parameters = {
     /** Whether the touch event emulation should be enabled. */
     enabled: boolean;
     /** Touch/gesture events configuration. Default: current platform. */
     configuration?: "mobile" | "desktop";
-  }
-  export type captureScreenshot_Parameters = {
-  }
+  };
+  export type captureScreenshot_Parameters = any;
   export type captureScreenshot_Return = {
     /** Base64-encoded image data (PNG). */
     data: string;
-  }
+  };
   export type startScreencast_Parameters = {
     /** Image compression format. */
     format?: "jpeg" | "png";
@@ -762,29 +764,29 @@ export namespace Page {
     maxHeight?: number;
     /** Send every n-th frame. */
     everyNthFrame?: number;
-  }
+  };
   export type screencastFrameAck_Parameters = {
     /** Frame number. */
     sessionId: number;
-  }
+  };
   export type handleJavaScriptDialog_Parameters = {
     /** Whether to accept or dismiss the dialog. */
     accept: boolean;
     /** The text to enter into the dialog prompt before accepting. Used only if this is a prompt dialog. */
     promptText?: string;
-  }
+  };
   export type setColorPickerEnabled_Parameters = {
     /** Shows / hides color picker */
     enabled: boolean;
-  }
+  };
   export type setOverlayMessage_Parameters = {
     /** Overlay message to display when paused in debugger. */
     message?: string;
-  }
+  };
 }
 /** This domain allows to control rendering of the page. */
 export class Rendering {
-  _client: IDebuggingProtocolClient;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -809,24 +811,24 @@ export namespace Rendering {
   export type setShowPaintRects_Parameters = {
     /** True for showing paint rectangles */
     result: boolean;
-  }
+  };
   export type setShowDebugBorders_Parameters = {
     /** True for showing debug borders */
     show: boolean;
-  }
+  };
   export type setShowFPSCounter_Parameters = {
     /** True for showing the FPS counter */
     show: boolean;
-  }
+  };
   export type setShowScrollBottleneckRects_Parameters = {
     /** True for showing scroll bottleneck rects */
     show: boolean;
-  }
+  };
 }
 /** This domain emulates different environments for the page. */
 export class Emulation {
-  _client: IDebuggingProtocolClient;
-  _viewportChanged: Emulation.viewportChanged_Handler;
+  private _viewportChanged: Emulation.viewportChanged_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -909,7 +911,7 @@ export namespace Emulation {
   export type viewportChanged_Parameters = {
     /** Viewport description. */
     viewport: Viewport;
-  }
+  };
   export type viewportChanged_Handler = (params: viewportChanged_Parameters) => void;
   export type setDeviceMetricsOverride_Parameters = {
     /** Overriding width value in pixels (minimum 0, maximum 10000000). 0 disables the override. */
@@ -936,15 +938,15 @@ export namespace Emulation {
     positionX?: number;
     /** Overriding view Y position on screen in pixels (minimum 0, maximum 10000000). Only used for |mobile==true|. */
     positionY?: number;
-  }
+  };
   export type setPageScaleFactor_Parameters = {
     /** Page scale factor. */
     pageScaleFactor: number;
-  }
+  };
   export type setScriptExecutionDisabled_Parameters = {
     /** Whether script execution should be disabled in the page. */
     value: boolean;
-  }
+  };
   export type setGeolocationOverride_Parameters = {
     /** Mock latitude */
     latitude?: number;
@@ -952,32 +954,32 @@ export namespace Emulation {
     longitude?: number;
     /** Mock accuracy */
     accuracy?: number;
-  }
+  };
   export type setTouchEmulationEnabled_Parameters = {
     /** Whether the touch event emulation should be enabled. */
     enabled: boolean;
     /** Touch/gesture events configuration. Default: current platform. */
     configuration?: "mobile" | "desktop";
-  }
+  };
   export type setEmulatedMedia_Parameters = {
     /** Media type to emulate. Empty string disables the override. */
     media: string;
-  }
+  };
   export type setCPUThrottlingRate_Parameters = {
     /** Throttling rate as a slowdown factor (1 is no throttle, 2 is 2x slowdown, etc). */
     rate: number;
-  }
+  };
   export type canEmulate_Return = {
     /** True if emulation is supported. */
     result: boolean;
-  }
+  };
 }
 /** Runtime domain exposes JavaScript runtime by means of remote evaluation and mirror objects. Evaluation results are returned as mirror object that expose object type, string representation and unique identifier that can be used for further object reference. Original objects are maintained in memory unless they are either explicitly released or are released along with the other objects in their object group. */
 export class Runtime {
-  _client: IDebuggingProtocolClient;
-  _executionContextCreated: Runtime.executionContextCreated_Handler;
-  _executionContextDestroyed: Runtime.executionContextDestroyed_Handler;
-  _executionContextsCleared: Runtime.executionContextsCleared_Handler;
+  private _executionContextCreated: Runtime.executionContextCreated_Handler = undefined;
+  private _executionContextDestroyed: Runtime.executionContextDestroyed_Handler = undefined;
+  private _executionContextsCleared: Runtime.executionContextsCleared_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -1178,12 +1180,12 @@ export namespace Runtime {
   export type executionContextCreated_Parameters = {
     /** A newly created execution contex. */
     context: ExecutionContextDescription;
-  }
+  };
   export type executionContextCreated_Handler = (params: executionContextCreated_Parameters) => void;
   export type executionContextDestroyed_Parameters = {
     /** Id of the destroyed context */
     executionContextId: ExecutionContextId;
-  }
+  };
   export type executionContextDestroyed_Handler = (params: executionContextDestroyed_Parameters) => void;
   export type executionContextsCleared_Handler = () => void;
   export type evaluate_Parameters = {
@@ -1201,7 +1203,7 @@ export namespace Runtime {
     returnByValue?: boolean;
     /** Whether preview should be generated for the result. */
     generatePreview?: boolean;
-  }
+  };
   export type evaluate_Return = {
     /** Evaluation result. */
     result: RemoteObject;
@@ -1209,7 +1211,7 @@ export namespace Runtime {
     wasThrown?: boolean;
     /** Exception details. */
     exceptionDetails?: Debugger.ExceptionDetails;
-  }
+  };
   export type callFunctionOn_Parameters = {
     /** Identifier of the object to call function on. */
     objectId: RemoteObjectId;
@@ -1223,13 +1225,13 @@ export namespace Runtime {
     returnByValue?: boolean;
     /** Whether preview should be generated for the result. */
     generatePreview?: boolean;
-  }
+  };
   export type callFunctionOn_Return = {
     /** Call result. */
     result: RemoteObject;
     /** True if the result was thrown during the evaluation. */
     wasThrown?: boolean;
-  }
+  };
   export type getProperties_Parameters = {
     /** Identifier of the object to return properties for. */
     objectId: RemoteObjectId;
@@ -1239,7 +1241,7 @@ export namespace Runtime {
     accessorPropertiesOnly?: boolean;
     /** Whether preview should be generated for the results. */
     generatePreview?: boolean;
-  }
+  };
   export type getProperties_Return = {
     /** Object properties. */
     result: PropertyDescriptor[];
@@ -1247,29 +1249,29 @@ export namespace Runtime {
     internalProperties?: InternalPropertyDescriptor[];
     /** Exception details. */
     exceptionDetails?: Debugger.ExceptionDetails;
-  }
+  };
   export type releaseObject_Parameters = {
     /** Identifier of the object to release. */
     objectId: RemoteObjectId;
-  }
+  };
   export type releaseObjectGroup_Parameters = {
     /** Symbolic object group name. */
     objectGroup: string;
-  }
+  };
   export type isRunRequired_Return = {
     /** True if the Runtime is in paused on start state. */
     result: boolean;
-  }
+  };
   export type setCustomObjectFormatterEnabled_Parameters = {
     enabled: boolean;
-  }
+  };
 }
 /** Console domain defines methods and events for interaction with the JavaScript console. Console collects messages created by means of the <a href='http://getfirebug.com/wiki/index.php/Console_API'>JavaScript Console API</a>. One needs to enable this domain using <code>enable</code> command in order to start receiving the console messages. Browser collects messages issued while console domain is not enabled as well and reports them using <code>messageAdded</code> notification upon enabling. */
 export class Console {
-  _client: IDebuggingProtocolClient;
-  _messageAdded: Console.messageAdded_Handler;
-  _messageRepeatCountUpdated: Console.messageRepeatCountUpdated_Handler;
-  _messagesCleared: Console.messagesCleared_Handler;
+  private _messageAdded: Console.messageAdded_Handler = undefined;
+  private _messageRepeatCountUpdated: Console.messageRepeatCountUpdated_Handler = undefined;
+  private _messagesCleared: Console.messagesCleared_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -1392,21 +1394,21 @@ export namespace Console {
   export type messageAdded_Parameters = {
     /** Console message that has been added. */
     message: ConsoleMessage;
-  }
+  };
   export type messageAdded_Handler = (params: messageAdded_Parameters) => void;
   export type messageRepeatCountUpdated_Parameters = {
     /** New repeat count value. */
     count: number;
     /** Timestamp of most recent message in batch. */
     timestamp: Timestamp;
-  }
+  };
   export type messageRepeatCountUpdated_Handler = (params: messageRepeatCountUpdated_Parameters) => void;
   export type messagesCleared_Handler = () => void;
 }
 /** Security */
 export class Security {
-  _client: IDebuggingProtocolClient;
-  _securityStateChanged: Security.securityStateChanged_Handler;
+  private _securityStateChanged: Security.securityStateChanged_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -1466,26 +1468,26 @@ export namespace Security {
     mixedContentStatus?: MixedContentStatus;
     /** True if the page was loaded over cryptographic transport such as HTTPS. */
     schemeIsCryptographic?: boolean;
-  }
+  };
   export type securityStateChanged_Handler = (params: securityStateChanged_Parameters) => void;
 }
 /** Network domain allows tracking network activities of the page. It exposes information about http, file, data and other requests and responses, their headers, bodies, timing, etc. */
 export class Network {
-  _client: IDebuggingProtocolClient;
-  _requestWillBeSent: Network.requestWillBeSent_Handler;
-  _requestServedFromCache: Network.requestServedFromCache_Handler;
-  _responseReceived: Network.responseReceived_Handler;
-  _dataReceived: Network.dataReceived_Handler;
-  _loadingFinished: Network.loadingFinished_Handler;
-  _loadingFailed: Network.loadingFailed_Handler;
-  _webSocketWillSendHandshakeRequest: Network.webSocketWillSendHandshakeRequest_Handler;
-  _webSocketHandshakeResponseReceived: Network.webSocketHandshakeResponseReceived_Handler;
-  _webSocketCreated: Network.webSocketCreated_Handler;
-  _webSocketClosed: Network.webSocketClosed_Handler;
-  _webSocketFrameReceived: Network.webSocketFrameReceived_Handler;
-  _webSocketFrameError: Network.webSocketFrameError_Handler;
-  _webSocketFrameSent: Network.webSocketFrameSent_Handler;
-  _eventSourceMessageReceived: Network.eventSourceMessageReceived_Handler;
+  private _requestWillBeSent: Network.requestWillBeSent_Handler = undefined;
+  private _requestServedFromCache: Network.requestServedFromCache_Handler = undefined;
+  private _responseReceived: Network.responseReceived_Handler = undefined;
+  private _dataReceived: Network.dataReceived_Handler = undefined;
+  private _loadingFinished: Network.loadingFinished_Handler = undefined;
+  private _loadingFailed: Network.loadingFailed_Handler = undefined;
+  private _webSocketWillSendHandshakeRequest: Network.webSocketWillSendHandshakeRequest_Handler = undefined;
+  private _webSocketHandshakeResponseReceived: Network.webSocketHandshakeResponseReceived_Handler = undefined;
+  private _webSocketCreated: Network.webSocketCreated_Handler = undefined;
+  private _webSocketClosed: Network.webSocketClosed_Handler = undefined;
+  private _webSocketFrameReceived: Network.webSocketFrameReceived_Handler = undefined;
+  private _webSocketFrameError: Network.webSocketFrameError_Handler = undefined;
+  private _webSocketFrameSent: Network.webSocketFrameSent_Handler = undefined;
+  private _eventSourceMessageReceived: Network.eventSourceMessageReceived_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -1986,12 +1988,12 @@ export namespace Network {
     redirectResponse?: Response;
     /** Type of this resource. */
     type?: Page.ResourceType;
-  }
+  };
   export type requestWillBeSent_Handler = (params: requestWillBeSent_Parameters) => void;
   export type requestServedFromCache_Parameters = {
     /** Request identifier. */
     requestId: RequestId;
-  }
+  };
   export type requestServedFromCache_Handler = (params: requestServedFromCache_Parameters) => void;
   export type responseReceived_Parameters = {
     /** Request identifier. */
@@ -2006,7 +2008,7 @@ export namespace Network {
     type: Page.ResourceType;
     /** Response data. */
     response: Response;
-  }
+  };
   export type responseReceived_Handler = (params: responseReceived_Parameters) => void;
   export type dataReceived_Parameters = {
     /** Request identifier. */
@@ -2017,7 +2019,7 @@ export namespace Network {
     dataLength: number;
     /** Actual bytes received (might be less than dataLength for compressed encodings). */
     encodedDataLength: number;
-  }
+  };
   export type dataReceived_Handler = (params: dataReceived_Parameters) => void;
   export type loadingFinished_Parameters = {
     /** Request identifier. */
@@ -2026,7 +2028,7 @@ export namespace Network {
     timestamp: Timestamp;
     /** Total number of bytes received for this request. */
     encodedDataLength: number;
-  }
+  };
   export type loadingFinished_Handler = (params: loadingFinished_Parameters) => void;
   export type loadingFailed_Parameters = {
     /** Request identifier. */
@@ -2041,7 +2043,7 @@ export namespace Network {
     canceled?: boolean;
     /** The reason why loading was blocked, if any. */
     blockedReason?: BlockedReason;
-  }
+  };
   export type loadingFailed_Handler = (params: loadingFailed_Parameters) => void;
   export type webSocketWillSendHandshakeRequest_Parameters = {
     /** Request identifier. */
@@ -2052,7 +2054,7 @@ export namespace Network {
     wallTime: Timestamp;
     /** WebSocket request data. */
     request: WebSocketRequest;
-  }
+  };
   export type webSocketWillSendHandshakeRequest_Handler = (params: webSocketWillSendHandshakeRequest_Parameters) => void;
   export type webSocketHandshakeResponseReceived_Parameters = {
     /** Request identifier. */
@@ -2061,21 +2063,21 @@ export namespace Network {
     timestamp: Timestamp;
     /** WebSocket response data. */
     response: WebSocketResponse;
-  }
+  };
   export type webSocketHandshakeResponseReceived_Handler = (params: webSocketHandshakeResponseReceived_Parameters) => void;
   export type webSocketCreated_Parameters = {
     /** Request identifier. */
     requestId: RequestId;
     /** WebSocket request URL. */
     url: string;
-  }
+  };
   export type webSocketCreated_Handler = (params: webSocketCreated_Parameters) => void;
   export type webSocketClosed_Parameters = {
     /** Request identifier. */
     requestId: RequestId;
     /** Timestamp. */
     timestamp: Timestamp;
-  }
+  };
   export type webSocketClosed_Handler = (params: webSocketClosed_Parameters) => void;
   export type webSocketFrameReceived_Parameters = {
     /** Request identifier. */
@@ -2084,7 +2086,7 @@ export namespace Network {
     timestamp: Timestamp;
     /** WebSocket response data. */
     response: WebSocketFrame;
-  }
+  };
   export type webSocketFrameReceived_Handler = (params: webSocketFrameReceived_Parameters) => void;
   export type webSocketFrameError_Parameters = {
     /** Request identifier. */
@@ -2093,7 +2095,7 @@ export namespace Network {
     timestamp: Timestamp;
     /** WebSocket frame error message. */
     errorMessage: string;
-  }
+  };
   export type webSocketFrameError_Handler = (params: webSocketFrameError_Parameters) => void;
   export type webSocketFrameSent_Parameters = {
     /** Request identifier. */
@@ -2102,7 +2104,7 @@ export namespace Network {
     timestamp: Timestamp;
     /** WebSocket response data. */
     response: WebSocketFrame;
-  }
+  };
   export type webSocketFrameSent_Handler = (params: webSocketFrameSent_Parameters) => void;
   export type eventSourceMessageReceived_Parameters = {
     /** Request identifier. */
@@ -2115,64 +2117,64 @@ export namespace Network {
     eventId: string;
     /** Message content. */
     data: string;
-  }
+  };
   export type eventSourceMessageReceived_Handler = (params: eventSourceMessageReceived_Parameters) => void;
   export type setUserAgentOverride_Parameters = {
     /** User agent to use. */
     userAgent: string;
-  }
+  };
   export type setExtraHTTPHeaders_Parameters = {
     /** Map with extra HTTP headers. */
     headers: Headers;
-  }
+  };
   export type getResponseBody_Parameters = {
     /** Identifier of the network request to get content for. */
     requestId: RequestId;
-  }
+  };
   export type getResponseBody_Return = {
     /** Response body. */
     body: string;
     /** True, if content was sent as base64. */
     base64Encoded: boolean;
-  }
+  };
   export type addBlockedURL_Parameters = {
     /** URL to block. */
     url: string;
-  }
+  };
   export type removeBlockedURL_Parameters = {
     /** URL to stop blocking. */
     url: string;
-  }
+  };
   export type replayXHR_Parameters = {
     /** Identifier of XHR to replay. */
     requestId: RequestId;
-  }
+  };
   export type setMonitoringXHREnabled_Parameters = {
     /** Monitoring enabled state. */
     enabled: boolean;
-  }
+  };
   export type canClearBrowserCache_Return = {
     /** True if browser cache can be cleared. */
     result: boolean;
-  }
+  };
   export type canClearBrowserCookies_Return = {
     /** True if browser cookies can be cleared. */
     result: boolean;
-  }
+  };
   export type getCookies_Return = {
     /** Array of cookie objects. */
     cookies: Cookie[];
-  }
+  };
   export type deleteCookie_Parameters = {
     /** Name of the cookie to remove. */
     cookieName: string;
     /** URL to match cooke domain and path. */
     url: string;
-  }
+  };
   export type canEmulateNetworkConditions_Return = {
     /** True if emulation of network conditions is supported. */
     result: boolean;
-  }
+  };
   export type emulateNetworkConditions_Parameters = {
     /** True to emulate internet disconnection. */
     offline: boolean;
@@ -2182,33 +2184,33 @@ export namespace Network {
     downloadThroughput: number;
     /** Maximal aggregated upload throughput. */
     uploadThroughput: number;
-  }
+  };
   export type setCacheDisabled_Parameters = {
     /** Cache disabled state. */
     cacheDisabled: boolean;
-  }
+  };
   export type setDataSizeLimitsForTest_Parameters = {
     /** Maximum total buffer size. */
     maxTotalSize: number;
     /** Maximum per-resource size. */
     maxResourceSize: number;
-  }
+  };
   export type getCertificateDetails_Parameters = {
     /** ID of the certificate to get details for. */
     certificateId: CertificateId;
-  }
+  };
   export type getCertificateDetails_Return = {
     /** Certificate details. */
     result: CertificateDetails;
-  }
+  };
   export type showCertificateViewer_Parameters = {
     /** Certificate id. */
     certificateId: CertificateId;
-  }
+  };
 }
 export class Database {
-  _client: IDebuggingProtocolClient;
-  _addDatabase: Database.addDatabase_Handler;
+  private _addDatabase: Database.addDatabase_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -2262,26 +2264,26 @@ export namespace Database {
   }
   export type addDatabase_Parameters = {
     database: Database;
-  }
+  };
   export type addDatabase_Handler = (params: addDatabase_Parameters) => void;
   export type getDatabaseTableNames_Parameters = {
     databaseId: DatabaseId;
-  }
+  };
   export type getDatabaseTableNames_Return = {
     tableNames: string[];
-  }
+  };
   export type executeSQL_Parameters = {
     databaseId: DatabaseId;
     query: string;
-  }
+  };
   export type executeSQL_Return = {
     columnNames?: string[];
     values?: any[];
     sqlError?: Error;
-  }
+  };
 }
 export class IndexedDB {
-  _client: IDebuggingProtocolClient;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -2389,21 +2391,21 @@ export namespace IndexedDB {
   export type requestDatabaseNames_Parameters = {
     /** Security origin. */
     securityOrigin: string;
-  }
+  };
   export type requestDatabaseNames_Return = {
     /** Database names for origin. */
     databaseNames: string[];
-  }
+  };
   export type requestDatabase_Parameters = {
     /** Security origin. */
     securityOrigin: string;
     /** Database name. */
     databaseName: string;
-  }
+  };
   export type requestDatabase_Return = {
     /** Database with an array of object stores. */
     databaseWithObjectStores: DatabaseWithObjectStores;
-  }
+  };
   export type requestData_Parameters = {
     /** Security origin. */
     securityOrigin: string;
@@ -2419,13 +2421,13 @@ export namespace IndexedDB {
     pageSize: number;
     /** Key range. */
     keyRange?: KeyRange;
-  }
+  };
   export type requestData_Return = {
     /** Array of object store data entries. */
     objectStoreDataEntries: DataEntry[];
     /** If true, there are more entries to fetch in the given range. */
     hasMore: boolean;
-  }
+  };
   export type clearObjectStore_Parameters = {
     /** Security origin. */
     securityOrigin: string;
@@ -2433,12 +2435,11 @@ export namespace IndexedDB {
     databaseName: string;
     /** Object store name. */
     objectStoreName: string;
-  }
-  export type clearObjectStore_Return = {
-  }
+  };
+  export type clearObjectStore_Return = any;
 }
 export class CacheStorage {
-  _client: IDebuggingProtocolClient;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -2481,11 +2482,11 @@ export namespace CacheStorage {
   export type requestCacheNames_Parameters = {
     /** Security origin. */
     securityOrigin: string;
-  }
+  };
   export type requestCacheNames_Return = {
     /** Caches for the security origin. */
     caches: Cache[];
-  }
+  };
   export type requestEntries_Parameters = {
     /** ID of cache to get entries from. */
     cacheId: CacheId;
@@ -2493,31 +2494,31 @@ export namespace CacheStorage {
     skipCount: number;
     /** Number of records to fetch. */
     pageSize: number;
-  }
+  };
   export type requestEntries_Return = {
     /** Array of object store data entries. */
     cacheDataEntries: DataEntry[];
     /** If true, there are more entries to fetch in the given range. */
     hasMore: boolean;
-  }
+  };
   export type deleteCache_Parameters = {
     /** Id of cache for deletion. */
     cacheId: CacheId;
-  }
+  };
   export type deleteEntry_Parameters = {
     /** Id of cache where the entry will be deleted. */
     cacheId: CacheId;
     /** URL spec of the request. */
     request: string;
-  }
+  };
 }
 /** Query and modify DOM storage. */
 export class DOMStorage {
-  _client: IDebuggingProtocolClient;
-  _domStorageItemsCleared: DOMStorage.domStorageItemsCleared_Handler;
-  _domStorageItemRemoved: DOMStorage.domStorageItemRemoved_Handler;
-  _domStorageItemAdded: DOMStorage.domStorageItemAdded_Handler;
-  _domStorageItemUpdated: DOMStorage.domStorageItemUpdated_Handler;
+  private _domStorageItemsCleared: DOMStorage.domStorageItemsCleared_Handler = undefined;
+  private _domStorageItemRemoved: DOMStorage.domStorageItemRemoved_Handler = undefined;
+  private _domStorageItemAdded: DOMStorage.domStorageItemAdded_Handler = undefined;
+  private _domStorageItemUpdated: DOMStorage.domStorageItemUpdated_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -2599,46 +2600,46 @@ export namespace DOMStorage {
   export type Item = string[];
   export type domStorageItemsCleared_Parameters = {
     storageId: StorageId;
-  }
+  };
   export type domStorageItemsCleared_Handler = (params: domStorageItemsCleared_Parameters) => void;
   export type domStorageItemRemoved_Parameters = {
     storageId: StorageId;
     key: string;
-  }
+  };
   export type domStorageItemRemoved_Handler = (params: domStorageItemRemoved_Parameters) => void;
   export type domStorageItemAdded_Parameters = {
     storageId: StorageId;
     key: string;
     newValue: string;
-  }
+  };
   export type domStorageItemAdded_Handler = (params: domStorageItemAdded_Parameters) => void;
   export type domStorageItemUpdated_Parameters = {
     storageId: StorageId;
     key: string;
     oldValue: string;
     newValue: string;
-  }
+  };
   export type domStorageItemUpdated_Handler = (params: domStorageItemUpdated_Parameters) => void;
   export type getDOMStorageItems_Parameters = {
     storageId: StorageId;
-  }
+  };
   export type getDOMStorageItems_Return = {
     entries: Item[];
-  }
+  };
   export type setDOMStorageItem_Parameters = {
     storageId: StorageId;
     key: string;
     value: string;
-  }
+  };
   export type removeDOMStorageItem_Parameters = {
     storageId: StorageId;
     key: string;
-  }
+  };
 }
 export class ApplicationCache {
-  _client: IDebuggingProtocolClient;
-  _applicationCacheStatusUpdated: ApplicationCache.applicationCacheStatusUpdated_Handler;
-  _networkStateUpdated: ApplicationCache.networkStateUpdated_Handler;
+  private _applicationCacheStatusUpdated: ApplicationCache.applicationCacheStatusUpdated_Handler = undefined;
+  private _networkStateUpdated: ApplicationCache.networkStateUpdated_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -2722,35 +2723,35 @@ export namespace ApplicationCache {
     manifestURL: string;
     /** Updated application cache status. */
     status: number;
-  }
+  };
   export type applicationCacheStatusUpdated_Handler = (params: applicationCacheStatusUpdated_Parameters) => void;
   export type networkStateUpdated_Parameters = {
     isNowOnline: boolean;
-  }
+  };
   export type networkStateUpdated_Handler = (params: networkStateUpdated_Parameters) => void;
   export type getFramesWithManifests_Return = {
     /** Array of frame identifiers with manifest urls for each frame containing a document associated with some application cache. */
     frameIds: FrameWithManifest[];
-  }
+  };
   export type getManifestForFrame_Parameters = {
     /** Identifier of the frame containing document whose manifest is retrieved. */
     frameId: Page.FrameId;
-  }
+  };
   export type getManifestForFrame_Return = {
     /** Manifest URL for document in the given frame. */
     manifestURL: string;
-  }
+  };
   export type getApplicationCacheForFrame_Parameters = {
     /** Identifier of the frame containing document whose application cache is retrieved. */
     frameId: Page.FrameId;
-  }
+  };
   export type getApplicationCacheForFrame_Return = {
     /** Relevant application cache data for the document in given frame. */
     applicationCache: ApplicationCache;
-  }
+  };
 }
 export class FileSystem {
-  _client: IDebuggingProtocolClient;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -2811,33 +2812,33 @@ export namespace FileSystem {
     origin: string;
     /** FileSystem type of requesting FileSystem. */
     type: "temporary" | "persistent";
-  }
+  };
   export type requestFileSystemRoot_Return = {
     /** 0, if no error. Otherwise, errorCode is set to FileError::ErrorCode value. */
     errorCode: number;
     /** Contains root of the requested FileSystem if the command completed successfully. */
     root?: Entry;
-  }
+  };
   export type requestDirectoryContent_Parameters = {
     /** URL of the directory that the frontend is requesting to read from. */
     url: string;
-  }
+  };
   export type requestDirectoryContent_Return = {
     /** 0, if no error. Otherwise, errorCode is set to FileError::ErrorCode value. */
     errorCode: number;
     /** Contains all entries on directory if the command completed successfully. */
     entries?: Entry[];
-  }
+  };
   export type requestMetadata_Parameters = {
     /** URL of the entry that the frontend is requesting to get metadata from. */
     url: string;
-  }
+  };
   export type requestMetadata_Return = {
     /** 0, if no error. Otherwise, errorCode is set to FileError::ErrorCode value. */
     errorCode: number;
     /** Contains metadata of the entry if the command completed successfully. */
     metadata?: Metadata;
-  }
+  };
   export type requestFileContent_Parameters = {
     /** URL of the file that the frontend is requesting to read from. */
     url: string;
@@ -2849,7 +2850,7 @@ export namespace FileSystem {
     end?: number;
     /** Overrides charset of the content when content is served as text. */
     charset?: string;
-  }
+  };
   export type requestFileContent_Return = {
     /** 0, if no error. Otherwise, errorCode is set to FileError::ErrorCode value. */
     errorCode: number;
@@ -2857,35 +2858,35 @@ export namespace FileSystem {
     content?: string;
     /** Charset of the content if it is served as text. */
     charset?: string;
-  }
+  };
   export type deleteEntry_Parameters = {
     /** URL of the entry to delete. */
     url: string;
-  }
+  };
   export type deleteEntry_Return = {
     /** 0, if no error. Otherwise errorCode is set to FileError::ErrorCode value. */
     errorCode: number;
-  }
+  };
 }
 /** This domain exposes DOM read/write operations. Each DOM Node is represented with its mirror object that has an <code>id</code>. This <code>id</code> can be used to get additional information on the Node, resolve it into the JavaScript object wrapper, etc. It is important that client receives DOM events only for the nodes that are known to the client. Backend keeps track of the nodes that were sent to the client and never sends the same node twice. It is client's responsibility to collect information about the nodes that were sent to the client.<p>Note that <code>iframe</code> owner elements will return corresponding document elements as their child nodes.</p> */
 export class DOM {
-  _client: IDebuggingProtocolClient;
-  _documentUpdated: DOM.documentUpdated_Handler;
-  _inspectNodeRequested: DOM.inspectNodeRequested_Handler;
-  _setChildNodes: DOM.setChildNodes_Handler;
-  _attributeModified: DOM.attributeModified_Handler;
-  _attributeRemoved: DOM.attributeRemoved_Handler;
-  _inlineStyleInvalidated: DOM.inlineStyleInvalidated_Handler;
-  _characterDataModified: DOM.characterDataModified_Handler;
-  _childNodeCountUpdated: DOM.childNodeCountUpdated_Handler;
-  _childNodeInserted: DOM.childNodeInserted_Handler;
-  _childNodeRemoved: DOM.childNodeRemoved_Handler;
-  _shadowRootPushed: DOM.shadowRootPushed_Handler;
-  _shadowRootPopped: DOM.shadowRootPopped_Handler;
-  _pseudoElementAdded: DOM.pseudoElementAdded_Handler;
-  _pseudoElementRemoved: DOM.pseudoElementRemoved_Handler;
-  _distributedNodesUpdated: DOM.distributedNodesUpdated_Handler;
-  _nodeHighlightRequested: DOM.nodeHighlightRequested_Handler;
+  private _documentUpdated: DOM.documentUpdated_Handler = undefined;
+  private _inspectNodeRequested: DOM.inspectNodeRequested_Handler = undefined;
+  private _setChildNodes: DOM.setChildNodes_Handler = undefined;
+  private _attributeModified: DOM.attributeModified_Handler = undefined;
+  private _attributeRemoved: DOM.attributeRemoved_Handler = undefined;
+  private _inlineStyleInvalidated: DOM.inlineStyleInvalidated_Handler = undefined;
+  private _characterDataModified: DOM.characterDataModified_Handler = undefined;
+  private _childNodeCountUpdated: DOM.childNodeCountUpdated_Handler = undefined;
+  private _childNodeInserted: DOM.childNodeInserted_Handler = undefined;
+  private _childNodeRemoved: DOM.childNodeRemoved_Handler = undefined;
+  private _shadowRootPushed: DOM.shadowRootPushed_Handler = undefined;
+  private _shadowRootPopped: DOM.shadowRootPopped_Handler = undefined;
+  private _pseudoElementAdded: DOM.pseudoElementAdded_Handler = undefined;
+  private _pseudoElementRemoved: DOM.pseudoElementRemoved_Handler = undefined;
+  private _distributedNodesUpdated: DOM.distributedNodesUpdated_Handler = undefined;
+  private _nodeHighlightRequested: DOM.nodeHighlightRequested_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -3408,14 +3409,14 @@ export namespace DOM {
   export type inspectNodeRequested_Parameters = {
     /** Id of the node to inspect. */
     backendNodeId: BackendNodeId;
-  }
+  };
   export type inspectNodeRequested_Handler = (params: inspectNodeRequested_Parameters) => void;
   export type setChildNodes_Parameters = {
     /** Parent node id to populate with children. */
     parentId: NodeId;
     /** Child nodes array. */
     nodes: Node[];
-  }
+  };
   export type setChildNodes_Handler = (params: setChildNodes_Parameters) => void;
   export type attributeModified_Parameters = {
     /** Id of the node that has changed. */
@@ -3424,33 +3425,33 @@ export namespace DOM {
     name: string;
     /** Attribute value. */
     value: string;
-  }
+  };
   export type attributeModified_Handler = (params: attributeModified_Parameters) => void;
   export type attributeRemoved_Parameters = {
     /** Id of the node that has changed. */
     nodeId: NodeId;
     /** A ttribute name. */
     name: string;
-  }
+  };
   export type attributeRemoved_Handler = (params: attributeRemoved_Parameters) => void;
   export type inlineStyleInvalidated_Parameters = {
     /** Ids of the nodes for which the inline styles have been invalidated. */
     nodeIds: NodeId[];
-  }
+  };
   export type inlineStyleInvalidated_Handler = (params: inlineStyleInvalidated_Parameters) => void;
   export type characterDataModified_Parameters = {
     /** Id of the node that has changed. */
     nodeId: NodeId;
     /** New text value. */
     characterData: string;
-  }
+  };
   export type characterDataModified_Handler = (params: characterDataModified_Parameters) => void;
   export type childNodeCountUpdated_Parameters = {
     /** Id of the node that has changed. */
     nodeId: NodeId;
     /** New node count. */
     childNodeCount: number;
-  }
+  };
   export type childNodeCountUpdated_Handler = (params: childNodeCountUpdated_Parameters) => void;
   export type childNodeInserted_Parameters = {
     /** Id of the node that has changed. */
@@ -3459,104 +3460,104 @@ export namespace DOM {
     previousNodeId: NodeId;
     /** Inserted node data. */
     node: Node;
-  }
+  };
   export type childNodeInserted_Handler = (params: childNodeInserted_Parameters) => void;
   export type childNodeRemoved_Parameters = {
     /** Parent id. */
     parentNodeId: NodeId;
     /** Id of the node that has been removed. */
     nodeId: NodeId;
-  }
+  };
   export type childNodeRemoved_Handler = (params: childNodeRemoved_Parameters) => void;
   export type shadowRootPushed_Parameters = {
     /** Host element id. */
     hostId: NodeId;
     /** Shadow root. */
     root: Node;
-  }
+  };
   export type shadowRootPushed_Handler = (params: shadowRootPushed_Parameters) => void;
   export type shadowRootPopped_Parameters = {
     /** Host element id. */
     hostId: NodeId;
     /** Shadow root id. */
     rootId: NodeId;
-  }
+  };
   export type shadowRootPopped_Handler = (params: shadowRootPopped_Parameters) => void;
   export type pseudoElementAdded_Parameters = {
     /** Pseudo element's parent element id. */
     parentId: NodeId;
     /** The added pseudo element. */
     pseudoElement: Node;
-  }
+  };
   export type pseudoElementAdded_Handler = (params: pseudoElementAdded_Parameters) => void;
   export type pseudoElementRemoved_Parameters = {
     /** Pseudo element's parent element id. */
     parentId: NodeId;
     /** The removed pseudo element id. */
     pseudoElementId: NodeId;
-  }
+  };
   export type pseudoElementRemoved_Handler = (params: pseudoElementRemoved_Parameters) => void;
   export type distributedNodesUpdated_Parameters = {
     /** Insertion point where distrubuted nodes were updated. */
     insertionPointId: NodeId;
     /** Distributed nodes for given insertion point. */
     distributedNodes: BackendNode[];
-  }
+  };
   export type distributedNodesUpdated_Handler = (params: distributedNodesUpdated_Parameters) => void;
   export type nodeHighlightRequested_Parameters = {
     nodeId: NodeId;
-  }
+  };
   export type nodeHighlightRequested_Handler = (params: nodeHighlightRequested_Parameters) => void;
   export type getDocument_Return = {
     /** Resulting node. */
     root: Node;
-  }
+  };
   export type requestChildNodes_Parameters = {
     /** Id of the node to get children for. */
     nodeId: NodeId;
     /** The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0. */
     depth?: number;
-  }
+  };
   export type querySelector_Parameters = {
     /** Id of the node to query upon. */
     nodeId: NodeId;
     /** Selector string. */
     selector: string;
-  }
+  };
   export type querySelector_Return = {
     /** Query selector result. */
     nodeId: NodeId;
-  }
+  };
   export type querySelectorAll_Parameters = {
     /** Id of the node to query upon. */
     nodeId: NodeId;
     /** Selector string. */
     selector: string;
-  }
+  };
   export type querySelectorAll_Return = {
     /** Query selector result. */
     nodeIds: NodeId[];
-  }
+  };
   export type setNodeName_Parameters = {
     /** Id of the node to set name for. */
     nodeId: NodeId;
     /** New node's name. */
     name: string;
-  }
+  };
   export type setNodeName_Return = {
     /** New node's id. */
     nodeId: NodeId;
-  }
+  };
   export type setNodeValue_Parameters = {
     /** Id of the node to set value for. */
     nodeId: NodeId;
     /** New node's value. */
     value: string;
-  }
+  };
   export type removeNode_Parameters = {
     /** Id of the node to remove. */
     nodeId: NodeId;
-  }
+  };
   export type setAttributeValue_Parameters = {
     /** Id of the element to set attribute for. */
     nodeId: NodeId;
@@ -3564,7 +3565,7 @@ export namespace DOM {
     name: string;
     /** Attribute value. */
     value: string;
-  }
+  };
   export type setAttributesAsText_Parameters = {
     /** Id of the element to set attributes for. */
     nodeId: NodeId;
@@ -3572,39 +3573,39 @@ export namespace DOM {
     text: string;
     /** Attribute name to replace with new attributes derived from text in case text parsed successfully. */
     name?: string;
-  }
+  };
   export type removeAttribute_Parameters = {
     /** Id of the element to remove attribute from. */
     nodeId: NodeId;
     /** Name of the attribute to remove. */
     name: string;
-  }
+  };
   export type getOuterHTML_Parameters = {
     /** Id of the node to get markup for. */
     nodeId: NodeId;
-  }
+  };
   export type getOuterHTML_Return = {
     /** Outer HTML markup. */
     outerHTML: string;
-  }
+  };
   export type setOuterHTML_Parameters = {
     /** Id of the node to set markup for. */
     nodeId: NodeId;
     /** Outer HTML markup to set. */
     outerHTML: string;
-  }
+  };
   export type performSearch_Parameters = {
     /** Plain text or query selector or XPath search query. */
     query: string;
     /** True to search in user agent shadow DOM. */
     includeUserAgentShadowDOM?: boolean;
-  }
+  };
   export type performSearch_Return = {
     /** Unique search session identifier. */
     searchId: string;
     /** Number of search results. */
     resultCount: number;
-  }
+  };
   export type getSearchResults_Parameters = {
     /** Unique search session identifier. */
     searchId: string;
@@ -3612,29 +3613,29 @@ export namespace DOM {
     fromIndex: number;
     /** End index of the search result to be returned. */
     toIndex: number;
-  }
+  };
   export type getSearchResults_Return = {
     /** Ids of the search result nodes. */
     nodeIds: NodeId[];
-  }
+  };
   export type discardSearchResults_Parameters = {
     /** Unique search session identifier. */
     searchId: string;
-  }
+  };
   export type requestNode_Parameters = {
     /** JavaScript object id to convert into node. */
     objectId: Runtime.RemoteObjectId;
-  }
+  };
   export type requestNode_Return = {
     /** Node id for given object. */
     nodeId: NodeId;
-  }
+  };
   export type setInspectMode_Parameters = {
     /** Set an inspection mode. */
     mode: InspectMode;
     /** A descriptor for the highlight appearance of hovered-over nodes. May be omitted if <code>enabled == false</code>. */
     highlightConfig?: HighlightConfig;
-  }
+  };
   export type highlightRect_Parameters = {
     /** X coordinate */
     x: number;
@@ -3648,7 +3649,7 @@ export namespace DOM {
     color?: RGBA;
     /** The highlight outline color (default: transparent). */
     outlineColor?: RGBA;
-  }
+  };
   export type highlightQuad_Parameters = {
     /** Quad to highlight */
     quad: Quad;
@@ -3656,7 +3657,7 @@ export namespace DOM {
     color?: RGBA;
     /** The highlight outline color (default: transparent). */
     outlineColor?: RGBA;
-  }
+  };
   export type highlightNode_Parameters = {
     /** A descriptor for the highlight appearance. */
     highlightConfig: HighlightConfig;
@@ -3666,7 +3667,7 @@ export namespace DOM {
     backendNodeId?: BackendNodeId;
     /** JavaScript object id of the node to be highlighted. */
     objectId?: Runtime.RemoteObjectId;
-  }
+  };
   export type highlightFrame_Parameters = {
     /** Identifier of the frame to highlight. */
     frameId: Page.FrameId;
@@ -3674,45 +3675,45 @@ export namespace DOM {
     contentColor?: RGBA;
     /** The content box highlight outline color (default: transparent). */
     contentOutlineColor?: RGBA;
-  }
+  };
   export type pushNodeByPathToFrontend_Parameters = {
     /** Path to node in the proprietary format. */
     path: string;
-  }
+  };
   export type pushNodeByPathToFrontend_Return = {
     /** Id of the node for given path. */
     nodeId: NodeId;
-  }
+  };
   export type pushNodesByBackendIdsToFrontend_Parameters = {
     /** The array of backend node ids. */
     backendNodeIds: BackendNodeId[];
-  }
+  };
   export type pushNodesByBackendIdsToFrontend_Return = {
     /** The array of ids of pushed nodes that correspond to the backend ids specified in backendNodeIds. */
     nodeIds: NodeId[];
-  }
+  };
   export type setInspectedNode_Parameters = {
     /** DOM node id to be accessible by means of $x command line API. */
     nodeId: NodeId;
-  }
+  };
   export type resolveNode_Parameters = {
     /** Id of the node to resolve. */
     nodeId: NodeId;
     /** Symbolic group name that can be used to release multiple objects. */
     objectGroup?: string;
-  }
+  };
   export type resolveNode_Return = {
     /** JavaScript object wrapper for given node. */
     object: Runtime.RemoteObject;
-  }
+  };
   export type getAttributes_Parameters = {
     /** Id of the node to retrieve attibutes for. */
     nodeId: NodeId;
-  }
+  };
   export type getAttributes_Return = {
     /** An interleaved array of node attribute names and values. */
     attributes: string[];
-  }
+  };
   export type copyTo_Parameters = {
     /** Id of the node to copy. */
     nodeId: NodeId;
@@ -3720,11 +3721,11 @@ export namespace DOM {
     targetNodeId: NodeId;
     /** Drop the copy before this node (if absent, the copy becomes the last child of <code>targetNodeId</code>). */
     insertBeforeNodeId?: NodeId;
-  }
+  };
   export type copyTo_Return = {
     /** Id of the node clone. */
     nodeId: NodeId;
-  }
+  };
   export type moveTo_Parameters = {
     /** Id of the node to move. */
     nodeId: NodeId;
@@ -3732,64 +3733,64 @@ export namespace DOM {
     targetNodeId: NodeId;
     /** Drop node before this one (if absent, the moved node becomes the last child of <code>targetNodeId</code>). */
     insertBeforeNodeId?: NodeId;
-  }
+  };
   export type moveTo_Return = {
     /** New id of the moved node. */
     nodeId: NodeId;
-  }
+  };
   export type focus_Parameters = {
     /** Id of the node to focus. */
     nodeId: NodeId;
-  }
+  };
   export type setFileInputFiles_Parameters = {
     /** Id of the file input node to set files for. */
     nodeId: NodeId;
     /** Array of file paths to set. */
     files: string[];
-  }
+  };
   export type getBoxModel_Parameters = {
     /** Id of the node to get box model for. */
     nodeId: NodeId;
-  }
+  };
   export type getBoxModel_Return = {
     /** Box model for the node. */
     model: BoxModel;
-  }
+  };
   export type getNodeForLocation_Parameters = {
     /** X coordinate. */
     x: number;
     /** Y coordinate. */
     y: number;
-  }
+  };
   export type getNodeForLocation_Return = {
     /** Id of the node at given coordinates. */
     nodeId: NodeId;
-  }
+  };
   export type getRelayoutBoundary_Parameters = {
     /** Id of the node. */
     nodeId: NodeId;
-  }
+  };
   export type getRelayoutBoundary_Return = {
     /** Relayout boundary node id for the given node. */
     nodeId: NodeId;
-  }
+  };
   export type getHighlightObjectForTest_Parameters = {
     /** Id of the node to get highlight object for. */
     nodeId: NodeId;
-  }
+  };
   export type getHighlightObjectForTest_Return = {
     /** Highlight data for the node. */
     highlight: any;
-  }
+  };
 }
 /** This domain exposes CSS read/write operations. All CSS objects (stylesheets, rules, and styles) have an associated <code>id</code> used in subsequent operations on the related object. Each object type has a specific <code>id</code> structure, and those are not interchangeable between objects of different kinds. CSS objects can be loaded using the <code>get*ForNode()</code> calls (which accept a DOM node id). A client can also discover all the existing stylesheets with the <code>getAllStyleSheets()</code> method (or keeping track of the <code>styleSheetAdded</code>/<code>styleSheetRemoved</code> events) and subsequently load the required stylesheet contents using the <code>getStyleSheet[Text]()</code> methods. */
 export class CSS {
-  _client: IDebuggingProtocolClient;
-  _mediaQueryResultChanged: CSS.mediaQueryResultChanged_Handler;
-  _styleSheetChanged: CSS.styleSheetChanged_Handler;
-  _styleSheetAdded: CSS.styleSheetAdded_Handler;
-  _styleSheetRemoved: CSS.styleSheetRemoved_Handler;
-  _layoutEditorChange: CSS.layoutEditorChange_Handler;
+  private _mediaQueryResultChanged: CSS.mediaQueryResultChanged_Handler = undefined;
+  private _styleSheetChanged: CSS.styleSheetChanged_Handler = undefined;
+  private _styleSheetAdded: CSS.styleSheetAdded_Handler = undefined;
+  private _styleSheetRemoved: CSS.styleSheetRemoved_Handler = undefined;
+  private _layoutEditorChange: CSS.layoutEditorChange_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -4124,28 +4125,28 @@ export namespace CSS {
   export type mediaQueryResultChanged_Handler = () => void;
   export type styleSheetChanged_Parameters = {
     styleSheetId: StyleSheetId;
-  }
+  };
   export type styleSheetChanged_Handler = (params: styleSheetChanged_Parameters) => void;
   export type styleSheetAdded_Parameters = {
     /** Added stylesheet metainfo. */
     header: CSSStyleSheetHeader;
-  }
+  };
   export type styleSheetAdded_Handler = (params: styleSheetAdded_Parameters) => void;
   export type styleSheetRemoved_Parameters = {
     /** Identifier of the removed stylesheet. */
     styleSheetId: StyleSheetId;
-  }
+  };
   export type styleSheetRemoved_Handler = (params: styleSheetRemoved_Parameters) => void;
   export type layoutEditorChange_Parameters = {
     /** Identifier of the stylesheet where the modification occurred. */
     styleSheetId: StyleSheetId;
     /** Range where the modification occurred. */
     changeRange: SourceRange;
-  }
+  };
   export type layoutEditorChange_Handler = (params: layoutEditorChange_Parameters) => void;
   export type getMatchedStylesForNode_Parameters = {
     nodeId: DOM.NodeId;
-  }
+  };
   export type getMatchedStylesForNode_Return = {
     /** Inline style for the specified DOM node. */
     inlineStyle?: CSSStyle;
@@ -4157,87 +4158,87 @@ export namespace CSS {
     pseudoElements?: PseudoElementMatches[];
     /** A chain of inherited styles (from the immediate node parent up to the DOM tree root). */
     inherited?: InheritedStyleEntry[];
-  }
+  };
   export type getInlineStylesForNode_Parameters = {
     nodeId: DOM.NodeId;
-  }
+  };
   export type getInlineStylesForNode_Return = {
     /** Inline style for the specified DOM node. */
     inlineStyle?: CSSStyle;
     /** Attribute-defined element style (e.g. resulting from "width=20 height=100%"). */
     attributesStyle?: CSSStyle;
-  }
+  };
   export type getComputedStyleForNode_Parameters = {
     nodeId: DOM.NodeId;
-  }
+  };
   export type getComputedStyleForNode_Return = {
     /** Computed style for the specified DOM node. */
     computedStyle: CSSComputedStyleProperty[];
-  }
+  };
   export type getPlatformFontsForNode_Parameters = {
     nodeId: DOM.NodeId;
-  }
+  };
   export type getPlatformFontsForNode_Return = {
     /** Usage statistics for every employed platform font. */
     fonts: PlatformFontUsage[];
-  }
+  };
   export type getCSSAnimationsForNode_Parameters = {
     nodeId: DOM.NodeId;
-  }
+  };
   export type getCSSAnimationsForNode_Return = {
     /** A list of CSS keyframed animations matching this node. */
     cssKeyframesRules?: CSSKeyframesRule[];
-  }
+  };
   export type getStyleSheetText_Parameters = {
     styleSheetId: StyleSheetId;
-  }
+  };
   export type getStyleSheetText_Return = {
     /** The stylesheet text. */
     text: string;
-  }
+  };
   export type setStyleSheetText_Parameters = {
     styleSheetId: StyleSheetId;
     text: string;
-  }
+  };
   export type setStyleSheetText_Return = {
     /** URL of source map associated with script (if any). */
     sourceMapURL?: string;
-  }
+  };
   export type setRuleSelector_Parameters = {
     styleSheetId: StyleSheetId;
     range: SourceRange;
     selector: string;
-  }
+  };
   export type setRuleSelector_Return = {
     /** The resulting selector list after modification. */
     selectorList: SelectorList;
-  }
+  };
   export type setStyleText_Parameters = {
     styleSheetId: StyleSheetId;
     range: SourceRange;
     text: string;
-  }
+  };
   export type setStyleText_Return = {
     /** The resulting style after the selector modification. */
     style: CSSStyle;
-  }
+  };
   export type setMediaText_Parameters = {
     styleSheetId: StyleSheetId;
     range: SourceRange;
     text: string;
-  }
+  };
   export type setMediaText_Return = {
     /** The resulting CSS media rule after modification. */
     media: CSSMedia;
-  }
+  };
   export type createStyleSheet_Parameters = {
     /** Identifier of the frame where "via-inspector" stylesheet should be created. */
     frameId: Page.FrameId;
-  }
+  };
   export type createStyleSheet_Return = {
     /** Identifier of the created "via-inspector" stylesheet. */
     styleSheetId: StyleSheetId;
-  }
+  };
   export type addRule_Parameters = {
     /** The css style sheet identifier where a new rule should be inserted. */
     styleSheetId: StyleSheetId;
@@ -4245,38 +4246,38 @@ export namespace CSS {
     ruleText: string;
     /** Text position of a new rule in the target style sheet. */
     location: SourceRange;
-  }
+  };
   export type addRule_Return = {
     /** The newly created rule. */
     rule: CSSRule;
-  }
+  };
   export type forcePseudoState_Parameters = {
     /** The element id for which to force the pseudo state. */
     nodeId: DOM.NodeId;
     /** Element pseudo classes to force when computing the element's style. */
     forcedPseudoClasses: "active" | "focus" | "hover" | "visited"[];
-  }
+  };
   export type getMediaQueries_Return = {
     medias: CSSMedia[];
-  }
+  };
   export type setEffectivePropertyValueForNode_Parameters = {
     /** The element id for which to set property. */
     nodeId: DOM.NodeId;
     propertyName: string;
     value: string;
-  }
+  };
   export type getBackgroundColors_Parameters = {
     /** Id of the node to get background colors for. */
     nodeId: DOM.NodeId;
-  }
+  };
   export type getBackgroundColors_Return = {
     /** The range of background colors behind this element, if it contains any visible text. If no visible text is present, this will be undefined. In the case of a flat background color, this will consist of simply that color. In the case of a gradient, this will consist of each of the color stops. For anything more complicated, this will be an empty array. Images will be ignored (as if the image had failed to load). */
     backgroundColors?: string[];
-  }
+  };
 }
 /** Input/Output operations for streams produced by DevTools. */
 export class IO {
-  _client: IDebuggingProtocolClient;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -4298,22 +4299,22 @@ export namespace IO {
     offset?: number;
     /** Maximum number of bytes to read (left upon the agent discretion if not specified). */
     size?: number;
-  }
+  };
   export type read_Return = {
     /** Data that were read. */
     data: string;
     /** Set if the end-of-file condition occured while reading. */
     eof: boolean;
-  }
+  };
   export type close_Parameters = {
     /** Handle of the stream to close. */
     handle: StreamHandle;
-  }
+  };
 }
 /** Timeline domain is deprecated. Please use Tracing instead. */
 export class Timeline {
-  _client: IDebuggingProtocolClient;
-  _eventRecorded: Timeline.eventRecorded_Handler;
+  private _eventRecorded: Timeline.eventRecorded_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -4370,7 +4371,7 @@ export namespace Timeline {
   export type eventRecorded_Parameters = {
     /** Timeline event record data. */
     record: TimelineEvent;
-  }
+  };
   export type eventRecorded_Handler = (params: eventRecorded_Parameters) => void;
   export type start_Parameters = {
     /** Samples JavaScript stack traces up to <code>maxCallStackDepth</code>, defaults to 5. */
@@ -4383,20 +4384,20 @@ export namespace Timeline {
     includeCounters?: boolean;
     /** Whether events from GPU process should be collected. */
     includeGPUEvents?: boolean;
-  }
+  };
 }
 /** Debugger domain exposes JavaScript debugging capabilities. It allows setting and removing breakpoints, stepping through execution, exploring stack traces, etc. */
 export class Debugger {
-  _client: IDebuggingProtocolClient;
-  _globalObjectCleared: Debugger.globalObjectCleared_Handler;
-  _scriptParsed: Debugger.scriptParsed_Handler;
-  _scriptFailedToParse: Debugger.scriptFailedToParse_Handler;
-  _breakpointResolved: Debugger.breakpointResolved_Handler;
-  _paused: Debugger.paused_Handler;
-  _resumed: Debugger.resumed_Handler;
-  _promiseUpdated: Debugger.promiseUpdated_Handler;
-  _asyncOperationStarted: Debugger.asyncOperationStarted_Handler;
-  _asyncOperationCompleted: Debugger.asyncOperationCompleted_Handler;
+  private _globalObjectCleared: Debugger.globalObjectCleared_Handler = undefined;
+  private _scriptParsed: Debugger.scriptParsed_Handler = undefined;
+  private _scriptFailedToParse: Debugger.scriptFailedToParse_Handler = undefined;
+  private _breakpointResolved: Debugger.breakpointResolved_Handler = undefined;
+  private _paused: Debugger.paused_Handler = undefined;
+  private _resumed: Debugger.resumed_Handler = undefined;
+  private _promiseUpdated: Debugger.promiseUpdated_Handler = undefined;
+  private _asyncOperationStarted: Debugger.asyncOperationStarted_Handler = undefined;
+  private _asyncOperationCompleted: Debugger.asyncOperationCompleted_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -4762,7 +4763,7 @@ export namespace Debugger {
   }
   /** Error data for setScriptSource command. compileError is a case type for uncompilable script source error. */
   export interface SetScriptSourceError {
-    compileError?: { message: string; lineNumber: number; columnNumber: number };
+    compileError?: { message: string; lineNumber: number; columnNumber: number; };
   }
   /** Information about the promise. All fields but id are optional and if present they reflect the new state of the property on the promise with given id. */
   export interface PromiseDetails {
@@ -4831,7 +4832,7 @@ export namespace Debugger {
     sourceMapURL?: string;
     /** True, if this script has sourceURL. */
     hasSourceURL?: boolean;
-  }
+  };
   export type scriptParsed_Handler = (params: scriptParsed_Parameters) => void;
   export type scriptFailedToParse_Parameters = {
     /** Identifier of the script parsed. */
@@ -4856,14 +4857,14 @@ export namespace Debugger {
     sourceMapURL?: string;
     /** True, if this script has sourceURL. */
     hasSourceURL?: boolean;
-  }
+  };
   export type scriptFailedToParse_Handler = (params: scriptFailedToParse_Parameters) => void;
   export type breakpointResolved_Parameters = {
     /** Breakpoint unique identifier. */
     breakpointId: BreakpointId;
     /** Actual breakpoint location. */
     location: Location;
-  }
+  };
   export type breakpointResolved_Handler = (params: breakpointResolved_Parameters) => void;
   export type paused_Parameters = {
     /** Call stack the virtual machine stopped on. */
@@ -4876,7 +4877,7 @@ export namespace Debugger {
     hitBreakpoints?: string[];
     /** Async stack trace, if any. */
     asyncStackTrace?: StackTrace;
-  }
+  };
   export type paused_Handler = (params: paused_Parameters) => void;
   export type resumed_Handler = () => void;
   export type promiseUpdated_Parameters = {
@@ -4884,26 +4885,26 @@ export namespace Debugger {
     eventType: "new" | "update" | "gc";
     /** Information about the updated <code>Promise</code>. */
     promise: PromiseDetails;
-  }
+  };
   export type promiseUpdated_Handler = (params: promiseUpdated_Parameters) => void;
   export type asyncOperationStarted_Parameters = {
     /** Information about the async operation. */
     operation: AsyncOperation;
-  }
+  };
   export type asyncOperationStarted_Handler = (params: asyncOperationStarted_Parameters) => void;
   export type asyncOperationCompleted_Parameters = {
     /** ID of the async operation that was completed. */
     id: number;
-  }
+  };
   export type asyncOperationCompleted_Handler = (params: asyncOperationCompleted_Parameters) => void;
   export type setBreakpointsActive_Parameters = {
     /** New value for breakpoints active state. */
     active: boolean;
-  }
+  };
   export type setSkipAllPauses_Parameters = {
     /** New value for skip pauses state. */
     skipped: boolean;
-  }
+  };
   export type setBreakpointByUrl_Parameters = {
     /** Line number to set breakpoint at. */
     lineNumber: number;
@@ -4915,34 +4916,34 @@ export namespace Debugger {
     columnNumber?: number;
     /** Expression to use as a breakpoint condition. When specified, debugger will only stop on the breakpoint if this expression evaluates to true. */
     condition?: string;
-  }
+  };
   export type setBreakpointByUrl_Return = {
     /** Id of the created breakpoint for further reference. */
     breakpointId: BreakpointId;
     /** List of the locations this breakpoint resolved into upon addition. */
     locations: Location[];
-  }
+  };
   export type setBreakpoint_Parameters = {
     /** Location to set breakpoint in. */
     location: Location;
     /** Expression to use as a breakpoint condition. When specified, debugger will only stop on the breakpoint if this expression evaluates to true. */
     condition?: string;
-  }
+  };
   export type setBreakpoint_Return = {
     /** Id of the created breakpoint for further reference. */
     breakpointId: BreakpointId;
     /** Location this breakpoint resolved into. */
     actualLocation: Location;
-  }
+  };
   export type removeBreakpoint_Parameters = {
     breakpointId: BreakpointId;
-  }
+  };
   export type continueToLocation_Parameters = {
     /** Location to continue to. */
     location: Location;
     /** Allows breakpoints at the intemediate positions inside statements. */
     interstatementLocation?: boolean;
-  }
+  };
   export type searchInContent_Parameters = {
     /** Id of the script to search in. */
     scriptId: ScriptId;
@@ -4952,15 +4953,15 @@ export namespace Debugger {
     caseSensitive?: boolean;
     /** If true, treats string parameter as regex. */
     isRegex?: boolean;
-  }
+  };
   export type searchInContent_Return = {
     /** List of search matches. */
     result: SearchMatch[];
-  }
+  };
   export type canSetScriptSource_Return = {
     /** True if <code>setScriptSource</code> is supported. */
     result: boolean;
-  }
+  };
   export type setScriptSource_Parameters = {
     /** Id of the script to edit. */
     scriptId: ScriptId;
@@ -4968,7 +4969,7 @@ export namespace Debugger {
     scriptSource: string;
     /**  If true the change will not actually be applied. Preview mode may be used to get result description without actually modifying the code. */
     preview?: boolean;
-  }
+  };
   export type setScriptSource_Return = {
     /** New stack trace in case editing has happened while VM was stopped. */
     callFrames?: CallFrame[];
@@ -4976,53 +4977,53 @@ export namespace Debugger {
     stackChanged?: boolean;
     /** Async stack trace, if any. */
     asyncStackTrace?: StackTrace;
-  }
+  };
   export type restartFrame_Parameters = {
     /** Call frame identifier to evaluate on. */
     callFrameId: CallFrameId;
-  }
+  };
   export type restartFrame_Return = {
     /** New stack trace. */
     callFrames: CallFrame[];
     /** Async stack trace, if any. */
     asyncStackTrace?: StackTrace;
-  }
+  };
   export type getScriptSource_Parameters = {
     /** Id of the script to get source for. */
     scriptId: ScriptId;
-  }
+  };
   export type getScriptSource_Return = {
     /** Script source. */
     scriptSource: string;
-  }
+  };
   export type getFunctionDetails_Parameters = {
     /** Id of the function to get details for. */
     functionId: Runtime.RemoteObjectId;
-  }
+  };
   export type getFunctionDetails_Return = {
     /** Information about the function. */
     details: FunctionDetails;
-  }
+  };
   export type getGeneratorObjectDetails_Parameters = {
     /** Id of the generator object to get details for. */
     objectId: Runtime.RemoteObjectId;
-  }
+  };
   export type getGeneratorObjectDetails_Return = {
     /** Information about the generator object. */
     details: GeneratorObjectDetails;
-  }
+  };
   export type getCollectionEntries_Parameters = {
     /** Id of the collection to get entries for. */
     objectId: Runtime.RemoteObjectId;
-  }
+  };
   export type getCollectionEntries_Return = {
     /** Array of collection entries. */
     entries: CollectionEntry[];
-  }
+  };
   export type setPauseOnExceptions_Parameters = {
     /** Pause on exceptions mode. */
     state: "none" | "uncaught" | "all";
-  }
+  };
   export type evaluateOnCallFrame_Parameters = {
     /** Call frame identifier to evaluate on. */
     callFrameId: CallFrameId;
@@ -5038,7 +5039,7 @@ export namespace Debugger {
     returnByValue?: boolean;
     /** Whether preview should be generated for the result. */
     generatePreview?: boolean;
-  }
+  };
   export type evaluateOnCallFrame_Return = {
     /** Object wrapper for the evaluation result. */
     result: Runtime.RemoteObject;
@@ -5046,7 +5047,7 @@ export namespace Debugger {
     wasThrown?: boolean;
     /** Exception details. */
     exceptionDetails?: ExceptionDetails;
-  }
+  };
   export type compileScript_Parameters = {
     /** Expression to compile. */
     expression: string;
@@ -5056,13 +5057,13 @@ export namespace Debugger {
     persistScript: boolean;
     /** Specifies in which isolated context to perform script run. Each content script lives in an isolated context and this parameter is used to specify one of those contexts. */
     executionContextId: Runtime.ExecutionContextId;
-  }
+  };
   export type compileScript_Return = {
     /** Id of the script. */
     scriptId?: ScriptId;
     /** Exception details. */
     exceptionDetails?: ExceptionDetails;
-  }
+  };
   export type runScript_Parameters = {
     /** Id of the script to run. */
     scriptId: ScriptId;
@@ -5072,13 +5073,13 @@ export namespace Debugger {
     objectGroup?: string;
     /** Specifies whether script run should stop on exceptions and mute console. Overrides setPauseOnException state. */
     doNotPauseOnExceptionsAndMuteConsole?: boolean;
-  }
+  };
   export type runScript_Return = {
     /** Run result. */
     result: Runtime.RemoteObject;
     /** Exception details. */
     exceptionDetails?: ExceptionDetails;
-  }
+  };
   export type setVariableValue_Parameters = {
     /** 0-based number of scope as was listed in scope chain. Only 'local', 'closure' and 'catch' scope types are allowed. Other scopes could be manipulated manually. */
     scopeNumber: number;
@@ -5090,56 +5091,56 @@ export namespace Debugger {
     callFrameId?: CallFrameId;
     /** Object id of closure (function) that holds variable. */
     functionObjectId?: Runtime.RemoteObjectId;
-  }
+  };
   export type getStepInPositions_Parameters = {
     /** Id of a call frame where the current statement should be analized */
     callFrameId: CallFrameId;
-  }
+  };
   export type getStepInPositions_Return = {
     /** experimental */
     stepInPositions?: Location[];
-  }
+  };
   export type getBacktrace_Return = {
     /** Call stack the virtual machine stopped on. */
     callFrames: CallFrame[];
     /** Async stack trace, if any. */
     asyncStackTrace?: StackTrace;
-  }
+  };
   export type skipStackFrames_Parameters = {
     /** Regular expression defining the scripts to ignore while stepping. */
     script?: string;
     /** True, if all content scripts should be ignored. */
     skipContentScripts?: boolean;
-  }
+  };
   export type setAsyncCallStackDepth_Parameters = {
     /** Maximum depth of async call stacks. Setting to <code>0</code> will effectively disable collecting async call stacks (default). */
     maxDepth: number;
-  }
+  };
   export type enablePromiseTracker_Parameters = {
     /** Whether to capture stack traces for promise creation and settlement events (default: false). */
     captureStacks?: boolean;
-  }
+  };
   export type getPromiseById_Parameters = {
     promiseId: number;
     /** Symbolic group name that can be used to release multiple objects. */
     objectGroup?: string;
-  }
+  };
   export type getPromiseById_Return = {
     /** Object wrapper for <code>Promise</code> with specified ID, if any. */
     promise: Runtime.RemoteObject;
-  }
+  };
   export type setAsyncOperationBreakpoint_Parameters = {
     /** ID of the async operation to set breakpoint for. */
     operationId: number;
-  }
+  };
   export type removeAsyncOperationBreakpoint_Parameters = {
     /** ID of the async operation to remove breakpoint for. */
     operationId: number;
-  }
+  };
 }
 /** DOM debugging allows setting breakpoints on particular DOM operations and events. JavaScript execution will stop on these operations as if there was a regular breakpoint set. */
 export class DOMDebugger {
-  _client: IDebuggingProtocolClient;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -5201,54 +5202,54 @@ export namespace DOMDebugger {
     nodeId: DOM.NodeId;
     /** Type of the operation to stop upon. */
     type: DOMBreakpointType;
-  }
+  };
   export type removeDOMBreakpoint_Parameters = {
     /** Identifier of the node to remove breakpoint from. */
     nodeId: DOM.NodeId;
     /** Type of the breakpoint to remove. */
     type: DOMBreakpointType;
-  }
+  };
   export type setEventListenerBreakpoint_Parameters = {
     /** DOM Event name to stop on (any DOM event will do). */
     eventName: string;
     /** EventTarget interface name to stop on. If equal to <code>"*"</code> or not provided, will stop on any EventTarget. */
     targetName?: string;
-  }
+  };
   export type removeEventListenerBreakpoint_Parameters = {
     /** Event name. */
     eventName: string;
     /** EventTarget interface name. */
     targetName?: string;
-  }
+  };
   export type setInstrumentationBreakpoint_Parameters = {
     /** Instrumentation name to stop on. */
     eventName: string;
-  }
+  };
   export type removeInstrumentationBreakpoint_Parameters = {
     /** Instrumentation name to stop on. */
     eventName: string;
-  }
+  };
   export type setXHRBreakpoint_Parameters = {
     /** Resource URL substring. All XHRs having this substring in the URL will get stopped upon. */
     url: string;
-  }
+  };
   export type removeXHRBreakpoint_Parameters = {
     /** Resource URL substring. */
     url: string;
-  }
+  };
   export type getEventListeners_Parameters = {
     /** Identifier of the object to return listeners for. */
     objectId: Runtime.RemoteObjectId;
-  }
+  };
   export type getEventListeners_Return = {
     /** Array of relevant listeners. */
     listeners: EventListener[];
-  }
+  };
 }
 export class Profiler {
-  _client: IDebuggingProtocolClient;
-  _consoleProfileStarted: Profiler.consoleProfileStarted_Handler;
-  _consoleProfileFinished: Profiler.consoleProfileFinished_Handler;
+  private _consoleProfileStarted: Profiler.consoleProfileStarted_Handler = undefined;
+  private _consoleProfileFinished: Profiler.consoleProfileFinished_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -5345,7 +5346,7 @@ export namespace Profiler {
     location: Debugger.Location;
     /** Profile title passed as argument to console.profile(). */
     title?: string;
-  }
+  };
   export type consoleProfileStarted_Handler = (params: consoleProfileStarted_Parameters) => void;
   export type consoleProfileFinished_Parameters = {
     id: string;
@@ -5354,24 +5355,24 @@ export namespace Profiler {
     profile: CPUProfile;
     /** Profile title passed as argunet to console.profile(). */
     title?: string;
-  }
+  };
   export type consoleProfileFinished_Handler = (params: consoleProfileFinished_Parameters) => void;
   export type setSamplingInterval_Parameters = {
     /** New sampling interval in microseconds. */
     interval: number;
-  }
+  };
   export type stop_Return = {
     /** Recorded profile. */
     profile: CPUProfile;
-  }
+  };
 }
 export class HeapProfiler {
-  _client: IDebuggingProtocolClient;
-  _addHeapSnapshotChunk: HeapProfiler.addHeapSnapshotChunk_Handler;
-  _resetProfiles: HeapProfiler.resetProfiles_Handler;
-  _reportHeapSnapshotProgress: HeapProfiler.reportHeapSnapshotProgress_Handler;
-  _lastSeenObjectId: HeapProfiler.lastSeenObjectId_Handler;
-  _heapStatsUpdate: HeapProfiler.heapStatsUpdate_Handler;
+  private _addHeapSnapshotChunk: HeapProfiler.addHeapSnapshotChunk_Handler = undefined;
+  private _resetProfiles: HeapProfiler.resetProfiles_Handler = undefined;
+  private _reportHeapSnapshotProgress: HeapProfiler.reportHeapSnapshotProgress_Handler = undefined;
+  private _lastSeenObjectId: HeapProfiler.lastSeenObjectId_Handler = undefined;
+  private _heapStatsUpdate: HeapProfiler.heapStatsUpdate_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -5471,63 +5472,63 @@ export namespace HeapProfiler {
   export type HeapSnapshotObjectId = string;
   export type addHeapSnapshotChunk_Parameters = {
     chunk: string;
-  }
+  };
   export type addHeapSnapshotChunk_Handler = (params: addHeapSnapshotChunk_Parameters) => void;
   export type resetProfiles_Handler = () => void;
   export type reportHeapSnapshotProgress_Parameters = {
     done: number;
     total: number;
     finished?: boolean;
-  }
+  };
   export type reportHeapSnapshotProgress_Handler = (params: reportHeapSnapshotProgress_Parameters) => void;
   export type lastSeenObjectId_Parameters = {
     lastSeenObjectId: number;
     timestamp: number;
-  }
+  };
   export type lastSeenObjectId_Handler = (params: lastSeenObjectId_Parameters) => void;
   export type heapStatsUpdate_Parameters = {
     /** An array of triplets. Each triplet describes a fragment. The first integer is the fragment index, the second integer is a total count of objects for the fragment, the third integer is a total size of the objects for the fragment. */
     statsUpdate: number[];
-  }
+  };
   export type heapStatsUpdate_Handler = (params: heapStatsUpdate_Parameters) => void;
   export type startTrackingHeapObjects_Parameters = {
     trackAllocations?: boolean;
-  }
+  };
   export type stopTrackingHeapObjects_Parameters = {
     /** If true 'reportHeapSnapshotProgress' events will be generated while snapshot is being taken when the tracking is stopped. */
     reportProgress?: boolean;
-  }
+  };
   export type takeHeapSnapshot_Parameters = {
     /** If true 'reportHeapSnapshotProgress' events will be generated while snapshot is being taken. */
     reportProgress?: boolean;
-  }
+  };
   export type getObjectByHeapObjectId_Parameters = {
     objectId: HeapSnapshotObjectId;
     /** Symbolic group name that can be used to release multiple objects. */
     objectGroup?: string;
-  }
+  };
   export type getObjectByHeapObjectId_Return = {
     /** Evaluation result. */
     result: Runtime.RemoteObject;
-  }
+  };
   export type addInspectedHeapObject_Parameters = {
     /** Heap snapshot object id to be accessible by means of $x command line API. */
     heapObjectId: HeapSnapshotObjectId;
-  }
+  };
   export type getHeapObjectId_Parameters = {
     /** Identifier of the object to get heap object id for. */
     objectId: Runtime.RemoteObjectId;
-  }
+  };
   export type getHeapObjectId_Return = {
     /** Id of the heap snapshot object corresponding to the passed remote object id. */
     heapSnapshotObjectId: HeapSnapshotObjectId;
-  }
+  };
 }
 export class Worker {
-  _client: IDebuggingProtocolClient;
-  _workerCreated: Worker.workerCreated_Handler;
-  _workerTerminated: Worker.workerTerminated_Handler;
-  _dispatchMessageFromWorker: Worker.dispatchMessageFromWorker_Handler;
+  private _workerCreated: Worker.workerCreated_Handler = undefined;
+  private _workerTerminated: Worker.workerTerminated_Handler = undefined;
+  private _dispatchMessageFromWorker: Worker.dispatchMessageFromWorker_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -5591,40 +5592,40 @@ export namespace Worker {
     workerId: string;
     url: string;
     inspectorConnected: boolean;
-  }
+  };
   export type workerCreated_Handler = (params: workerCreated_Parameters) => void;
   export type workerTerminated_Parameters = {
     workerId: string;
-  }
+  };
   export type workerTerminated_Handler = (params: workerTerminated_Parameters) => void;
   export type dispatchMessageFromWorker_Parameters = {
     workerId: string;
     message: string;
-  }
+  };
   export type dispatchMessageFromWorker_Handler = (params: dispatchMessageFromWorker_Parameters) => void;
   export type sendMessageToWorker_Parameters = {
     workerId: string;
     message: string;
-  }
+  };
   export type connectToWorker_Parameters = {
     workerId: string;
-  }
+  };
   export type disconnectFromWorker_Parameters = {
     workerId: string;
-  }
+  };
   export type setAutoconnectToWorkers_Parameters = {
     value: boolean;
-  }
+  };
 }
 export class ServiceWorker {
-  _client: IDebuggingProtocolClient;
-  _workerCreated: ServiceWorker.workerCreated_Handler;
-  _workerTerminated: ServiceWorker.workerTerminated_Handler;
-  _dispatchMessage: ServiceWorker.dispatchMessage_Handler;
-  _workerRegistrationUpdated: ServiceWorker.workerRegistrationUpdated_Handler;
-  _workerVersionUpdated: ServiceWorker.workerVersionUpdated_Handler;
-  _workerErrorReported: ServiceWorker.workerErrorReported_Handler;
-  _debugOnStartUpdated: ServiceWorker.debugOnStartUpdated_Handler;
+  private _workerCreated: ServiceWorker.workerCreated_Handler = undefined;
+  private _workerTerminated: ServiceWorker.workerTerminated_Handler = undefined;
+  private _dispatchMessage: ServiceWorker.dispatchMessage_Handler = undefined;
+  private _workerRegistrationUpdated: ServiceWorker.workerRegistrationUpdated_Handler = undefined;
+  private _workerVersionUpdated: ServiceWorker.workerVersionUpdated_Handler = undefined;
+  private _workerErrorReported: ServiceWorker.workerErrorReported_Handler = undefined;
+  private _debugOnStartUpdated: ServiceWorker.debugOnStartUpdated_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -5798,79 +5799,79 @@ export namespace ServiceWorker {
     workerId: string;
     url: string;
     versionId: string;
-  }
+  };
   export type workerCreated_Handler = (params: workerCreated_Parameters) => void;
   export type workerTerminated_Parameters = {
     workerId: string;
-  }
+  };
   export type workerTerminated_Handler = (params: workerTerminated_Parameters) => void;
   export type dispatchMessage_Parameters = {
     workerId: string;
     message: string;
-  }
+  };
   export type dispatchMessage_Handler = (params: dispatchMessage_Parameters) => void;
   export type workerRegistrationUpdated_Parameters = {
     registrations: ServiceWorkerRegistration[];
-  }
+  };
   export type workerRegistrationUpdated_Handler = (params: workerRegistrationUpdated_Parameters) => void;
   export type workerVersionUpdated_Parameters = {
     versions: ServiceWorkerVersion[];
-  }
+  };
   export type workerVersionUpdated_Handler = (params: workerVersionUpdated_Parameters) => void;
   export type workerErrorReported_Parameters = {
     errorMessage: ServiceWorkerErrorMessage;
-  }
+  };
   export type workerErrorReported_Handler = (params: workerErrorReported_Parameters) => void;
   export type debugOnStartUpdated_Parameters = {
     debugOnStart: boolean;
-  }
+  };
   export type debugOnStartUpdated_Handler = (params: debugOnStartUpdated_Parameters) => void;
   export type sendMessage_Parameters = {
     workerId: string;
     message: string;
-  }
+  };
   export type stop_Parameters = {
     workerId: string;
-  }
+  };
   export type unregister_Parameters = {
     scopeURL: string;
-  }
+  };
   export type updateRegistration_Parameters = {
     scopeURL: string;
-  }
+  };
   export type startWorker_Parameters = {
     scopeURL: string;
-  }
+  };
   export type stopWorker_Parameters = {
     versionId: string;
-  }
+  };
   export type inspectWorker_Parameters = {
     versionId: string;
-  }
+  };
   export type setDebugOnStart_Parameters = {
     debugOnStart: boolean;
-  }
+  };
   export type setForceUpdateOnPageLoad_Parameters = {
     registrationId: string;
     forceUpdateOnPageLoad: boolean;
-  }
+  };
   export type deliverPushMessage_Parameters = {
     origin: string;
     registrationId: string;
     data: string;
-  }
+  };
   export type getTargetInfo_Parameters = {
     targetId: TargetID;
-  }
+  };
   export type getTargetInfo_Return = {
     targetInfo: TargetInfo;
-  }
+  };
   export type activateTarget_Parameters = {
     targetId: TargetID;
-  }
+  };
 }
 export class Input {
-  _client: IDebuggingProtocolClient;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -5950,7 +5951,7 @@ export namespace Input {
     isKeypad?: boolean;
     /** Whether the event was a system key event (default: false). */
     isSystemKey?: boolean;
-  }
+  };
   export type dispatchMouseEvent_Parameters = {
     /** Type of the mouse event. */
     type: "mousePressed" | "mouseReleased" | "mouseMoved";
@@ -5966,7 +5967,7 @@ export namespace Input {
     button?: "none" | "left" | "middle" | "right";
     /** Number of times the mouse button was clicked (default: 0). */
     clickCount?: number;
-  }
+  };
   export type dispatchTouchEvent_Parameters = {
     /** Type of the touch event. */
     type: "touchStart" | "touchEnd" | "touchMove";
@@ -5976,7 +5977,7 @@ export namespace Input {
     modifiers?: number;
     /** Time at which the event occurred. Measured in UTC time in seconds since January 1, 1970 (default: current time). */
     timestamp?: number;
-  }
+  };
   export type emulateTouchFromMouseEvent_Parameters = {
     /** Type of the mouse event. */
     type: "mousePressed" | "mouseReleased" | "mouseMoved" | "mouseWheel";
@@ -5996,7 +5997,7 @@ export namespace Input {
     modifiers?: number;
     /** Number of times the mouse button was clicked (default: 0). */
     clickCount?: number;
-  }
+  };
   export type synthesizePinchGesture_Parameters = {
     /** X coordinate of the start of the gesture in CSS pixels. */
     x: number;
@@ -6008,7 +6009,7 @@ export namespace Input {
     relativeSpeed?: number;
     /** Which type of input events to be generated (default: 'default', which queries the platform for the preferred input type). */
     gestureSourceType?: GestureSourceType;
-  }
+  };
   export type synthesizeScrollGesture_Parameters = {
     /** X coordinate of the start of the gesture in CSS pixels. */
     x: number;
@@ -6034,7 +6035,7 @@ export namespace Input {
     repeatDelayMs?: number;
     /** The name of the interaction markers to generate, if not empty (default: ""). */
     interactionMarkerName?: string;
-  }
+  };
   export type synthesizeTapGesture_Parameters = {
     /** X coordinate of the start of the gesture in CSS pixels. */
     x: number;
@@ -6046,12 +6047,12 @@ export namespace Input {
     tapCount?: number;
     /** Which type of input events to be generated (default: 'default', which queries the platform for the preferred input type). */
     gestureSourceType?: GestureSourceType;
-  }
+  };
 }
 export class LayerTree {
-  _client: IDebuggingProtocolClient;
-  _layerTreeDidChange: LayerTree.layerTreeDidChange_Handler;
-  _layerPainted: LayerTree.layerPainted_Handler;
+  private _layerTreeDidChange: LayerTree.layerTreeDidChange_Handler = undefined;
+  private _layerPainted: LayerTree.layerPainted_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -6174,43 +6175,43 @@ export namespace LayerTree {
   export type layerTreeDidChange_Parameters = {
     /** Layer tree, absent if not in the comspositing mode. */
     layers?: Layer[];
-  }
+  };
   export type layerTreeDidChange_Handler = (params: layerTreeDidChange_Parameters) => void;
   export type layerPainted_Parameters = {
     /** The id of the painted layer. */
     layerId: LayerId;
     /** Clip rectangle. */
     clip: DOM.Rect;
-  }
+  };
   export type layerPainted_Handler = (params: layerPainted_Parameters) => void;
   export type compositingReasons_Parameters = {
     /** The id of the layer for which we want to get the reasons it was composited. */
     layerId: LayerId;
-  }
+  };
   export type compositingReasons_Return = {
     /** A list of strings specifying reasons for the given layer to become composited. */
     compositingReasons: string[];
-  }
+  };
   export type makeSnapshot_Parameters = {
     /** The id of the layer. */
     layerId: LayerId;
-  }
+  };
   export type makeSnapshot_Return = {
     /** The id of the layer snapshot. */
     snapshotId: SnapshotId;
-  }
+  };
   export type loadSnapshot_Parameters = {
     /** An array of tiles composing the snapshot. */
     tiles: PictureTile[];
-  }
+  };
   export type loadSnapshot_Return = {
     /** The id of the snapshot. */
     snapshotId: SnapshotId;
-  }
+  };
   export type releaseSnapshot_Parameters = {
     /** The id of the layer snapshot. */
     snapshotId: SnapshotId;
-  }
+  };
   export type profileSnapshot_Parameters = {
     /** The id of the layer snapshot. */
     snapshotId: SnapshotId;
@@ -6220,11 +6221,11 @@ export namespace LayerTree {
     minDuration?: number;
     /** The clip rectangle to apply when replaying the snapshot. */
     clipRect?: DOM.Rect;
-  }
+  };
   export type profileSnapshot_Return = {
     /** The array of paint profiles, one per run. */
     timings: PaintProfile[];
-  }
+  };
   export type replaySnapshot_Parameters = {
     /** The id of the layer snapshot. */
     snapshotId: SnapshotId;
@@ -6234,22 +6235,22 @@ export namespace LayerTree {
     toStep?: number;
     /** The scale to apply while replaying (defaults to 1). */
     scale?: number;
-  }
+  };
   export type replaySnapshot_Return = {
     /** A data: URL for resulting image. */
     dataURL: string;
-  }
+  };
   export type snapshotCommandLog_Parameters = {
     /** The id of the layer snapshot. */
     snapshotId: SnapshotId;
-  }
+  };
   export type snapshotCommandLog_Return = {
     /** The array of canvas function calls. */
     commandLog: any[];
-  }
+  };
 }
 export class DeviceOrientation {
-  _client: IDebuggingProtocolClient;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -6270,10 +6271,10 @@ export namespace DeviceOrientation {
     beta: number;
     /** Mock gamma */
     gamma: number;
-  }
+  };
 }
 export class ScreenOrientation {
-  _client: IDebuggingProtocolClient;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -6294,13 +6295,13 @@ export namespace ScreenOrientation {
     angle: number;
     /** Orientation type */
     type: OrientationType;
-  }
+  };
 }
 export class Tracing {
-  _client: IDebuggingProtocolClient;
-  _dataCollected: Tracing.dataCollected_Handler;
-  _tracingComplete: Tracing.tracingComplete_Handler;
-  _bufferUsage: Tracing.bufferUsage_Handler;
+  private _dataCollected: Tracing.dataCollected_Handler = undefined;
+  private _tracingComplete: Tracing.tracingComplete_Handler = undefined;
+  private _bufferUsage: Tracing.bufferUsage_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -6362,12 +6363,12 @@ export class Tracing {
 export namespace Tracing {
   export type dataCollected_Parameters = {
     value: any[];
-  }
+  };
   export type dataCollected_Handler = (params: dataCollected_Parameters) => void;
   export type tracingComplete_Parameters = {
     /** A handle of the stream that holds resulting trace data. */
     stream?: IO.StreamHandle;
-  }
+  };
   export type tracingComplete_Handler = (params: tracingComplete_Parameters) => void;
   export type bufferUsage_Parameters = {
     /** A number in range [0..1] that indicates the used size of event buffer as a fraction of its total size. */
@@ -6376,7 +6377,7 @@ export namespace Tracing {
     eventCount?: number;
     /** A number in range [0..1] that indicates the used size of event buffer as a fraction of its total size. */
     value?: number;
-  }
+  };
   export type bufferUsage_Handler = (params: bufferUsage_Parameters) => void;
   export type start_Parameters = {
     /** Category/tag filter */
@@ -6387,23 +6388,23 @@ export namespace Tracing {
     bufferUsageReportingInterval?: number;
     /** Whether to report trace events as series of dataCollected events or to save trace to a stream (defaults to <code>ReportEvents</code>). */
     transferMode?: "ReportEvents" | "ReturnAsStream";
-  }
+  };
   export type getCategories_Return = {
     /** A list of supported tracing categories. */
     categories: string[];
-  }
+  };
   export type requestMemoryDump_Return = {
     /** GUID of the resulting global memory dump. */
     dumpGuid: string;
     /** True iff the global memory dump succeeded. */
     success: boolean;
-  }
+  };
 }
 export class Animation {
-  _client: IDebuggingProtocolClient;
-  _animationCreated: Animation.animationCreated_Handler;
-  _animationStarted: Animation.animationStarted_Handler;
-  _animationCanceled: Animation.animationCanceled_Handler;
+  private _animationCreated: Animation.animationCreated_Handler = undefined;
+  private _animationStarted: Animation.animationStarted_Handler = undefined;
+  private _animationCanceled: Animation.animationCanceled_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -6553,40 +6554,40 @@ export namespace Animation {
   export type animationCreated_Parameters = {
     /** Id of the animation that was created. */
     id: string;
-  }
+  };
   export type animationCreated_Handler = (params: animationCreated_Parameters) => void;
   export type animationStarted_Parameters = {
     /** Animation that was started. */
     animation: Animation;
-  }
+  };
   export type animationStarted_Handler = (params: animationStarted_Parameters) => void;
   export type animationCanceled_Parameters = {
     /** Id of the animation that was cancelled. */
     id: string;
-  }
+  };
   export type animationCanceled_Handler = (params: animationCanceled_Parameters) => void;
   export type getPlaybackRate_Return = {
     /** Playback rate for animations on page. */
     playbackRate: number;
-  }
+  };
   export type setPlaybackRate_Parameters = {
     /** Playback rate for animations on page */
     playbackRate: number;
-  }
+  };
   export type getCurrentTime_Parameters = {
     /** Id of animation. */
     id: string;
-  }
+  };
   export type getCurrentTime_Return = {
     /** Current time of the page. */
     currentTime: number;
-  }
+  };
   export type setPaused_Parameters = {
     /** Animations to set the pause state of. */
     animations: string[];
     /** Paused state to set to. */
     paused: boolean;
-  }
+  };
   export type setTiming_Parameters = {
     /** Animation id. */
     animationId: string;
@@ -6594,28 +6595,28 @@ export namespace Animation {
     duration: number;
     /** Delay of the animation. */
     delay: number;
-  }
+  };
   export type seekAnimations_Parameters = {
     /** List of animation ids to seek. */
     animations: string[];
     /** Set the current time of each animation. */
     currentTime: number;
-  }
+  };
   export type releaseAnimations_Parameters = {
     /** List of animation ids to seek. */
     animations: string[];
-  }
+  };
   export type resolveAnimation_Parameters = {
     /** Animation id. */
     animationId: string;
-  }
+  };
   export type resolveAnimation_Return = {
     /** Corresponding remote object. */
     remoteObject: Runtime.RemoteObject;
-  }
+  };
 }
 export class Accessibility {
-  _client: IDebuggingProtocolClient;
+  private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
@@ -6706,9 +6707,9 @@ export namespace Accessibility {
   export type getAXNode_Parameters = {
     /** ID of node to get accessibility node for. */
     nodeId: DOM.NodeId;
-  }
+  };
   export type getAXNode_Return = {
     /** The <code>Accessibility.AXNode</code> for this DOM node, if it exists. */
     accessibilityNode?: AXNode;
-  }
+  };
 }

@@ -1,6 +1,6 @@
 {
   "name": "chrome-tracing",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Parser for chrome traces",
   "main": "dist/index.js",
   "typescript": {
@@ -17,11 +17,12 @@
   "author": "Kris Selden",
   "license": "MIT",
   "devDependencies": {
+    "tape": "^4.4.0",
     "tslint": "^3.3.0",
     "typescript": "^1.8.0"
   },
   "dependencies": {
-    "chrome-debugging-client": "^0.2.0"
+    "chrome-debugging-client": "^0.2.2"
   },
   "engine": "node >= 4.0.0"
 }
