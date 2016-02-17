@@ -12,6 +12,7 @@ import { Trace } from "./trace";
 
 export interface IBenchmark<T> {
   name: string;
+  iterations: number;
   options: any;
   /** run benchmark returning result */
   run(): Promise<T>;
@@ -21,9 +22,7 @@ function delay(ms: number): Promise<void> {
   return new Promise<void>(resolve => setTimeout(resolve, ms));
 }
 
-export interface IBenchmarkDSL {
-  /** Browser version info */
-  version: VersionInfo;
+export interface ITab {
   /** The process id of the tab */
   pid: number;
   /** The current frame for the tab */
@@ -46,10 +45,12 @@ export interface ITracing {
 
 export abstract class Benchmark<T> implements IBenchmark<T> {
   name: string;
+  iterations: number;
   options: any;
 
-  constructor(name: string, options: any) {
+  constructor(name: string, iterations?: number, options?: any) {
     this.name = name;
+    this.iterations = iterations > 0 ? iterations : 1;
     this.options = options || {};
   }
 
@@ -57,67 +58,81 @@ export abstract class Benchmark<T> implements IBenchmark<T> {
   // connect to API to get version
   run(): Promise<T> {
     return createSession((session: ISession) => {
-      return this.createDSL(session).then((dsl) => {
-        return this.perform(dsl);
-      });
+      return this.perform(session);
     });
   }
 
-  async createDSL(session: ISession): Promise<IBenchmarkDSL> {
+  async perform(session: ISession): Promise<T> {
     let opts = this.options;
-    let browser = await session.spawnBrowser(opts.browserType, {
+    let browserType = opts.browserType || "release";
+    let resolverOptions = {
       chromiumSrcDir: opts.chromiumSrcDir,
       executablePath: opts.executablePath
-    });
-    await delay(1000);
-    let apiClient = session.createAPIClient("localhost", browser.remoteDebuggingPort);
+    };
+    let browser = await session.spawnBrowser(browserType, resolverOptions);
+    let apiClient = await session.createAPIClient("localhost", browser.remoteDebuggingPort);
     let version = await apiClient.version();
     let tabs = await apiClient.listTabs();
-    let tab = tabs[0];
-    await apiClient.activateTab(tab.id);
-    let client = await session.openDebuggingProtocol(tab.webSocketDebuggerUrl);
-    let page = new Page(client);
-    await page.enable();
-    let res = await page.getResourceTree();
-    let frame = res.frameTree.frame;
-    let pid = parseInt(frame.id.split(".")[0], 10);
-    return new BenchmarkDSL(session, browser, apiClient, version, client, page, frame, pid);
+    // open a blank tab
+    let prev = await apiClient.newTab("about:blank");
+    for (let i = 0; i < tabs.length; i++) {
+      await apiClient.closeTab(tabs[i].id);
+    }
+    await delay(500);
+    let results = this.createResults(version["Browser"]);
+
+    for (let i = 0; i < this.iterations; i++) {
+      let tab = await apiClient.newTab("about:blank");
+      await apiClient.closeTab(prev.id);
+      await apiClient.activateTab(tab.id);
+
+      let client = await session.openDebuggingProtocol(tab.webSocketDebuggerUrl);
+      let page = new Page(client);
+      await page.enable();
+      let res = await page.getResourceTree();
+      let frame = res.frameTree.frame;
+
+      let dsl = new TabDSL(tab.id, client, page, frame);
+
+      await dsl.clearBrowserCache();
+      await dsl.collectGarbage();
+
+      await this.performIteration(dsl, results, i);
+
+      await page.disable();
+      prev = tab;
+    }
+
+    return results;
   }
 
-  abstract perform(dsl: IBenchmarkDSL): Promise<T>;
+  abstract createResults(browserVersion: string): T;
+  abstract performIteration(t: ITab, results: T, index: number): Promise<void>;
 }
 
-class BenchmarkDSL implements IBenchmarkDSL {
-  session: ISession;
-  browser: IBrowserProcess;
-  apiClient: IAPIClient;
-  /** browser version info */
-  version: VersionInfo;
+class TabDSL implements ITab {
+  id: string;
   client: IDebuggingProtocolClient;
   page: Page;
-  tracing: Tracing;
-  currentTrace: TracingDSL;
-
-  network: Network;
-  heapProfiler: HeapProfiler;
   /** The current frame for the tab */
   frame: Page.Frame;
   /** The process id of the tab */
   pid: number;
 
-  constructor(session, browser, apiClient, version, client, page, frame, pid) {
-    this.session = session;
-    this.browser = browser;
-    this.apiClient = apiClient;
-    this.version = version;
+  tracing: Tracing;
+  currentTrace: TracingDSL;
+  network: Network;
+  heapProfiler: HeapProfiler;
+
+  constructor(id: string, client: IDebuggingProtocolClient, page: Page, frame: Page.Frame) {
     this.client = client;
     this.page = page;
     this.frame = frame;
-    this.pid = pid;
     this.tracing = new Tracing(client);
     this.network = new Network(client);
     this.heapProfiler = new HeapProfiler(client);
     this.currentTrace = null;
+    let pid = this.pid =  parseInt(frame.id.split(".")[0], 10);
     page.frameNavigated = (params) => {
       let frame = params.frame;
       if (this.frame.id = frame.id) {
@@ -171,7 +186,7 @@ class BenchmarkDSL implements IBenchmarkDSL {
     await this.network.clearBrowserCache();
     // causes MemoryCache entries to be evicted
     await this.network.setCacheDisabled({cacheDisabled: true});
-   // await this.network.disable();
+    await this.network.disable();
   }
 
   async collectGarbage(): Promise<void> {
