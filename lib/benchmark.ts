@@ -10,12 +10,10 @@ import {
 import { Page, Tracing, HeapProfiler, Network } from "./debugging-protocol-domains";
 import { Trace } from "./trace";
 
-export interface IBenchmark<T> {
-  name: string;
-  iterations: number;
-  options: any;
+export interface IBenchmark<P extends BenchmarkParams, R> {
+  params: P;
   /** run benchmark returning result */
-  run(): Promise<T>;
+  run(): Promise<R>;
 }
 
 function delay(ms: number): Promise<void> {
@@ -43,33 +41,40 @@ export interface ITracing {
   end(): Promise<void>;
 }
 
-export abstract class Benchmark<T> implements IBenchmark<T> {
-  name: string;
-  iterations: number;
-  options: any;
+export interface BrowserOptions {
+  type: string;
+  executablePath?: string;
+  chromiumSrcDir?: string;
+}
 
-  constructor(name: string, iterations?: number, options?: any) {
-    this.name = name;
-    this.iterations = iterations > 0 ? iterations : 1;
-    this.options = options || {};
+export interface BenchmarkParams {
+  name: string;
+  browser: BrowserOptions;
+  iterations?: number;
+}
+
+export abstract class Benchmark<P extends BenchmarkParams, R> implements IBenchmark<P, R> {
+  params: P;
+  iterations: number;
+  browserOptions: BrowserOptions;
+
+  constructor(params: P) {
+    this.iterations = params.iterations > 0 ? params.iterations : 1;
+    this.browserOptions = params.browser;
+    this.params = params;
   }
 
   // create session, spawn browser, get port
   // connect to API to get version
-  run(): Promise<T> {
+  run(): Promise<R> {
     return createSession((session: ISession) => {
       return this.perform(session);
     });
   }
 
-  async perform(session: ISession): Promise<T> {
-    let opts = this.options;
-    let browserType = opts.browserType || "release";
-    let resolverOptions = {
-      chromiumSrcDir: opts.chromiumSrcDir,
-      executablePath: opts.executablePath
-    };
-    let browser = await session.spawnBrowser(browserType, resolverOptions);
+  async perform(session: ISession): Promise<R> {
+    let browserOptions = this.browserOptions;
+    let browser = await session.spawnBrowser(browserOptions.type, browserOptions);
     let apiClient = await session.createAPIClient("localhost", browser.remoteDebuggingPort);
     let version = await apiClient.version();
     let tabs = await apiClient.listTabs();
@@ -78,7 +83,8 @@ export abstract class Benchmark<T> implements IBenchmark<T> {
     for (let i = 0; i < tabs.length; i++) {
       await apiClient.closeTab(tabs[i].id);
     }
-    await delay(500);
+    await delay(2000);
+    await apiClient.activateTab(prev.id);
     let results = this.createResults(version["Browser"]);
 
     for (let i = 0; i < this.iterations; i++) {
@@ -106,8 +112,8 @@ export abstract class Benchmark<T> implements IBenchmark<T> {
     return results;
   }
 
-  abstract createResults(browserVersion: string): T;
-  abstract performIteration(t: ITab, results: T, index: number): Promise<void>;
+  abstract createResults(browserVersion: string): R;
+  abstract performIteration(t: ITab, results: R, index: number): Promise<void>;
 }
 
 class TabDSL implements ITab {

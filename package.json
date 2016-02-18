@@ -7,8 +7,9 @@
     "definition": "dist/index.d.ts"
   },
   "scripts": {
+    "prepublish": "tsc",
     "compile": "tsc --watch",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "tsc && node dist/test.js"
   },
   "keywords": [
     "chrome",
@@ -17,7 +18,6 @@
   "author": "Kris Selden",
   "license": "MIT",
   "devDependencies": {
-    "tape": "^4.4.0",
     "tslint": "^3.3.0",
     "typescript": "^1.8.0"
   },
