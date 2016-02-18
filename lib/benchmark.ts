@@ -171,9 +171,7 @@ class TabDSL implements ITab {
     }
     let tracing = this.tracing;
     await tracing.start({
-      categories: categories,
-      options: options,
-      transferMode: "ReportEvents"
+      categories: categories
     });
     let trace = this.currentTrace = new TracingDSL(tracing, this.pid);
     trace.traceComplete.then(() => {
