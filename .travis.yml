@@ -5,6 +5,8 @@ node_js:
 before_install:
   - wget https://commondatastorage.googleapis.com/chromium-browser-continuous/Linux/375946/chrome-linux.zip
   - unzip chrome-linux.zip
+  - ls -lah chrome-linux
   - export CHROME_BIN=`pwd`/chrome-linux/chrome
+  - ls -lah $CHROME_BIN
   - export DISPLAY=:99.0
   - sh -e /etc/init.d/xvfb start
