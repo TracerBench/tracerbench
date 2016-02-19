@@ -9,6 +9,12 @@ import {
 } from "chrome-debugging-client";
 import { Page, Tracing, HeapProfiler, Network } from "./debugging-protocol-domains";
 import { Trace } from "./trace";
+import * as os from "os";
+
+export interface BenchmarkMeta {
+  browserVersion: string;
+  cpus: string[];
+}
 
 export interface IBenchmark<P extends BenchmarkParams, R> {
   params: P;
@@ -85,7 +91,9 @@ export abstract class Benchmark<P extends BenchmarkParams, R> implements IBenchm
     }
     await delay(2000);
     await apiClient.activateTab(prev.id);
-    let results = this.createResults(version["Browser"]);
+    let browserVersion = version["Browser"];
+    let cpus = os.cpus().map((cpu) => cpu.model);
+    let results = this.createResults({browserVersion, cpus});
 
     for (let i = 0; i < this.iterations; i++) {
       let tab = await apiClient.newTab("about:blank");
@@ -112,7 +120,7 @@ export abstract class Benchmark<P extends BenchmarkParams, R> implements IBenchm
     return results;
   }
 
-  abstract createResults(browserVersion: string): R;
+  abstract createResults(meta: BenchmarkMeta): R;
   abstract performIteration(t: ITab, results: R, index: number): Promise<void>;
 }
 

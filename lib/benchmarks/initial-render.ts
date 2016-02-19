@@ -1,10 +1,8 @@
-import { Benchmark, BenchmarkParams, ITab } from "../benchmark";
+import { Benchmark, BenchmarkParams, BenchmarkMeta, ITab } from "../benchmark";
 import { TraceEvent } from "../trace/trace_event";
 
 export interface DurationSamples {
-  meta: {
-    browserVersion: string;
-  };
+  meta: BenchmarkMeta;
   /**
    * samples are in microseconds
    */
@@ -54,19 +52,15 @@ export class InitialRenderBenchmark extends Benchmark<InitialRenderBenchmarkPara
     super(params);
   }
 
-  createResults(browserVersion): DurationSamples {
-    return {
-      meta: {
-        browserVersion: browserVersion
-      },
-      samples: {
-        initialRender: [],
-        scriptEvalWall: [],
-        scriptEvalCPU: [],
-        functionCallWall: [],
-        functionCallCPU: []
-      }
+  createResults(meta: BenchmarkMeta): DurationSamples {
+    let samples = {
+      initialRender: [],
+      scriptEvalWall: [],
+      scriptEvalCPU: [],
+      functionCallWall: [],
+      functionCallCPU: []
     };
+    return { meta, samples };
   }
 
   async performIteration(t: ITab, results: DurationSamples, i: number): Promise<void> {
