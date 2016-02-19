@@ -1,15 +1,23 @@
 chrome-tracing
 ==============
 
-```js
-var ColdStartMeasure = require("chrome-tracing").ColdStartMeasure;
+Automated Chrome benchmarking.
 
-var measure = new ColdStartMeasure("http://localhost:4200");
-measure.on("end", (samples) => {
-  console.log(samples);
+```js
+import { InitialRenderBenchmark } from "chrome-tracing";
+
+let benchmark = new InitialRenderBenchmark({
+  name: "app initial render",
+  url: "http://localhost:4200/",
+  endMarker: "renderEnd",
+  browser: {
+    type: "canary"
+  }
 });
-measure.on("error", (err) => {
+benchmark.run().then((result) => {
+  console.log(result);
+}).catch((err) => {
   console.error(err);
+  process.exit(1);
 });
-measure.run();
 ```
