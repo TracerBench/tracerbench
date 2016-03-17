@@ -1,6 +1,6 @@
 {
   "name": "chrome-tracing",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Parser for chrome traces",
   "main": "dist/index.js",
   "typescript": {
@@ -15,8 +15,8 @@
     "chrome",
     "tracing"
   ],
-  "author": "Kris Selden",
-  "license": "MIT",
+  "author": "Kris Selden <kris.selden@gmail.com>",
+  "license": "Apache-2.0",
   "devDependencies": {
     "tslint": "^3.3.0",
     "typescript": "^1.8.0"
