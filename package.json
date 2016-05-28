@@ -1,6 +1,6 @@
 {
   "name": "chrome-tracing",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Parser for chrome traces",
   "main": "dist/index.js",
   "typescript": {
@@ -22,7 +22,7 @@
     "typescript": "^1.8.0"
   },
   "dependencies": {
-    "chrome-debugging-client": "^0.2.2"
+    "chrome-debugging-client": "^0.2.4"
   },
   "engine": "node >= 4.0.0"
 }
