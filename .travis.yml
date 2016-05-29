@@ -1,5 +1,6 @@
+sudo: required
+dist: trusty
 language: node_js
-sudo: true
 node_js:
   - "stable"
   - "4.1"
