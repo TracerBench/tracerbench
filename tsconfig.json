@@ -7,9 +7,6 @@
 		"sourceMap": true,
     "moduleResolution": "node"
 	},
-	"files": [
-    "typings/node/node.d.ts",
-    "index.ts",
-    "test.ts"
-  ]
+  "exclude": ["node_modules", "bower_components", "dist"],
+	"filesGlob": ["typings/**/*.d.ts","lib/**/*.ts", "index.ts", "test.ts"]
 }

@@ -1,0 +1,6 @@
+<h2>Index</h2>
+<ul>
+{{#each items key="id" as |item|}}
+  <li>{{#link-to "item" item.id}}{{item.name}}{{/link-to}}</li>
+{{/each}}
+</ul>

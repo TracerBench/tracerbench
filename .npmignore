@@ -1,6 +1,4 @@
 /node_modules/
-/src/
-/typings/
 /.gitignore
 /.npmignore
 /tsconfig.json

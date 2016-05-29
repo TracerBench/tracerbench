@@ -1,0 +1,26 @@
+{
+  "name": "chrome-tracing",
+  "description": "Parser for chrome traces",
+  "main": "dist/index.js",
+  "authors": [
+    "Kris Selden <kris.selden@gmail.com>"
+  ],
+  "license": "Apache-2.0",
+  "keywords": [
+    "chrome",
+    "tracing"
+  ],
+  "homepage": "https://github.com/krisselden/chrome-tracing",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^2.2.4",
+    "ember": "canary"
+  }
+}
