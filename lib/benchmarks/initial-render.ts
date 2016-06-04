@@ -317,9 +317,9 @@ export class InitialRenderBenchmark extends Benchmark<InitialRenderBenchmarkPara
 
     mainThread.events.sort((a, b) => a.ts - b.ts);
 
-    if (i === 0) {
-      fs.writeFileSync("/Users/kselden/src/krisselden/chrome-tracing/trace.json", JSON.stringify(mainThread.events, null, 2));
-    }
+    // if (i === 0) {
+    //   fs.writeFileSync("trace.json", JSON.stringify(mainThread.events, null, 2));
+    // }
 
     let metric = new InitialRenderMetric(mainThread.events, markers);
     let sample = metric.measure();
