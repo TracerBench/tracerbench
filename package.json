@@ -1,6 +1,6 @@
 {
   "name": "chrome-tracing",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Parser for chrome traces",
   "main": "dist/index.js",
   "typescript": {

@@ -9,10 +9,42 @@ import {
 } from "../trace/trace_event";
 import * as fs from "fs";
 
-export interface DurationSamples {
+export type PhaseSample = {
+  phase: string;
+  self: number;
+  cumulative: number;
+}
+
+export type RequestSample = {
+  url: string;
+  respond: number;
+  duration: number;
+}
+
+export type GCSample = {
+  duration: number;
+  usedHeapSizeBefore: number;
+  usedHeapSizeAfter: number;
+}
+
+export type InterationSample = {
+  // during an initial render
+  duration: number;
+  phaseSamples: PhaseSample[];
+  js: number;
+  compile: number;
+  run: number;
+  gc: number;
+  gcSamples: GCSample[];
+  net: number;
+  response: number;
+  requestSamples: RequestSample[];
+}
+
+export type InitialRenderSamples = {
   meta: BenchmarkMeta;
-  headers: string[];
-  samples: number[][];
+  set: string;
+  samples: InterationSample[];
 };
 
 export interface Marker {
@@ -34,40 +66,38 @@ export interface InitialRenderBenchmarkParams extends BenchmarkParams {
   markers: Marker[];
 }
 
-class Request {
-  public send = 0;
-  public response = 0;
-}
-
-function milliseconds(microseconds) {
-  return Math.round(microseconds / 1000) | 0;
+type Request = {
+  url: string;
+  send: number;
+  response: number;
+  finish: number;
 }
 
 class InitialRenderMetric {
   private start = 0;
+  private markerIdx = 0;
   private lastMarkEvent: TraceEvent = undefined;
   private requests = new Map<string, Request>();
   private seenAllMarks = false;
-  private timeToPaint = 0;
-  private markerIdx = 0;
-  private sampleIdx = 0;
-  private samples: number[];
-  private jsWall = 0;
-  private jsCpu = 0;
-  private gcStart = 0;
-  private gc = 0;
-  private minHeap = 0;
-  private maxHeap = 0;
-  private net = 0;
-  private response = 0;
-  private receive = 0;
   private done = false;
+  private stack: TraceEvent[] = [];
+  private sample: InterationSample = {
+    duration: 0,
+    phaseSamples: [],
+    js: 0,
+    compile: 0,
+    run: 0,
+    gc: 0,
+    gcSamples: [],
+    net: 0,
+    response: 0,
+    requestSamples: []
+  };
 
-  constructor(private length: number, private events: TraceEvent[], private markers: Marker[]) {
-    this.samples = new Array(length);
+  constructor(private events: TraceEvent[], private markers: Marker[]) {
   }
 
-  public measure(): number[] {
+  public measure(): InterationSample {
     let events = this.events;
     for (let i = 0; i < events.length; i++) {
       if (this.done) break;
@@ -92,7 +122,7 @@ class InitialRenderMetric {
         break;
       }
     }
-    return this.samples;
+    return this.sample;
   }
 
   measureInstant(event: TraceEvent) {
@@ -110,91 +140,119 @@ class InitialRenderMetric {
   }
 
   measureResourceSend(event: TraceEvent) {
-    let requestId = <string>event.args["requestId"];
-    let request = new Request();
-    request.send = event.ts;
+    let data = event.args["data"];
+    let requestId = data && data["requestId"];
+    if (!requestId) return;
+    let request = {
+      url: data && data["url"],
+      send: event.ts,
+      response: 0,
+      finish: 0
+    };
     this.requests.set(requestId, request);
   }
 
   measureResourceRespond(event: TraceEvent) {
-    let requestId = <string>event.args["requestId"];
-    let request = this.requests.get(requestId);
+    let data = event.args["data"];
+    let requestId = data && data["requestId"];
+    let request = requestId && this.requests.get(requestId);
+    if (!request) return;
     request.response = event.ts;
   }
 
   measureResourceFinish(event: TraceEvent) {
-    let requestId = <string>event.args["requestId"];
-    let request = this.requests.get(requestId);
-    this.net += milliseconds(event.ts - request.send);
-    this.response += milliseconds(request.response - request.send);
-    this.receive += milliseconds(event.ts - request.response);
+    let data = event.args["data"];
+    let requestId = data && data["requestId"];
+    let request = requestId && this.requests.get(requestId);
+    if (!request) return;
+    request.finish = event.ts;
+    let sample: RequestSample = {
+      url: request.url,
+      respond: request.response - request.send,
+      duration: request.finish - request.send
+    };
+
+    this.sample.net += sample.duration;
+    this.sample.requestSamples.push(sample);
   }
 
-  measureBegin(event: TraceEvent) {
-    switch (event.name) {
-    case "MajorGC":
-    case "MinorGC":
-      this.measureGCBegin(event);
-      break;
-    }
+  measureBegin(begin: TraceEvent) {
+    this.stack.push(begin);
   }
 
-  measureEnd(event: TraceEvent) {
-    let usedHeapSizeAfter;
-    switch (event.name) {
-    case "MajorGC":
-    case "MinorGC":
-      this.measureGCEnd(event);
-      break;
-    }
-  }
+  measureEnd(end: TraceEvent) {
+    let begin = this.stack.pop();
 
-  measureGCBegin(event: TraceEvent) {
-    this.gcStart = event.ts;
-    this.maxHeap = Math.max(event.args["usedHeapSizeBefore"], this.maxHeap);
-  }
+    let args = {};
+    Object.keys(begin.args).forEach(key => args[key] = begin.args[key]);
+    Object.keys(end.args).forEach(key => args[key] = end.args[key]);
 
-  measureGCEnd(event: TraceEvent) {
-    let usedHeapSizeAfter = event.args["usedHeapSizeAfter"];
-    if (this.minHeap) {
-      this.minHeap = Math.min(usedHeapSizeAfter, this.minHeap);
-    } else {
-      this.minHeap = usedHeapSizeAfter;
-    }
-    this.gc += event.ts - this.gcStart;
+    this.measureComplete({
+      "pid": begin.pid,
+      "tid": begin.tid,
+      "ts": begin.ts,
+      "ph": "X",
+      "cat": begin.cat,
+      "name": begin.name,
+      "args": args,
+      "dur": end.ts - begin.ts,
+      "tdur": end.tts - begin.tts,
+      "tts": begin.tts
+    });
   }
 
   measureComplete(event: TraceEvent) {
     switch (event.name) {
-    case "EvaluateScript":
-    case "FunctionCall":
-      this.measureJS(event);
-      break;
-    case "Paint":
-      this.measurePaint(event);
-      break;
+      // js entry points from browser
+      // it is parsing and running a script
+      // or it is calling a function on an event
+      case "v8.compile":
+        this.measureCompile(event);
+        break;
+      case "v8.run":
+      case "v8.callFunction":
+        this.measureRun(event);
+        break;
+      case "MajorGC":
+      case "MinorGC":
+        this.measureGC(event);
+        break;
+      case "Paint":
+        this.measurePaint(event);
+        break;
     }
   }
 
-  measureJS(event: TraceEvent) {
-    this.jsWall += event.dur;
-    this.jsCpu  += event.tdur;
+  measureGC(event: TraceEvent) {
+    this.sample.gcSamples.push({
+      duration: event.dur,
+      usedHeapSizeBefore: <number>event.args["usedHeapSizeBefore"],
+      usedHeapSizeAfter: <number>event.args["usedHeapSizeAfter"]
+    });
+  }
+
+  measureCompile(event: TraceEvent) {
+    this.sample.js += event.dur;
+  }
+
+  measureRun(event: TraceEvent) {
+    this.sample.js += event.dur;
   }
 
   measurePaint(event: TraceEvent) {
     if (this.seenAllMarks) {
-      let sample = event.ts - this.lastMarkEvent.ts;
-      this.samples[this.sampleIdx++] = milliseconds(sample);
-      this.samples[this.sampleIdx++] = milliseconds(event.dur);
-      this.samples[this.sampleIdx++] = milliseconds(event.ts - this.start);
-      this.samples[this.sampleIdx++] = milliseconds(this.jsWall);
-      this.samples[this.sampleIdx++] = milliseconds(this.jsCpu);
-      this.samples[this.sampleIdx++] = milliseconds(this.gc);
-      this.samples[this.sampleIdx++] = this.minHeap;
-      this.samples[this.sampleIdx++] = this.maxHeap;
-      this.samples[this.sampleIdx++] = this.net;
-      this.samples[this.sampleIdx++] = this.response;
-      this.samples[this.sampleIdx++] = this.receive;
+      let marker = this.markers[this.markerIdx - 1];
+
+      this.sample.phaseSamples.push({
+        phase: marker.label,
+        self: event.ts - this.lastMarkEvent.ts,
+        cumulative: event.ts - this.start
+      }, {
+        phase: "paint",
+        self: event.dur,
+        cumulative: event.ts - this.start + event.dur
+      });
+      this.sample.duration = event.ts - this.start + event.dur;
       this.done = true;
     }
   }
@@ -207,7 +265,11 @@ class InitialRenderMetric {
 
     if (this.lastMarkEvent) {
       let sample = event.ts - this.lastMarkEvent.ts;
-      this.samples[this.sampleIdx++] = milliseconds(sample);
+      this.sample.phaseSamples.push({
+        phase: marker.label,
+        self: event.ts - this.lastMarkEvent.ts,
+        cumulative: event.ts - this.start
+      });
     } else {
       this.start = event.ts;
     }
@@ -219,25 +281,25 @@ class InitialRenderMetric {
   }
 }
 
-export class InitialRenderBenchmark extends Benchmark<InitialRenderBenchmarkParams, DurationSamples> {
+export class InitialRenderBenchmark extends Benchmark<InitialRenderBenchmarkParams, InitialRenderSamples> {
   constructor(params: InitialRenderBenchmarkParams) {
     validateParams(params);
     super(params);
   }
 
-  createResults(meta: BenchmarkMeta): DurationSamples {
-    let markers = this.params.markers;
-    let headers = markers.map(marker => marker.label);
-    headers.push("paint", "timeToPaint", "jsWall", "jsCpu", "gc", "minHeap", "maxHeap", "response", "receive", "net");
-    console.log(headers.join(","));
-    return { meta, headers, samples: [] };
+  createResults(meta: BenchmarkMeta): InitialRenderSamples {
+    return {
+      meta: meta,
+      set: this.params.name,
+      samples: []
+    };
   }
 
-  async performIteration(t: ITab, results: DurationSamples, i: number): Promise<void> {
+  async performIteration(t: ITab, results: InitialRenderSamples, i: number): Promise<void> {
     let url = this.params.url;
     let markers = this.params.markers;
 
-    let tracing = await t.startTracing("blink.user_timing,devtools.timeline");
+    let tracing = await t.startTracing("blink.user_timing,devtools.timeline,v8");
 
     await t.navigate(url);
 
@@ -251,14 +313,14 @@ export class InitialRenderBenchmark extends Benchmark<InitialRenderBenchmarkPara
 
     mainThread.events.sort((a, b) => a.ts - b.ts);
 
-    // if (i === 0) {
-    //   fs.writeFileSync("/Users/kselden/src/krisselden/chrome-tracing/trace.json", JSON.stringify(mainThread.events, null, 2));
-    // }
+    if (i === 0) {
+      fs.writeFileSync("/Users/kselden/src/krisselden/chrome-tracing/trace.json", JSON.stringify(mainThread.events, null, 2));
+    }
 
-    let metric = new InitialRenderMetric(results.headers.length, mainThread.events, markers);
-    let samples = metric.measure();
-    results.samples.push(samples);
-    console.log(samples.join(","));
+    let metric = new InitialRenderMetric(mainThread.events, markers);
+    let sample = metric.measure();
+    results.samples.push(sample);
+    console.log(JSON.stringify(sample));
   }
 }
 
