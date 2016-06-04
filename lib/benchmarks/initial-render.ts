@@ -17,7 +17,7 @@ export type PhaseSample = {
 
 export type RequestSample = {
   url: string;
-  respond: number;
+  response: number;
   duration: number;
 }
 
@@ -168,11 +168,12 @@ class InitialRenderMetric {
     request.finish = event.ts;
     let sample: RequestSample = {
       url: request.url,
-      respond: request.response - request.send,
+      response: request.response - request.send,
       duration: request.finish - request.send
     };
 
     this.sample.net += sample.duration;
+    this.sample.response += sample.response;
     this.sample.requestSamples.push(sample);
   }
 
@@ -224,6 +225,7 @@ class InitialRenderMetric {
   }
 
   measureGC(event: TraceEvent) {
+    this.sample.gc += event.dur;
     this.sample.gcSamples.push({
       duration: event.dur,
       usedHeapSizeBefore: <number>event.args["usedHeapSizeBefore"],
@@ -233,10 +235,12 @@ class InitialRenderMetric {
 
   measureCompile(event: TraceEvent) {
     this.sample.js += event.dur;
+    this.sample.compile += event.dur;
   }
 
   measureRun(event: TraceEvent) {
     this.sample.js += event.dur;
+    this.sample.run += event.dur;
   }
 
   measurePaint(event: TraceEvent) {
