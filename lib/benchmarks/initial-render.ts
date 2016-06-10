@@ -324,7 +324,7 @@ export class InitialRenderBenchmark extends Benchmark<InitialRenderBenchmarkPara
     let metric = new InitialRenderMetric(mainThread.events, markers);
     let sample = metric.measure();
     results.samples.push(sample);
-    console.log(JSON.stringify(sample));
+    console.log(sample.duration);
   }
 }
 

@@ -111,6 +111,8 @@ export abstract class Benchmark<P extends BenchmarkParams, R> implements IBenchm
       await dsl.clearBrowserCache();
       await dsl.collectGarbage();
 
+      await delay(2000);
+
       await this.performIteration(dsl, results, i);
 
       await page.disable();
