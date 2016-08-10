@@ -162,10 +162,12 @@ class TabDSL implements ITab {
   }
 
   onNavigated(frame: Page.Frame) {
-    this.frame = frame;
-    // navigating to "about:blank" a signal to end the current trace
-    if (this.currentTrace && frame.url === "about:blank") {
-      this.currentTrace.end();
+    if (!frame.parentId) {
+      this.frame = frame;
+      // navigating to "about:blank" a signal to end the current trace
+      if (this.currentTrace && frame.url === "about:blank") {
+        this.currentTrace.end();
+      }
     }
   }
 
