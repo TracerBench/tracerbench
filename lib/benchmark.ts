@@ -32,7 +32,7 @@ export interface ITab {
   /** The current frame for the tab */
   frame: Page.Frame;
   /** Navigates to the specified url */
-  navigate(url): Promise<void>;
+  navigate(url: string, waitForLoad?: boolean): Promise<void>;
   /** Start tracing */
   startTracing(categories: string, options?: string): Promise<ITracing>;
   /** Clear browser cache and memory cache */
@@ -166,11 +166,21 @@ class TabDSL implements ITab {
   }
 
   /** Navigates to the specified url */
-  async navigate(url): Promise<void> {
+  async navigate(url: string, waitForLoad?: boolean): Promise<void> {
+    let didLoad;
+
+    if (waitForLoad) {
+      didLoad = new Promise(resolve => this.page.frameStoppedLoading = resolve);
+    }
+
     if (this.frame.url === url) {
       await this.page.reload({});
     } else {
       await this.page.navigate({ url });
+    }
+
+    if (waitForLoad) {
+      await didLoad;
     }
   }
 
