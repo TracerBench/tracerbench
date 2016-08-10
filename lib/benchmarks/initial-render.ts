@@ -285,16 +285,19 @@ class InitialRenderMetric {
   }
 }
 
-export class InitialRenderBenchmark extends Benchmark<InitialRenderBenchmarkParams, InitialRenderSamples> {
+export class InitialRenderBenchmark extends Benchmark<InitialRenderSamples> {
+  protected params: InitialRenderBenchmarkParams;
+
   constructor(params: InitialRenderBenchmarkParams) {
     validateParams(params);
     super(params);
+    this.params = params;
   }
 
   createResults(meta: BenchmarkMeta): InitialRenderSamples {
     return {
       meta: meta,
-      set: this.params.name,
+      set: this.name,
       samples: []
     };
   }
@@ -329,9 +332,6 @@ export class InitialRenderBenchmark extends Benchmark<InitialRenderBenchmarkPara
 }
 
 function validateParams(params: InitialRenderBenchmarkParams) {
-  if (!params.iterations) {
-    params.iterations = 30;
-  }
   if (!params.markers || params.markers.length === 0) {
     params.markers = [{
       start: "fetchStart",
