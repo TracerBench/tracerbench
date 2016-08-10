@@ -31,6 +31,10 @@ export interface ITab {
   pid: number;
   /** The current frame for the tab */
   frame: Page.Frame;
+  /** Add a script to execute on load */
+  addScriptToEvaluateOnLoad(source: string): Promise<Page.ScriptIdentifier>;
+  /** Remove a previously added script */
+  removeScriptToEvaluateOnLoad(identifier: Page.ScriptIdentifier): Promise<void>;
   /** Navigates to the specified url */
   navigate(url: string, waitForLoad?: boolean): Promise<void>;
   /** Start tracing */
@@ -182,6 +186,15 @@ class TabDSL implements ITab {
     if (waitForLoad) {
       await didLoad;
     }
+  }
+
+  async addScriptToEvaluateOnLoad(source: string): Promise<Page.ScriptIdentifier> {
+    let result = await this.page.addScriptToEvaluateOnLoad({scriptSource: source});
+    return result.identifier;
+  }
+
+  async removeScriptToEvaluateOnLoad(identifier: Page.ScriptIdentifier): Promise<void> {
+    await this.page.removeScriptToEvaluateOnLoad({identifier});
   }
 
   /** Start tracing */
