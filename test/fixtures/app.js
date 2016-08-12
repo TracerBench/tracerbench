@@ -32,7 +32,7 @@ var MyApp;
 
   MyApp.Router = Ember.Router.extend({
     location: 'none',
-    setupRouter() {
+    setupRouter: function() {
       performance.mark("startRouting");
       this.on("willTransition", function () {
         performance.mark("willTransition");

@@ -117,7 +117,7 @@ export interface BenchmarkParams {
 
 export interface BenchmarkState<R> {
   apiClient: IAPIClient;
-  previousTab: Tab;
+  tab: Tab;
   results: R;
 }
 
@@ -146,16 +146,15 @@ export abstract class Benchmark<R> implements IBenchmark<BenchmarkState<R>, R> {
     let version = await apiClient.version();
     let tabs = await apiClient.listTabs();
     // open a blank tab
-    let previousTab = await apiClient.newTab("about:blank");
+    let tab = await apiClient.newTab("about:blank");
     for (let i = 0; i < tabs.length; i++) {
       await apiClient.closeTab(tabs[i].id);
     }
-    await delay(2000);
-    await apiClient.activateTab(previousTab.id);
+
     let browserVersion = version["Browser"];
     let cpus = os.cpus().map((cpu) => cpu.model);
     let results = this.createResults({browserVersion, cpus});
-    let state = { apiClient, previousTab, results };
+    let state = { apiClient, tab, results };
 
     await this.withTab(session, state, tab => this.warm(tab));
 
@@ -173,11 +172,7 @@ export abstract class Benchmark<R> implements IBenchmark<BenchmarkState<R>, R> {
 
   private async withTab<T>(session: ISession, state: BenchmarkState<R>, callback: (TabDSL) => Promise<T>): Promise<T> {
     let apiClient = state.apiClient;
-    let previousTab = state.previousTab;
-
-    let tab = state.previousTab = await apiClient.newTab("about:blank");
-    await apiClient.closeTab(previousTab.id);
-    await apiClient.activateTab(tab.id);
+    let tab = state.tab;
 
     let client = await session.openDebuggingProtocol(tab.webSocketDebuggerUrl);
     let page = new Page(client);
@@ -190,11 +185,17 @@ export abstract class Benchmark<R> implements IBenchmark<BenchmarkState<R>, R> {
     await dsl.clearBrowserCache();
     await dsl.collectGarbage();
 
-    await delay(2000);
+    await apiClient.activateTab(tab.id);
+
+    await delay(500);
+
+    await apiClient.activateTab(tab.id);
 
     let rtn = await callback(dsl);
 
-    await page.disable();
+    state.tab = await apiClient.newTab("about:blank");
+
+    await apiClient.closeTab(tab.id);
 
     return rtn;
   }

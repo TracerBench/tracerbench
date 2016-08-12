@@ -21,6 +21,9 @@
   ],
   "dependencies": {
     "jquery": "^2.2.4",
-    "ember": "canary"
+    "ember-2.6": "ember#2.6",
+    "ember-2.7": "ember#2.7",
+    "ember-beta": "ember#beta",
+    "ember-alpha": "ember#alpha"
   }
 }
