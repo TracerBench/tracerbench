@@ -22,7 +22,6 @@ let benchmarks = versions.map(version => {
     name: version,
     url: `file://${__dirname}/test/${version}/index.html?tracing`,
     markers: [
-      { start: "fetchStart",     label: "fetch" },
       { start: "domLoading",     label: "jquery" },
       { start: "jqueryLoaded",   label: "ember" },
       { start: "emberLoaded",    label: "application" },
@@ -36,12 +35,22 @@ let benchmarks = versions.map(version => {
 });
 
 let runner = new Runner(benchmarks);
+
 runner.run(10).then((results) => {
+  console.log("set,ms");
   results.forEach(result => {
-    console.log("µs,set");
     let set = result.set;
     result.samples.forEach(sample => {
-      console.log(sample.duration + "," + set);
+      console.log(set + "," + (sample.duration / 1000));
+    });
+  });
+  console.log("set,phase,self_ms,cumulative_ms");
+  results.forEach(result => {
+    let set = result.set;
+    result.samples.forEach(sample => {
+      sample.phaseSamples.forEach(phaseSample => {
+        console.log(set + "," + phaseSample.phase + "," + (phaseSample.self / 1000) + "," + (phaseSample.cumulative / 1000));
+      });
     });
   });
 }).catch((err) => {

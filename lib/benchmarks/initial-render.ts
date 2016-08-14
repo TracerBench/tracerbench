@@ -268,9 +268,10 @@ class InitialRenderMetric {
     }
 
     if (this.lastMarkEvent) {
+      let lastMarker = this.markers[this.markerIdx - 1];
       let sample = event.ts - this.lastMarkEvent.ts;
       this.sample.phaseSamples.push({
-        phase: marker.label,
+        phase: lastMarker.label,
         self: event.ts - this.lastMarkEvent.ts,
         cumulative: event.ts - this.start
       });
@@ -326,8 +327,12 @@ export class InitialRenderBenchmark extends Benchmark<InitialRenderSamples> {
 
     let metric = new InitialRenderMetric(mainThread.events, markers);
     let sample = metric.measure();
+
+    // log progress to stderr
+    // TODO make some events or logger
+    console.error(this.name, sample.duration, "µs");
+
     results.samples.push(sample);
-    console.log(sample.duration);
   }
 }
 
