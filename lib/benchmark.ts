@@ -73,7 +73,7 @@ function createSessions<T>(count: number, callback: (sessions: ISession[]) => T 
   if (count === 1) {
     return createSession(session => callback([session]));
   } else {
-    return createSessions(count - 1, (sessions) => createSession(session => callback([session, ...sessions])));
+    return createSessions(count - 1, (sessions) => createSession(session => callback([session].concat(sessions))));
   }
 }
 
