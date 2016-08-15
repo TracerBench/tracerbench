@@ -268,9 +268,10 @@ class InitialRenderMetric {
     }
 
     if (this.lastMarkEvent) {
+      let lastMarker = this.markers[this.markerIdx - 1];
       let sample = event.ts - this.lastMarkEvent.ts;
       this.sample.phaseSamples.push({
-        phase: marker.label,
+        phase: lastMarker.label,
         self: event.ts - this.lastMarkEvent.ts,
         cumulative: event.ts - this.start
       });
@@ -285,16 +286,19 @@ class InitialRenderMetric {
   }
 }
 
-export class InitialRenderBenchmark extends Benchmark<InitialRenderBenchmarkParams, InitialRenderSamples> {
+export class InitialRenderBenchmark extends Benchmark<InitialRenderSamples> {
+  protected params: InitialRenderBenchmarkParams;
+
   constructor(params: InitialRenderBenchmarkParams) {
     validateParams(params);
     super(params);
+    this.params = params;
   }
 
   createResults(meta: BenchmarkMeta): InitialRenderSamples {
     return {
       meta: meta,
-      set: this.params.name,
+      set: this.name,
       samples: []
     };
   }
@@ -323,15 +327,16 @@ export class InitialRenderBenchmark extends Benchmark<InitialRenderBenchmarkPara
 
     let metric = new InitialRenderMetric(mainThread.events, markers);
     let sample = metric.measure();
+
+    // log progress to stderr
+    // TODO make some events or logger
+    console.error(this.name, sample.duration, "µs");
+
     results.samples.push(sample);
-    console.log(sample.duration);
   }
 }
 
 function validateParams(params: InitialRenderBenchmarkParams) {
-  if (!params.iterations) {
-    params.iterations = 30;
-  }
   if (!params.markers || params.markers.length === 0) {
     params.markers = [{
       start: "fetchStart",

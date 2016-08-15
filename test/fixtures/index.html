@@ -1,20 +1,19 @@
 <html>
   <head>
     <title>Test Initial Render</title>
-    <script src="../../bower_components/jquery/dist/jquery.min.js"></script>
+    <script src="../jquery.min.js"></script>
     <script>
       if ($) performance.mark("jqueryLoaded");
       if (location.search === "?profile") {
         console.profile("initialRender");
       }
     </script>
-    <script src="../../bower_components/ember/ember.prod.js"></script>
+    <script src="./ember.min.js"></script>
     <script>
       if (Ember) performance.mark("emberLoaded");
     </script>
-    <script src="../../dist/templates.js"></script>
   </head>
   <body>
-    <script src="./app.js"></script>
+    <script src="./app.min.js"></script>
   </body>
 </html>

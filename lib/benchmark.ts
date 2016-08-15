@@ -16,10 +16,22 @@ export interface BenchmarkMeta {
   cpus: string[];
 }
 
-export interface IBenchmark<P extends BenchmarkParams, R> {
-  params: P;
-  /** run benchmark returning result */
-  run(): Promise<R>;
+export interface IBenchmark<State, Result> {
+  name: string;
+
+  /** convenience to run the benchmark, returning result */
+  run(iterations: number): Promise<Result>;
+
+  /** alternatively, the following can be invoked manually in order */
+
+  /** setup the benchmark */
+  setup(session: ISession): Promise<State>;
+
+  /** run a single iteration of the benchmark */
+  perform(session: ISession, state: State, iteration: number): Promise<State>;
+
+  /** finalize the benchmark, returning result */
+  finalize(session: ISession, state: State): Promise<Result>;
 }
 
 function delay(ms: number): Promise<void> {
@@ -31,8 +43,12 @@ export interface ITab {
   pid: number;
   /** The current frame for the tab */
   frame: Page.Frame;
+  /** Add a script to execute on load */
+  addScriptToEvaluateOnLoad(source: string): Promise<Page.ScriptIdentifier>;
+  /** Remove a previously added script */
+  removeScriptToEvaluateOnLoad(identifier: Page.ScriptIdentifier): Promise<void>;
   /** Navigates to the specified url */
-  navigate(url): Promise<void>;
+  navigate(url: string, waitForLoad?: boolean): Promise<void>;
   /** Start tracing */
   startTracing(categories: string, options?: string): Promise<ITracing>;
   /** Clear browser cache and memory cache */
@@ -53,77 +69,138 @@ export interface BrowserOptions {
   chromiumSrcDir?: string;
 }
 
-export interface BenchmarkParams {
-  name: string;
-  browser: BrowserOptions;
-  iterations?: number;
+function createSessions<T>(count: number, callback: (sessions: ISession[]) => T | PromiseLike<T>): Promise<T> {
+  if (count === 1) {
+    return createSession(session => callback([session]));
+  } else {
+    return createSessions(count - 1, (sessions) => createSession(session => callback([session].concat(sessions))));
+  }
 }
 
-export abstract class Benchmark<P extends BenchmarkParams, R> implements IBenchmark<P, R> {
-  params: P;
-  iterations: number;
-  browserOptions: BrowserOptions;
+export class Runner<R> {
+  private benchmarks: IBenchmark<any, R>[];
 
-  constructor(params: P) {
-    this.iterations = params.iterations > 0 ? params.iterations : 1;
-    this.browserOptions = params.browser;
-    this.params = params;
+  constructor(benchmarks: IBenchmark<any, R>[]) {
+    this.benchmarks = benchmarks;
   }
 
-  // create session, spawn browser, get port
-  // connect to API to get version
-  run(): Promise<R> {
-    return createSession((session: ISession) => {
-      return this.perform(session);
+  async run(iterations: number): Promise<R[]> {
+    let benchmarks = this.benchmarks;
+
+    return createSessions(benchmarks.length, async (sessions) => {
+      let states = await this.inSequence((benchmark, i) => benchmark.setup(sessions[i]));
+
+      for (let iteration = 0; iteration < iterations; iteration++) {
+        states = await this.inSequence((benchmark, i) => benchmark.perform(sessions[i], states[i], iteration));
+      }
+
+      return this.inSequence((benchmark, i) => benchmark.finalize(sessions[i], states[i]));
     });
   }
 
-  async perform(session: ISession): Promise<R> {
+  private async inSequence<T>(callback: (benchmark: IBenchmark<any, R>, i: number) => Promise<T>): Promise<T[]> {
+    let benchmarks = this.benchmarks;
+    let results = [];
+
+    for (let i = 0; i < benchmarks.length; i++) {
+      results.push(await callback(benchmarks[i], i));
+    }
+
+    return results;
+  }
+}
+
+export interface BenchmarkParams {
+  name: string;
+  browser: BrowserOptions;
+}
+
+export interface BenchmarkState<R> {
+  apiClient: IAPIClient;
+  tab: Tab;
+  results: R;
+}
+
+export abstract class Benchmark<R> implements IBenchmark<BenchmarkState<R>, R> {
+  public name: string;
+  private browserOptions: BrowserOptions;
+
+  constructor(params: BenchmarkParams) {
+    this.name = params.name;
+    this.browserOptions = params.browser;
+  }
+
+  protected abstract createResults(meta: BenchmarkMeta): R;
+  protected async warm(t: ITab) {};
+  protected abstract async performIteration(t: ITab, results: R, index: number): Promise<void>;
+
+  public async run(iterations: number): Promise<R> {
+    return new Runner([this]).run(iterations)[0];
+  }
+
+  // create session, spawn browser, get port connect to API to get version
+  public async setup(session: ISession): Promise<BenchmarkState<R>> {
     let browserOptions = this.browserOptions;
     let browser = await session.spawnBrowser(browserOptions.type, browserOptions);
     let apiClient = await session.createAPIClient("localhost", browser.remoteDebuggingPort);
     let version = await apiClient.version();
     let tabs = await apiClient.listTabs();
     // open a blank tab
-    let prev = await apiClient.newTab("about:blank");
+    let tab = await apiClient.newTab("about:blank");
     for (let i = 0; i < tabs.length; i++) {
       await apiClient.closeTab(tabs[i].id);
     }
-    await delay(2000);
-    await apiClient.activateTab(prev.id);
+
+    await delay(1500);
+
     let browserVersion = version["Browser"];
     let cpus = os.cpus().map((cpu) => cpu.model);
     let results = this.createResults({browserVersion, cpus});
+    let state = { apiClient, tab, results };
 
-    for (let i = 0; i < this.iterations; i++) {
-      let tab = await apiClient.newTab("about:blank");
-      await apiClient.closeTab(prev.id);
-      await apiClient.activateTab(tab.id);
+    await this.withTab(session, state, tab => this.warm(tab));
 
-      let client = await session.openDebuggingProtocol(tab.webSocketDebuggerUrl);
-      let page = new Page(client);
-      await page.enable();
-      let res = await page.getResourceTree();
-      let frame = res.frameTree.frame;
-
-      let dsl = new TabDSL(tab.id, client, page, frame);
-
-      await dsl.clearBrowserCache();
-      await dsl.collectGarbage();
-
-      await delay(2000);
-
-      await this.performIteration(dsl, results, i);
-
-      await page.disable();
-      prev = tab;
-    }
-
-    return results;
+    return state;
   }
 
-  abstract createResults(meta: BenchmarkMeta): R;
-  abstract performIteration(t: ITab, results: R, index: number): Promise<void>;
+  public async perform(session: ISession, state: BenchmarkState<R>, iteration: number): Promise<BenchmarkState<R>> {
+    await this.withTab(session, state, tab => this.performIteration(tab, state.results, iteration));
+    return state;
+  }
+
+  public async finalize(session: ISession, state: BenchmarkState<R>): Promise<R> {
+    return state.results;
+  }
+
+  private async withTab<T>(session: ISession, state: BenchmarkState<R>, callback: (TabDSL) => Promise<T>): Promise<T> {
+    let apiClient = state.apiClient;
+    let tab = state.tab;
+
+    let client = await session.openDebuggingProtocol(tab.webSocketDebuggerUrl);
+    let page = new Page(client);
+    await page.enable();
+    let res = await page.getResourceTree();
+    let frame = res.frameTree.frame;
+
+    let dsl = new TabDSL(tab.id, client, page, frame);
+
+    await dsl.clearBrowserCache();
+    await dsl.collectGarbage();
+
+    await apiClient.activateTab(tab.id);
+
+    await delay(500);
+
+    await apiClient.activateTab(tab.id);
+
+    let rtn = await callback(dsl);
+
+    state.tab = await apiClient.newTab("about:blank");
+
+    await apiClient.closeTab(tab.id);
+
+    return rtn;
+  }
 }
 
 class TabDSL implements ITab {
@@ -158,20 +235,48 @@ class TabDSL implements ITab {
   }
 
   onNavigated(frame: Page.Frame) {
-    this.frame = frame;
-    // navigating to "about:blank" a signal to end the current trace
-    if (this.currentTrace && frame.url === "about:blank") {
-      this.currentTrace.end();
+    if (!frame.parentId) {
+      this.frame = frame;
+      // navigating to "about:blank" a signal to end the current trace
+      if (this.currentTrace && frame.url === "about:blank") {
+        this.currentTrace.end();
+      }
     }
   }
 
   /** Navigates to the specified url */
-  async navigate(url): Promise<void> {
+  async navigate(url: string, waitForLoad?: boolean): Promise<void> {
+    let didLoad;
+
+    if (waitForLoad) {
+      didLoad = new Promise(resolve => {
+        this.page.frameStoppedLoading = params => {
+          if (params.frameId === this.frame.id) {
+            this.page.frameStoppedLoading = null;
+            resolve();
+          }
+        };
+      });
+    }
+
     if (this.frame.url === url) {
       await this.page.reload({});
     } else {
       await this.page.navigate({ url });
     }
+
+    if (waitForLoad) {
+      await didLoad;
+    }
+  }
+
+  async addScriptToEvaluateOnLoad(source: string): Promise<Page.ScriptIdentifier> {
+    let result = await this.page.addScriptToEvaluateOnLoad({scriptSource: source});
+    return result.identifier;
+  }
+
+  async removeScriptToEvaluateOnLoad(identifier: Page.ScriptIdentifier): Promise<void> {
+    await this.page.removeScriptToEvaluateOnLoad({identifier});
   }
 
   /** Start tracing */

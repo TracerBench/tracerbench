@@ -18,9 +18,12 @@
   "author": "Kris Selden <kris.selden@gmail.com>",
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/node": "^4.0.29",
+    "@types/uglify-js": "^2.0.27",
     "bower": "^1.7.9",
-    "tslint": "^3.3.0",
-    "typescript": "^1.8.0"
+    "tslint": "^3.14.0",
+    "typescript": "^2.0.0",
+    "uglify-js": "^2.7.0"
   },
   "dependencies": {
     "chrome-debugging-client": "^0.2.4"

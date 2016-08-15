@@ -1,47 +1,58 @@
-import { InitialRenderBenchmark } from "./index";
-import * as fs from "fs";
-import * as path from "path";
+import { InitialRenderBenchmark, Runner } from "./index";
+import build from "./test/build";
 
-let precompile: (src: string) => string = require("../bower_components/ember/ember-template-compiler").precompile;
+let versions = [
+  "ember-2.6",
+  "ember-2.7",
+  "ember-beta",
+  "ember-alpha"
+];
 
-let files = fs.readdirSync("test/fixtures/templates");
-let templates = [];
-files.forEach((file) => {
-  if (path.extname(file) === ".hbs") {
-    let src = fs.readFileSync(`test/fixtures/templates/${file}`, "utf8");
-    let compiled = precompile(src);
-    let templateId = file.replace(/\.hbs$/, "");
-    templates.push(`Ember.TEMPLATES[${JSON.stringify(templateId)}] = Ember.HTMLBars.template(${compiled});`);
-  }
-});
-
-fs.writeFileSync("dist/templates.js", templates.join("\n"));
+let result = build(versions);
 
 let browserOpts = process.env.CHROME_BIN ? {
   type: "exact",
   executablePath: process.env.CHROME_BIN
 } : {
-  type: "debug"
+  type: "system"
 };
 
-let benchmark = new InitialRenderBenchmark({
-  name: "test initial render",
-  url: `file://${__dirname}/../test/fixtures/index.html?tracing`,
-  markers: [
-    { start: "fetchStart",     label: "fetch" },
-    { start: "domLoading",     label: "jquery" },
-    { start: "jqueryLoaded",   label: "ember" },
-    { start: "emberLoaded",    label: "application" },
-    { start: "startRouting",   label: "routing" },
-    { start: "willTransition", label: "transition" },
-    { start: "didTransition",  label: "render" },
-    { start: "renderEnd",      label: "afterRender" }
-  ],
-  browser: browserOpts
+let benchmarks = versions.map(version => {
+  return new InitialRenderBenchmark({
+    name: version,
+    url: `file://${__dirname}/test/${version}/index.html?tracing`,
+    markers: [
+      { start: "domLoading",     label: "jquery" },
+      { start: "jqueryLoaded",   label: "ember" },
+      { start: "emberLoaded",    label: "application" },
+      { start: "startRouting",   label: "routing" },
+      { start: "willTransition", label: "transition" },
+      { start: "didTransition",  label: "render" },
+      { start: "renderEnd",      label: "afterRender" }
+    ],
+    browser: browserOpts
+  });
 });
 
-benchmark.run().then((result) => {
-  console.log(JSON.stringify(result.meta, null, 2));
+let runner = new Runner(benchmarks);
+
+runner.run(10).then((results) => {
+  console.log("set,ms");
+  results.forEach(result => {
+    let set = result.set;
+    result.samples.forEach(sample => {
+      console.log(set + "," + (sample.duration / 1000));
+    });
+  });
+  console.log("set,phase,self_ms,cumulative_ms");
+  results.forEach(result => {
+    let set = result.set;
+    result.samples.forEach(sample => {
+      sample.phaseSamples.forEach(phaseSample => {
+        console.log(set + "," + phaseSample.phase + "," + (phaseSample.self / 1000) + "," + (phaseSample.cumulative / 1000));
+      });
+    });
+  });
 }).catch((err) => {
   console.error(err.stack);
   process.exit(1);

@@ -4255,7 +4255,7 @@ export namespace CSS {
     /** The element id for which to force the pseudo state. */
     nodeId: DOM.NodeId;
     /** Element pseudo classes to force when computing the element's style. */
-    forcedPseudoClasses: "active" | "focus" | "hover" | "visited"[];
+    forcedPseudoClasses: ("active" | "focus" | "hover" | "visited")[];
   };
   export type getMediaQueries_Return = {
     medias: CSSMedia[];
