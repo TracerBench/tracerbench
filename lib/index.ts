@@ -3,5 +3,11 @@ export * from "./benchmarks/initial-render";
 export {
   Runner,
   Benchmark,
-  IBenchmark
+  BenchmarkMeta,
+  BenchmarkParams,
+  BenchmarkState,
+  BrowserOptions,
+  IBenchmark,
+  ITab,
+  ITracing
 } from "./benchmark";
