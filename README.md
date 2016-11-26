@@ -8,20 +8,30 @@ Chrome tracing allows you to automate Chrome benchmarking. It's goal is to provi
 The most basic benchmark is the `InitialRenderBenchmark`.
 
 ```js
-import { InitialRenderBenchmark } from "chrome-tracing";
+import { InitialRenderBenchmark, Runner } from "chrome-tracing";
 
-let benchmark = new InitialRenderBenchmark({
-  name: "app initial render",
-  url: "http://localhost:4200/",
+let control = new InitialRenderBenchmark({
+  name: "control",
+  url: "http://localhost:8001/",
   endMarker: "renderEnd",
   browser: {
     type: "canary"
   }
 });
 
-benchmark.run().then((result) => {
+let experiment = new InitialRenderBenchmark({
+  name: "experiment",
+  url: "http://localhost:8002/",
+  endMarker: "renderEnd",
+  browser: {
+    type: "canary"
+  }
+});
+
+let runner = new Runner([control, experiment]);
+runner.run(50).then(result => {
   console.log(result);
-}).catch((err) => {
+}).catch(err => {
   console.error(err);
   process.exit(1);
 });
