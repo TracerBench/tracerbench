@@ -2,6 +2,8 @@ import {
   createSession,
   ISession,
   IBrowserProcess,
+  SpawnOptions,
+  ResolveOptions,
   IAPIClient,
   VersionInfo,
   Tab,
@@ -63,11 +65,9 @@ export interface ITracing {
   end(): Promise<void>;
 }
 
-export interface BrowserOptions {
+export type BrowserOptions = {
   type: string;
-  executablePath?: string;
-  chromiumSrcDir?: string;
-}
+} & ResolveOptions & SpawnOptions;
 
 function createSessions<T>(count: number, callback: (sessions: ISession[]) => T | PromiseLike<T>): Promise<T> {
   if (count === 1) {

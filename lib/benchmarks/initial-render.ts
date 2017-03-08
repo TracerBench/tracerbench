@@ -15,12 +15,6 @@ export type PhaseSample = {
   cumulative: number;
 }
 
-export type RequestSample = {
-  url: string;
-  response: number;
-  duration: number;
-}
-
 export type GCSample = {
   duration: number;
   usedHeapSizeBefore: number;
@@ -36,9 +30,6 @@ export type InterationSample = {
   run: number;
   gc: number;
   gcSamples: GCSample[];
-  net: number;
-  response: number;
-  requestSamples: RequestSample[];
 }
 
 export type InitialRenderSamples = {
@@ -66,18 +57,10 @@ export interface InitialRenderBenchmarkParams extends BenchmarkParams {
   markers: Marker[];
 }
 
-type Request = {
-  url: string;
-  send: number;
-  response: number;
-  finish: number;
-}
-
 class InitialRenderMetric {
   private start = 0;
   private markerIdx = 0;
   private lastMarkEvent: TraceEvent = undefined;
-  private requests = new Map<string, Request>();
   private seenAllMarks = false;
   private done = false;
   private stack: TraceEvent[] = [];
@@ -88,10 +71,7 @@ class InitialRenderMetric {
     compile: 0,
     run: 0,
     gc: 0,
-    gcSamples: [],
-    net: 0,
-    response: 0,
-    requestSamples: []
+    gcSamples: []
   };
 
   constructor(private events: TraceEvent[], private markers: Marker[]) {
@@ -127,54 +107,7 @@ class InitialRenderMetric {
 
   measureInstant(event: TraceEvent) {
     switch (event.name) {
-    case "ResourceSendRequest":
-      this.measureResourceSend(event);
-      break;
-    case "ResourceReceiveResponse":
-      this.measureResourceRespond(event);
-      break;
-    case "ResourceFinish":
-      this.measureResourceFinish(event);
-      break;
     }
-  }
-
-  measureResourceSend(event: TraceEvent) {
-    let data = event.args["data"];
-    let requestId = data && data["requestId"];
-    if (!requestId) return;
-    let request = {
-      url: data && data["url"],
-      send: event.ts,
-      response: 0,
-      finish: 0
-    };
-    this.requests.set(requestId, request);
-  }
-
-  measureResourceRespond(event: TraceEvent) {
-    let data = event.args["data"];
-    let requestId = data && data["requestId"];
-    let request = requestId && this.requests.get(requestId);
-    if (!request) return;
-    request.response = event.ts;
-  }
-
-  measureResourceFinish(event: TraceEvent) {
-    let data = event.args["data"];
-    let requestId = data && data["requestId"];
-    let request = requestId && this.requests.get(requestId);
-    if (!request) return;
-    request.finish = event.ts;
-    let sample: RequestSample = {
-      url: request.url,
-      response: request.response - request.send,
-      duration: request.finish - request.send
-    };
-
-    this.sample.net += sample.duration;
-    this.sample.response += sample.response;
-    this.sample.requestSamples.push(sample);
   }
 
   measureBegin(begin: TraceEvent) {
