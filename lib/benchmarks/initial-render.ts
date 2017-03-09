@@ -55,8 +55,8 @@ export interface InitialRenderBenchmarkParams extends BenchmarkParams {
    */
   url: string;
   markers: Marker[];
-  gcStats: boolean;
-  runtimeStats: boolean;
+  gcStats?: boolean;
+  runtimeStats?: boolean;
 }
 
 class InitialRenderMetric {
