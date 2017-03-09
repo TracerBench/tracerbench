@@ -55,6 +55,8 @@ export interface InitialRenderBenchmarkParams extends BenchmarkParams {
    */
   url: string;
   markers: Marker[];
+  gcStats: boolean;
+  runtimeStats: boolean;
 }
 
 class InitialRenderMetric {
@@ -240,7 +242,17 @@ export class InitialRenderBenchmark extends Benchmark<InitialRenderSamples> {
     let url = this.params.url;
     let markers = this.params.markers;
 
-    let tracing = await t.startTracing("blink.user_timing,devtools.timeline,v8");
+    let categories = "blink.user_timing,benchmark,toplevel,devtools.timeline,v8,v8.execute";
+
+    if (this.params.gcStats) {
+      categories += ",disabled-by-default-v8.gc_stats";
+    }
+
+    if (this.params.runtimeStats) {
+      categories += ",disabled-by-default-v8.runtime_stats";
+    }
+
+    let tracing = await t.startTracing(categories);
 
     await t.navigate(url);
 

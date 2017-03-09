@@ -8,11 +8,9 @@
     "moduleResolution": "node"
 	},
   "exclude": [
-		"node_modules/**", "bower_components", "dist"
+		"node_modules", "bower_components", "dist"
 	],
-	"filesGlob": [
-		"lib/**.ts",
-		"test/**.ts",
+	"include": [
 		"index.ts",
 		"test.ts"
 	]

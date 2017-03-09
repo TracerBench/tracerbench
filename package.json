@@ -22,7 +22,7 @@
     "@types/uglify-js": "^2.0.27",
     "bower": "^1.7.9",
     "tslint": "^3.14.0",
-    "typescript": "^2.0.0",
+    "typescript": "2",
     "uglify-js": "^2.7.0"
   },
   "dependencies": {
