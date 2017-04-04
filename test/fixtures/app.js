@@ -16,11 +16,15 @@ var MyApp;
         performance.measure("render", "didTransition", "renderEnd");
         performance.measure("afterRender", "renderEnd", "beforePaint");
         performance.measure("paint", "beforePaint", "afterPaint");
-        if (location.search === "?tracing") {
-          document.location.href = "about:blank";
-        }
         if (location.search === "?profile") {
           console.profileEnd("initialRender");
+        }
+        if (location.search === "?tracing") {
+          requestAnimationFrame(function () {
+            setTimeout(function () {
+              document.location.href = "about:blank";
+            }, 0);
+          });
         }
       });
     });

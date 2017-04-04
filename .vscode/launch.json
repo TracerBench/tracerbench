@@ -1,32 +1,20 @@
 {
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"name": "Launch",
-			"type": "node",
-			"request": "launch",
-			"program": "${workspaceRoot}/test.ts",
-			"stopOnEntry": false,
-			"args": [],
-			"cwd": "${workspaceRoot}",
-			"runtimeExecutable": null,
-			"runtimeArgs": [
-				"--nolazy"
-			],
-			"env": {
-				"NODE_ENV": "development",
-				"CHROME_BIN": "/Applications/Google Chrome Canary.app/Contents/MacOS/Google Chrome Canary"
-			},
-      "preLaunchTask": "npm",
-			"externalConsole": false,
-			"sourceMaps": true,
-			"outDir": "${workspaceRoot}/dist"
-		},
-		{
-			"name": "Attach",
-			"type": "node",
-			"request": "attach",
-			"port": 5858
-		}
-	]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Test",
+      "type": "node",
+      "request": "launch",
+      "preLaunchTask": "build",
+      "program": "${workspaceRoot}/dist/test.js",
+      "sourceMaps": true,
+      "outFiles": [
+        "${workspaceRoot}/dist/lib/*.js",
+        "${workspaceRoot}/dist/lib/benchmarks/*.js",
+        "${workspaceRoot}/dist/lib/trace/*.js",
+        "${workspaceRoot}/dist/*.js",
+        "${workspaceRoot}/dist/test/build.js"
+      ]
+    }
+  ]
 }
