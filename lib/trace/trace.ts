@@ -80,8 +80,10 @@ export default class Trace {
         let thread_name: string = event.args["name"];
         let thread = this.thread(pid, tid);
         thread.name = thread_name;
-        if (thread_name.endsWith("Main")) {
+        if (thread_name === 'CrBrowserMain') {
           this.process(pid).mainThread = thread;
+        } else if (thread_name === 'ScriptStreamerThread') {
+          this.process(pid).scriptStreamerThread = thread;
         }
         break;
       case "thread_sort_index":

@@ -6,6 +6,7 @@ export default class Process {
   threadMap: { [tid: number]: Thread; } = {};
   threads: Thread[] = [];
   mainThread: Thread = null;
+  scriptStreamerThread: Thread = null;
   bounds: Bounds = new Bounds();
   events: TraceEvent[] = [];
   name: string;
