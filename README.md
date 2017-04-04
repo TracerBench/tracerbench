@@ -1,5 +1,6 @@
 chrome-tracing
 ==============
+[![Build Status](https://travis-ci.org/krisselden/chrome-tracing.svg?branch=master)](https://travis-ci.org/krisselden/chrome-tracing)
 
 Chrome tracing allows you to automate Chrome benchmarking. It's goal is to provide a JavaScript variant of [Telemetry](https://www.chromium.org/developers/telemetry/run_locally).
 
