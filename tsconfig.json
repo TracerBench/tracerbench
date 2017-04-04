@@ -10,7 +10,7 @@
   "exclude": [
 		"node_modules", "bower_components", "dist"
 	],
-	"include": [
+	"files": [
 		"index.ts",
 		"test.ts"
 	]
