@@ -31,7 +31,7 @@
     "uglify-js": "^2.7.0"
   },
   "dependencies": {
-    "chrome-debugging-client": "^0.2.5"
+    "chrome-debugging-client": "^0.3.0"
   },
   "engine": "node >= 4.0.0"
 }

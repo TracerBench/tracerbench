@@ -92,9 +92,9 @@ chalk@^1.1.0:
     strip-ansi "^3.0.0"
     supports-color "^2.0.0"
 
-chrome-debugging-client@^0.2.5:
-  version "0.2.5"
-  resolved "https://registry.yarnpkg.com/chrome-debugging-client/-/chrome-debugging-client-0.2.5.tgz#b8e1a6c37283323b6ff5d60525f6ea1fc8899fbd"
+chrome-debugging-client@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/chrome-debugging-client/-/chrome-debugging-client-0.3.0.tgz#4e5f4bbe43a95072d19e1bc580fd2798112fcb4e"
   dependencies:
     "@types/node" "^7.0.5"
     "@types/rimraf" "^0.0.28"
