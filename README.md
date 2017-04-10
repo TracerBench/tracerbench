@@ -56,7 +56,7 @@ performance.mark("renderEnd");
 endTrace();
 ```
 
-In the example above we would mark right after we render the app and then call an `endTrace` function that ensures that we schedule a micro-task after paint that transitions to a blank page. Internally Chrome-Tracing will see this as the queue to start a new sample.
+In the example above we would mark right after we render the app and then call an `endTrace` function that ensures that we schedule a micro-task after paint that transitions to a blank page. Internally Chrome-Tracing will see this as the cue to start a new sample.
 
 ## Extending Benchmarks
 TODO
