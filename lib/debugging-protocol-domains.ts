@@ -1,11 +1,9 @@
 /**
- * Debugging Protocol 1.1 Domains
- * Generated on Wed Feb 10 2016 15:20:19 GMT-0800 (PST)
+ * Debugging Protocol 1.2 Domains
+ * Generated on Mon Apr 10 2017 12:58:29 GMT-0700 (PDT)
  */
 import { IDebuggingProtocolClient } from "chrome-debugging-client";
 export class Inspector {
-  private _evaluateForTestInFrontend: Inspector.evaluateForTestInFrontend_Handler = undefined;
-  private _inspect: Inspector.inspect_Handler = undefined;
   private _detached: Inspector.detached_Handler = undefined;
   private _targetCrashed: Inspector.targetCrashed_Handler = undefined;
   private _client: IDebuggingProtocolClient = undefined;
@@ -19,30 +17,6 @@ export class Inspector {
   /** Disables inspector domain notifications. */
   disable(): Promise<void> {
     return this._client.send<void>("Inspector.disable");
-  }
-  get evaluateForTestInFrontend(): Inspector.evaluateForTestInFrontend_Handler {
-    return this._evaluateForTestInFrontend;
-  }
-  set evaluateForTestInFrontend(handler: Inspector.evaluateForTestInFrontend_Handler) {
-    if (this._evaluateForTestInFrontend) {
-      this._client.removeListener("Inspector.evaluateForTestInFrontend", this._evaluateForTestInFrontend);
-    }
-    this._evaluateForTestInFrontend = handler;
-    if (handler) {
-      this._client.on("Inspector.evaluateForTestInFrontend", handler);
-    }
-  }
-  get inspect(): Inspector.inspect_Handler {
-    return this._inspect;
-  }
-  set inspect(handler: Inspector.inspect_Handler) {
-    if (this._inspect) {
-      this._client.removeListener("Inspector.inspect", this._inspect);
-    }
-    this._inspect = handler;
-    if (handler) {
-      this._client.on("Inspector.inspect", handler);
-    }
   }
   /** Fired when remote debugging connection is about to be terminated. Contains detach reason. */
   get detached(): Inspector.detached_Handler {
@@ -72,16 +46,6 @@ export class Inspector {
   }
 }
 export namespace Inspector {
-  export type evaluateForTestInFrontend_Parameters = {
-    testCallId: number;
-    script: string;
-  };
-  export type evaluateForTestInFrontend_Handler = (params: evaluateForTestInFrontend_Parameters) => void;
-  export type inspect_Parameters = {
-    object: Runtime.RemoteObject;
-    hints: any;
-  };
-  export type inspect_Handler = (params: inspect_Parameters) => void;
   export type detached_Parameters = {
     /** The reason why connection has been terminated. */
     reason: string;
@@ -142,6 +106,7 @@ export class Page {
   private _colorPicked: Page.colorPicked_Handler = undefined;
   private _interstitialShown: Page.interstitialShown_Handler = undefined;
   private _interstitialHidden: Page.interstitialHidden_Handler = undefined;
+  private _navigationRequested: Page.navigationRequested_Handler = undefined;
   private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
@@ -160,6 +125,10 @@ export class Page {
   removeScriptToEvaluateOnLoad(params: Page.removeScriptToEvaluateOnLoad_Parameters): Promise<void> {
     return this._client.send<void>("Page.removeScriptToEvaluateOnLoad", params);
   }
+  /** Controls whether browser will open a new inspector window for connected pages. */
+  setAutoAttachToCreatedPages(params: Page.setAutoAttachToCreatedPages_Parameters): Promise<void> {
+    return this._client.send<void>("Page.setAutoAttachToCreatedPages", params);
+  }
   /** Reloads given page optionally ignoring the cache. */
   reload(params: Page.reload_Parameters): Promise<void> {
     return this._client.send<void>("Page.reload", params);
@@ -168,9 +137,13 @@ export class Page {
   navigate(params: Page.navigate_Parameters): Promise<Page.navigate_Return> {
     return this._client.send<Page.navigate_Return>("Page.navigate", params);
   }
+  /** Force the page stop all navigations and pending resource fetches. */
+  stopLoading(): Promise<void> {
+    return this._client.send<void>("Page.stopLoading");
+  }
   /** Returns navigation history for the current page. */
-  getNavigationHistory(params: Page.getNavigationHistory_Parameters): Promise<Page.getNavigationHistory_Return> {
-    return this._client.send<Page.getNavigationHistory_Return>("Page.getNavigationHistory", params);
+  getNavigationHistory(): Promise<Page.getNavigationHistory_Return> {
+    return this._client.send<Page.getNavigationHistory_Return>("Page.getNavigationHistory");
   }
   /** Navigates current page to the given history entry. */
   navigateToHistoryEntry(params: Page.navigateToHistoryEntry_Parameters): Promise<void> {
@@ -232,6 +205,10 @@ export class Page {
   captureScreenshot(params: Page.captureScreenshot_Parameters): Promise<Page.captureScreenshot_Return> {
     return this._client.send<Page.captureScreenshot_Return>("Page.captureScreenshot", params);
   }
+  /** Print page as pdf. */
+  printToPDF(): Promise<Page.printToPDF_Return> {
+    return this._client.send<Page.printToPDF_Return>("Page.printToPDF");
+  }
   /** Starts sending each frame using the <code>screencastFrame</code> event. */
   startScreencast(params: Page.startScreencast_Parameters): Promise<void> {
     return this._client.send<void>("Page.startScreencast", params);
@@ -252,9 +229,27 @@ export class Page {
   setColorPickerEnabled(params: Page.setColorPickerEnabled_Parameters): Promise<void> {
     return this._client.send<void>("Page.setColorPickerEnabled", params);
   }
-  /** Sets overlay message. */
-  setOverlayMessage(params: Page.setOverlayMessage_Parameters): Promise<void> {
-    return this._client.send<void>("Page.setOverlayMessage", params);
+  /** Configures overlay. */
+  configureOverlay(params: Page.configureOverlay_Parameters): Promise<void> {
+    return this._client.send<void>("Page.configureOverlay", params);
+  }
+  getAppManifest(): Promise<Page.getAppManifest_Return> {
+    return this._client.send<Page.getAppManifest_Return>("Page.getAppManifest");
+  }
+  requestAppBanner(): Promise<void> {
+    return this._client.send<void>("Page.requestAppBanner");
+  }
+  /** Toggles navigation throttling which allows programatic control over navigation and redirect response. */
+  setControlNavigations(params: Page.setControlNavigations_Parameters): Promise<void> {
+    return this._client.send<void>("Page.setControlNavigations", params);
+  }
+  /** Should be sent in response to a navigationRequested or a redirectRequested event, telling the browser how to handle the navigation. */
+  processNavigation(params: Page.processNavigation_Parameters): Promise<void> {
+    return this._client.send<void>("Page.processNavigation", params);
+  }
+  /** Returns metrics relating to the layouting of the page, such as viewport bounds/scale. */
+  getLayoutMetrics(): Promise<Page.getLayoutMetrics_Return> {
+    return this._client.send<Page.getLayoutMetrics_Return>("Page.getLayoutMetrics");
   }
   get domContentEventFired(): Page.domContentEventFired_Handler {
     return this._domContentEventFired;
@@ -474,6 +469,19 @@ export class Page {
       this._client.on("Page.interstitialHidden", handler);
     }
   }
+  /** Fired when a navigation is started if navigation throttles are enabled.  The navigation will be deferred until processNavigation is called. */
+  get navigationRequested(): Page.navigationRequested_Handler {
+    return this._navigationRequested;
+  }
+  set navigationRequested(handler: Page.navigationRequested_Handler) {
+    if (this._navigationRequested) {
+      this._client.removeListener("Page.navigationRequested", this._navigationRequested);
+    }
+    this._navigationRequested = handler;
+    if (handler) {
+      this._client.on("Page.navigationRequested", handler);
+    }
+  }
 }
 export namespace Page {
   /** Resource type as it was perceived by the rendering engine. */
@@ -497,6 +505,23 @@ export namespace Page {
     /** Frame document's mimeType as determined by the browser. */
     mimeType: string;
   }
+  /** Information about the Resource on the page. */
+  export interface FrameResource {
+    /** Resource URL. */
+    url: string;
+    /** Type of this resource. */
+    type: ResourceType;
+    /** Resource mimeType as determined by the browser. */
+    mimeType: string;
+    /** last-modified timestamp as reported by server. */
+    lastModified?: Network.Timestamp;
+    /** Resource content size. */
+    contentSize?: number;
+    /** True if the resource failed to load. */
+    failed?: boolean;
+    /** True if the resource was canceled during loading. */
+    canceled?: boolean;
+  }
   /** Information about the Frame hierarchy along with their cached resources. */
   export interface FrameResourceTree {
     /** Frame information for this tree item. */
@@ -504,7 +529,7 @@ export namespace Page {
     /** Child frames. */
     childFrames?: FrameResourceTree[];
     /** Information about frame resources. */
-    resources: { url: string; type: ResourceType; mimeType: string; failed?: boolean; canceled?: boolean; }[];
+    resources: FrameResource[];
   }
   /** Unique script identifier. */
   export type ScriptIdentifier = string;
@@ -517,7 +542,7 @@ export namespace Page {
     /** Title of the navigation history entry. */
     title: string;
   }
-  /** Screencast frame metadata */
+  /** Screencast frame metadata. */
   export interface ScreencastFrameMetadata {
     /** Top offset in DIP. */
     offsetTop: number;
@@ -534,8 +559,49 @@ export namespace Page {
     /** Frame swap timestamp. */
     timestamp?: number;
   }
-  /** Javascript dialog type */
+  /** Javascript dialog type. */
   export type DialogType = "alert" | "confirm" | "prompt" | "beforeunload";
+  /** Error while paring app manifest. */
+  export interface AppManifestError {
+    /** Error message. */
+    message: string;
+    /** If criticial, this is a non-recoverable parse error. */
+    critical: number;
+    /** Error line. */
+    line: number;
+    /** Error column. */
+    column: number;
+  }
+  /** Proceed: allow the navigation; Cancel: cancel the navigation; CancelAndIgnore: cancels the navigation and makes the requester of the navigation acts like the request was never made. */
+  export type NavigationResponse = "Proceed" | "Cancel" | "CancelAndIgnore";
+  /** Layout viewport position and dimensions. */
+  export interface LayoutViewport {
+    /** Horizontal offset relative to the document (CSS pixels). */
+    pageX: number;
+    /** Vertical offset relative to the document (CSS pixels). */
+    pageY: number;
+    /** Width (CSS pixels), excludes scrollbar if present. */
+    clientWidth: number;
+    /** Height (CSS pixels), excludes scrollbar if present. */
+    clientHeight: number;
+  }
+  /** Visual viewport position, dimensions, and scale. */
+  export interface VisualViewport {
+    /** Horizontal offset relative to the layout viewport (CSS pixels). */
+    offsetX: number;
+    /** Vertical offset relative to the layout viewport (CSS pixels). */
+    offsetY: number;
+    /** Horizontal offset relative to the document (CSS pixels). */
+    pageX: number;
+    /** Vertical offset relative to the document (CSS pixels). */
+    pageY: number;
+    /** Width (CSS pixels), excludes scrollbar if present. */
+    clientWidth: number;
+    /** Height (CSS pixels), excludes scrollbar if present. */
+    clientHeight: number;
+    /** Scale relative to the ideal viewport (size at width=device-width). */
+    scale: number;
+  }
   export type domContentEventFired_Parameters = {
     timestamp: number;
   };
@@ -549,6 +615,8 @@ export namespace Page {
     frameId: FrameId;
     /** Parent frame identifier. */
     parentFrameId: FrameId;
+    /** JavaScript stack trace of when frame was attached, only set if frame initiated from script. */
+    stack?: Runtime.StackTrace;
   };
   export type frameAttached_Handler = (params: frameAttached_Parameters) => void;
   export type frameNavigated_Parameters = {
@@ -617,6 +685,16 @@ export namespace Page {
   export type colorPicked_Handler = (params: colorPicked_Parameters) => void;
   export type interstitialShown_Handler = () => void;
   export type interstitialHidden_Handler = () => void;
+  export type navigationRequested_Parameters = {
+    /** Whether the navigation is taking place in the main frame or in a subframe. */
+    isInMainFrame: boolean;
+    /** Whether the navigation has encountered a server redirect or not. */
+    isRedirect: boolean;
+    navigationId: number;
+    /** URL of requested navigation. */
+    url: string;
+  };
+  export type navigationRequested_Handler = (params: navigationRequested_Parameters) => void;
   export type addScriptToEvaluateOnLoad_Parameters = {
     scriptSource: string;
   };
@@ -627,6 +705,10 @@ export namespace Page {
   export type removeScriptToEvaluateOnLoad_Parameters = {
     identifier: ScriptIdentifier;
   };
+  export type setAutoAttachToCreatedPages_Parameters = {
+    /** If true, browser will open a new inspector window for every page created from this one. */
+    autoAttach: boolean;
+  };
   export type reload_Parameters = {
     /** If true, browser cache is ignored (as if the user pressed Shift+refresh). */
     ignoreCache?: boolean;
@@ -636,12 +718,13 @@ export namespace Page {
   export type navigate_Parameters = {
     /** URL to navigate the page to. */
     url: string;
+    /** Referrer URL. */
+    referrer?: string;
   };
   export type navigate_Return = {
     /** Frame id that will be navigated. */
     frameId: FrameId;
   };
-  export type getNavigationHistory_Parameters = any;
   export type getNavigationHistory_Return = {
     /** Index of the current navigation history entry. */
     currentIndex: number;
@@ -725,6 +808,8 @@ export namespace Page {
     positionX?: number;
     /** Overriding view Y position on screen in pixels (minimum 0, maximum 10000000). Only used for |mobile==true|. */
     positionY?: number;
+    /** Screen orientation override. */
+    screenOrientation?: Emulation.ScreenOrientation;
   };
   export type setGeolocationOverride_Parameters = {
     /** Mock latitude */
@@ -748,9 +833,20 @@ export namespace Page {
     /** Touch/gesture events configuration. Default: current platform. */
     configuration?: "mobile" | "desktop";
   };
-  export type captureScreenshot_Parameters = any;
+  export type captureScreenshot_Parameters = {
+    /** Image compression format (defaults to png). */
+    format?: "jpeg" | "png";
+    /** Compression quality from range [0..100] (jpeg only). */
+    quality?: number;
+    /** Capture the screenshot from the surface, rather than the view. Defaults to false. */
+    fromSurface?: boolean;
+  };
   export type captureScreenshot_Return = {
-    /** Base64-encoded image data (PNG). */
+    /** Base64-encoded image data. */
+    data: string;
+  };
+  export type printToPDF_Return = {
+    /** Base64-encoded pdf data. */
     data: string;
   };
   export type startScreencast_Parameters = {
@@ -779,9 +875,33 @@ export namespace Page {
     /** Shows / hides color picker */
     enabled: boolean;
   };
-  export type setOverlayMessage_Parameters = {
-    /** Overlay message to display when paused in debugger. */
+  export type configureOverlay_Parameters = {
+    /** Whether overlay should be suspended and not consume any resources. */
+    suspended?: boolean;
+    /** Overlay message to display. */
     message?: string;
+  };
+  export type getAppManifest_Return = {
+    /** Manifest location. */
+    url: string;
+    errors: AppManifestError[];
+    /** Manifest content. */
+    data?: string;
+  };
+  export type setControlNavigations_Parameters = {
+    enabled: boolean;
+  };
+  export type processNavigation_Parameters = {
+    response: NavigationResponse;
+    navigationId: number;
+  };
+  export type getLayoutMetrics_Return = {
+    /** Metrics relating to the layout viewport. */
+    layoutViewport: LayoutViewport;
+    /** Metrics relating to the visual viewport. */
+    visualViewport: VisualViewport;
+    /** Size of scrollable area. */
+    contentSize: DOM.Rect;
   };
 }
 /** This domain allows to control rendering of the page. */
@@ -806,6 +926,10 @@ export class Rendering {
   setShowScrollBottleneckRects(params: Rendering.setShowScrollBottleneckRects_Parameters): Promise<void> {
     return this._client.send<void>("Rendering.setShowScrollBottleneckRects", params);
   }
+  /** Paints viewport size upon main frame resize. */
+  setShowViewportSizeOnResize(params: Rendering.setShowViewportSizeOnResize_Parameters): Promise<void> {
+    return this._client.send<void>("Rendering.setShowViewportSizeOnResize", params);
+  }
 }
 export namespace Rendering {
   export type setShowPaintRects_Parameters = {
@@ -824,10 +948,14 @@ export namespace Rendering {
     /** True for showing scroll bottleneck rects */
     show: boolean;
   };
+  export type setShowViewportSizeOnResize_Parameters = {
+    /** Whether to paint size or not. */
+    show: boolean;
+  };
 }
 /** This domain emulates different environments for the page. */
 export class Emulation {
-  private _viewportChanged: Emulation.viewportChanged_Handler = undefined;
+  private _virtualTimeBudgetExpired: Emulation.virtualTimeBudgetExpired_Handler = undefined;
   private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
@@ -840,13 +968,25 @@ export class Emulation {
   clearDeviceMetricsOverride(): Promise<void> {
     return this._client.send<void>("Emulation.clearDeviceMetricsOverride");
   }
-  /** Requests that scroll offsets and page scale factor are reset to initial values. */
-  resetScrollAndPageScaleFactor(): Promise<void> {
-    return this._client.send<void>("Emulation.resetScrollAndPageScaleFactor");
+  /** Overrides the visible area of the page. The change is hidden from the page, i.e. the observable scroll position and page scale does not change. In effect, the command moves the specified area of the page into the top-left corner of the frame. */
+  forceViewport(params: Emulation.forceViewport_Parameters): Promise<void> {
+    return this._client.send<void>("Emulation.forceViewport", params);
+  }
+  /** Resets the visible area of the page to the original viewport, undoing any effects of the <code>forceViewport</code> command. */
+  resetViewport(): Promise<void> {
+    return this._client.send<void>("Emulation.resetViewport");
+  }
+  /** Requests that page scale factor is reset to initial values. */
+  resetPageScaleFactor(): Promise<void> {
+    return this._client.send<void>("Emulation.resetPageScaleFactor");
   }
   /** Sets a specified page scale factor. */
   setPageScaleFactor(params: Emulation.setPageScaleFactor_Parameters): Promise<void> {
     return this._client.send<void>("Emulation.setPageScaleFactor", params);
+  }
+  /** Resizes the frame/viewport of the page. Note that this does not affect the frame's container (e.g. browser window). Can be used to produce screenshots of the specified size. Not supported on Android. */
+  setVisibleSize(params: Emulation.setVisibleSize_Parameters): Promise<void> {
+    return this._client.send<void>("Emulation.setVisibleSize", params);
   }
   /** Switches script execution in the page. */
   setScriptExecutionDisabled(params: Emulation.setScriptExecutionDisabled_Parameters): Promise<void> {
@@ -876,43 +1016,39 @@ export class Emulation {
   canEmulate(): Promise<Emulation.canEmulate_Return> {
     return this._client.send<Emulation.canEmulate_Return>("Emulation.canEmulate");
   }
-  /** Fired when a visible page viewport has changed. Only fired when device metrics are overridden. */
-  get viewportChanged(): Emulation.viewportChanged_Handler {
-    return this._viewportChanged;
+  /** Turns on virtual time for all frames (replacing real-time with a synthetic time source) and sets the current virtual time policy.  Note this supersedes any previous time budget. */
+  setVirtualTimePolicy(params: Emulation.setVirtualTimePolicy_Parameters): Promise<void> {
+    return this._client.send<void>("Emulation.setVirtualTimePolicy", params);
   }
-  set viewportChanged(handler: Emulation.viewportChanged_Handler) {
-    if (this._viewportChanged) {
-      this._client.removeListener("Emulation.viewportChanged", this._viewportChanged);
+  /** Sets or clears an override of the default background color of the frame. This override is used if the content does not specify one. */
+  setDefaultBackgroundColorOverride(params: Emulation.setDefaultBackgroundColorOverride_Parameters): Promise<void> {
+    return this._client.send<void>("Emulation.setDefaultBackgroundColorOverride", params);
+  }
+  /** Notification sent after the virual time budget for the current VirtualTimePolicy has run out. */
+  get virtualTimeBudgetExpired(): Emulation.virtualTimeBudgetExpired_Handler {
+    return this._virtualTimeBudgetExpired;
+  }
+  set virtualTimeBudgetExpired(handler: Emulation.virtualTimeBudgetExpired_Handler) {
+    if (this._virtualTimeBudgetExpired) {
+      this._client.removeListener("Emulation.virtualTimeBudgetExpired", this._virtualTimeBudgetExpired);
     }
-    this._viewportChanged = handler;
+    this._virtualTimeBudgetExpired = handler;
     if (handler) {
-      this._client.on("Emulation.viewportChanged", handler);
+      this._client.on("Emulation.virtualTimeBudgetExpired", handler);
     }
   }
 }
 export namespace Emulation {
-  /** Visible page viewport */
-  export interface Viewport {
-    /** X scroll offset in CSS pixels. */
-    scrollX: number;
-    /** Y scroll offset in CSS pixels. */
-    scrollY: number;
-    /** Contents width in CSS pixels. */
-    contentsWidth: number;
-    /** Contents height in CSS pixels. */
-    contentsHeight: number;
-    /** Page scale factor. */
-    pageScaleFactor: number;
-    /** Minimum page scale factor. */
-    minimumPageScaleFactor: number;
-    /** Maximum page scale factor. */
-    maximumPageScaleFactor: number;
+  /** Screen orientation. */
+  export interface ScreenOrientation {
+    /** Orientation type. */
+    type: "portraitPrimary" | "portraitSecondary" | "landscapePrimary" | "landscapeSecondary";
+    /** Orientation angle. */
+    angle: number;
   }
-  export type viewportChanged_Parameters = {
-    /** Viewport description. */
-    viewport: Viewport;
-  };
-  export type viewportChanged_Handler = (params: viewportChanged_Parameters) => void;
+  /** advance: If the scheduler runs out of immediate work, the virtual time base may fast forward to allow the next delayed task (if any) to run; pause: The virtual time base may not advance; pauseIfNetworkFetchesPending: The virtual time base may not advance if there are any pending resource fetches. */
+  export type VirtualTimePolicy = "advance" | "pause" | "pauseIfNetworkFetchesPending";
+  export type virtualTimeBudgetExpired_Handler = () => void;
   export type setDeviceMetricsOverride_Parameters = {
     /** Overriding width value in pixels (minimum 0, maximum 10000000). 0 disables the override. */
     width: number;
@@ -926,9 +1062,9 @@ export namespace Emulation {
     fitWindow: boolean;
     /** Scale to apply to resulting view image. Ignored in |fitWindow| mode. */
     scale?: number;
-    /** X offset to shift resulting view image by. Ignored in |fitWindow| mode. */
+    /** Not used. */
     offsetX?: number;
-    /** Y offset to shift resulting view image by. Ignored in |fitWindow| mode. */
+    /** Not used. */
     offsetY?: number;
     /** Overriding screen width value in pixels (minimum 0, maximum 10000000). Only used for |mobile==true|. */
     screenWidth?: number;
@@ -938,10 +1074,26 @@ export namespace Emulation {
     positionX?: number;
     /** Overriding view Y position on screen in pixels (minimum 0, maximum 10000000). Only used for |mobile==true|. */
     positionY?: number;
+    /** Screen orientation override. */
+    screenOrientation?: ScreenOrientation;
+  };
+  export type forceViewport_Parameters = {
+    /** X coordinate of top-left corner of the area (CSS pixels). */
+    x: number;
+    /** Y coordinate of top-left corner of the area (CSS pixels). */
+    y: number;
+    /** Scale to apply to the area (relative to a page scale of 1.0). */
+    scale: number;
   };
   export type setPageScaleFactor_Parameters = {
     /** Page scale factor. */
     pageScaleFactor: number;
+  };
+  export type setVisibleSize_Parameters = {
+    /** Frame width (DIP). */
+    width: number;
+    /** Frame height (DIP). */
+    height: number;
   };
   export type setScriptExecutionDisabled_Parameters = {
     /** Whether script execution should be disabled in the page. */
@@ -973,441 +1125,20 @@ export namespace Emulation {
     /** True if emulation is supported. */
     result: boolean;
   };
-}
-/** Runtime domain exposes JavaScript runtime by means of remote evaluation and mirror objects. Evaluation results are returned as mirror object that expose object type, string representation and unique identifier that can be used for further object reference. Original objects are maintained in memory unless they are either explicitly released or are released along with the other objects in their object group. */
-export class Runtime {
-  private _executionContextCreated: Runtime.executionContextCreated_Handler = undefined;
-  private _executionContextDestroyed: Runtime.executionContextDestroyed_Handler = undefined;
-  private _executionContextsCleared: Runtime.executionContextsCleared_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
-  /** Evaluates expression on global object. */
-  evaluate(params: Runtime.evaluate_Parameters): Promise<Runtime.evaluate_Return> {
-    return this._client.send<Runtime.evaluate_Return>("Runtime.evaluate", params);
-  }
-  /** Calls function with given declaration on the given object. Object group of the result is inherited from the target object. */
-  callFunctionOn(params: Runtime.callFunctionOn_Parameters): Promise<Runtime.callFunctionOn_Return> {
-    return this._client.send<Runtime.callFunctionOn_Return>("Runtime.callFunctionOn", params);
-  }
-  /** Returns properties of a given object. Object group of the result is inherited from the target object. */
-  getProperties(params: Runtime.getProperties_Parameters): Promise<Runtime.getProperties_Return> {
-    return this._client.send<Runtime.getProperties_Return>("Runtime.getProperties", params);
-  }
-  /** Releases remote object with given id. */
-  releaseObject(params: Runtime.releaseObject_Parameters): Promise<void> {
-    return this._client.send<void>("Runtime.releaseObject", params);
-  }
-  /** Releases all remote objects that belong to a given group. */
-  releaseObjectGroup(params: Runtime.releaseObjectGroup_Parameters): Promise<void> {
-    return this._client.send<void>("Runtime.releaseObjectGroup", params);
-  }
-  /** Tells inspected instance(worker or page) that it can run in case it was started paused. */
-  run(): Promise<void> {
-    return this._client.send<void>("Runtime.run");
-  }
-  /** Enables reporting of execution contexts creation by means of <code>executionContextCreated</code> event. When the reporting gets enabled the event will be sent immediately for each existing execution context. */
-  enable(): Promise<void> {
-    return this._client.send<void>("Runtime.enable");
-  }
-  /** Disables reporting of execution contexts creation. */
-  disable(): Promise<void> {
-    return this._client.send<void>("Runtime.disable");
-  }
-  isRunRequired(): Promise<Runtime.isRunRequired_Return> {
-    return this._client.send<Runtime.isRunRequired_Return>("Runtime.isRunRequired");
-  }
-  setCustomObjectFormatterEnabled(params: Runtime.setCustomObjectFormatterEnabled_Parameters): Promise<void> {
-    return this._client.send<void>("Runtime.setCustomObjectFormatterEnabled", params);
-  }
-  /** Issued when new execution context is created. */
-  get executionContextCreated(): Runtime.executionContextCreated_Handler {
-    return this._executionContextCreated;
-  }
-  set executionContextCreated(handler: Runtime.executionContextCreated_Handler) {
-    if (this._executionContextCreated) {
-      this._client.removeListener("Runtime.executionContextCreated", this._executionContextCreated);
-    }
-    this._executionContextCreated = handler;
-    if (handler) {
-      this._client.on("Runtime.executionContextCreated", handler);
-    }
-  }
-  /** Issued when execution context is destroyed. */
-  get executionContextDestroyed(): Runtime.executionContextDestroyed_Handler {
-    return this._executionContextDestroyed;
-  }
-  set executionContextDestroyed(handler: Runtime.executionContextDestroyed_Handler) {
-    if (this._executionContextDestroyed) {
-      this._client.removeListener("Runtime.executionContextDestroyed", this._executionContextDestroyed);
-    }
-    this._executionContextDestroyed = handler;
-    if (handler) {
-      this._client.on("Runtime.executionContextDestroyed", handler);
-    }
-  }
-  /** Issued when all executionContexts were cleared in browser */
-  get executionContextsCleared(): Runtime.executionContextsCleared_Handler {
-    return this._executionContextsCleared;
-  }
-  set executionContextsCleared(handler: Runtime.executionContextsCleared_Handler) {
-    if (this._executionContextsCleared) {
-      this._client.removeListener("Runtime.executionContextsCleared", this._executionContextsCleared);
-    }
-    this._executionContextsCleared = handler;
-    if (handler) {
-      this._client.on("Runtime.executionContextsCleared", handler);
-    }
-  }
-}
-export namespace Runtime {
-  /** Unique object identifier. */
-  export type RemoteObjectId = string;
-  /** Mirror object referencing original JavaScript object. */
-  export interface RemoteObject {
-    /** Object type. */
-    type: "object" | "function" | "undefined" | "string" | "number" | "boolean" | "symbol";
-    /** Object subtype hint. Specified for <code>object</code> type values only. */
-    subtype?: "array" | "null" | "node" | "regexp" | "date" | "map" | "set" | "iterator" | "generator" | "error";
-    /** Object class (constructor) name. Specified for <code>object</code> type values only. */
-    className?: string;
-    /** Remote object value in case of primitive values or JSON values (if it was requested), or description string if the value can not be JSON-stringified (like NaN, Infinity, -Infinity, -0). */
-    value?: any;
-    /** String representation of the object. */
-    description?: string;
-    /** Unique object identifier (for non-primitive values). */
-    objectId?: RemoteObjectId;
-    /** Preview containing abbreviated property values. Specified for <code>object</code> type values only. */
-    preview?: ObjectPreview;
-    customPreview?: CustomPreview;
-  }
-  export interface CustomPreview {
-    header: string;
-    hasBody: boolean;
-    formatterObjectId: RemoteObjectId;
-    configObjectId?: RemoteObjectId;
-  }
-  /** Object containing abbreviated remote object value. */
-  export interface ObjectPreview {
-    /** Object type. */
-    type: "object" | "function" | "undefined" | "string" | "number" | "boolean" | "symbol";
-    /** Object subtype hint. Specified for <code>object</code> type values only. */
-    subtype?: "array" | "null" | "node" | "regexp" | "date" | "map" | "set" | "iterator" | "generator" | "error";
-    /** String representation of the object. */
-    description?: string;
-    /** Determines whether preview is lossless (contains all information of the original object). */
-    lossless: boolean;
-    /** True iff some of the properties or entries of the original object did not fit. */
-    overflow: boolean;
-    /** List of the properties. */
-    properties: PropertyPreview[];
-    /** List of the entries. Specified for <code>map</code> and <code>set</code> subtype values only. */
-    entries?: EntryPreview[];
-  }
-  export interface PropertyPreview {
-    /** Property name. */
-    name: string;
-    /** Object type. Accessor means that the property itself is an accessor property. */
-    type: "object" | "function" | "undefined" | "string" | "number" | "boolean" | "symbol" | "accessor";
-    /** User-friendly property value string. */
-    value?: string;
-    /** Nested value preview. */
-    valuePreview?: ObjectPreview;
-    /** Object subtype hint. Specified for <code>object</code> type values only. */
-    subtype?: "array" | "null" | "node" | "regexp" | "date" | "map" | "set" | "iterator" | "generator" | "error";
-  }
-  export interface EntryPreview {
-    /** Preview of the key. Specified for map-like collection entries. */
-    key?: ObjectPreview;
-    /** Preview of the value. */
-    value: ObjectPreview;
-  }
-  /** Object property descriptor. */
-  export interface PropertyDescriptor {
-    /** Property name or symbol description. */
-    name: string;
-    /** The value associated with the property. */
-    value?: RemoteObject;
-    /** True if the value associated with the property may be changed (data descriptors only). */
-    writable?: boolean;
-    /** A function which serves as a getter for the property, or <code>undefined</code> if there is no getter (accessor descriptors only). */
-    get?: RemoteObject;
-    /** A function which serves as a setter for the property, or <code>undefined</code> if there is no setter (accessor descriptors only). */
-    set?: RemoteObject;
-    /** True if the type of this property descriptor may be changed and if the property may be deleted from the corresponding object. */
-    configurable: boolean;
-    /** True if this property shows up during enumeration of the properties on the corresponding object. */
-    enumerable: boolean;
-    /** True if the result was thrown during the evaluation. */
-    wasThrown?: boolean;
-    /** True if the property is owned for the object. */
-    isOwn?: boolean;
-    /** Property symbol object, if the property is of the <code>symbol</code> type. */
-    symbol?: RemoteObject;
-  }
-  /** Object internal property descriptor. This property isn't normally visible in JavaScript code. */
-  export interface InternalPropertyDescriptor {
-    /** Conventional property name. */
-    name: string;
-    /** The value associated with the property. */
-    value?: RemoteObject;
-  }
-  /** Represents function call argument. Either remote object id <code>objectId</code> or primitive <code>value</code> or neither of (for undefined) them should be specified. */
-  export interface CallArgument {
-    /** Primitive value, or description string if the value can not be JSON-stringified (like NaN, Infinity, -Infinity, -0). */
-    value?: any;
-    /** Remote object handle. */
-    objectId?: RemoteObjectId;
-    /** Object type. */
-    type?: "object" | "function" | "undefined" | "string" | "number" | "boolean" | "symbol";
-  }
-  /** Id of an execution context. */
-  export type ExecutionContextId = number;
-  /** Description of an isolated world. */
-  export interface ExecutionContextDescription {
-    /** Unique id of the execution context. It can be used to specify in which execution context script evaluation should be performed. */
-    id: ExecutionContextId;
-    /** Context type. It is used e.g. to distinguish content scripts from web page script. */
-    type?: string;
-    /** Execution context origin. */
-    origin: string;
-    /** Human readable name describing given context. */
-    name: string;
-    /** Id of the owning frame. May be an empty string if the context is not associated with a frame. */
-    frameId: string;
-  }
-  export type executionContextCreated_Parameters = {
-    /** A newly created execution contex. */
-    context: ExecutionContextDescription;
+  export type setVirtualTimePolicy_Parameters = {
+    policy: VirtualTimePolicy;
+    /** If set, after this many virtual milliseconds have elapsed virtual time will be paused and a virtualTimeBudgetExpired event is sent. */
+    budget?: number;
   };
-  export type executionContextCreated_Handler = (params: executionContextCreated_Parameters) => void;
-  export type executionContextDestroyed_Parameters = {
-    /** Id of the destroyed context */
-    executionContextId: ExecutionContextId;
+  export type setDefaultBackgroundColorOverride_Parameters = {
+    /** RGBA of the default background color. If not specified, any existing override will be cleared. */
+    color?: DOM.RGBA;
   };
-  export type executionContextDestroyed_Handler = (params: executionContextDestroyed_Parameters) => void;
-  export type executionContextsCleared_Handler = () => void;
-  export type evaluate_Parameters = {
-    /** Expression to evaluate. */
-    expression: string;
-    /** Symbolic group name that can be used to release multiple objects. */
-    objectGroup?: string;
-    /** Determines whether Command Line API should be available during the evaluation. */
-    includeCommandLineAPI?: boolean;
-    /** Specifies whether evaluation should stop on exceptions and mute console. Overrides setPauseOnException state. */
-    doNotPauseOnExceptionsAndMuteConsole?: boolean;
-    /** Specifies in which isolated context to perform evaluation. Each content script lives in an isolated context and this parameter may be used to specify one of those contexts. If the parameter is omitted or 0 the evaluation will be performed in the context of the inspected page. */
-    contextId?: ExecutionContextId;
-    /** Whether the result is expected to be a JSON object that should be sent by value. */
-    returnByValue?: boolean;
-    /** Whether preview should be generated for the result. */
-    generatePreview?: boolean;
-  };
-  export type evaluate_Return = {
-    /** Evaluation result. */
-    result: RemoteObject;
-    /** True if the result was thrown during the evaluation. */
-    wasThrown?: boolean;
-    /** Exception details. */
-    exceptionDetails?: Debugger.ExceptionDetails;
-  };
-  export type callFunctionOn_Parameters = {
-    /** Identifier of the object to call function on. */
-    objectId: RemoteObjectId;
-    /** Declaration of the function to call. */
-    functionDeclaration: string;
-    /** Call arguments. All call arguments must belong to the same JavaScript world as the target object. */
-    arguments?: CallArgument[];
-    /** Specifies whether function call should stop on exceptions and mute console. Overrides setPauseOnException state. */
-    doNotPauseOnExceptionsAndMuteConsole?: boolean;
-    /** Whether the result is expected to be a JSON object which should be sent by value. */
-    returnByValue?: boolean;
-    /** Whether preview should be generated for the result. */
-    generatePreview?: boolean;
-  };
-  export type callFunctionOn_Return = {
-    /** Call result. */
-    result: RemoteObject;
-    /** True if the result was thrown during the evaluation. */
-    wasThrown?: boolean;
-  };
-  export type getProperties_Parameters = {
-    /** Identifier of the object to return properties for. */
-    objectId: RemoteObjectId;
-    /** If true, returns properties belonging only to the element itself, not to its prototype chain. */
-    ownProperties?: boolean;
-    /** If true, returns accessor properties (with getter/setter) only; internal properties are not returned either. */
-    accessorPropertiesOnly?: boolean;
-    /** Whether preview should be generated for the results. */
-    generatePreview?: boolean;
-  };
-  export type getProperties_Return = {
-    /** Object properties. */
-    result: PropertyDescriptor[];
-    /** Internal object properties (only of the element itself). */
-    internalProperties?: InternalPropertyDescriptor[];
-    /** Exception details. */
-    exceptionDetails?: Debugger.ExceptionDetails;
-  };
-  export type releaseObject_Parameters = {
-    /** Identifier of the object to release. */
-    objectId: RemoteObjectId;
-  };
-  export type releaseObjectGroup_Parameters = {
-    /** Symbolic object group name. */
-    objectGroup: string;
-  };
-  export type isRunRequired_Return = {
-    /** True if the Runtime is in paused on start state. */
-    result: boolean;
-  };
-  export type setCustomObjectFormatterEnabled_Parameters = {
-    enabled: boolean;
-  };
-}
-/** Console domain defines methods and events for interaction with the JavaScript console. Console collects messages created by means of the <a href='http://getfirebug.com/wiki/index.php/Console_API'>JavaScript Console API</a>. One needs to enable this domain using <code>enable</code> command in order to start receiving the console messages. Browser collects messages issued while console domain is not enabled as well and reports them using <code>messageAdded</code> notification upon enabling. */
-export class Console {
-  private _messageAdded: Console.messageAdded_Handler = undefined;
-  private _messageRepeatCountUpdated: Console.messageRepeatCountUpdated_Handler = undefined;
-  private _messagesCleared: Console.messagesCleared_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
-  /** Enables console domain, sends the messages collected so far to the client by means of the <code>messageAdded</code> notification. */
-  enable(): Promise<void> {
-    return this._client.send<void>("Console.enable");
-  }
-  /** Disables console domain, prevents further console messages from being reported to the client. */
-  disable(): Promise<void> {
-    return this._client.send<void>("Console.disable");
-  }
-  /** Clears console messages collected in the browser. */
-  clearMessages(): Promise<void> {
-    return this._client.send<void>("Console.clearMessages");
-  }
-  /** Issued when new console message is added. */
-  get messageAdded(): Console.messageAdded_Handler {
-    return this._messageAdded;
-  }
-  set messageAdded(handler: Console.messageAdded_Handler) {
-    if (this._messageAdded) {
-      this._client.removeListener("Console.messageAdded", this._messageAdded);
-    }
-    this._messageAdded = handler;
-    if (handler) {
-      this._client.on("Console.messageAdded", handler);
-    }
-  }
-  /** Is not issued. Will be gone in the future versions of the protocol. */
-  get messageRepeatCountUpdated(): Console.messageRepeatCountUpdated_Handler {
-    return this._messageRepeatCountUpdated;
-  }
-  set messageRepeatCountUpdated(handler: Console.messageRepeatCountUpdated_Handler) {
-    if (this._messageRepeatCountUpdated) {
-      this._client.removeListener("Console.messageRepeatCountUpdated", this._messageRepeatCountUpdated);
-    }
-    this._messageRepeatCountUpdated = handler;
-    if (handler) {
-      this._client.on("Console.messageRepeatCountUpdated", handler);
-    }
-  }
-  /** Issued when console is cleared. This happens either upon <code>clearMessages</code> command or after page navigation. */
-  get messagesCleared(): Console.messagesCleared_Handler {
-    return this._messagesCleared;
-  }
-  set messagesCleared(handler: Console.messagesCleared_Handler) {
-    if (this._messagesCleared) {
-      this._client.removeListener("Console.messagesCleared", this._messagesCleared);
-    }
-    this._messagesCleared = handler;
-    if (handler) {
-      this._client.on("Console.messagesCleared", handler);
-    }
-  }
-}
-export namespace Console {
-  /** Number of seconds since epoch. */
-  export type Timestamp = number;
-  /** Console message. */
-  export interface ConsoleMessage {
-    /** Message source. */
-    source: "xml" | "javascript" | "network" | "console-api" | "storage" | "appcache" | "rendering" | "security" | "other" | "deprecation";
-    /** Message severity. */
-    level: "log" | "warning" | "error" | "debug" | "info" | "revokedError";
-    /** Message text. */
-    text: string;
-    /** Console message type. */
-    type?: "log" | "dir" | "dirxml" | "table" | "trace" | "clear" | "startGroup" | "startGroupCollapsed" | "endGroup" | "assert" | "profile" | "profileEnd";
-    /** Script ID of the message origin. */
-    scriptId?: string;
-    /** URL of the message origin. */
-    url?: string;
-    /** Line number in the resource that generated this message. */
-    line?: number;
-    /** Column number in the resource that generated this message. */
-    column?: number;
-    /** Repeat count for repeated messages. */
-    repeatCount?: number;
-    /** Message parameters in case of the formatted message. */
-    parameters?: Runtime.RemoteObject[];
-    /** JavaScript stack trace for assertions and error messages. */
-    stackTrace?: StackTrace;
-    /** Asynchronous JavaScript stack trace that preceded this message, if available. */
-    asyncStackTrace?: AsyncStackTrace;
-    /** Identifier of the network request associated with this message. */
-    networkRequestId?: Network.RequestId;
-    /** Timestamp, when this message was fired. */
-    timestamp: Timestamp;
-    /** Identifier of the context where this message was created */
-    executionContextId?: Runtime.ExecutionContextId;
-    /** Message id. */
-    messageId?: number;
-    /** Related message id. */
-    relatedMessageId?: number;
-  }
-  /** Stack entry for console errors and assertions. */
-  export interface CallFrame {
-    /** JavaScript function name. */
-    functionName: string;
-    /** JavaScript script id. */
-    scriptId: string;
-    /** JavaScript script name or url. */
-    url: string;
-    /** JavaScript script line number. */
-    lineNumber: number;
-    /** JavaScript script column number. */
-    columnNumber: number;
-  }
-  /** Call frames for assertions or error messages. */
-  export type StackTrace = CallFrame[];
-  /** Asynchronous JavaScript call stack. */
-  export interface AsyncStackTrace {
-    /** Call frames of the stack trace. */
-    callFrames: CallFrame[];
-    /** String label of this stack trace. For async traces this may be a name of the function that initiated the async call. */
-    description?: string;
-    /** Next asynchronous stack trace, if any. */
-    asyncStackTrace?: AsyncStackTrace;
-  }
-  export type messageAdded_Parameters = {
-    /** Console message that has been added. */
-    message: ConsoleMessage;
-  };
-  export type messageAdded_Handler = (params: messageAdded_Parameters) => void;
-  export type messageRepeatCountUpdated_Parameters = {
-    /** New repeat count value. */
-    count: number;
-    /** Timestamp of most recent message in batch. */
-    timestamp: Timestamp;
-  };
-  export type messageRepeatCountUpdated_Handler = (params: messageRepeatCountUpdated_Parameters) => void;
-  export type messagesCleared_Handler = () => void;
 }
 /** Security */
 export class Security {
   private _securityStateChanged: Security.securityStateChanged_Handler = undefined;
+  private _certificateError: Security.certificateError_Handler = undefined;
   private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
@@ -1419,6 +1150,18 @@ export class Security {
   /** Disables tracking security state changes. */
   disable(): Promise<void> {
     return this._client.send<void>("Security.disable");
+  }
+  /** Displays native dialog with the certificate details. */
+  showCertificateViewer(): Promise<void> {
+    return this._client.send<void>("Security.showCertificateViewer");
+  }
+  /** Handles a certificate error that fired a certificateError event. */
+  handleCertificateError(params: Security.handleCertificateError_Parameters): Promise<void> {
+    return this._client.send<void>("Security.handleCertificateError", params);
+  }
+  /** Enable/disable overriding certificate errors. If enabled, all certificate error events need to be handled by the DevTools client and should be answered with handleCertificateError commands. */
+  setOverrideCertificateErrors(params: Security.setOverrideCertificateErrors_Parameters): Promise<void> {
+    return this._client.send<void>("Security.setOverrideCertificateErrors", params);
   }
   /** The security state of the page changed. */
   get securityStateChanged(): Security.securityStateChanged_Handler {
@@ -1433,8 +1176,23 @@ export class Security {
       this._client.on("Security.securityStateChanged", handler);
     }
   }
+  /** There is a certificate error. If overriding certificate errors is enabled, then it should be handled with the handleCertificateError command. Note: this event does not fire if the certificate error has been allowed internally. */
+  get certificateError(): Security.certificateError_Handler {
+    return this._certificateError;
+  }
+  set certificateError(handler: Security.certificateError_Handler) {
+    if (this._certificateError) {
+      this._client.removeListener("Security.certificateError", this._certificateError);
+    }
+    this._certificateError = handler;
+    if (handler) {
+      this._client.on("Security.certificateError", handler);
+    }
+  }
 }
 export namespace Security {
+  /** An internal certificate ID value. */
+  export type CertificateId = number;
   /** The security level of a page or resource. */
   export type SecurityState = "unknown" | "neutral" | "insecure" | "warning" | "secure" | "info";
   /** An explanation of an factor contributing to the security state. */
@@ -1445,34 +1203,64 @@ export namespace Security {
     summary: string;
     /** Full text explanation of the factor. */
     description: string;
-    /** Associated certificate id. */
-    certificateId?: Network.CertificateId;
+    /** True if the page has a certificate. */
+    hasCertificate: boolean;
   }
-  /** Information about mixed content on the page. */
-  export interface MixedContentStatus {
-    /** True if the page ran insecure content such as scripts. */
-    ranInsecureContent: boolean;
-    /** True if the page displayed insecure content such as images. */
-    displayedInsecureContent: boolean;
+  /** Information about insecure content on the page. */
+  export interface InsecureContentStatus {
+    /** True if the page was loaded over HTTPS and ran mixed (HTTP) content such as scripts. */
+    ranMixedContent: boolean;
+    /** True if the page was loaded over HTTPS and displayed mixed (HTTP) content such as images. */
+    displayedMixedContent: boolean;
+    /** True if the page was loaded over HTTPS and contained a form targeting an insecure url. */
+    containedMixedForm: boolean;
+    /** True if the page was loaded over HTTPS without certificate errors, and ran content such as scripts that were loaded with certificate errors. */
+    ranContentWithCertErrors: boolean;
+    /** True if the page was loaded over HTTPS without certificate errors, and displayed content such as images that were loaded with certificate errors. */
+    displayedContentWithCertErrors: boolean;
     /** Security state representing a page that ran insecure content. */
     ranInsecureContentStyle: SecurityState;
     /** Security state representing a page that displayed insecure content. */
     displayedInsecureContentStyle: SecurityState;
   }
+  /** The action to take when a certificate error occurs. continue will continue processing the request and cancel will cancel the request. */
+  export type CertificateErrorAction = "continue" | "cancel";
   export type securityStateChanged_Parameters = {
     /** Security state. */
     securityState: SecurityState;
-    /** List of explanations for the security state. If the overall security state is `insecure` or `warning`, at least one corresponding explanation should be included. */
-    explanations?: SecurityStateExplanation[];
-    /** Information about mixed content on the page. */
-    mixedContentStatus?: MixedContentStatus;
     /** True if the page was loaded over cryptographic transport such as HTTPS. */
-    schemeIsCryptographic?: boolean;
+    schemeIsCryptographic: boolean;
+    /** List of explanations for the security state. If the overall security state is `insecure` or `warning`, at least one corresponding explanation should be included. */
+    explanations: SecurityStateExplanation[];
+    /** Information about insecure content on the page. */
+    insecureContentStatus: InsecureContentStatus;
+    /** Overrides user-visible description of the state. */
+    summary?: string;
   };
   export type securityStateChanged_Handler = (params: securityStateChanged_Parameters) => void;
+  export type certificateError_Parameters = {
+    /** The ID of the event. */
+    eventId: number;
+    /** The type of the error. */
+    errorType: string;
+    /** The url that was requested. */
+    requestURL: string;
+  };
+  export type certificateError_Handler = (params: certificateError_Parameters) => void;
+  export type handleCertificateError_Parameters = {
+    /** The ID of the event. */
+    eventId: number;
+    /** The action to take on the certificate error. */
+    action: CertificateErrorAction;
+  };
+  export type setOverrideCertificateErrors_Parameters = {
+    /** If true, certificate errors will be overridden. */
+    override: boolean;
+  };
 }
 /** Network domain allows tracking network activities of the page. It exposes information about http, file, data and other requests and responses, their headers, bodies, timing, etc. */
 export class Network {
+  private _resourceChangedPriority: Network.resourceChangedPriority_Handler = undefined;
   private _requestWillBeSent: Network.requestWillBeSent_Handler = undefined;
   private _requestServedFromCache: Network.requestServedFromCache_Handler = undefined;
   private _responseReceived: Network.responseReceived_Handler = undefined;
@@ -1492,8 +1280,8 @@ export class Network {
     this._client = client;
   }
   /** Enables network tracking, network events will now be delivered to the client. */
-  enable(): Promise<void> {
-    return this._client.send<void>("Network.enable");
+  enable(params: Network.enable_Parameters): Promise<void> {
+    return this._client.send<void>("Network.enable", params);
   }
   /** Disables network tracking, prevents network events from being sent to the client. */
   disable(): Promise<void> {
@@ -1511,13 +1299,9 @@ export class Network {
   getResponseBody(params: Network.getResponseBody_Parameters): Promise<Network.getResponseBody_Return> {
     return this._client.send<Network.getResponseBody_Return>("Network.getResponseBody", params);
   }
-  /** Blocks specific URL from loading. */
-  addBlockedURL(params: Network.addBlockedURL_Parameters): Promise<void> {
-    return this._client.send<void>("Network.addBlockedURL", params);
-  }
-  /** Cancels blocking of a specific URL from loading. */
-  removeBlockedURL(params: Network.removeBlockedURL_Parameters): Promise<void> {
-    return this._client.send<void>("Network.removeBlockedURL", params);
+  /** Blocks URLs from loading. */
+  setBlockedURLs(params: Network.setBlockedURLs_Parameters): Promise<void> {
+    return this._client.send<void>("Network.setBlockedURLs", params);
   }
   /** This method sends a new XMLHttpRequest which is identical to the original one. The following parameters should be identical: method, url, async, request body, extra headers, withCredentials attribute, user, password. */
   replayXHR(params: Network.replayXHR_Parameters): Promise<void> {
@@ -1543,13 +1327,21 @@ export class Network {
   clearBrowserCookies(): Promise<void> {
     return this._client.send<void>("Network.clearBrowserCookies");
   }
+  /** Returns all browser cookies for the current URL. Depending on the backend support, will return detailed cookie information in the <code>cookies</code> field. */
+  getCookies(params: Network.getCookies_Parameters): Promise<Network.getCookies_Return> {
+    return this._client.send<Network.getCookies_Return>("Network.getCookies", params);
+  }
   /** Returns all browser cookies. Depending on the backend support, will return detailed cookie information in the <code>cookies</code> field. */
-  getCookies(): Promise<Network.getCookies_Return> {
-    return this._client.send<Network.getCookies_Return>("Network.getCookies");
+  getAllCookies(): Promise<Network.getAllCookies_Return> {
+    return this._client.send<Network.getAllCookies_Return>("Network.getAllCookies");
   }
   /** Deletes browser cookie with given name, domain and path. */
   deleteCookie(params: Network.deleteCookie_Parameters): Promise<void> {
     return this._client.send<void>("Network.deleteCookie", params);
+  }
+  /** Sets a cookie with the given cookie data; may overwrite equivalent cookies if they exist. */
+  setCookie(params: Network.setCookie_Parameters): Promise<Network.setCookie_Return> {
+    return this._client.send<Network.setCookie_Return>("Network.setCookie", params);
   }
   /** Tells whether emulation of network conditions is supported. */
   canEmulateNetworkConditions(): Promise<Network.canEmulateNetworkConditions_Return> {
@@ -1563,17 +1355,30 @@ export class Network {
   setCacheDisabled(params: Network.setCacheDisabled_Parameters): Promise<void> {
     return this._client.send<void>("Network.setCacheDisabled", params);
   }
+  /** Toggles ignoring of service worker for each request. */
+  setBypassServiceWorker(params: Network.setBypassServiceWorker_Parameters): Promise<void> {
+    return this._client.send<void>("Network.setBypassServiceWorker", params);
+  }
   /** For testing. */
   setDataSizeLimitsForTest(params: Network.setDataSizeLimitsForTest_Parameters): Promise<void> {
     return this._client.send<void>("Network.setDataSizeLimitsForTest", params);
   }
-  /** Returns details for the given certificate. */
-  getCertificateDetails(params: Network.getCertificateDetails_Parameters): Promise<Network.getCertificateDetails_Return> {
-    return this._client.send<Network.getCertificateDetails_Return>("Network.getCertificateDetails", params);
+  /** Returns the DER-encoded certificate. */
+  getCertificate(params: Network.getCertificate_Parameters): Promise<Network.getCertificate_Return> {
+    return this._client.send<Network.getCertificate_Return>("Network.getCertificate", params);
   }
-  /** Displays native dialog with the certificate details. */
-  showCertificateViewer(params: Network.showCertificateViewer_Parameters): Promise<void> {
-    return this._client.send<void>("Network.showCertificateViewer", params);
+  /** Fired when resource loading priority is changed */
+  get resourceChangedPriority(): Network.resourceChangedPriority_Handler {
+    return this._resourceChangedPriority;
+  }
+  set resourceChangedPriority(handler: Network.resourceChangedPriority_Handler) {
+    if (this._resourceChangedPriority) {
+      this._client.removeListener("Network.resourceChangedPriority", this._resourceChangedPriority);
+    }
+    this._resourceChangedPriority = handler;
+    if (handler) {
+      this._client.on("Network.resourceChangedPriority", handler);
+    }
   }
   /** Fired when page is about to send HTTP request. */
   get requestWillBeSent(): Network.requestWillBeSent_Handler {
@@ -1767,6 +1572,10 @@ export namespace Network {
   export type Timestamp = number;
   /** Request / response headers as keys / values of JSON object. */
   export type Headers = any;
+  /** Loading priority of a resource request. */
+  export type ConnectionType = "none" | "cellular2g" | "cellular3g" | "cellular4g" | "bluetooth" | "ethernet" | "wifi" | "wimax" | "other";
+  /** Represents the cookie's 'SameSite' status: https://tools.ietf.org/html/draft-west-first-party-cookies */
+  export type CookieSameSite = "Strict" | "Lax";
   /** Timing information for the request. */
   export interface ResourceTiming {
     /** Timing's requestTime is a baseline in seconds, while the other numbers are ticks in milliseconds relatively to this requestTime. */
@@ -1795,6 +1604,10 @@ export namespace Network {
     sendStart: number;
     /** Finished sending request. */
     sendEnd: number;
+    /** Time the server started pushing request. */
+    pushStart: number;
+    /** Time the server finished pushing request. */
+    pushEnd: number;
     /** Finished receiving response headers. */
     receiveHeadersEnd: number;
   }
@@ -1814,44 +1627,59 @@ export namespace Network {
     mixedContentType?: "blockable" | "optionally-blockable" | "none";
     /** Priority of the resource request at the time request is sent. */
     initialPriority: ResourcePriority;
+    /** The referrer policy of the request, as defined in https://www.w3.org/TR/referrer-policy/ */
+    referrerPolicy: "unsafe-url" | "no-referrer-when-downgrade" | "no-referrer" | "origin" | "origin-when-cross-origin" | "no-referrer-when-downgrade-origin-when-cross-origin";
+    /** Whether is loaded via link preload. */
+    isLinkPreload?: boolean;
   }
-  /** An internal certificate ID value. */
-  export type CertificateId = number;
-  /** Subject of a certificate. */
-  export interface CertificateSubject {
+  /** Details of a signed certificate timestamp (SCT). */
+  export interface SignedCertificateTimestamp {
+    /** Validation status. */
+    status: string;
+    /** Origin. */
+    origin: string;
+    /** Log name / description. */
+    logDescription: string;
+    /** Log ID. */
+    logId: string;
+    /** Issuance date. */
+    timestamp: Timestamp;
+    /** Hash algorithm. */
+    hashAlgorithm: string;
+    /** Signature algorithm. */
+    signatureAlgorithm: string;
+    /** Signature data. */
+    signatureData: string;
+  }
+  /** Security details about a request. */
+  export interface SecurityDetails {
+    /** Protocol name (e.g. "TLS 1.2" or "QUIC"). */
+    protocol: string;
+    /** Key Exchange used by the connection, or the empty string if not applicable. */
+    keyExchange: string;
+    /** (EC)DH group used by the connection, if applicable. */
+    keyExchangeGroup?: string;
+    /** Cipher name. */
+    cipher: string;
+    /** TLS MAC. Note that AEAD ciphers do not have separate MACs. */
+    mac?: string;
+    /** Certificate ID value. */
+    certificateId: Security.CertificateId;
     /** Certificate subject name. */
-    name: string;
-    /** Subject Alternative Name (SAN) DNS names. */
-    sanDnsNames: string[];
-    /** Subject Alternative Name (SAN) IP addresses. */
-    sanIpAddresses: string[];
-  }
-  /** Details about a request's certificate. */
-  export interface CertificateDetails {
-    /** Certificate subject. */
-    subject: CertificateSubject;
+    subjectName: string;
+    /** Subject Alternative Name (SAN) DNS names and IP addresses. */
+    sanList: string[];
     /** Name of the issuing CA. */
     issuer: string;
     /** Certificate valid from date. */
     validFrom: Timestamp;
     /** Certificate valid to (expiration) date */
     validTo: Timestamp;
-  }
-  /** Security details about a request. */
-  export interface SecurityDetails {
-    /** Protocol name (e.g. "TLS 1.2" or "QUIC"). */
-    protocol: string;
-    /** Key Exchange used by the connection. */
-    keyExchange: string;
-    /** Cipher name. */
-    cipher: string;
-    /** TLS MAC. Note that AEAD ciphers do not have separate MACs. */
-    mac?: string;
-    /** Certificate ID value. */
-    certificateId: CertificateId;
+    /** List of signed certificate timestamps (SCTs). */
+    signedCertificateTimestampList: SignedCertificateTimestamp[];
   }
   /** The reason why request was blocked. */
-  export type BlockedReason = "csp" | "mixed-content" | "origin" | "inspector" | "other";
+  export type BlockedReason = "csp" | "mixed-content" | "origin" | "inspector" | "subresource-filter" | "other";
   /** HTTP response data. */
   export interface Response {
     /** Response URL. This URL can be different from CachedResource.url in case of redirect. */
@@ -1936,15 +1764,13 @@ export namespace Network {
   /** Information about the request initiator. */
   export interface Initiator {
     /** Type of this initiator. */
-    type: "parser" | "script" | "other";
+    type: "parser" | "script" | "preload" | "other";
     /** Initiator JavaScript stack trace, set for Script only. */
-    stackTrace?: Console.StackTrace;
+    stack?: Runtime.StackTrace;
     /** Initiator URL, set for Parser type only. */
     url?: string;
-    /** Initiator line number, set for Parser type only. */
+    /** Initiator line number, set for Parser type only (0-based). */
     lineNumber?: number;
-    /** Initiator asynchronous JavaScript stack trace, if available. */
-    asyncStackTrace?: Console.AsyncStackTrace;
   }
   /** Cookie object */
   export interface Cookie {
@@ -1956,7 +1782,7 @@ export namespace Network {
     domain: string;
     /** Cookie path. */
     path: string;
-    /** Cookie expires. */
+    /** Cookie expiration date as the number of seconds since the UNIX epoch. */
     expires: number;
     /** Cookie size. */
     size: number;
@@ -1966,7 +1792,18 @@ export namespace Network {
     secure: boolean;
     /** True in case of session cookie. */
     session: boolean;
+    /** Cookie SameSite type. */
+    sameSite?: CookieSameSite;
   }
+  export type resourceChangedPriority_Parameters = {
+    /** Request identifier. */
+    requestId: RequestId;
+    /** New priority */
+    newPriority: ResourcePriority;
+    /** Timestamp. */
+    timestamp: Timestamp;
+  };
+  export type resourceChangedPriority_Handler = (params: resourceChangedPriority_Parameters) => void;
   export type requestWillBeSent_Parameters = {
     /** Request identifier. */
     requestId: RequestId;
@@ -2070,6 +1907,8 @@ export namespace Network {
     requestId: RequestId;
     /** WebSocket request URL. */
     url: string;
+    /** Request initiator. */
+    initiator?: Initiator;
   };
   export type webSocketCreated_Handler = (params: webSocketCreated_Parameters) => void;
   export type webSocketClosed_Parameters = {
@@ -2119,6 +1958,12 @@ export namespace Network {
     data: string;
   };
   export type eventSourceMessageReceived_Handler = (params: eventSourceMessageReceived_Parameters) => void;
+  export type enable_Parameters = {
+    /** Buffer size in bytes to use when preserving network payloads (XHRs, etc). */
+    maxTotalBufferSize?: number;
+    /** Per-resource buffer size in bytes to use when preserving network payloads (XHRs, etc). */
+    maxResourceBufferSize?: number;
+  };
   export type setUserAgentOverride_Parameters = {
     /** User agent to use. */
     userAgent: string;
@@ -2137,13 +1982,9 @@ export namespace Network {
     /** True, if content was sent as base64. */
     base64Encoded: boolean;
   };
-  export type addBlockedURL_Parameters = {
-    /** URL to block. */
-    url: string;
-  };
-  export type removeBlockedURL_Parameters = {
-    /** URL to stop blocking. */
-    url: string;
+  export type setBlockedURLs_Parameters = {
+    /** URL patterns to block. Wildcards ('*') are allowed. */
+    urls: string[];
   };
   export type replayXHR_Parameters = {
     /** Identifier of XHR to replay. */
@@ -2161,7 +2002,15 @@ export namespace Network {
     /** True if browser cookies can be cleared. */
     result: boolean;
   };
+  export type getCookies_Parameters = {
+    /** The list of URLs for which applicable cookies will be fetched */
+    urls?: string[];
+  };
   export type getCookies_Return = {
+    /** Array of cookie objects. */
+    cookies: Cookie[];
+  };
+  export type getAllCookies_Return = {
     /** Array of cookie objects. */
     cookies: Cookie[];
   };
@@ -2170,6 +2019,30 @@ export namespace Network {
     cookieName: string;
     /** URL to match cooke domain and path. */
     url: string;
+  };
+  export type setCookie_Parameters = {
+    /** The request-URI to associate with the setting of the cookie. This value can affect the default domain and path values of the created cookie. */
+    url: string;
+    /** The name of the cookie. */
+    name: string;
+    /** The value of the cookie. */
+    value: string;
+    /** If omitted, the cookie becomes a host-only cookie. */
+    domain?: string;
+    /** Defaults to the path portion of the url parameter. */
+    path?: string;
+    /** Defaults ot false. */
+    secure?: boolean;
+    /** Defaults to false. */
+    httpOnly?: boolean;
+    /** Defaults to browser default behavior. */
+    sameSite?: CookieSameSite;
+    /** If omitted, the cookie becomes a session cookie. */
+    expirationDate?: Timestamp;
+  };
+  export type setCookie_Return = {
+    /** True if successfully set cookie. */
+    success: boolean;
   };
   export type canEmulateNetworkConditions_Return = {
     /** True if emulation of network conditions is supported. */
@@ -2184,10 +2057,16 @@ export namespace Network {
     downloadThroughput: number;
     /** Maximal aggregated upload throughput. */
     uploadThroughput: number;
+    /** Connection type if known. */
+    connectionType?: ConnectionType;
   };
   export type setCacheDisabled_Parameters = {
     /** Cache disabled state. */
     cacheDisabled: boolean;
+  };
+  export type setBypassServiceWorker_Parameters = {
+    /** Bypass service worker and load from network. */
+    bypass: boolean;
   };
   export type setDataSizeLimitsForTest_Parameters = {
     /** Maximum total buffer size. */
@@ -2195,17 +2074,12 @@ export namespace Network {
     /** Maximum per-resource size. */
     maxResourceSize: number;
   };
-  export type getCertificateDetails_Parameters = {
-    /** ID of the certificate to get details for. */
-    certificateId: CertificateId;
+  export type getCertificate_Parameters = {
+    /** Origin to get certificate for. */
+    origin: string;
   };
-  export type getCertificateDetails_Return = {
-    /** Certificate details. */
-    result: CertificateDetails;
-  };
-  export type showCertificateViewer_Parameters = {
-    /** Certificate id. */
-    certificateId: CertificateId;
+  export type getCertificate_Return = {
+    tableNames: string[];
   };
 }
 export class Database {
@@ -2311,16 +2185,18 @@ export class IndexedDB {
   clearObjectStore(params: IndexedDB.clearObjectStore_Parameters): Promise<IndexedDB.clearObjectStore_Return> {
     return this._client.send<IndexedDB.clearObjectStore_Return>("IndexedDB.clearObjectStore", params);
   }
+  /** Deletes a database. */
+  deleteDatabase(params: IndexedDB.deleteDatabase_Parameters): Promise<IndexedDB.deleteDatabase_Return> {
+    return this._client.send<IndexedDB.deleteDatabase_Return>("IndexedDB.deleteDatabase", params);
+  }
 }
 export namespace IndexedDB {
   /** Database with an array of object stores. */
   export interface DatabaseWithObjectStores {
     /** Database name. */
     name: string;
-    /** Deprecated string database version. */
-    version: string;
-    /** Integer database version. */
-    intVersion: number;
+    /** Database version. */
+    version: number;
     /** Object stores in this database. */
     objectStores: ObjectStore[];
   }
@@ -2372,12 +2248,12 @@ export namespace IndexedDB {
   }
   /** Data entry. */
   export interface DataEntry {
-    /** JSON-stringified key object. */
-    key: string;
-    /** JSON-stringified primary key object. */
-    primaryKey: string;
-    /** JSON-stringified value object. */
-    value: string;
+    /** Key object. */
+    key: Runtime.RemoteObject;
+    /** Primary key object. */
+    primaryKey: Runtime.RemoteObject;
+    /** Value object. */
+    value: Runtime.RemoteObject;
   }
   /** Key path. */
   export interface KeyPath {
@@ -2437,6 +2313,13 @@ export namespace IndexedDB {
     objectStoreName: string;
   };
   export type clearObjectStore_Return = any;
+  export type deleteDatabase_Parameters = {
+    /** Security origin. */
+    securityOrigin: string;
+    /** Database name. */
+    databaseName: string;
+  };
+  export type deleteDatabase_Return = any;
 }
 export class CacheStorage {
   private _client: IDebuggingProtocolClient = undefined;
@@ -2530,6 +2413,9 @@ export class DOMStorage {
   disable(): Promise<void> {
     return this._client.send<void>("DOMStorage.disable");
   }
+  clear(params: DOMStorage.clear_Parameters): Promise<void> {
+    return this._client.send<void>("DOMStorage.clear", params);
+  }
   getDOMStorageItems(params: DOMStorage.getDOMStorageItems_Parameters): Promise<DOMStorage.getDOMStorageItems_Return> {
     return this._client.send<DOMStorage.getDOMStorageItems_Return>("DOMStorage.getDOMStorageItems", params);
   }
@@ -2620,6 +2506,9 @@ export namespace DOMStorage {
     newValue: string;
   };
   export type domStorageItemUpdated_Handler = (params: domStorageItemUpdated_Parameters) => void;
+  export type clear_Parameters = {
+    storageId: StorageId;
+  };
   export type getDOMStorageItems_Parameters = {
     storageId: StorageId;
   };
@@ -2750,124 +2639,6 @@ export namespace ApplicationCache {
     applicationCache: ApplicationCache;
   };
 }
-export class FileSystem {
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
-  /** Enables events from backend. */
-  enable(): Promise<void> {
-    return this._client.send<void>("FileSystem.enable");
-  }
-  /** Disables events from backend. */
-  disable(): Promise<void> {
-    return this._client.send<void>("FileSystem.disable");
-  }
-  /** Returns root directory of the FileSystem, if exists. */
-  requestFileSystemRoot(params: FileSystem.requestFileSystemRoot_Parameters): Promise<FileSystem.requestFileSystemRoot_Return> {
-    return this._client.send<FileSystem.requestFileSystemRoot_Return>("FileSystem.requestFileSystemRoot", params);
-  }
-  /** Returns content of the directory. */
-  requestDirectoryContent(params: FileSystem.requestDirectoryContent_Parameters): Promise<FileSystem.requestDirectoryContent_Return> {
-    return this._client.send<FileSystem.requestDirectoryContent_Return>("FileSystem.requestDirectoryContent", params);
-  }
-  /** Returns metadata of the entry. */
-  requestMetadata(params: FileSystem.requestMetadata_Parameters): Promise<FileSystem.requestMetadata_Return> {
-    return this._client.send<FileSystem.requestMetadata_Return>("FileSystem.requestMetadata", params);
-  }
-  /** Returns content of the file. Result should be sliced into [start, end). */
-  requestFileContent(params: FileSystem.requestFileContent_Parameters): Promise<FileSystem.requestFileContent_Return> {
-    return this._client.send<FileSystem.requestFileContent_Return>("FileSystem.requestFileContent", params);
-  }
-  /** Deletes specified entry. If the entry is a directory, the agent deletes children recursively. */
-  deleteEntry(params: FileSystem.deleteEntry_Parameters): Promise<FileSystem.deleteEntry_Return> {
-    return this._client.send<FileSystem.deleteEntry_Return>("FileSystem.deleteEntry", params);
-  }
-}
-export namespace FileSystem {
-  /** Represents a browser side file or directory. */
-  export interface Entry {
-    /** filesystem: URL for the entry. */
-    url: string;
-    /** The name of the file or directory. */
-    name: string;
-    /** True if the entry is a directory. */
-    isDirectory: boolean;
-    /** MIME type of the entry, available for a file only. */
-    mimeType?: string;
-    /** ResourceType of the entry, available for a file only. */
-    resourceType?: Page.ResourceType;
-    /** True if the entry is a text file. */
-    isTextFile?: boolean;
-  }
-  /** Represents metadata of a file or entry. */
-  export interface Metadata {
-    /** Modification time. */
-    modificationTime: number;
-    /** File size. This field is always zero for directories. */
-    size: number;
-  }
-  export type requestFileSystemRoot_Parameters = {
-    /** Security origin of requesting FileSystem. One of frames in current page needs to have this security origin. */
-    origin: string;
-    /** FileSystem type of requesting FileSystem. */
-    type: "temporary" | "persistent";
-  };
-  export type requestFileSystemRoot_Return = {
-    /** 0, if no error. Otherwise, errorCode is set to FileError::ErrorCode value. */
-    errorCode: number;
-    /** Contains root of the requested FileSystem if the command completed successfully. */
-    root?: Entry;
-  };
-  export type requestDirectoryContent_Parameters = {
-    /** URL of the directory that the frontend is requesting to read from. */
-    url: string;
-  };
-  export type requestDirectoryContent_Return = {
-    /** 0, if no error. Otherwise, errorCode is set to FileError::ErrorCode value. */
-    errorCode: number;
-    /** Contains all entries on directory if the command completed successfully. */
-    entries?: Entry[];
-  };
-  export type requestMetadata_Parameters = {
-    /** URL of the entry that the frontend is requesting to get metadata from. */
-    url: string;
-  };
-  export type requestMetadata_Return = {
-    /** 0, if no error. Otherwise, errorCode is set to FileError::ErrorCode value. */
-    errorCode: number;
-    /** Contains metadata of the entry if the command completed successfully. */
-    metadata?: Metadata;
-  };
-  export type requestFileContent_Parameters = {
-    /** URL of the file that the frontend is requesting to read from. */
-    url: string;
-    /** True if the content should be read as text, otherwise the result will be returned as base64 encoded text. */
-    readAsText: boolean;
-    /** Specifies the start of range to read. */
-    start?: number;
-    /** Specifies the end of range to read exclusively. */
-    end?: number;
-    /** Overrides charset of the content when content is served as text. */
-    charset?: string;
-  };
-  export type requestFileContent_Return = {
-    /** 0, if no error. Otherwise, errorCode is set to FileError::ErrorCode value. */
-    errorCode: number;
-    /** Content of the file. */
-    content?: string;
-    /** Charset of the content if it is served as text. */
-    charset?: string;
-  };
-  export type deleteEntry_Parameters = {
-    /** URL of the entry to delete. */
-    url: string;
-  };
-  export type deleteEntry_Return = {
-    /** 0, if no error. Otherwise errorCode is set to FileError::ErrorCode value. */
-    errorCode: number;
-  };
-}
 /** This domain exposes DOM read/write operations. Each DOM Node is represented with its mirror object that has an <code>id</code>. This <code>id</code> can be used to get additional information on the Node, resolve it into the JavaScript object wrapper, etc. It is important that client receives DOM events only for the nodes that are known to the client. Backend keeps track of the nodes that were sent to the client and never sends the same node twice. It is client's responsibility to collect information about the nodes that were sent to the client.<p>Note that <code>iframe</code> owner elements will return corresponding document elements as their child nodes.</p> */
 export class DOM {
   private _documentUpdated: DOM.documentUpdated_Handler = undefined;
@@ -2898,9 +2669,17 @@ export class DOM {
   disable(): Promise<void> {
     return this._client.send<void>("DOM.disable");
   }
-  /** Returns the root DOM node to the caller. */
-  getDocument(): Promise<DOM.getDocument_Return> {
-    return this._client.send<DOM.getDocument_Return>("DOM.getDocument");
+  /** Returns the root DOM node (and optionally the subtree) to the caller. */
+  getDocument(params: DOM.getDocument_Parameters): Promise<DOM.getDocument_Return> {
+    return this._client.send<DOM.getDocument_Return>("DOM.getDocument", params);
+  }
+  /** Returns the root DOM node (and optionally the subtree) to the caller. */
+  getFlattenedDocument(params: DOM.getFlattenedDocument_Parameters): Promise<DOM.getFlattenedDocument_Return> {
+    return this._client.send<DOM.getFlattenedDocument_Return>("DOM.getFlattenedDocument", params);
+  }
+  /** Collects class names for the node with given id and all of it's child nodes. */
+  collectClassNamesFromSubtree(params: DOM.collectClassNamesFromSubtree_Parameters): Promise<DOM.collectClassNamesFromSubtree_Return> {
+    return this._client.send<DOM.collectClassNamesFromSubtree_Return>("DOM.collectClassNamesFromSubtree", params);
   }
   /** Requests that children of the node with given id are returned to the caller in form of <code>setChildNodes</code> events where not only immediate children are retrieved, but all children down to the specified depth. */
   requestChildNodes(params: DOM.requestChildNodes_Parameters): Promise<void> {
@@ -3279,6 +3058,10 @@ export namespace DOM {
   export interface Node {
     /** Node identifier that is passed into the rest of the DOM messages as the <code>nodeId</code>. Backend will only push node with given <code>id</code> once. It is aware of all requested nodes and will only fire DOM events for nodes known to the client. */
     nodeId: NodeId;
+    /** The id of the parent node if any. */
+    parentId?: NodeId;
+    /** The BackendNodeId for this node. */
+    backendNodeId: BackendNodeId;
     /** <code>Node</code>'s nodeType. */
     nodeType: number;
     /** <code>Node</code>'s nodeName. */
@@ -3327,6 +3110,8 @@ export namespace DOM {
     importedDocument?: Node;
     /** Distributed nodes for given insertion point. */
     distributedNodes?: BackendNode[];
+    /** Whether the node is SVG. */
+    isSVG?: boolean;
   }
   /** A structure holding an RGBA color. */
   export interface RGBA {
@@ -3404,7 +3189,7 @@ export namespace DOM {
     /** Selectors to highlight relevant nodes. */
     selectorList?: string;
   }
-  export type InspectMode = "searchForNode" | "searchForUAShadowDOM" | "showLayoutEditor" | "none";
+  export type InspectMode = "searchForNode" | "searchForUAShadowDOM" | "none";
   export type documentUpdated_Handler = () => void;
   export type inspectNodeRequested_Parameters = {
     /** Id of the node to inspect. */
@@ -3508,15 +3293,41 @@ export namespace DOM {
     nodeId: NodeId;
   };
   export type nodeHighlightRequested_Handler = (params: nodeHighlightRequested_Parameters) => void;
+  export type getDocument_Parameters = {
+    /** The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0. */
+    depth?: number;
+    /** Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false). */
+    pierce?: boolean;
+  };
   export type getDocument_Return = {
     /** Resulting node. */
     root: Node;
+  };
+  export type getFlattenedDocument_Parameters = {
+    /** The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0. */
+    depth?: number;
+    /** Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false). */
+    pierce?: boolean;
+  };
+  export type getFlattenedDocument_Return = {
+    /** Resulting node. */
+    nodes: Node[];
+  };
+  export type collectClassNamesFromSubtree_Parameters = {
+    /** Id of the node to collect class names. */
+    nodeId: NodeId;
+  };
+  export type collectClassNamesFromSubtree_Return = {
+    /** Class name list. */
+    classNames: string[];
   };
   export type requestChildNodes_Parameters = {
     /** Id of the node to get children for. */
     nodeId: NodeId;
     /** The maximum depth at which children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0. */
     depth?: number;
+    /** Whether or not iframes and shadow roots should be traversed when returning the sub-tree (default is false). */
+    pierce?: boolean;
   };
   export type querySelector_Parameters = {
     /** Id of the node to query upon. */
@@ -3761,6 +3572,8 @@ export namespace DOM {
     x: number;
     /** Y coordinate. */
     y: number;
+    /** False to skip to the nearest non-UA shadow root ancestor (default: false). */
+    includeUserAgentShadowDOM?: boolean;
   };
   export type getNodeForLocation_Return = {
     /** Id of the node at given coordinates. */
@@ -3786,10 +3599,10 @@ export namespace DOM {
 /** This domain exposes CSS read/write operations. All CSS objects (stylesheets, rules, and styles) have an associated <code>id</code> used in subsequent operations on the related object. Each object type has a specific <code>id</code> structure, and those are not interchangeable between objects of different kinds. CSS objects can be loaded using the <code>get*ForNode()</code> calls (which accept a DOM node id). A client can also discover all the existing stylesheets with the <code>getAllStyleSheets()</code> method (or keeping track of the <code>styleSheetAdded</code>/<code>styleSheetRemoved</code> events) and subsequently load the required stylesheet contents using the <code>getStyleSheet[Text]()</code> methods. */
 export class CSS {
   private _mediaQueryResultChanged: CSS.mediaQueryResultChanged_Handler = undefined;
+  private _fontsUpdated: CSS.fontsUpdated_Handler = undefined;
   private _styleSheetChanged: CSS.styleSheetChanged_Handler = undefined;
   private _styleSheetAdded: CSS.styleSheetAdded_Handler = undefined;
   private _styleSheetRemoved: CSS.styleSheetRemoved_Handler = undefined;
-  private _layoutEditorChange: CSS.layoutEditorChange_Handler = undefined;
   private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
@@ -3818,13 +3631,13 @@ export class CSS {
   getPlatformFontsForNode(params: CSS.getPlatformFontsForNode_Parameters): Promise<CSS.getPlatformFontsForNode_Return> {
     return this._client.send<CSS.getPlatformFontsForNode_Return>("CSS.getPlatformFontsForNode", params);
   }
-  /** Returns all CSS keyframed animations mtaching this node. */
-  getCSSAnimationsForNode(params: CSS.getCSSAnimationsForNode_Parameters): Promise<CSS.getCSSAnimationsForNode_Return> {
-    return this._client.send<CSS.getCSSAnimationsForNode_Return>("CSS.getCSSAnimationsForNode", params);
-  }
   /** Returns the current textual content and the URL for a stylesheet. */
   getStyleSheetText(params: CSS.getStyleSheetText_Parameters): Promise<CSS.getStyleSheetText_Return> {
     return this._client.send<CSS.getStyleSheetText_Return>("CSS.getStyleSheetText", params);
+  }
+  /** Returns all class names from specified stylesheet. */
+  collectClassNames(params: CSS.collectClassNames_Parameters): Promise<CSS.collectClassNames_Return> {
+    return this._client.send<CSS.collectClassNames_Return>("CSS.collectClassNames", params);
   }
   /** Sets the new stylesheet text. */
   setStyleSheetText(params: CSS.setStyleSheetText_Parameters): Promise<CSS.setStyleSheetText_Return> {
@@ -3834,9 +3647,13 @@ export class CSS {
   setRuleSelector(params: CSS.setRuleSelector_Parameters): Promise<CSS.setRuleSelector_Return> {
     return this._client.send<CSS.setRuleSelector_Return>("CSS.setRuleSelector", params);
   }
-  /** Modifies the style text. */
-  setStyleText(params: CSS.setStyleText_Parameters): Promise<CSS.setStyleText_Return> {
-    return this._client.send<CSS.setStyleText_Return>("CSS.setStyleText", params);
+  /** Modifies the keyframe rule key text. */
+  setKeyframeKey(params: CSS.setKeyframeKey_Parameters): Promise<CSS.setKeyframeKey_Return> {
+    return this._client.send<CSS.setKeyframeKey_Return>("CSS.setKeyframeKey", params);
+  }
+  /** Applies specified style edits one after another in the given order. */
+  setStyleTexts(params: CSS.setStyleTexts_Parameters): Promise<CSS.setStyleTexts_Return> {
+    return this._client.send<CSS.setStyleTexts_Return>("CSS.setStyleTexts", params);
   }
   /** Modifies the rule selector. */
   setMediaText(params: CSS.setMediaText_Parameters): Promise<CSS.setMediaText_Return> {
@@ -3865,6 +3682,22 @@ export class CSS {
   getBackgroundColors(params: CSS.getBackgroundColors_Parameters): Promise<CSS.getBackgroundColors_Return> {
     return this._client.send<CSS.getBackgroundColors_Return>("CSS.getBackgroundColors", params);
   }
+  /** For the main document and any content documents, return the LayoutTreeNodes and a whitelisted subset of the computed style. It only returns pushed nodes, on way to pull all nodes is to call DOM.getDocument with a depth of -1. */
+  getLayoutTreeAndStyles(params: CSS.getLayoutTreeAndStyles_Parameters): Promise<CSS.getLayoutTreeAndStyles_Return> {
+    return this._client.send<CSS.getLayoutTreeAndStyles_Return>("CSS.getLayoutTreeAndStyles", params);
+  }
+  /** Enables the selector recording. */
+  startRuleUsageTracking(): Promise<void> {
+    return this._client.send<void>("CSS.startRuleUsageTracking");
+  }
+  /** Obtain list of rules that became used since last call to this method (or since start of coverage instrumentation) */
+  takeCoverageDelta(): Promise<CSS.takeCoverageDelta_Return> {
+    return this._client.send<CSS.takeCoverageDelta_Return>("CSS.takeCoverageDelta");
+  }
+  /** The list of rules with an indication of whether these were used */
+  stopRuleUsageTracking(): Promise<CSS.stopRuleUsageTracking_Return> {
+    return this._client.send<CSS.stopRuleUsageTracking_Return>("CSS.stopRuleUsageTracking");
+  }
   /** Fires whenever a MediaQuery result changes (for example, after a browser window has been resized.) The current implementation considers only viewport-dependent media features. */
   get mediaQueryResultChanged(): CSS.mediaQueryResultChanged_Handler {
     return this._mediaQueryResultChanged;
@@ -3876,6 +3709,19 @@ export class CSS {
     this._mediaQueryResultChanged = handler;
     if (handler) {
       this._client.on("CSS.mediaQueryResultChanged", handler);
+    }
+  }
+  /** Fires whenever a web font gets loaded. */
+  get fontsUpdated(): CSS.fontsUpdated_Handler {
+    return this._fontsUpdated;
+  }
+  set fontsUpdated(handler: CSS.fontsUpdated_Handler) {
+    if (this._fontsUpdated) {
+      this._client.removeListener("CSS.fontsUpdated", this._fontsUpdated);
+    }
+    this._fontsUpdated = handler;
+    if (handler) {
+      this._client.on("CSS.fontsUpdated", handler);
     }
   }
   /** Fired whenever a stylesheet is changed as a result of the client operation. */
@@ -3915,18 +3761,6 @@ export class CSS {
     this._styleSheetRemoved = handler;
     if (handler) {
       this._client.on("CSS.styleSheetRemoved", handler);
-    }
-  }
-  get layoutEditorChange(): CSS.layoutEditorChange_Handler {
-    return this._layoutEditorChange;
-  }
-  set layoutEditorChange(handler: CSS.layoutEditorChange_Handler) {
-    if (this._layoutEditorChange) {
-      this._client.removeListener("CSS.layoutEditorChange", this._layoutEditorChange);
-    }
-    this._layoutEditorChange = handler;
-    if (handler) {
-      this._client.on("CSS.layoutEditorChange", handler);
     }
   }
 }
@@ -3995,6 +3829,8 @@ export namespace CSS {
     startLine: number;
     /** Column offset of the stylesheet within the resource (zero based). */
     startColumn: number;
+    /** Size of the content (in characters). */
+    length: number;
   }
   /** CSS rule representation. */
   export interface CSSRule {
@@ -4008,6 +3844,17 @@ export namespace CSS {
     style: CSSStyle;
     /** Media list array (for rules involving media queries). The array enumerates media queries starting with the innermost one, going outwards. */
     media?: CSSMedia[];
+  }
+  /** CSS coverage information. */
+  export interface RuleUsage {
+    /** The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from. */
+    styleSheetId: StyleSheetId;
+    /** Offset of the start of the rule (including selector) from the beginning of the stylesheet. */
+    startOffset: number;
+    /** Offset of the end of the rule body from the beginning of the stylesheet. */
+    endOffset: number;
+    /** Indicates whether the rule was actually used by some element in the page. */
+    used: boolean;
   }
   /** Text range within a resource. All numbers are zero-based. */
   export interface SourceRange {
@@ -4077,7 +3924,7 @@ export namespace CSS {
     /** The associated rule (@media or @import) header range in the enclosing stylesheet (if available). */
     range?: SourceRange;
     /** Identifier of the stylesheet containing this object (if exists). */
-    parentStyleSheetId?: StyleSheetId;
+    styleSheetId?: StyleSheetId;
     /** Array of media queries. */
     mediaList?: MediaQuery[];
   }
@@ -4105,6 +3952,8 @@ export namespace CSS {
   export interface PlatformFontUsage {
     /** Font's family name reported by platform. */
     familyName: string;
+    /** Indicates if the font was downloaded or resolved locally. */
+    isCustomFont: boolean;
     /** Amount of glyphs that were rendered with this font. */
     glyphCount: number;
   }
@@ -4117,12 +3966,52 @@ export namespace CSS {
   }
   /** CSS keyframe rule representation. */
   export interface CSSKeyframeRule {
+    /** The css style sheet identifier (absent for user agent stylesheet and user-specified stylesheet rules) this rule came from. */
+    styleSheetId?: StyleSheetId;
+    /** Parent stylesheet's origin. */
+    origin: StyleSheetOrigin;
     /** Associated key text. */
     keyText: Value;
     /** Associated style declaration. */
     style: CSSStyle;
   }
+  /** A descriptor of operation to mutate style declaration text. */
+  export interface StyleDeclarationEdit {
+    /** The css style sheet identifier. */
+    styleSheetId: StyleSheetId;
+    /** The range of the style text in the enclosing stylesheet. */
+    range: SourceRange;
+    /** New style text. */
+    text: string;
+  }
+  /** Details of post layout rendered text positions. The exact layout should not be regarded as stable and may change between versions. */
+  export interface InlineTextBox {
+    /** The absolute position bounding box. */
+    boundingBox: DOM.Rect;
+    /** The starting index in characters, for this post layout textbox substring. */
+    startCharacterIndex: number;
+    /** The number of characters in this post layout textbox substring. */
+    numCharacters: number;
+  }
+  /** Details of an element in the DOM tree with a LayoutObject. */
+  export interface LayoutTreeNode {
+    /** The id of the related DOM node matching one from DOM.GetDocument. */
+    nodeId: DOM.NodeId;
+    /** The absolute position bounding box. */
+    boundingBox: DOM.Rect;
+    /** Contents of the LayoutText if any */
+    layoutText?: string;
+    /** The post layout inline text nodes, if any. */
+    inlineTextNodes?: InlineTextBox[];
+    /** Index into the computedStyles array returned by getLayoutTreeAndStyles. */
+    styleIndex?: number;
+  }
+  /** A subset of the full ComputedStyle as defined by the request whitelist. */
+  export interface ComputedStyle {
+    properties: CSSComputedStyleProperty[];
+  }
   export type mediaQueryResultChanged_Handler = () => void;
+  export type fontsUpdated_Handler = () => void;
   export type styleSheetChanged_Parameters = {
     styleSheetId: StyleSheetId;
   };
@@ -4137,13 +4026,6 @@ export namespace CSS {
     styleSheetId: StyleSheetId;
   };
   export type styleSheetRemoved_Handler = (params: styleSheetRemoved_Parameters) => void;
-  export type layoutEditorChange_Parameters = {
-    /** Identifier of the stylesheet where the modification occurred. */
-    styleSheetId: StyleSheetId;
-    /** Range where the modification occurred. */
-    changeRange: SourceRange;
-  };
-  export type layoutEditorChange_Handler = (params: layoutEditorChange_Parameters) => void;
   export type getMatchedStylesForNode_Parameters = {
     nodeId: DOM.NodeId;
   };
@@ -4158,6 +4040,8 @@ export namespace CSS {
     pseudoElements?: PseudoElementMatches[];
     /** A chain of inherited styles (from the immediate node parent up to the DOM tree root). */
     inherited?: InheritedStyleEntry[];
+    /** A list of CSS keyframed animations matching this node. */
+    cssKeyframesRules?: CSSKeyframesRule[];
   };
   export type getInlineStylesForNode_Parameters = {
     nodeId: DOM.NodeId;
@@ -4182,19 +4066,19 @@ export namespace CSS {
     /** Usage statistics for every employed platform font. */
     fonts: PlatformFontUsage[];
   };
-  export type getCSSAnimationsForNode_Parameters = {
-    nodeId: DOM.NodeId;
-  };
-  export type getCSSAnimationsForNode_Return = {
-    /** A list of CSS keyframed animations matching this node. */
-    cssKeyframesRules?: CSSKeyframesRule[];
-  };
   export type getStyleSheetText_Parameters = {
     styleSheetId: StyleSheetId;
   };
   export type getStyleSheetText_Return = {
     /** The stylesheet text. */
     text: string;
+  };
+  export type collectClassNames_Parameters = {
+    styleSheetId: StyleSheetId;
+  };
+  export type collectClassNames_Return = {
+    /** Class name list. */
+    classNames: string[];
   };
   export type setStyleSheetText_Parameters = {
     styleSheetId: StyleSheetId;
@@ -4213,14 +4097,21 @@ export namespace CSS {
     /** The resulting selector list after modification. */
     selectorList: SelectorList;
   };
-  export type setStyleText_Parameters = {
+  export type setKeyframeKey_Parameters = {
     styleSheetId: StyleSheetId;
     range: SourceRange;
-    text: string;
+    keyText: string;
   };
-  export type setStyleText_Return = {
-    /** The resulting style after the selector modification. */
-    style: CSSStyle;
+  export type setKeyframeKey_Return = {
+    /** The resulting key text after modification. */
+    keyText: Value;
+  };
+  export type setStyleTexts_Parameters = {
+    edits: StyleDeclarationEdit[];
+  };
+  export type setStyleTexts_Return = {
+    /** The resulting styles after modification. */
+    styles: CSSStyle[];
   };
   export type setMediaText_Parameters = {
     styleSheetId: StyleSheetId;
@@ -4255,7 +4146,7 @@ export namespace CSS {
     /** The element id for which to force the pseudo state. */
     nodeId: DOM.NodeId;
     /** Element pseudo classes to force when computing the element's style. */
-    forcedPseudoClasses: ("active" | "focus" | "hover" | "visited")[];
+    forcedPseudoClasses: Array<"active" | "focus" | "hover" | "visited">;
   };
   export type getMediaQueries_Return = {
     medias: CSSMedia[];
@@ -4273,6 +4164,20 @@ export namespace CSS {
   export type getBackgroundColors_Return = {
     /** The range of background colors behind this element, if it contains any visible text. If no visible text is present, this will be undefined. In the case of a flat background color, this will consist of simply that color. In the case of a gradient, this will consist of each of the color stops. For anything more complicated, this will be an empty array. Images will be ignored (as if the image had failed to load). */
     backgroundColors?: string[];
+  };
+  export type getLayoutTreeAndStyles_Parameters = {
+    /** Whitelist of computed styles to return. */
+    computedStyleWhitelist: string[];
+  };
+  export type getLayoutTreeAndStyles_Return = {
+    layoutTreeNodes: LayoutTreeNode[];
+    computedStyles: ComputedStyle[];
+  };
+  export type takeCoverageDelta_Return = {
+    coverage: RuleUsage[];
+  };
+  export type stopRuleUsageTracking_Return = {
+    ruleUsage: RuleUsage[];
   };
 }
 /** Input/Output operations for streams produced by DevTools. */
@@ -4309,833 +4214,6 @@ export namespace IO {
   export type close_Parameters = {
     /** Handle of the stream to close. */
     handle: StreamHandle;
-  };
-}
-/** Timeline domain is deprecated. Please use Tracing instead. */
-export class Timeline {
-  private _eventRecorded: Timeline.eventRecorded_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
-  /** Deprecated. */
-  enable(): Promise<void> {
-    return this._client.send<void>("Timeline.enable");
-  }
-  /** Deprecated. */
-  disable(): Promise<void> {
-    return this._client.send<void>("Timeline.disable");
-  }
-  /** Deprecated. */
-  start(params: Timeline.start_Parameters): Promise<void> {
-    return this._client.send<void>("Timeline.start", params);
-  }
-  /** Deprecated. */
-  stop(): Promise<void> {
-    return this._client.send<void>("Timeline.stop");
-  }
-  /** Deprecated. */
-  get eventRecorded(): Timeline.eventRecorded_Handler {
-    return this._eventRecorded;
-  }
-  set eventRecorded(handler: Timeline.eventRecorded_Handler) {
-    if (this._eventRecorded) {
-      this._client.removeListener("Timeline.eventRecorded", this._eventRecorded);
-    }
-    this._eventRecorded = handler;
-    if (handler) {
-      this._client.on("Timeline.eventRecorded", handler);
-    }
-  }
-}
-export namespace Timeline {
-  /** Timeline record contains information about the recorded activity. */
-  export interface TimelineEvent {
-    /** Event type. */
-    type: string;
-    /** Event data. */
-    data: any;
-    /** Start time. */
-    startTime: number;
-    /** End time. */
-    endTime?: number;
-    /** Nested records. */
-    children?: TimelineEvent[];
-    /** If present, identifies the thread that produced the event. */
-    thread?: string;
-    /** Stack trace. */
-    stackTrace?: Console.StackTrace;
-    /** Unique identifier of the frame within the page that the event relates to. */
-    frameId?: string;
-  }
-  export type eventRecorded_Parameters = {
-    /** Timeline event record data. */
-    record: TimelineEvent;
-  };
-  export type eventRecorded_Handler = (params: eventRecorded_Parameters) => void;
-  export type start_Parameters = {
-    /** Samples JavaScript stack traces up to <code>maxCallStackDepth</code>, defaults to 5. */
-    maxCallStackDepth?: number;
-    /** Whether instrumentation events should be buffered and returned upon <code>stop</code> call. */
-    bufferEvents?: boolean;
-    /** Coma separated event types to issue although bufferEvents is set. */
-    liveEvents?: string;
-    /** Whether counters data should be included into timeline events. */
-    includeCounters?: boolean;
-    /** Whether events from GPU process should be collected. */
-    includeGPUEvents?: boolean;
-  };
-}
-/** Debugger domain exposes JavaScript debugging capabilities. It allows setting and removing breakpoints, stepping through execution, exploring stack traces, etc. */
-export class Debugger {
-  private _globalObjectCleared: Debugger.globalObjectCleared_Handler = undefined;
-  private _scriptParsed: Debugger.scriptParsed_Handler = undefined;
-  private _scriptFailedToParse: Debugger.scriptFailedToParse_Handler = undefined;
-  private _breakpointResolved: Debugger.breakpointResolved_Handler = undefined;
-  private _paused: Debugger.paused_Handler = undefined;
-  private _resumed: Debugger.resumed_Handler = undefined;
-  private _promiseUpdated: Debugger.promiseUpdated_Handler = undefined;
-  private _asyncOperationStarted: Debugger.asyncOperationStarted_Handler = undefined;
-  private _asyncOperationCompleted: Debugger.asyncOperationCompleted_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
-  /** Enables debugger for the given page. Clients should not assume that the debugging has been enabled until the result for this command is received. */
-  enable(): Promise<void> {
-    return this._client.send<void>("Debugger.enable");
-  }
-  /** Disables debugger for given page. */
-  disable(): Promise<void> {
-    return this._client.send<void>("Debugger.disable");
-  }
-  /** Activates / deactivates all breakpoints on the page. */
-  setBreakpointsActive(params: Debugger.setBreakpointsActive_Parameters): Promise<void> {
-    return this._client.send<void>("Debugger.setBreakpointsActive", params);
-  }
-  /** Makes page not interrupt on any pauses (breakpoint, exception, dom exception etc). */
-  setSkipAllPauses(params: Debugger.setSkipAllPauses_Parameters): Promise<void> {
-    return this._client.send<void>("Debugger.setSkipAllPauses", params);
-  }
-  /** Sets JavaScript breakpoint at given location specified either by URL or URL regex. Once this command is issued, all existing parsed scripts will have breakpoints resolved and returned in <code>locations</code> property. Further matching script parsing will result in subsequent <code>breakpointResolved</code> events issued. This logical breakpoint will survive page reloads. */
-  setBreakpointByUrl(params: Debugger.setBreakpointByUrl_Parameters): Promise<Debugger.setBreakpointByUrl_Return> {
-    return this._client.send<Debugger.setBreakpointByUrl_Return>("Debugger.setBreakpointByUrl", params);
-  }
-  /** Sets JavaScript breakpoint at a given location. */
-  setBreakpoint(params: Debugger.setBreakpoint_Parameters): Promise<Debugger.setBreakpoint_Return> {
-    return this._client.send<Debugger.setBreakpoint_Return>("Debugger.setBreakpoint", params);
-  }
-  /** Removes JavaScript breakpoint. */
-  removeBreakpoint(params: Debugger.removeBreakpoint_Parameters): Promise<void> {
-    return this._client.send<void>("Debugger.removeBreakpoint", params);
-  }
-  /** Continues execution until specific location is reached. */
-  continueToLocation(params: Debugger.continueToLocation_Parameters): Promise<void> {
-    return this._client.send<void>("Debugger.continueToLocation", params);
-  }
-  /** Steps over the statement. */
-  stepOver(): Promise<void> {
-    return this._client.send<void>("Debugger.stepOver");
-  }
-  /** Steps into the function call. */
-  stepInto(): Promise<void> {
-    return this._client.send<void>("Debugger.stepInto");
-  }
-  /** Steps out of the function call. */
-  stepOut(): Promise<void> {
-    return this._client.send<void>("Debugger.stepOut");
-  }
-  /** Stops on the next JavaScript statement. */
-  pause(): Promise<void> {
-    return this._client.send<void>("Debugger.pause");
-  }
-  /** Resumes JavaScript execution. */
-  resume(): Promise<void> {
-    return this._client.send<void>("Debugger.resume");
-  }
-  /** Steps into the first async operation handler that was scheduled by or after the current statement. */
-  stepIntoAsync(): Promise<void> {
-    return this._client.send<void>("Debugger.stepIntoAsync");
-  }
-  /** Searches for given string in script content. */
-  searchInContent(params: Debugger.searchInContent_Parameters): Promise<Debugger.searchInContent_Return> {
-    return this._client.send<Debugger.searchInContent_Return>("Debugger.searchInContent", params);
-  }
-  /** Always returns true. */
-  canSetScriptSource(): Promise<Debugger.canSetScriptSource_Return> {
-    return this._client.send<Debugger.canSetScriptSource_Return>("Debugger.canSetScriptSource");
-  }
-  /** Edits JavaScript source live. */
-  setScriptSource(params: Debugger.setScriptSource_Parameters): Promise<Debugger.setScriptSource_Return> {
-    return this._client.send<Debugger.setScriptSource_Return>("Debugger.setScriptSource", params);
-  }
-  /** Restarts particular call frame from the beginning. */
-  restartFrame(params: Debugger.restartFrame_Parameters): Promise<Debugger.restartFrame_Return> {
-    return this._client.send<Debugger.restartFrame_Return>("Debugger.restartFrame", params);
-  }
-  /** Returns source for the script with given id. */
-  getScriptSource(params: Debugger.getScriptSource_Parameters): Promise<Debugger.getScriptSource_Return> {
-    return this._client.send<Debugger.getScriptSource_Return>("Debugger.getScriptSource", params);
-  }
-  /** Returns detailed information on given function. */
-  getFunctionDetails(params: Debugger.getFunctionDetails_Parameters): Promise<Debugger.getFunctionDetails_Return> {
-    return this._client.send<Debugger.getFunctionDetails_Return>("Debugger.getFunctionDetails", params);
-  }
-  /** Returns detailed information on given generator object. */
-  getGeneratorObjectDetails(params: Debugger.getGeneratorObjectDetails_Parameters): Promise<Debugger.getGeneratorObjectDetails_Return> {
-    return this._client.send<Debugger.getGeneratorObjectDetails_Return>("Debugger.getGeneratorObjectDetails", params);
-  }
-  /** Returns entries of given collection. */
-  getCollectionEntries(params: Debugger.getCollectionEntries_Parameters): Promise<Debugger.getCollectionEntries_Return> {
-    return this._client.send<Debugger.getCollectionEntries_Return>("Debugger.getCollectionEntries", params);
-  }
-  /** Defines pause on exceptions state. Can be set to stop on all exceptions, uncaught exceptions or no exceptions. Initial pause on exceptions state is <code>none</code>. */
-  setPauseOnExceptions(params: Debugger.setPauseOnExceptions_Parameters): Promise<void> {
-    return this._client.send<void>("Debugger.setPauseOnExceptions", params);
-  }
-  /** Evaluates expression on a given call frame. */
-  evaluateOnCallFrame(params: Debugger.evaluateOnCallFrame_Parameters): Promise<Debugger.evaluateOnCallFrame_Return> {
-    return this._client.send<Debugger.evaluateOnCallFrame_Return>("Debugger.evaluateOnCallFrame", params);
-  }
-  /** Compiles expression. */
-  compileScript(params: Debugger.compileScript_Parameters): Promise<Debugger.compileScript_Return> {
-    return this._client.send<Debugger.compileScript_Return>("Debugger.compileScript", params);
-  }
-  /** Runs script with given id in a given context. */
-  runScript(params: Debugger.runScript_Parameters): Promise<Debugger.runScript_Return> {
-    return this._client.send<Debugger.runScript_Return>("Debugger.runScript", params);
-  }
-  /** Changes value of variable in a callframe or a closure. Either callframe or function must be specified. Object-based scopes are not supported and must be mutated manually. */
-  setVariableValue(params: Debugger.setVariableValue_Parameters): Promise<void> {
-    return this._client.send<void>("Debugger.setVariableValue", params);
-  }
-  /** Lists all positions where step-in is possible for a current statement in a specified call frame */
-  getStepInPositions(params: Debugger.getStepInPositions_Parameters): Promise<Debugger.getStepInPositions_Return> {
-    return this._client.send<Debugger.getStepInPositions_Return>("Debugger.getStepInPositions", params);
-  }
-  /** Returns call stack including variables changed since VM was paused. VM must be paused. */
-  getBacktrace(): Promise<Debugger.getBacktrace_Return> {
-    return this._client.send<Debugger.getBacktrace_Return>("Debugger.getBacktrace");
-  }
-  /** Makes backend skip steps in the sources with names matching given pattern. VM will try leave blacklisted scripts by performing 'step in' several times, finally resorting to 'step out' if unsuccessful. */
-  skipStackFrames(params: Debugger.skipStackFrames_Parameters): Promise<void> {
-    return this._client.send<void>("Debugger.skipStackFrames", params);
-  }
-  /** Enables or disables async call stacks tracking. */
-  setAsyncCallStackDepth(params: Debugger.setAsyncCallStackDepth_Parameters): Promise<void> {
-    return this._client.send<void>("Debugger.setAsyncCallStackDepth", params);
-  }
-  /** Enables promise tracking, information about <code>Promise</code>s created or updated will now be stored on the backend. */
-  enablePromiseTracker(params: Debugger.enablePromiseTracker_Parameters): Promise<void> {
-    return this._client.send<void>("Debugger.enablePromiseTracker", params);
-  }
-  /** Disables promise tracking. */
-  disablePromiseTracker(): Promise<void> {
-    return this._client.send<void>("Debugger.disablePromiseTracker");
-  }
-  /** Returns <code>Promise</code> with specified ID. */
-  getPromiseById(params: Debugger.getPromiseById_Parameters): Promise<Debugger.getPromiseById_Return> {
-    return this._client.send<Debugger.getPromiseById_Return>("Debugger.getPromiseById", params);
-  }
-  /** Fires pending <code>asyncOperationStarted</code> events (if any), as if a debugger stepping session has just been started. */
-  flushAsyncOperationEvents(): Promise<void> {
-    return this._client.send<void>("Debugger.flushAsyncOperationEvents");
-  }
-  /** Sets breakpoint on AsyncOperation callback handler. */
-  setAsyncOperationBreakpoint(params: Debugger.setAsyncOperationBreakpoint_Parameters): Promise<void> {
-    return this._client.send<void>("Debugger.setAsyncOperationBreakpoint", params);
-  }
-  /** Removes AsyncOperation breakpoint. */
-  removeAsyncOperationBreakpoint(params: Debugger.removeAsyncOperationBreakpoint_Parameters): Promise<void> {
-    return this._client.send<void>("Debugger.removeAsyncOperationBreakpoint", params);
-  }
-  /** Called when global has been cleared and debugger client should reset its state. Happens upon navigation or reload. */
-  get globalObjectCleared(): Debugger.globalObjectCleared_Handler {
-    return this._globalObjectCleared;
-  }
-  set globalObjectCleared(handler: Debugger.globalObjectCleared_Handler) {
-    if (this._globalObjectCleared) {
-      this._client.removeListener("Debugger.globalObjectCleared", this._globalObjectCleared);
-    }
-    this._globalObjectCleared = handler;
-    if (handler) {
-      this._client.on("Debugger.globalObjectCleared", handler);
-    }
-  }
-  /** Fired when virtual machine parses script. This event is also fired for all known and uncollected scripts upon enabling debugger. */
-  get scriptParsed(): Debugger.scriptParsed_Handler {
-    return this._scriptParsed;
-  }
-  set scriptParsed(handler: Debugger.scriptParsed_Handler) {
-    if (this._scriptParsed) {
-      this._client.removeListener("Debugger.scriptParsed", this._scriptParsed);
-    }
-    this._scriptParsed = handler;
-    if (handler) {
-      this._client.on("Debugger.scriptParsed", handler);
-    }
-  }
-  /** Fired when virtual machine fails to parse the script. */
-  get scriptFailedToParse(): Debugger.scriptFailedToParse_Handler {
-    return this._scriptFailedToParse;
-  }
-  set scriptFailedToParse(handler: Debugger.scriptFailedToParse_Handler) {
-    if (this._scriptFailedToParse) {
-      this._client.removeListener("Debugger.scriptFailedToParse", this._scriptFailedToParse);
-    }
-    this._scriptFailedToParse = handler;
-    if (handler) {
-      this._client.on("Debugger.scriptFailedToParse", handler);
-    }
-  }
-  /** Fired when breakpoint is resolved to an actual script and location. */
-  get breakpointResolved(): Debugger.breakpointResolved_Handler {
-    return this._breakpointResolved;
-  }
-  set breakpointResolved(handler: Debugger.breakpointResolved_Handler) {
-    if (this._breakpointResolved) {
-      this._client.removeListener("Debugger.breakpointResolved", this._breakpointResolved);
-    }
-    this._breakpointResolved = handler;
-    if (handler) {
-      this._client.on("Debugger.breakpointResolved", handler);
-    }
-  }
-  /** Fired when the virtual machine stopped on breakpoint or exception or any other stop criteria. */
-  get paused(): Debugger.paused_Handler {
-    return this._paused;
-  }
-  set paused(handler: Debugger.paused_Handler) {
-    if (this._paused) {
-      this._client.removeListener("Debugger.paused", this._paused);
-    }
-    this._paused = handler;
-    if (handler) {
-      this._client.on("Debugger.paused", handler);
-    }
-  }
-  /** Fired when the virtual machine resumed execution. */
-  get resumed(): Debugger.resumed_Handler {
-    return this._resumed;
-  }
-  set resumed(handler: Debugger.resumed_Handler) {
-    if (this._resumed) {
-      this._client.removeListener("Debugger.resumed", this._resumed);
-    }
-    this._resumed = handler;
-    if (handler) {
-      this._client.on("Debugger.resumed", handler);
-    }
-  }
-  /** Fired when a <code>Promise</code> is created, updated or garbage collected. */
-  get promiseUpdated(): Debugger.promiseUpdated_Handler {
-    return this._promiseUpdated;
-  }
-  set promiseUpdated(handler: Debugger.promiseUpdated_Handler) {
-    if (this._promiseUpdated) {
-      this._client.removeListener("Debugger.promiseUpdated", this._promiseUpdated);
-    }
-    this._promiseUpdated = handler;
-    if (handler) {
-      this._client.on("Debugger.promiseUpdated", handler);
-    }
-  }
-  /** Fired when an async operation is scheduled (while in a debugger stepping session). */
-  get asyncOperationStarted(): Debugger.asyncOperationStarted_Handler {
-    return this._asyncOperationStarted;
-  }
-  set asyncOperationStarted(handler: Debugger.asyncOperationStarted_Handler) {
-    if (this._asyncOperationStarted) {
-      this._client.removeListener("Debugger.asyncOperationStarted", this._asyncOperationStarted);
-    }
-    this._asyncOperationStarted = handler;
-    if (handler) {
-      this._client.on("Debugger.asyncOperationStarted", handler);
-    }
-  }
-  /** Fired when an async operation is completed (while in a debugger stepping session). */
-  get asyncOperationCompleted(): Debugger.asyncOperationCompleted_Handler {
-    return this._asyncOperationCompleted;
-  }
-  set asyncOperationCompleted(handler: Debugger.asyncOperationCompleted_Handler) {
-    if (this._asyncOperationCompleted) {
-      this._client.removeListener("Debugger.asyncOperationCompleted", this._asyncOperationCompleted);
-    }
-    this._asyncOperationCompleted = handler;
-    if (handler) {
-      this._client.on("Debugger.asyncOperationCompleted", handler);
-    }
-  }
-}
-export namespace Debugger {
-  /** Breakpoint identifier. */
-  export type BreakpointId = string;
-  /** Unique script identifier. */
-  export type ScriptId = string;
-  /** Call frame identifier. */
-  export type CallFrameId = string;
-  /** Location in the source code. */
-  export interface Location {
-    /** Script identifier as reported in the <code>Debugger.scriptParsed</code>. */
-    scriptId: ScriptId;
-    /** Line number in the script (0-based). */
-    lineNumber: number;
-    /** Column number in the script (0-based). */
-    columnNumber?: number;
-  }
-  /** Information about the function. */
-  export interface FunctionDetails {
-    /** Location of the function, none for native functions. */
-    location?: Location;
-    /** Name of the function. */
-    functionName: string;
-    /** Whether this is a generator function. */
-    isGenerator: boolean;
-    /** Scope chain for this closure. */
-    scopeChain?: Scope[];
-  }
-  /** Information about the generator object. */
-  export interface GeneratorObjectDetails {
-    /** Generator function. */
-    function: Runtime.RemoteObject;
-    /** Name of the generator function. */
-    functionName: string;
-    /** Current generator object status. */
-    status: "running" | "suspended" | "closed";
-    /** If suspended, location where generator function was suspended (e.g. location of the last 'yield'). Otherwise, location of the generator function. */
-    location?: Location;
-  }
-  /** Collection entry. */
-  export interface CollectionEntry {
-    /** Entry key of a map-like collection, otherwise not provided. */
-    key?: Runtime.RemoteObject;
-    /** Entry value. */
-    value: Runtime.RemoteObject;
-  }
-  /** JavaScript call frame. Array of call frames form the call stack. */
-  export interface CallFrame {
-    /** Call frame identifier. This identifier is only valid while the virtual machine is paused. */
-    callFrameId: CallFrameId;
-    /** Name of the JavaScript function called on this call frame. */
-    functionName: string;
-    /** Location in the source code. */
-    functionLocation?: Location;
-    /** Location in the source code. */
-    location: Location;
-    /** Scope chain for this call frame. */
-    scopeChain: Scope[];
-    /** <code>this</code> object for this call frame. */
-    this: Runtime.RemoteObject;
-    /** The value being returned, if the function is at return point. */
-    returnValue?: Runtime.RemoteObject;
-  }
-  /** JavaScript call stack, including async stack traces. */
-  export interface StackTrace {
-    /** Call frames of the stack trace. */
-    callFrames: CallFrame[];
-    /** String label of this stack trace. For async traces this may be a name of the function that initiated the async call. */
-    description?: string;
-    /** Async stack trace, if any. */
-    asyncStackTrace?: StackTrace;
-  }
-  /** Scope description. */
-  export interface Scope {
-    /** Scope type. */
-    type: "global" | "local" | "with" | "closure" | "catch" | "block" | "script";
-    /** Object representing the scope. For <code>global</code> and <code>with</code> scopes it represents the actual object; for the rest of the scopes, it is artificial transient object enumerating scope variables as its properties. */
-    object: Runtime.RemoteObject;
-    name?: string;
-  }
-  /** Detailed information on exception (or error) that was thrown during script compilation or execution. */
-  export interface ExceptionDetails {
-    /** Exception text. */
-    text: string;
-    /** URL of the message origin. */
-    url?: string;
-    /** Script ID of the message origin. */
-    scriptId?: string;
-    /** Line number in the resource that generated this message. */
-    line?: number;
-    /** Column number in the resource that generated this message. */
-    column?: number;
-    /** JavaScript stack trace for assertions and error messages. */
-    stackTrace?: Console.StackTrace;
-  }
-  /** Error data for setScriptSource command. compileError is a case type for uncompilable script source error. */
-  export interface SetScriptSourceError {
-    compileError?: { message: string; lineNumber: number; columnNumber: number; };
-  }
-  /** Information about the promise. All fields but id are optional and if present they reflect the new state of the property on the promise with given id. */
-  export interface PromiseDetails {
-    /** Unique id of the promise. */
-    id: number;
-    /** Status of the promise. */
-    status?: "pending" | "resolved" | "rejected";
-    /** Id of the parent promise. */
-    parentId?: number;
-    /** Top call frame on promise creation. */
-    callFrame?: Console.CallFrame;
-    /** Creation time of the promise. */
-    creationTime?: number;
-    /** Settlement time of the promise. */
-    settlementTime?: number;
-    /** JavaScript stack trace on promise creation. */
-    creationStack?: Console.StackTrace;
-    /** JavaScript asynchronous stack trace on promise creation, if available. */
-    asyncCreationStack?: Console.AsyncStackTrace;
-    /** JavaScript stack trace on promise settlement. */
-    settlementStack?: Console.StackTrace;
-    /** JavaScript asynchronous stack trace on promise settlement, if available. */
-    asyncSettlementStack?: Console.AsyncStackTrace;
-  }
-  /** Information about the async operation. */
-  export interface AsyncOperation {
-    /** Unique id of the async operation. */
-    id: number;
-    /** String description of the async operation. */
-    description: string;
-    /** Stack trace where async operation was scheduled. */
-    stackTrace?: Console.StackTrace;
-    /** Asynchronous stack trace where async operation was scheduled, if available. */
-    asyncStackTrace?: Console.AsyncStackTrace;
-  }
-  /** Search match for resource. */
-  export interface SearchMatch {
-    /** Line number in resource content. */
-    lineNumber: number;
-    /** Line with match content. */
-    lineContent: string;
-  }
-  export type globalObjectCleared_Handler = () => void;
-  export type scriptParsed_Parameters = {
-    /** Identifier of the script parsed. */
-    scriptId: ScriptId;
-    /** URL or name of the script parsed (if any). */
-    url: string;
-    /** Line offset of the script within the resource with given URL (for script tags). */
-    startLine: number;
-    /** Column offset of the script within the resource with given URL. */
-    startColumn: number;
-    /** Last line of the script. */
-    endLine: number;
-    /** Length of the last line of the script. */
-    endColumn: number;
-    /** Specifies script creation context. */
-    executionContextId: Runtime.ExecutionContextId;
-    /** Determines whether this script is a user extension script. */
-    isContentScript?: boolean;
-    /** Determines whether this script is an internal script. */
-    isInternalScript?: boolean;
-    /** True, if this script is generated as a result of the live edit operation. */
-    isLiveEdit?: boolean;
-    /** URL of source map associated with script (if any). */
-    sourceMapURL?: string;
-    /** True, if this script has sourceURL. */
-    hasSourceURL?: boolean;
-  };
-  export type scriptParsed_Handler = (params: scriptParsed_Parameters) => void;
-  export type scriptFailedToParse_Parameters = {
-    /** Identifier of the script parsed. */
-    scriptId: ScriptId;
-    /** URL or name of the script parsed (if any). */
-    url: string;
-    /** Line offset of the script within the resource with given URL (for script tags). */
-    startLine: number;
-    /** Column offset of the script within the resource with given URL. */
-    startColumn: number;
-    /** Last line of the script. */
-    endLine: number;
-    /** Length of the last line of the script. */
-    endColumn: number;
-    /** Specifies script creation context. */
-    executionContextId: Runtime.ExecutionContextId;
-    /** Determines whether this script is a user extension script. */
-    isContentScript?: boolean;
-    /** Determines whether this script is an internal script. */
-    isInternalScript?: boolean;
-    /** URL of source map associated with script (if any). */
-    sourceMapURL?: string;
-    /** True, if this script has sourceURL. */
-    hasSourceURL?: boolean;
-  };
-  export type scriptFailedToParse_Handler = (params: scriptFailedToParse_Parameters) => void;
-  export type breakpointResolved_Parameters = {
-    /** Breakpoint unique identifier. */
-    breakpointId: BreakpointId;
-    /** Actual breakpoint location. */
-    location: Location;
-  };
-  export type breakpointResolved_Handler = (params: breakpointResolved_Parameters) => void;
-  export type paused_Parameters = {
-    /** Call stack the virtual machine stopped on. */
-    callFrames: CallFrame[];
-    /** Pause reason. */
-    reason: "XHR" | "DOM" | "EventListener" | "exception" | "assert" | "CSPViolation" | "debugCommand" | "promiseRejection" | "AsyncOperation" | "other";
-    /** Object containing break-specific auxiliary properties. */
-    data?: any;
-    /** Hit breakpoints IDs */
-    hitBreakpoints?: string[];
-    /** Async stack trace, if any. */
-    asyncStackTrace?: StackTrace;
-  };
-  export type paused_Handler = (params: paused_Parameters) => void;
-  export type resumed_Handler = () => void;
-  export type promiseUpdated_Parameters = {
-    /** Type of the event. */
-    eventType: "new" | "update" | "gc";
-    /** Information about the updated <code>Promise</code>. */
-    promise: PromiseDetails;
-  };
-  export type promiseUpdated_Handler = (params: promiseUpdated_Parameters) => void;
-  export type asyncOperationStarted_Parameters = {
-    /** Information about the async operation. */
-    operation: AsyncOperation;
-  };
-  export type asyncOperationStarted_Handler = (params: asyncOperationStarted_Parameters) => void;
-  export type asyncOperationCompleted_Parameters = {
-    /** ID of the async operation that was completed. */
-    id: number;
-  };
-  export type asyncOperationCompleted_Handler = (params: asyncOperationCompleted_Parameters) => void;
-  export type setBreakpointsActive_Parameters = {
-    /** New value for breakpoints active state. */
-    active: boolean;
-  };
-  export type setSkipAllPauses_Parameters = {
-    /** New value for skip pauses state. */
-    skipped: boolean;
-  };
-  export type setBreakpointByUrl_Parameters = {
-    /** Line number to set breakpoint at. */
-    lineNumber: number;
-    /** URL of the resources to set breakpoint on. */
-    url?: string;
-    /** Regex pattern for the URLs of the resources to set breakpoints on. Either <code>url</code> or <code>urlRegex</code> must be specified. */
-    urlRegex?: string;
-    /** Offset in the line to set breakpoint at. */
-    columnNumber?: number;
-    /** Expression to use as a breakpoint condition. When specified, debugger will only stop on the breakpoint if this expression evaluates to true. */
-    condition?: string;
-  };
-  export type setBreakpointByUrl_Return = {
-    /** Id of the created breakpoint for further reference. */
-    breakpointId: BreakpointId;
-    /** List of the locations this breakpoint resolved into upon addition. */
-    locations: Location[];
-  };
-  export type setBreakpoint_Parameters = {
-    /** Location to set breakpoint in. */
-    location: Location;
-    /** Expression to use as a breakpoint condition. When specified, debugger will only stop on the breakpoint if this expression evaluates to true. */
-    condition?: string;
-  };
-  export type setBreakpoint_Return = {
-    /** Id of the created breakpoint for further reference. */
-    breakpointId: BreakpointId;
-    /** Location this breakpoint resolved into. */
-    actualLocation: Location;
-  };
-  export type removeBreakpoint_Parameters = {
-    breakpointId: BreakpointId;
-  };
-  export type continueToLocation_Parameters = {
-    /** Location to continue to. */
-    location: Location;
-    /** Allows breakpoints at the intemediate positions inside statements. */
-    interstatementLocation?: boolean;
-  };
-  export type searchInContent_Parameters = {
-    /** Id of the script to search in. */
-    scriptId: ScriptId;
-    /** String to search for. */
-    query: string;
-    /** If true, search is case sensitive. */
-    caseSensitive?: boolean;
-    /** If true, treats string parameter as regex. */
-    isRegex?: boolean;
-  };
-  export type searchInContent_Return = {
-    /** List of search matches. */
-    result: SearchMatch[];
-  };
-  export type canSetScriptSource_Return = {
-    /** True if <code>setScriptSource</code> is supported. */
-    result: boolean;
-  };
-  export type setScriptSource_Parameters = {
-    /** Id of the script to edit. */
-    scriptId: ScriptId;
-    /** New content of the script. */
-    scriptSource: string;
-    /**  If true the change will not actually be applied. Preview mode may be used to get result description without actually modifying the code. */
-    preview?: boolean;
-  };
-  export type setScriptSource_Return = {
-    /** New stack trace in case editing has happened while VM was stopped. */
-    callFrames?: CallFrame[];
-    /** Whether current call stack  was modified after applying the changes. */
-    stackChanged?: boolean;
-    /** Async stack trace, if any. */
-    asyncStackTrace?: StackTrace;
-  };
-  export type restartFrame_Parameters = {
-    /** Call frame identifier to evaluate on. */
-    callFrameId: CallFrameId;
-  };
-  export type restartFrame_Return = {
-    /** New stack trace. */
-    callFrames: CallFrame[];
-    /** Async stack trace, if any. */
-    asyncStackTrace?: StackTrace;
-  };
-  export type getScriptSource_Parameters = {
-    /** Id of the script to get source for. */
-    scriptId: ScriptId;
-  };
-  export type getScriptSource_Return = {
-    /** Script source. */
-    scriptSource: string;
-  };
-  export type getFunctionDetails_Parameters = {
-    /** Id of the function to get details for. */
-    functionId: Runtime.RemoteObjectId;
-  };
-  export type getFunctionDetails_Return = {
-    /** Information about the function. */
-    details: FunctionDetails;
-  };
-  export type getGeneratorObjectDetails_Parameters = {
-    /** Id of the generator object to get details for. */
-    objectId: Runtime.RemoteObjectId;
-  };
-  export type getGeneratorObjectDetails_Return = {
-    /** Information about the generator object. */
-    details: GeneratorObjectDetails;
-  };
-  export type getCollectionEntries_Parameters = {
-    /** Id of the collection to get entries for. */
-    objectId: Runtime.RemoteObjectId;
-  };
-  export type getCollectionEntries_Return = {
-    /** Array of collection entries. */
-    entries: CollectionEntry[];
-  };
-  export type setPauseOnExceptions_Parameters = {
-    /** Pause on exceptions mode. */
-    state: "none" | "uncaught" | "all";
-  };
-  export type evaluateOnCallFrame_Parameters = {
-    /** Call frame identifier to evaluate on. */
-    callFrameId: CallFrameId;
-    /** Expression to evaluate. */
-    expression: string;
-    /** String object group name to put result into (allows rapid releasing resulting object handles using <code>releaseObjectGroup</code>). */
-    objectGroup?: string;
-    /** Specifies whether command line API should be available to the evaluated expression, defaults to false. */
-    includeCommandLineAPI?: boolean;
-    /** Specifies whether evaluation should stop on exceptions and mute console. Overrides setPauseOnException state. */
-    doNotPauseOnExceptionsAndMuteConsole?: boolean;
-    /** Whether the result is expected to be a JSON object that should be sent by value. */
-    returnByValue?: boolean;
-    /** Whether preview should be generated for the result. */
-    generatePreview?: boolean;
-  };
-  export type evaluateOnCallFrame_Return = {
-    /** Object wrapper for the evaluation result. */
-    result: Runtime.RemoteObject;
-    /** True if the result was thrown during the evaluation. */
-    wasThrown?: boolean;
-    /** Exception details. */
-    exceptionDetails?: ExceptionDetails;
-  };
-  export type compileScript_Parameters = {
-    /** Expression to compile. */
-    expression: string;
-    /** Source url to be set for the script. */
-    sourceURL: string;
-    /** Specifies whether the compiled script should be persisted. */
-    persistScript: boolean;
-    /** Specifies in which isolated context to perform script run. Each content script lives in an isolated context and this parameter is used to specify one of those contexts. */
-    executionContextId: Runtime.ExecutionContextId;
-  };
-  export type compileScript_Return = {
-    /** Id of the script. */
-    scriptId?: ScriptId;
-    /** Exception details. */
-    exceptionDetails?: ExceptionDetails;
-  };
-  export type runScript_Parameters = {
-    /** Id of the script to run. */
-    scriptId: ScriptId;
-    /** Specifies in which isolated context to perform script run. Each content script lives in an isolated context and this parameter is used to specify one of those contexts. */
-    executionContextId: Runtime.ExecutionContextId;
-    /** Symbolic group name that can be used to release multiple objects. */
-    objectGroup?: string;
-    /** Specifies whether script run should stop on exceptions and mute console. Overrides setPauseOnException state. */
-    doNotPauseOnExceptionsAndMuteConsole?: boolean;
-  };
-  export type runScript_Return = {
-    /** Run result. */
-    result: Runtime.RemoteObject;
-    /** Exception details. */
-    exceptionDetails?: ExceptionDetails;
-  };
-  export type setVariableValue_Parameters = {
-    /** 0-based number of scope as was listed in scope chain. Only 'local', 'closure' and 'catch' scope types are allowed. Other scopes could be manipulated manually. */
-    scopeNumber: number;
-    /** Variable name. */
-    variableName: string;
-    /** New variable value. */
-    newValue: Runtime.CallArgument;
-    /** Id of callframe that holds variable. */
-    callFrameId?: CallFrameId;
-    /** Object id of closure (function) that holds variable. */
-    functionObjectId?: Runtime.RemoteObjectId;
-  };
-  export type getStepInPositions_Parameters = {
-    /** Id of a call frame where the current statement should be analized */
-    callFrameId: CallFrameId;
-  };
-  export type getStepInPositions_Return = {
-    /** experimental */
-    stepInPositions?: Location[];
-  };
-  export type getBacktrace_Return = {
-    /** Call stack the virtual machine stopped on. */
-    callFrames: CallFrame[];
-    /** Async stack trace, if any. */
-    asyncStackTrace?: StackTrace;
-  };
-  export type skipStackFrames_Parameters = {
-    /** Regular expression defining the scripts to ignore while stepping. */
-    script?: string;
-    /** True, if all content scripts should be ignored. */
-    skipContentScripts?: boolean;
-  };
-  export type setAsyncCallStackDepth_Parameters = {
-    /** Maximum depth of async call stacks. Setting to <code>0</code> will effectively disable collecting async call stacks (default). */
-    maxDepth: number;
-  };
-  export type enablePromiseTracker_Parameters = {
-    /** Whether to capture stack traces for promise creation and settlement events (default: false). */
-    captureStacks?: boolean;
-  };
-  export type getPromiseById_Parameters = {
-    promiseId: number;
-    /** Symbolic group name that can be used to release multiple objects. */
-    objectGroup?: string;
-  };
-  export type getPromiseById_Return = {
-    /** Object wrapper for <code>Promise</code> with specified ID, if any. */
-    promise: Runtime.RemoteObject;
-  };
-  export type setAsyncOperationBreakpoint_Parameters = {
-    /** ID of the async operation to set breakpoint for. */
-    operationId: number;
-  };
-  export type removeAsyncOperationBreakpoint_Parameters = {
-    /** ID of the async operation to remove breakpoint for. */
-    operationId: number;
   };
 }
 /** DOM debugging allows setting breakpoints on particular DOM operations and events. JavaScript execution will stop on these operations as if there was a regular breakpoint set. */
@@ -5190,12 +4268,22 @@ export namespace DOMDebugger {
     type: string;
     /** <code>EventListener</code>'s useCapture. */
     useCapture: boolean;
-    /** Handler code location. */
-    location: Debugger.Location;
+    /** <code>EventListener</code>'s passive flag. */
+    passive: boolean;
+    /** <code>EventListener</code>'s once flag. */
+    once: boolean;
+    /** Script id of the handler code. */
+    scriptId: Runtime.ScriptId;
+    /** Line number in the script (0-based). */
+    lineNumber: number;
+    /** Column number in the script (0-based). */
+    columnNumber: number;
     /** Event handler function value. */
     handler?: Runtime.RemoteObject;
     /** Event original handler function value. */
     originalHandler?: Runtime.RemoteObject;
+    /** Node the listener is added to (if any). */
+    backendNodeId?: DOM.BackendNodeId;
   }
   export type setDOMBreakpoint_Parameters = {
     /** Identifier of the node to set breakpoint on. */
@@ -5240,391 +4328,263 @@ export namespace DOMDebugger {
   export type getEventListeners_Parameters = {
     /** Identifier of the object to return listeners for. */
     objectId: Runtime.RemoteObjectId;
+    /** The maximum depth at which Node children should be retrieved, defaults to 1. Use -1 for the entire subtree or provide an integer larger than 0. */
+    depth?: number;
+    /** Whether or not iframes and shadow roots should be traversed when returning the subtree (default is false). Reports listeners for all contexts if pierce is enabled. */
+    pierce?: boolean;
   };
   export type getEventListeners_Return = {
     /** Array of relevant listeners. */
     listeners: EventListener[];
   };
 }
-export class Profiler {
-  private _consoleProfileStarted: Profiler.consoleProfileStarted_Handler = undefined;
-  private _consoleProfileFinished: Profiler.consoleProfileFinished_Handler = undefined;
+/** Supports additional targets discovery and allows to attach to them. */
+export class Target {
+  private _targetCreated: Target.targetCreated_Handler = undefined;
+  private _targetDestroyed: Target.targetDestroyed_Handler = undefined;
+  private _attachedToTarget: Target.attachedToTarget_Handler = undefined;
+  private _detachedFromTarget: Target.detachedFromTarget_Handler = undefined;
+  private _receivedMessageFromTarget: Target.receivedMessageFromTarget_Handler = undefined;
   private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
-  enable(): Promise<void> {
-    return this._client.send<void>("Profiler.enable");
+  /** Controls whether to discover available targets and notify via <code>targetCreated/targetDestroyed</code> events. */
+  setDiscoverTargets(params: Target.setDiscoverTargets_Parameters): Promise<void> {
+    return this._client.send<void>("Target.setDiscoverTargets", params);
   }
-  disable(): Promise<void> {
-    return this._client.send<void>("Profiler.disable");
+  /** Controls whether to automatically attach to new targets which are considered to be related to this one. When turned on, attaches to all existing related targets as well. When turned off, automatically detaches from all currently attached targets. */
+  setAutoAttach(params: Target.setAutoAttach_Parameters): Promise<void> {
+    return this._client.send<void>("Target.setAutoAttach", params);
   }
-  /** Changes CPU profiler sampling interval. Must be called before CPU profiles recording started. */
-  setSamplingInterval(params: Profiler.setSamplingInterval_Parameters): Promise<void> {
-    return this._client.send<void>("Profiler.setSamplingInterval", params);
+  setAttachToFrames(params: Target.setAttachToFrames_Parameters): Promise<void> {
+    return this._client.send<void>("Target.setAttachToFrames", params);
   }
-  start(): Promise<void> {
-    return this._client.send<void>("Profiler.start");
+  /** Enables target discovery for the specified locations, when <code>setDiscoverTargets</code> was set to <code>true</code>. */
+  setRemoteLocations(params: Target.setRemoteLocations_Parameters): Promise<void> {
+    return this._client.send<void>("Target.setRemoteLocations", params);
   }
-  stop(): Promise<Profiler.stop_Return> {
-    return this._client.send<Profiler.stop_Return>("Profiler.stop");
+  /** Sends protocol message to the target with given id. */
+  sendMessageToTarget(params: Target.sendMessageToTarget_Parameters): Promise<void> {
+    return this._client.send<void>("Target.sendMessageToTarget", params);
   }
-  /** Sent when new profile recodring is started using console.profile() call. */
-  get consoleProfileStarted(): Profiler.consoleProfileStarted_Handler {
-    return this._consoleProfileStarted;
+  /** Returns information about a target. */
+  getTargetInfo(params: Target.getTargetInfo_Parameters): Promise<Target.getTargetInfo_Return> {
+    return this._client.send<Target.getTargetInfo_Return>("Target.getTargetInfo", params);
   }
-  set consoleProfileStarted(handler: Profiler.consoleProfileStarted_Handler) {
-    if (this._consoleProfileStarted) {
-      this._client.removeListener("Profiler.consoleProfileStarted", this._consoleProfileStarted);
+  /** Activates (focuses) the target. */
+  activateTarget(params: Target.activateTarget_Parameters): Promise<void> {
+    return this._client.send<void>("Target.activateTarget", params);
+  }
+  /** Closes the target. If the target is a page that gets closed too. */
+  closeTarget(params: Target.closeTarget_Parameters): Promise<Target.closeTarget_Return> {
+    return this._client.send<Target.closeTarget_Return>("Target.closeTarget", params);
+  }
+  /** Attaches to the target with given id. */
+  attachToTarget(params: Target.attachToTarget_Parameters): Promise<Target.attachToTarget_Return> {
+    return this._client.send<Target.attachToTarget_Return>("Target.attachToTarget", params);
+  }
+  /** Detaches from the target with given id. */
+  detachFromTarget(params: Target.detachFromTarget_Parameters): Promise<void> {
+    return this._client.send<void>("Target.detachFromTarget", params);
+  }
+  /** Creates a new empty BrowserContext. Similar to an incognito profile but you can have more than one. */
+  createBrowserContext(): Promise<Target.createBrowserContext_Return> {
+    return this._client.send<Target.createBrowserContext_Return>("Target.createBrowserContext");
+  }
+  /** Deletes a BrowserContext, will fail of any open page uses it. */
+  disposeBrowserContext(params: Target.disposeBrowserContext_Parameters): Promise<Target.disposeBrowserContext_Return> {
+    return this._client.send<Target.disposeBrowserContext_Return>("Target.disposeBrowserContext", params);
+  }
+  /** Creates a new page. */
+  createTarget(params: Target.createTarget_Parameters): Promise<Target.createTarget_Return> {
+    return this._client.send<Target.createTarget_Return>("Target.createTarget", params);
+  }
+  /** Retrieves a list of available targets. */
+  getTargets(): Promise<Target.getTargets_Return> {
+    return this._client.send<Target.getTargets_Return>("Target.getTargets");
+  }
+  /** Issued when a possible inspection target is created. */
+  get targetCreated(): Target.targetCreated_Handler {
+    return this._targetCreated;
+  }
+  set targetCreated(handler: Target.targetCreated_Handler) {
+    if (this._targetCreated) {
+      this._client.removeListener("Target.targetCreated", this._targetCreated);
     }
-    this._consoleProfileStarted = handler;
+    this._targetCreated = handler;
     if (handler) {
-      this._client.on("Profiler.consoleProfileStarted", handler);
+      this._client.on("Target.targetCreated", handler);
     }
   }
-  get consoleProfileFinished(): Profiler.consoleProfileFinished_Handler {
-    return this._consoleProfileFinished;
+  /** Issued when a target is destroyed. */
+  get targetDestroyed(): Target.targetDestroyed_Handler {
+    return this._targetDestroyed;
   }
-  set consoleProfileFinished(handler: Profiler.consoleProfileFinished_Handler) {
-    if (this._consoleProfileFinished) {
-      this._client.removeListener("Profiler.consoleProfileFinished", this._consoleProfileFinished);
+  set targetDestroyed(handler: Target.targetDestroyed_Handler) {
+    if (this._targetDestroyed) {
+      this._client.removeListener("Target.targetDestroyed", this._targetDestroyed);
     }
-    this._consoleProfileFinished = handler;
+    this._targetDestroyed = handler;
     if (handler) {
-      this._client.on("Profiler.consoleProfileFinished", handler);
+      this._client.on("Target.targetDestroyed", handler);
+    }
+  }
+  /** Issued when attached to target because of auto-attach or <code>attachToTarget</code> command. */
+  get attachedToTarget(): Target.attachedToTarget_Handler {
+    return this._attachedToTarget;
+  }
+  set attachedToTarget(handler: Target.attachedToTarget_Handler) {
+    if (this._attachedToTarget) {
+      this._client.removeListener("Target.attachedToTarget", this._attachedToTarget);
+    }
+    this._attachedToTarget = handler;
+    if (handler) {
+      this._client.on("Target.attachedToTarget", handler);
+    }
+  }
+  /** Issued when detached from target for any reason (including <code>detachFromTarget</code> command). */
+  get detachedFromTarget(): Target.detachedFromTarget_Handler {
+    return this._detachedFromTarget;
+  }
+  set detachedFromTarget(handler: Target.detachedFromTarget_Handler) {
+    if (this._detachedFromTarget) {
+      this._client.removeListener("Target.detachedFromTarget", this._detachedFromTarget);
+    }
+    this._detachedFromTarget = handler;
+    if (handler) {
+      this._client.on("Target.detachedFromTarget", handler);
+    }
+  }
+  /** Notifies about new protocol message from attached target. */
+  get receivedMessageFromTarget(): Target.receivedMessageFromTarget_Handler {
+    return this._receivedMessageFromTarget;
+  }
+  set receivedMessageFromTarget(handler: Target.receivedMessageFromTarget_Handler) {
+    if (this._receivedMessageFromTarget) {
+      this._client.removeListener("Target.receivedMessageFromTarget", this._receivedMessageFromTarget);
+    }
+    this._receivedMessageFromTarget = handler;
+    if (handler) {
+      this._client.on("Target.receivedMessageFromTarget", handler);
     }
   }
 }
-export namespace Profiler {
-  /** CPU Profile node. Holds callsite information, execution statistics and child nodes. */
-  export interface CPUProfileNode {
-    /** Function name. */
-    functionName: string;
-    /** Script identifier. */
-    scriptId: Debugger.ScriptId;
-    /** URL. */
+export namespace Target {
+  export type TargetID = string;
+  export type BrowserContextID = string;
+  export interface TargetInfo {
+    targetId: TargetID;
+    type: string;
+    title: string;
     url: string;
-    /** 1-based line number of the function start position. */
-    lineNumber: number;
-    /** 1-based column number of the function start position. */
-    columnNumber: number;
-    /** Number of samples where this node was on top of the call stack. */
-    hitCount: number;
-    /** Call UID. */
-    callUID: number;
-    /** Child nodes. */
-    children: CPUProfileNode[];
-    /** The reason of being not optimized. The function may be deoptimized or marked as don't optimize. */
-    deoptReason: string;
-    /** Unique id of the node. */
-    id: number;
-    /** An array of source position ticks. */
-    positionTicks: PositionTickInfo[];
   }
-  /** Profile. */
-  export interface CPUProfile {
-    head: CPUProfileNode;
-    /** Profiling start time in seconds. */
-    startTime: number;
-    /** Profiling end time in seconds. */
-    endTime: number;
-    /** Ids of samples top nodes. */
-    samples?: number[];
-    /** Timestamps of the samples in microseconds. */
-    timestamps?: number[];
+  export interface RemoteLocation {
+    host: string;
+    port: number;
   }
-  /** Specifies a number of samples attributed to a certain source position. */
-  export interface PositionTickInfo {
-    /** Source line number (1-based). */
-    line: number;
-    /** Number of samples attributed to the source line. */
-    ticks: number;
-  }
-  export type consoleProfileStarted_Parameters = {
-    id: string;
-    /** Location of console.profile(). */
-    location: Debugger.Location;
-    /** Profile title passed as argument to console.profile(). */
-    title?: string;
+  export type targetCreated_Parameters = {
+    targetInfo: TargetInfo;
   };
-  export type consoleProfileStarted_Handler = (params: consoleProfileStarted_Parameters) => void;
-  export type consoleProfileFinished_Parameters = {
-    id: string;
-    /** Location of console.profileEnd(). */
-    location: Debugger.Location;
-    profile: CPUProfile;
-    /** Profile title passed as argunet to console.profile(). */
-    title?: string;
+  export type targetCreated_Handler = (params: targetCreated_Parameters) => void;
+  export type targetDestroyed_Parameters = {
+    targetId: TargetID;
   };
-  export type consoleProfileFinished_Handler = (params: consoleProfileFinished_Parameters) => void;
-  export type setSamplingInterval_Parameters = {
-    /** New sampling interval in microseconds. */
-    interval: number;
+  export type targetDestroyed_Handler = (params: targetDestroyed_Parameters) => void;
+  export type attachedToTarget_Parameters = {
+    targetInfo: TargetInfo;
+    waitingForDebugger: boolean;
   };
-  export type stop_Return = {
-    /** Recorded profile. */
-    profile: CPUProfile;
+  export type attachedToTarget_Handler = (params: attachedToTarget_Parameters) => void;
+  export type detachedFromTarget_Parameters = {
+    targetId: TargetID;
   };
-}
-export class HeapProfiler {
-  private _addHeapSnapshotChunk: HeapProfiler.addHeapSnapshotChunk_Handler = undefined;
-  private _resetProfiles: HeapProfiler.resetProfiles_Handler = undefined;
-  private _reportHeapSnapshotProgress: HeapProfiler.reportHeapSnapshotProgress_Handler = undefined;
-  private _lastSeenObjectId: HeapProfiler.lastSeenObjectId_Handler = undefined;
-  private _heapStatsUpdate: HeapProfiler.heapStatsUpdate_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
-  enable(): Promise<void> {
-    return this._client.send<void>("HeapProfiler.enable");
-  }
-  disable(): Promise<void> {
-    return this._client.send<void>("HeapProfiler.disable");
-  }
-  startTrackingHeapObjects(params: HeapProfiler.startTrackingHeapObjects_Parameters): Promise<void> {
-    return this._client.send<void>("HeapProfiler.startTrackingHeapObjects", params);
-  }
-  stopTrackingHeapObjects(params: HeapProfiler.stopTrackingHeapObjects_Parameters): Promise<void> {
-    return this._client.send<void>("HeapProfiler.stopTrackingHeapObjects", params);
-  }
-  takeHeapSnapshot(params: HeapProfiler.takeHeapSnapshot_Parameters): Promise<void> {
-    return this._client.send<void>("HeapProfiler.takeHeapSnapshot", params);
-  }
-  collectGarbage(): Promise<void> {
-    return this._client.send<void>("HeapProfiler.collectGarbage");
-  }
-  getObjectByHeapObjectId(params: HeapProfiler.getObjectByHeapObjectId_Parameters): Promise<HeapProfiler.getObjectByHeapObjectId_Return> {
-    return this._client.send<HeapProfiler.getObjectByHeapObjectId_Return>("HeapProfiler.getObjectByHeapObjectId", params);
-  }
-  /** Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions). */
-  addInspectedHeapObject(params: HeapProfiler.addInspectedHeapObject_Parameters): Promise<void> {
-    return this._client.send<void>("HeapProfiler.addInspectedHeapObject", params);
-  }
-  getHeapObjectId(params: HeapProfiler.getHeapObjectId_Parameters): Promise<HeapProfiler.getHeapObjectId_Return> {
-    return this._client.send<HeapProfiler.getHeapObjectId_Return>("HeapProfiler.getHeapObjectId", params);
-  }
-  get addHeapSnapshotChunk(): HeapProfiler.addHeapSnapshotChunk_Handler {
-    return this._addHeapSnapshotChunk;
-  }
-  set addHeapSnapshotChunk(handler: HeapProfiler.addHeapSnapshotChunk_Handler) {
-    if (this._addHeapSnapshotChunk) {
-      this._client.removeListener("HeapProfiler.addHeapSnapshotChunk", this._addHeapSnapshotChunk);
-    }
-    this._addHeapSnapshotChunk = handler;
-    if (handler) {
-      this._client.on("HeapProfiler.addHeapSnapshotChunk", handler);
-    }
-  }
-  get resetProfiles(): HeapProfiler.resetProfiles_Handler {
-    return this._resetProfiles;
-  }
-  set resetProfiles(handler: HeapProfiler.resetProfiles_Handler) {
-    if (this._resetProfiles) {
-      this._client.removeListener("HeapProfiler.resetProfiles", this._resetProfiles);
-    }
-    this._resetProfiles = handler;
-    if (handler) {
-      this._client.on("HeapProfiler.resetProfiles", handler);
-    }
-  }
-  get reportHeapSnapshotProgress(): HeapProfiler.reportHeapSnapshotProgress_Handler {
-    return this._reportHeapSnapshotProgress;
-  }
-  set reportHeapSnapshotProgress(handler: HeapProfiler.reportHeapSnapshotProgress_Handler) {
-    if (this._reportHeapSnapshotProgress) {
-      this._client.removeListener("HeapProfiler.reportHeapSnapshotProgress", this._reportHeapSnapshotProgress);
-    }
-    this._reportHeapSnapshotProgress = handler;
-    if (handler) {
-      this._client.on("HeapProfiler.reportHeapSnapshotProgress", handler);
-    }
-  }
-  /** If heap objects tracking has been started then backend regulary sends a current value for last seen object id and corresponding timestamp. If the were changes in the heap since last event then one or more heapStatsUpdate events will be sent before a new lastSeenObjectId event. */
-  get lastSeenObjectId(): HeapProfiler.lastSeenObjectId_Handler {
-    return this._lastSeenObjectId;
-  }
-  set lastSeenObjectId(handler: HeapProfiler.lastSeenObjectId_Handler) {
-    if (this._lastSeenObjectId) {
-      this._client.removeListener("HeapProfiler.lastSeenObjectId", this._lastSeenObjectId);
-    }
-    this._lastSeenObjectId = handler;
-    if (handler) {
-      this._client.on("HeapProfiler.lastSeenObjectId", handler);
-    }
-  }
-  /** If heap objects tracking has been started then backend may send update for one or more fragments */
-  get heapStatsUpdate(): HeapProfiler.heapStatsUpdate_Handler {
-    return this._heapStatsUpdate;
-  }
-  set heapStatsUpdate(handler: HeapProfiler.heapStatsUpdate_Handler) {
-    if (this._heapStatsUpdate) {
-      this._client.removeListener("HeapProfiler.heapStatsUpdate", this._heapStatsUpdate);
-    }
-    this._heapStatsUpdate = handler;
-    if (handler) {
-      this._client.on("HeapProfiler.heapStatsUpdate", handler);
-    }
-  }
-}
-export namespace HeapProfiler {
-  /** Heap snapshot object id. */
-  export type HeapSnapshotObjectId = string;
-  export type addHeapSnapshotChunk_Parameters = {
-    chunk: string;
-  };
-  export type addHeapSnapshotChunk_Handler = (params: addHeapSnapshotChunk_Parameters) => void;
-  export type resetProfiles_Handler = () => void;
-  export type reportHeapSnapshotProgress_Parameters = {
-    done: number;
-    total: number;
-    finished?: boolean;
-  };
-  export type reportHeapSnapshotProgress_Handler = (params: reportHeapSnapshotProgress_Parameters) => void;
-  export type lastSeenObjectId_Parameters = {
-    lastSeenObjectId: number;
-    timestamp: number;
-  };
-  export type lastSeenObjectId_Handler = (params: lastSeenObjectId_Parameters) => void;
-  export type heapStatsUpdate_Parameters = {
-    /** An array of triplets. Each triplet describes a fragment. The first integer is the fragment index, the second integer is a total count of objects for the fragment, the third integer is a total size of the objects for the fragment. */
-    statsUpdate: number[];
-  };
-  export type heapStatsUpdate_Handler = (params: heapStatsUpdate_Parameters) => void;
-  export type startTrackingHeapObjects_Parameters = {
-    trackAllocations?: boolean;
-  };
-  export type stopTrackingHeapObjects_Parameters = {
-    /** If true 'reportHeapSnapshotProgress' events will be generated while snapshot is being taken when the tracking is stopped. */
-    reportProgress?: boolean;
-  };
-  export type takeHeapSnapshot_Parameters = {
-    /** If true 'reportHeapSnapshotProgress' events will be generated while snapshot is being taken. */
-    reportProgress?: boolean;
-  };
-  export type getObjectByHeapObjectId_Parameters = {
-    objectId: HeapSnapshotObjectId;
-    /** Symbolic group name that can be used to release multiple objects. */
-    objectGroup?: string;
-  };
-  export type getObjectByHeapObjectId_Return = {
-    /** Evaluation result. */
-    result: Runtime.RemoteObject;
-  };
-  export type addInspectedHeapObject_Parameters = {
-    /** Heap snapshot object id to be accessible by means of $x command line API. */
-    heapObjectId: HeapSnapshotObjectId;
-  };
-  export type getHeapObjectId_Parameters = {
-    /** Identifier of the object to get heap object id for. */
-    objectId: Runtime.RemoteObjectId;
-  };
-  export type getHeapObjectId_Return = {
-    /** Id of the heap snapshot object corresponding to the passed remote object id. */
-    heapSnapshotObjectId: HeapSnapshotObjectId;
-  };
-}
-export class Worker {
-  private _workerCreated: Worker.workerCreated_Handler = undefined;
-  private _workerTerminated: Worker.workerTerminated_Handler = undefined;
-  private _dispatchMessageFromWorker: Worker.dispatchMessageFromWorker_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
-  enable(): Promise<void> {
-    return this._client.send<void>("Worker.enable");
-  }
-  disable(): Promise<void> {
-    return this._client.send<void>("Worker.disable");
-  }
-  sendMessageToWorker(params: Worker.sendMessageToWorker_Parameters): Promise<void> {
-    return this._client.send<void>("Worker.sendMessageToWorker", params);
-  }
-  connectToWorker(params: Worker.connectToWorker_Parameters): Promise<void> {
-    return this._client.send<void>("Worker.connectToWorker", params);
-  }
-  disconnectFromWorker(params: Worker.disconnectFromWorker_Parameters): Promise<void> {
-    return this._client.send<void>("Worker.disconnectFromWorker", params);
-  }
-  setAutoconnectToWorkers(params: Worker.setAutoconnectToWorkers_Parameters): Promise<void> {
-    return this._client.send<void>("Worker.setAutoconnectToWorkers", params);
-  }
-  get workerCreated(): Worker.workerCreated_Handler {
-    return this._workerCreated;
-  }
-  set workerCreated(handler: Worker.workerCreated_Handler) {
-    if (this._workerCreated) {
-      this._client.removeListener("Worker.workerCreated", this._workerCreated);
-    }
-    this._workerCreated = handler;
-    if (handler) {
-      this._client.on("Worker.workerCreated", handler);
-    }
-  }
-  get workerTerminated(): Worker.workerTerminated_Handler {
-    return this._workerTerminated;
-  }
-  set workerTerminated(handler: Worker.workerTerminated_Handler) {
-    if (this._workerTerminated) {
-      this._client.removeListener("Worker.workerTerminated", this._workerTerminated);
-    }
-    this._workerTerminated = handler;
-    if (handler) {
-      this._client.on("Worker.workerTerminated", handler);
-    }
-  }
-  get dispatchMessageFromWorker(): Worker.dispatchMessageFromWorker_Handler {
-    return this._dispatchMessageFromWorker;
-  }
-  set dispatchMessageFromWorker(handler: Worker.dispatchMessageFromWorker_Handler) {
-    if (this._dispatchMessageFromWorker) {
-      this._client.removeListener("Worker.dispatchMessageFromWorker", this._dispatchMessageFromWorker);
-    }
-    this._dispatchMessageFromWorker = handler;
-    if (handler) {
-      this._client.on("Worker.dispatchMessageFromWorker", handler);
-    }
-  }
-}
-export namespace Worker {
-  export type workerCreated_Parameters = {
-    workerId: string;
-    url: string;
-    inspectorConnected: boolean;
-  };
-  export type workerCreated_Handler = (params: workerCreated_Parameters) => void;
-  export type workerTerminated_Parameters = {
-    workerId: string;
-  };
-  export type workerTerminated_Handler = (params: workerTerminated_Parameters) => void;
-  export type dispatchMessageFromWorker_Parameters = {
-    workerId: string;
+  export type detachedFromTarget_Handler = (params: detachedFromTarget_Parameters) => void;
+  export type receivedMessageFromTarget_Parameters = {
+    targetId: TargetID;
     message: string;
   };
-  export type dispatchMessageFromWorker_Handler = (params: dispatchMessageFromWorker_Parameters) => void;
-  export type sendMessageToWorker_Parameters = {
-    workerId: string;
-    message: string;
+  export type receivedMessageFromTarget_Handler = (params: receivedMessageFromTarget_Parameters) => void;
+  export type setDiscoverTargets_Parameters = {
+    /** Whether to discover available targets. */
+    discover: boolean;
   };
-  export type connectToWorker_Parameters = {
-    workerId: string;
+  export type setAutoAttach_Parameters = {
+    /** Whether to auto-attach to related targets. */
+    autoAttach: boolean;
+    /** Whether to pause new targets when attaching to them. Use <code>Runtime.runIfWaitingForDebugger</code> to run paused targets. */
+    waitForDebuggerOnStart: boolean;
   };
-  export type disconnectFromWorker_Parameters = {
-    workerId: string;
-  };
-  export type setAutoconnectToWorkers_Parameters = {
+  export type setAttachToFrames_Parameters = {
+    /** Whether to attach to frames. */
     value: boolean;
+  };
+  export type setRemoteLocations_Parameters = {
+    /** List of remote locations. */
+    locations: RemoteLocation[];
+  };
+  export type sendMessageToTarget_Parameters = {
+    targetId: string;
+    message: string;
+  };
+  export type getTargetInfo_Parameters = {
+    targetId: TargetID;
+  };
+  export type getTargetInfo_Return = {
+    targetInfo: TargetInfo;
+  };
+  export type activateTarget_Parameters = {
+    targetId: TargetID;
+  };
+  export type closeTarget_Parameters = {
+    targetId: TargetID;
+  };
+  export type closeTarget_Return = {
+    success: boolean;
+  };
+  export type attachToTarget_Parameters = {
+    targetId: TargetID;
+  };
+  export type attachToTarget_Return = {
+    /** Whether attach succeeded. */
+    success: boolean;
+  };
+  export type detachFromTarget_Parameters = {
+    targetId: TargetID;
+  };
+  export type createBrowserContext_Return = {
+    /** The id of the context created. */
+    browserContextId: BrowserContextID;
+  };
+  export type disposeBrowserContext_Parameters = {
+    browserContextId: BrowserContextID;
+  };
+  export type disposeBrowserContext_Return = {
+    success: boolean;
+  };
+  export type createTarget_Parameters = {
+    /** The initial URL the page will be navigated to. */
+    url: string;
+    /** Frame width in DIP (headless chrome only). */
+    width?: number;
+    /** Frame height in DIP (headless chrome only). */
+    height?: number;
+    /** The browser context to create the page in (headless chrome only). */
+    browserContextId?: BrowserContextID;
+  };
+  export type createTarget_Return = {
+    /** The id of the page opened. */
+    targetId: TargetID;
+  };
+  export type getTargets_Return = {
+    /** The list of targets. */
+    targetInfos: TargetInfo[];
   };
 }
 export class ServiceWorker {
-  private _workerCreated: ServiceWorker.workerCreated_Handler = undefined;
-  private _workerTerminated: ServiceWorker.workerTerminated_Handler = undefined;
-  private _dispatchMessage: ServiceWorker.dispatchMessage_Handler = undefined;
   private _workerRegistrationUpdated: ServiceWorker.workerRegistrationUpdated_Handler = undefined;
   private _workerVersionUpdated: ServiceWorker.workerVersionUpdated_Handler = undefined;
   private _workerErrorReported: ServiceWorker.workerErrorReported_Handler = undefined;
-  private _debugOnStartUpdated: ServiceWorker.debugOnStartUpdated_Handler = undefined;
   private _client: IDebuggingProtocolClient = undefined;
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
@@ -5635,12 +4595,6 @@ export class ServiceWorker {
   disable(): Promise<void> {
     return this._client.send<void>("ServiceWorker.disable");
   }
-  sendMessage(params: ServiceWorker.sendMessage_Parameters): Promise<void> {
-    return this._client.send<void>("ServiceWorker.sendMessage", params);
-  }
-  stop(params: ServiceWorker.stop_Parameters): Promise<void> {
-    return this._client.send<void>("ServiceWorker.stop", params);
-  }
   unregister(params: ServiceWorker.unregister_Parameters): Promise<void> {
     return this._client.send<void>("ServiceWorker.unregister", params);
   }
@@ -5650,14 +4604,14 @@ export class ServiceWorker {
   startWorker(params: ServiceWorker.startWorker_Parameters): Promise<void> {
     return this._client.send<void>("ServiceWorker.startWorker", params);
   }
+  skipWaiting(params: ServiceWorker.skipWaiting_Parameters): Promise<void> {
+    return this._client.send<void>("ServiceWorker.skipWaiting", params);
+  }
   stopWorker(params: ServiceWorker.stopWorker_Parameters): Promise<void> {
     return this._client.send<void>("ServiceWorker.stopWorker", params);
   }
   inspectWorker(params: ServiceWorker.inspectWorker_Parameters): Promise<void> {
     return this._client.send<void>("ServiceWorker.inspectWorker", params);
-  }
-  setDebugOnStart(params: ServiceWorker.setDebugOnStart_Parameters): Promise<void> {
-    return this._client.send<void>("ServiceWorker.setDebugOnStart", params);
   }
   setForceUpdateOnPageLoad(params: ServiceWorker.setForceUpdateOnPageLoad_Parameters): Promise<void> {
     return this._client.send<void>("ServiceWorker.setForceUpdateOnPageLoad", params);
@@ -5665,47 +4619,8 @@ export class ServiceWorker {
   deliverPushMessage(params: ServiceWorker.deliverPushMessage_Parameters): Promise<void> {
     return this._client.send<void>("ServiceWorker.deliverPushMessage", params);
   }
-  getTargetInfo(params: ServiceWorker.getTargetInfo_Parameters): Promise<ServiceWorker.getTargetInfo_Return> {
-    return this._client.send<ServiceWorker.getTargetInfo_Return>("ServiceWorker.getTargetInfo", params);
-  }
-  activateTarget(params: ServiceWorker.activateTarget_Parameters): Promise<void> {
-    return this._client.send<void>("ServiceWorker.activateTarget", params);
-  }
-  get workerCreated(): ServiceWorker.workerCreated_Handler {
-    return this._workerCreated;
-  }
-  set workerCreated(handler: ServiceWorker.workerCreated_Handler) {
-    if (this._workerCreated) {
-      this._client.removeListener("ServiceWorker.workerCreated", this._workerCreated);
-    }
-    this._workerCreated = handler;
-    if (handler) {
-      this._client.on("ServiceWorker.workerCreated", handler);
-    }
-  }
-  get workerTerminated(): ServiceWorker.workerTerminated_Handler {
-    return this._workerTerminated;
-  }
-  set workerTerminated(handler: ServiceWorker.workerTerminated_Handler) {
-    if (this._workerTerminated) {
-      this._client.removeListener("ServiceWorker.workerTerminated", this._workerTerminated);
-    }
-    this._workerTerminated = handler;
-    if (handler) {
-      this._client.on("ServiceWorker.workerTerminated", handler);
-    }
-  }
-  get dispatchMessage(): ServiceWorker.dispatchMessage_Handler {
-    return this._dispatchMessage;
-  }
-  set dispatchMessage(handler: ServiceWorker.dispatchMessage_Handler) {
-    if (this._dispatchMessage) {
-      this._client.removeListener("ServiceWorker.dispatchMessage", this._dispatchMessage);
-    }
-    this._dispatchMessage = handler;
-    if (handler) {
-      this._client.on("ServiceWorker.dispatchMessage", handler);
-    }
+  dispatchSyncEvent(params: ServiceWorker.dispatchSyncEvent_Parameters): Promise<void> {
+    return this._client.send<void>("ServiceWorker.dispatchSyncEvent", params);
   }
   get workerRegistrationUpdated(): ServiceWorker.workerRegistrationUpdated_Handler {
     return this._workerRegistrationUpdated;
@@ -5743,18 +4658,6 @@ export class ServiceWorker {
       this._client.on("ServiceWorker.workerErrorReported", handler);
     }
   }
-  get debugOnStartUpdated(): ServiceWorker.debugOnStartUpdated_Handler {
-    return this._debugOnStartUpdated;
-  }
-  set debugOnStartUpdated(handler: ServiceWorker.debugOnStartUpdated_Handler) {
-    if (this._debugOnStartUpdated) {
-      this._client.removeListener("ServiceWorker.debugOnStartUpdated", this._debugOnStartUpdated);
-    }
-    this._debugOnStartUpdated = handler;
-    if (handler) {
-      this._client.on("ServiceWorker.debugOnStartUpdated", handler);
-    }
-  }
 }
 export namespace ServiceWorker {
   /** ServiceWorker registration. */
@@ -5762,11 +4665,9 @@ export namespace ServiceWorker {
     registrationId: string;
     scopeURL: string;
     isDeleted: boolean;
-    forceUpdateOnPageLoad?: boolean;
   }
   export type ServiceWorkerVersionRunningStatus = "stopped" | "starting" | "running" | "stopping";
   export type ServiceWorkerVersionStatus = "new" | "installing" | "installed" | "activating" | "activated" | "redundant";
-  export type TargetID = string;
   /** ServiceWorker version. */
   export interface ServiceWorkerVersion {
     versionId: string;
@@ -5778,7 +4679,8 @@ export namespace ServiceWorker {
     scriptLastModified?: number;
     /** The time at which the response headers of the main script were received from the server.  For cached script it is the last time the cache entry was validated. */
     scriptResponseTime?: number;
-    controlledClients?: TargetID[];
+    controlledClients?: Target.TargetID[];
+    targetId?: Target.TargetID;
   }
   /** ServiceWorker error message. */
   export interface ServiceWorkerErrorMessage {
@@ -5789,27 +4691,6 @@ export namespace ServiceWorker {
     lineNumber: number;
     columnNumber: number;
   }
-  export interface TargetInfo {
-    id: TargetID;
-    type: string;
-    title: string;
-    url: string;
-  }
-  export type workerCreated_Parameters = {
-    workerId: string;
-    url: string;
-    versionId: string;
-  };
-  export type workerCreated_Handler = (params: workerCreated_Parameters) => void;
-  export type workerTerminated_Parameters = {
-    workerId: string;
-  };
-  export type workerTerminated_Handler = (params: workerTerminated_Parameters) => void;
-  export type dispatchMessage_Parameters = {
-    workerId: string;
-    message: string;
-  };
-  export type dispatchMessage_Handler = (params: dispatchMessage_Parameters) => void;
   export type workerRegistrationUpdated_Parameters = {
     registrations: ServiceWorkerRegistration[];
   };
@@ -5822,17 +4703,6 @@ export namespace ServiceWorker {
     errorMessage: ServiceWorkerErrorMessage;
   };
   export type workerErrorReported_Handler = (params: workerErrorReported_Parameters) => void;
-  export type debugOnStartUpdated_Parameters = {
-    debugOnStart: boolean;
-  };
-  export type debugOnStartUpdated_Handler = (params: debugOnStartUpdated_Parameters) => void;
-  export type sendMessage_Parameters = {
-    workerId: string;
-    message: string;
-  };
-  export type stop_Parameters = {
-    workerId: string;
-  };
   export type unregister_Parameters = {
     scopeURL: string;
   };
@@ -5842,17 +4712,16 @@ export namespace ServiceWorker {
   export type startWorker_Parameters = {
     scopeURL: string;
   };
+  export type skipWaiting_Parameters = {
+    scopeURL: string;
+  };
   export type stopWorker_Parameters = {
     versionId: string;
   };
   export type inspectWorker_Parameters = {
     versionId: string;
   };
-  export type setDebugOnStart_Parameters = {
-    debugOnStart: boolean;
-  };
   export type setForceUpdateOnPageLoad_Parameters = {
-    registrationId: string;
     forceUpdateOnPageLoad: boolean;
   };
   export type deliverPushMessage_Parameters = {
@@ -5860,14 +4729,11 @@ export namespace ServiceWorker {
     registrationId: string;
     data: string;
   };
-  export type getTargetInfo_Parameters = {
-    targetId: TargetID;
-  };
-  export type getTargetInfo_Return = {
-    targetInfo: TargetInfo;
-  };
-  export type activateTarget_Parameters = {
-    targetId: TargetID;
+  export type dispatchSyncEvent_Parameters = {
+    origin: string;
+    registrationId: string;
+    tag: string;
+    lastChance: boolean;
   };
 }
 export class Input {
@@ -6273,30 +5139,6 @@ export namespace DeviceOrientation {
     gamma: number;
   };
 }
-export class ScreenOrientation {
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
-  /** Overrides the Screen Orientation. */
-  setScreenOrientationOverride(params: ScreenOrientation.setScreenOrientationOverride_Parameters): Promise<void> {
-    return this._client.send<void>("ScreenOrientation.setScreenOrientationOverride", params);
-  }
-  /** Clears the overridden Screen Orientation. */
-  clearScreenOrientationOverride(): Promise<void> {
-    return this._client.send<void>("ScreenOrientation.clearScreenOrientationOverride");
-  }
-}
-export namespace ScreenOrientation {
-  /** Orientation type */
-  export type OrientationType = "portraitPrimary" | "portraitSecondary" | "landscapePrimary" | "landscapeSecondary";
-  export type setScreenOrientationOverride_Parameters = {
-    /** Orientation angle */
-    angle: number;
-    /** Orientation type */
-    type: OrientationType;
-  };
-}
 export class Tracing {
   private _dataCollected: Tracing.dataCollected_Handler = undefined;
   private _tracingComplete: Tracing.tracingComplete_Handler = undefined;
@@ -6320,6 +5162,10 @@ export class Tracing {
   /** Request a global memory dump. */
   requestMemoryDump(): Promise<Tracing.requestMemoryDump_Return> {
     return this._client.send<Tracing.requestMemoryDump_Return>("Tracing.requestMemoryDump");
+  }
+  /** Record a clock sync marker in the trace. */
+  recordClockSyncMarker(params: Tracing.recordClockSyncMarker_Parameters): Promise<void> {
+    return this._client.send<void>("Tracing.recordClockSyncMarker", params);
   }
   /** Contains an bucket of collected trace events. When tracing is stopped collected events will be send as a sequence of dataCollected events followed by tracingComplete event. */
   get dataCollected(): Tracing.dataCollected_Handler {
@@ -6361,6 +5207,26 @@ export class Tracing {
   }
 }
 export namespace Tracing {
+  /** Configuration for memory dump. Used only when "memory-infra" category is enabled. */
+  export type MemoryDumpConfig = any;
+  export interface TraceConfig {
+    /** Controls how the trace buffer stores data. */
+    recordMode?: "recordUntilFull" | "recordContinuously" | "recordAsMuchAsPossible" | "echoToConsole";
+    /** Turns on JavaScript stack sampling. */
+    enableSampling?: boolean;
+    /** Turns on system tracing. */
+    enableSystrace?: boolean;
+    /** Turns on argument filter. */
+    enableArgumentFilter?: boolean;
+    /** Included category filters. */
+    includedCategories?: string[];
+    /** Excluded category filters. */
+    excludedCategories?: string[];
+    /** Configuration to synthesize the delays in tracing. */
+    syntheticDelays?: string[];
+    /** Configuration for memory dump triggers. Used only when "memory-infra" category is enabled. */
+    memoryDumpConfig?: MemoryDumpConfig;
+  }
   export type dataCollected_Parameters = {
     value: any[];
   };
@@ -6388,6 +5254,7 @@ export namespace Tracing {
     bufferUsageReportingInterval?: number;
     /** Whether to report trace events as series of dataCollected events or to save trace to a stream (defaults to <code>ReportEvents</code>). */
     transferMode?: "ReportEvents" | "ReturnAsStream";
+    traceConfig?: TraceConfig;
   };
   export type getCategories_Return = {
     /** A list of supported tracing categories. */
@@ -6398,6 +5265,10 @@ export namespace Tracing {
     dumpGuid: string;
     /** True iff the global memory dump succeeded. */
     success: boolean;
+  };
+  export type recordClockSyncMarker_Parameters = {
+    /** The ID of this clock sync marker */
+    syncId: string;
   };
 }
 export class Animation {
@@ -6493,6 +5364,8 @@ export namespace Animation {
   export interface Animation {
     /** <code>Animation</code>'s id. */
     id: string;
+    /** <code>Animation</code>'s name. */
+    name: string;
     /** <code>Animation</code>'s internal paused state. */
     pausedState: boolean;
     /** <code>Animation</code>'s play state. */
@@ -6516,8 +5389,6 @@ export namespace Animation {
     delay: number;
     /** <code>AnimationEffect</code>'s end delay. */
     endDelay: number;
-    /** <code>AnimationEffect</code>'s playbackRate. */
-    playbackRate: number;
     /** <code>AnimationEffect</code>'s iteration start. */
     iterationStart: number;
     /** <code>AnimationEffect</code>'s iterations. */
@@ -6528,8 +5399,6 @@ export namespace Animation {
     direction: string;
     /** <code>AnimationEffect</code>'s fill mode. */
     fill: string;
-    /** <code>AnimationEffect</code>'s name. */
-    name: string;
     /** <code>AnimationEffect</code>'s target node. */
     backendNodeId: DOM.BackendNodeId;
     /** <code>AnimationEffect</code>'s keyframes. */
@@ -6620,9 +5489,9 @@ export class Accessibility {
   constructor(client: IDebuggingProtocolClient) {
     this._client = client;
   }
-  /** Fetches the accessibility node for this DOM node, if it exists. */
-  getAXNode(params: Accessibility.getAXNode_Parameters): Promise<Accessibility.getAXNode_Return> {
-    return this._client.send<Accessibility.getAXNode_Return>("Accessibility.getAXNode", params);
+  /** Fetches the accessibility node and partial accessibility tree for this DOM node, if it exists. */
+  getPartialAXTree(params: Accessibility.getPartialAXTree_Parameters): Promise<Accessibility.getPartialAXTree_Return> {
+    return this._client.send<Accessibility.getPartialAXTree_Return>("Accessibility.getPartialAXTree", params);
   }
 }
 export namespace Accessibility {
@@ -6640,20 +5509,24 @@ export namespace Accessibility {
     type: AXValueSourceType;
     /** The value of this property source. */
     value?: AXValue;
-    /** The attribute, if any. */
+    /** The name of the relevant attribute, if any. */
     attribute?: string;
+    /** The value of the relevant attribute, if any. */
+    attributeValue?: AXValue;
     /** Whether this source is superseded by a higher priority source. */
     superseded?: boolean;
     /** The native markup source for this value, e.g. a <label> element. */
     nativeSource?: AXValueNativeSourceType;
+    /** The value, such as a node or node list, of the native source. */
+    nativeSourceValue?: AXValue;
     /** Whether the value for this property is invalid. */
     invalid?: boolean;
     /** Reason for the value being invalid, if it is. */
     invalidReason?: string;
   }
   export interface AXRelatedNode {
-    /** The BackendNodeId of the related node. */
-    backendNodeId: DOM.BackendNodeId;
+    /** The BackendNodeId of the related DOM node. */
+    backendDOMNodeId: DOM.BackendNodeId;
     /** The IDRef value provided, if any. */
     idref?: string;
     /** The text alternative of this node in the current context. */
@@ -6677,14 +5550,15 @@ export namespace Accessibility {
     sources?: AXValueSource[];
   }
   /** States which apply to every AX node. */
-  export type AXGlobalStates = "disabled" | "hidden" | "hiddenRoot" | "invalid";
+  export type AXGlobalStates = "disabled" | "hidden" | "hiddenRoot" | "invalid" | "keyshortcuts" | "roledescription";
   /** Attributes which apply to nodes in live regions. */
   export type AXLiveRegionAttributes = "live" | "atomic" | "relevant" | "busy" | "root";
+  /** Attributes which apply to widgets. */
   export type AXWidgetAttributes = "autocomplete" | "haspopup" | "level" | "multiselectable" | "orientation" | "multiline" | "readonly" | "required" | "valuemin" | "valuemax" | "valuetext";
   /** States which apply to widgets. */
-  export type AXWidgetStates = "checked" | "expanded" | "pressed" | "selected";
+  export type AXWidgetStates = "checked" | "expanded" | "modal" | "pressed" | "selected";
   /** Relationships between elements other than parent/child/sibling. */
-  export type AXRelationshipAttributes = "activedescendant" | "flowto" | "controls" | "describedby" | "labelledby" | "owns";
+  export type AXRelationshipAttributes = "activedescendant" | "controls" | "describedby" | "details" | "errormessage" | "flowto" | "labelledby" | "owns";
   /** A node in the accessibility tree. */
   export interface AXNode {
     /** Unique identifier for this node. */
@@ -6703,13 +5577,1619 @@ export namespace Accessibility {
     value?: AXValue;
     /** All other properties */
     properties?: AXProperty[];
+    /** IDs for each of this node's child nodes. */
+    childIds?: AXNodeId[];
+    /** The backend ID for the associated DOM node, if any. */
+    backendDOMNodeId?: DOM.BackendNodeId;
   }
-  export type getAXNode_Parameters = {
-    /** ID of node to get accessibility node for. */
+  export type getPartialAXTree_Parameters = {
+    /** ID of node to get the partial accessibility tree for. */
     nodeId: DOM.NodeId;
+    /** Whether to fetch this nodes ancestors, siblings and children. Defaults to true. */
+    fetchRelatives?: boolean;
   };
-  export type getAXNode_Return = {
-    /** The <code>Accessibility.AXNode</code> for this DOM node, if it exists. */
-    accessibilityNode?: AXNode;
+  export type getPartialAXTree_Return = {
+    /** The <code>Accessibility.AXNode</code> for this DOM node, if it exists, plus its ancestors, siblings and children, if requested. */
+    nodes: AXNode[];
+  };
+}
+export class Storage {
+  private _client: IDebuggingProtocolClient = undefined;
+  constructor(client: IDebuggingProtocolClient) {
+    this._client = client;
+  }
+  /** Clears storage for origin. */
+  clearDataForOrigin(params: Storage.clearDataForOrigin_Parameters): Promise<void> {
+    return this._client.send<void>("Storage.clearDataForOrigin", params);
+  }
+}
+export namespace Storage {
+  /** Enum of possible storage types. */
+  export type StorageType = "appcache" | "cookies" | "file_systems" | "indexeddb" | "local_storage" | "shader_cache" | "websql" | "service_workers" | "cache_storage" | "all";
+  export type clearDataForOrigin_Parameters = {
+    /** Security origin. */
+    origin: string;
+    /** Comma separated origin names. */
+    storageTypes: string;
+  };
+}
+/** Provides access to log entries. */
+export class Log {
+  private _entryAdded: Log.entryAdded_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
+  constructor(client: IDebuggingProtocolClient) {
+    this._client = client;
+  }
+  /** Enables log domain, sends the entries collected so far to the client by means of the <code>entryAdded</code> notification. */
+  enable(): Promise<void> {
+    return this._client.send<void>("Log.enable");
+  }
+  /** Disables log domain, prevents further log entries from being reported to the client. */
+  disable(): Promise<void> {
+    return this._client.send<void>("Log.disable");
+  }
+  /** Clears the log. */
+  clear(): Promise<void> {
+    return this._client.send<void>("Log.clear");
+  }
+  /** start violation reporting. */
+  startViolationsReport(params: Log.startViolationsReport_Parameters): Promise<void> {
+    return this._client.send<void>("Log.startViolationsReport", params);
+  }
+  /** Stop violation reporting. */
+  stopViolationsReport(): Promise<void> {
+    return this._client.send<void>("Log.stopViolationsReport");
+  }
+  /** Issued when new message was logged. */
+  get entryAdded(): Log.entryAdded_Handler {
+    return this._entryAdded;
+  }
+  set entryAdded(handler: Log.entryAdded_Handler) {
+    if (this._entryAdded) {
+      this._client.removeListener("Log.entryAdded", this._entryAdded);
+    }
+    this._entryAdded = handler;
+    if (handler) {
+      this._client.on("Log.entryAdded", handler);
+    }
+  }
+}
+export namespace Log {
+  /** Log entry. */
+  export interface LogEntry {
+    /** Log entry source. */
+    source: "xml" | "javascript" | "network" | "storage" | "appcache" | "rendering" | "security" | "deprecation" | "worker" | "violation" | "intervention" | "other";
+    /** Log entry severity. */
+    level: "verbose" | "info" | "warning" | "error";
+    /** Logged text. */
+    text: string;
+    /** Timestamp when this entry was added. */
+    timestamp: Runtime.Timestamp;
+    /** URL of the resource if known. */
+    url?: string;
+    /** Line number in the resource. */
+    lineNumber?: number;
+    /** JavaScript stack trace. */
+    stackTrace?: Runtime.StackTrace;
+    /** Identifier of the network request associated with this entry. */
+    networkRequestId?: Network.RequestId;
+    /** Identifier of the worker associated with this entry. */
+    workerId?: string;
+  }
+  /** Violation configuration setting. */
+  export interface ViolationSetting {
+    /** Violation type. */
+    name: "longTask" | "longLayout" | "blockedEvent" | "blockedParser" | "discouragedAPIUse" | "handler" | "recurringHandler";
+    /** Time threshold to trigger upon. */
+    threshold: number;
+  }
+  export type entryAdded_Parameters = {
+    /** The entry. */
+    entry: LogEntry;
+  };
+  export type entryAdded_Handler = (params: entryAdded_Parameters) => void;
+  export type startViolationsReport_Parameters = {
+    /** Configuration for violations. */
+    config: ViolationSetting[];
+  };
+}
+/** The SystemInfo domain defines methods and events for querying low-level system information. */
+export class SystemInfo {
+  private _client: IDebuggingProtocolClient = undefined;
+  constructor(client: IDebuggingProtocolClient) {
+    this._client = client;
+  }
+  /** Returns information about the system. */
+  getInfo(): Promise<SystemInfo.getInfo_Return> {
+    return this._client.send<SystemInfo.getInfo_Return>("SystemInfo.getInfo");
+  }
+}
+export namespace SystemInfo {
+  /** Describes a single graphics processor (GPU). */
+  export interface GPUDevice {
+    /** PCI ID of the GPU vendor, if available; 0 otherwise. */
+    vendorId: number;
+    /** PCI ID of the GPU device, if available; 0 otherwise. */
+    deviceId: number;
+    /** String description of the GPU vendor, if the PCI ID is not available. */
+    vendorString: string;
+    /** String description of the GPU device, if the PCI ID is not available. */
+    deviceString: string;
+  }
+  /** Provides information about the GPU(s) on the system. */
+  export interface GPUInfo {
+    /** The graphics devices on the system. Element 0 is the primary GPU. */
+    devices: GPUDevice[];
+    /** An optional dictionary of additional GPU related attributes. */
+    auxAttributes?: any;
+    /** An optional dictionary of graphics features and their status. */
+    featureStatus?: any;
+    /** An optional array of GPU driver bug workarounds. */
+    driverBugWorkarounds: string[];
+  }
+  export type getInfo_Return = {
+    /** Information about the GPUs on the system. */
+    gpu: GPUInfo;
+    /** A platform-dependent description of the model of the machine. On Mac OS, this is, for example, 'MacBookPro'. Will be the empty string if not supported. */
+    modelName: string;
+    /** A platform-dependent description of the version of the machine. On Mac OS, this is, for example, '10.1'. Will be the empty string if not supported. */
+    modelVersion: string;
+  };
+}
+/** The Tethering domain defines methods and events for browser port binding. */
+export class Tethering {
+  private _accepted: Tethering.accepted_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
+  constructor(client: IDebuggingProtocolClient) {
+    this._client = client;
+  }
+  /** Request browser port binding. */
+  bind(params: Tethering.bind_Parameters): Promise<void> {
+    return this._client.send<void>("Tethering.bind", params);
+  }
+  /** Request browser port unbinding. */
+  unbind(params: Tethering.unbind_Parameters): Promise<void> {
+    return this._client.send<void>("Tethering.unbind", params);
+  }
+  /** Informs that port was successfully bound and got a specified connection id. */
+  get accepted(): Tethering.accepted_Handler {
+    return this._accepted;
+  }
+  set accepted(handler: Tethering.accepted_Handler) {
+    if (this._accepted) {
+      this._client.removeListener("Tethering.accepted", this._accepted);
+    }
+    this._accepted = handler;
+    if (handler) {
+      this._client.on("Tethering.accepted", handler);
+    }
+  }
+}
+export namespace Tethering {
+  export type accepted_Parameters = {
+    /** Port number that was successfully bound. */
+    port: number;
+    /** Connection id to be used. */
+    connectionId: string;
+  };
+  export type accepted_Handler = (params: accepted_Parameters) => void;
+  export type bind_Parameters = {
+    /** Port number to bind. */
+    port: number;
+  };
+  export type unbind_Parameters = {
+    /** Port number to unbind. */
+    port: number;
+  };
+}
+/** Provides information about the protocol schema. */
+export class Schema {
+  private _client: IDebuggingProtocolClient = undefined;
+  constructor(client: IDebuggingProtocolClient) {
+    this._client = client;
+  }
+  /** Returns supported domains. */
+  getDomains(): Promise<Schema.getDomains_Return> {
+    return this._client.send<Schema.getDomains_Return>("Schema.getDomains");
+  }
+}
+export namespace Schema {
+  /** Description of the protocol domain. */
+  export interface Domain {
+    /** Domain name. */
+    name: string;
+    /** Domain version. */
+    version: string;
+  }
+  export type getDomains_Return = {
+    /** List of supported domains. */
+    domains: Domain[];
+  };
+}
+/** Runtime domain exposes JavaScript runtime by means of remote evaluation and mirror objects. Evaluation results are returned as mirror object that expose object type, string representation and unique identifier that can be used for further object reference. Original objects are maintained in memory unless they are either explicitly released or are released along with the other objects in their object group. */
+export class Runtime {
+  private _executionContextCreated: Runtime.executionContextCreated_Handler = undefined;
+  private _executionContextDestroyed: Runtime.executionContextDestroyed_Handler = undefined;
+  private _executionContextsCleared: Runtime.executionContextsCleared_Handler = undefined;
+  private _exceptionThrown: Runtime.exceptionThrown_Handler = undefined;
+  private _exceptionRevoked: Runtime.exceptionRevoked_Handler = undefined;
+  private _consoleAPICalled: Runtime.consoleAPICalled_Handler = undefined;
+  private _inspectRequested: Runtime.inspectRequested_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
+  constructor(client: IDebuggingProtocolClient) {
+    this._client = client;
+  }
+  /** Evaluates expression on global object. */
+  evaluate(params: Runtime.evaluate_Parameters): Promise<Runtime.evaluate_Return> {
+    return this._client.send<Runtime.evaluate_Return>("Runtime.evaluate", params);
+  }
+  /** Add handler to promise with given promise object id. */
+  awaitPromise(params: Runtime.awaitPromise_Parameters): Promise<Runtime.awaitPromise_Return> {
+    return this._client.send<Runtime.awaitPromise_Return>("Runtime.awaitPromise", params);
+  }
+  /** Calls function with given declaration on the given object. Object group of the result is inherited from the target object. */
+  callFunctionOn(params: Runtime.callFunctionOn_Parameters): Promise<Runtime.callFunctionOn_Return> {
+    return this._client.send<Runtime.callFunctionOn_Return>("Runtime.callFunctionOn", params);
+  }
+  /** Returns properties of a given object. Object group of the result is inherited from the target object. */
+  getProperties(params: Runtime.getProperties_Parameters): Promise<Runtime.getProperties_Return> {
+    return this._client.send<Runtime.getProperties_Return>("Runtime.getProperties", params);
+  }
+  /** Releases remote object with given id. */
+  releaseObject(params: Runtime.releaseObject_Parameters): Promise<void> {
+    return this._client.send<void>("Runtime.releaseObject", params);
+  }
+  /** Releases all remote objects that belong to a given group. */
+  releaseObjectGroup(params: Runtime.releaseObjectGroup_Parameters): Promise<void> {
+    return this._client.send<void>("Runtime.releaseObjectGroup", params);
+  }
+  /** Tells inspected instance to run if it was waiting for debugger to attach. */
+  runIfWaitingForDebugger(): Promise<void> {
+    return this._client.send<void>("Runtime.runIfWaitingForDebugger");
+  }
+  /** Enables reporting of execution contexts creation by means of <code>executionContextCreated</code> event. When the reporting gets enabled the event will be sent immediately for each existing execution context. */
+  enable(): Promise<void> {
+    return this._client.send<void>("Runtime.enable");
+  }
+  /** Disables reporting of execution contexts creation. */
+  disable(): Promise<void> {
+    return this._client.send<void>("Runtime.disable");
+  }
+  /** Discards collected exceptions and console API calls. */
+  discardConsoleEntries(): Promise<void> {
+    return this._client.send<void>("Runtime.discardConsoleEntries");
+  }
+  setCustomObjectFormatterEnabled(params: Runtime.setCustomObjectFormatterEnabled_Parameters): Promise<void> {
+    return this._client.send<void>("Runtime.setCustomObjectFormatterEnabled", params);
+  }
+  /** Compiles expression. */
+  compileScript(params: Runtime.compileScript_Parameters): Promise<Runtime.compileScript_Return> {
+    return this._client.send<Runtime.compileScript_Return>("Runtime.compileScript", params);
+  }
+  /** Runs script with given id in a given context. */
+  runScript(params: Runtime.runScript_Parameters): Promise<Runtime.runScript_Return> {
+    return this._client.send<Runtime.runScript_Return>("Runtime.runScript", params);
+  }
+  /** Issued when new execution context is created. */
+  get executionContextCreated(): Runtime.executionContextCreated_Handler {
+    return this._executionContextCreated;
+  }
+  set executionContextCreated(handler: Runtime.executionContextCreated_Handler) {
+    if (this._executionContextCreated) {
+      this._client.removeListener("Runtime.executionContextCreated", this._executionContextCreated);
+    }
+    this._executionContextCreated = handler;
+    if (handler) {
+      this._client.on("Runtime.executionContextCreated", handler);
+    }
+  }
+  /** Issued when execution context is destroyed. */
+  get executionContextDestroyed(): Runtime.executionContextDestroyed_Handler {
+    return this._executionContextDestroyed;
+  }
+  set executionContextDestroyed(handler: Runtime.executionContextDestroyed_Handler) {
+    if (this._executionContextDestroyed) {
+      this._client.removeListener("Runtime.executionContextDestroyed", this._executionContextDestroyed);
+    }
+    this._executionContextDestroyed = handler;
+    if (handler) {
+      this._client.on("Runtime.executionContextDestroyed", handler);
+    }
+  }
+  /** Issued when all executionContexts were cleared in browser */
+  get executionContextsCleared(): Runtime.executionContextsCleared_Handler {
+    return this._executionContextsCleared;
+  }
+  set executionContextsCleared(handler: Runtime.executionContextsCleared_Handler) {
+    if (this._executionContextsCleared) {
+      this._client.removeListener("Runtime.executionContextsCleared", this._executionContextsCleared);
+    }
+    this._executionContextsCleared = handler;
+    if (handler) {
+      this._client.on("Runtime.executionContextsCleared", handler);
+    }
+  }
+  /** Issued when exception was thrown and unhandled. */
+  get exceptionThrown(): Runtime.exceptionThrown_Handler {
+    return this._exceptionThrown;
+  }
+  set exceptionThrown(handler: Runtime.exceptionThrown_Handler) {
+    if (this._exceptionThrown) {
+      this._client.removeListener("Runtime.exceptionThrown", this._exceptionThrown);
+    }
+    this._exceptionThrown = handler;
+    if (handler) {
+      this._client.on("Runtime.exceptionThrown", handler);
+    }
+  }
+  /** Issued when unhandled exception was revoked. */
+  get exceptionRevoked(): Runtime.exceptionRevoked_Handler {
+    return this._exceptionRevoked;
+  }
+  set exceptionRevoked(handler: Runtime.exceptionRevoked_Handler) {
+    if (this._exceptionRevoked) {
+      this._client.removeListener("Runtime.exceptionRevoked", this._exceptionRevoked);
+    }
+    this._exceptionRevoked = handler;
+    if (handler) {
+      this._client.on("Runtime.exceptionRevoked", handler);
+    }
+  }
+  /** Issued when console API was called. */
+  get consoleAPICalled(): Runtime.consoleAPICalled_Handler {
+    return this._consoleAPICalled;
+  }
+  set consoleAPICalled(handler: Runtime.consoleAPICalled_Handler) {
+    if (this._consoleAPICalled) {
+      this._client.removeListener("Runtime.consoleAPICalled", this._consoleAPICalled);
+    }
+    this._consoleAPICalled = handler;
+    if (handler) {
+      this._client.on("Runtime.consoleAPICalled", handler);
+    }
+  }
+  /** Issued when object should be inspected (for example, as a result of inspect() command line API call). */
+  get inspectRequested(): Runtime.inspectRequested_Handler {
+    return this._inspectRequested;
+  }
+  set inspectRequested(handler: Runtime.inspectRequested_Handler) {
+    if (this._inspectRequested) {
+      this._client.removeListener("Runtime.inspectRequested", this._inspectRequested);
+    }
+    this._inspectRequested = handler;
+    if (handler) {
+      this._client.on("Runtime.inspectRequested", handler);
+    }
+  }
+}
+export namespace Runtime {
+  /** Unique script identifier. */
+  export type ScriptId = string;
+  /** Unique object identifier. */
+  export type RemoteObjectId = string;
+  /** Primitive value which cannot be JSON-stringified. */
+  export type UnserializableValue = "Infinity" | "NaN" | "-Infinity" | "-0";
+  /** Mirror object referencing original JavaScript object. */
+  export interface RemoteObject {
+    /** Object type. */
+    type: "object" | "function" | "undefined" | "string" | "number" | "boolean" | "symbol";
+    /** Object subtype hint. Specified for <code>object</code> type values only. */
+    subtype?: "array" | "null" | "node" | "regexp" | "date" | "map" | "set" | "weakmap" | "weakset" | "iterator" | "generator" | "error" | "proxy" | "promise" | "typedarray";
+    /** Object class (constructor) name. Specified for <code>object</code> type values only. */
+    className?: string;
+    /** Remote object value in case of primitive values or JSON values (if it was requested). */
+    value?: any;
+    /** Primitive value which can not be JSON-stringified does not have <code>value</code>, but gets this property. */
+    unserializableValue?: UnserializableValue;
+    /** String representation of the object. */
+    description?: string;
+    /** Unique object identifier (for non-primitive values). */
+    objectId?: RemoteObjectId;
+    /** Preview containing abbreviated property values. Specified for <code>object</code> type values only. */
+    preview?: ObjectPreview;
+    customPreview?: CustomPreview;
+  }
+  export interface CustomPreview {
+    header: string;
+    hasBody: boolean;
+    formatterObjectId: RemoteObjectId;
+    bindRemoteObjectFunctionId: RemoteObjectId;
+    configObjectId?: RemoteObjectId;
+  }
+  /** Object containing abbreviated remote object value. */
+  export interface ObjectPreview {
+    /** Object type. */
+    type: "object" | "function" | "undefined" | "string" | "number" | "boolean" | "symbol";
+    /** Object subtype hint. Specified for <code>object</code> type values only. */
+    subtype?: "array" | "null" | "node" | "regexp" | "date" | "map" | "set" | "weakmap" | "weakset" | "iterator" | "generator" | "error";
+    /** String representation of the object. */
+    description?: string;
+    /** True iff some of the properties or entries of the original object did not fit. */
+    overflow: boolean;
+    /** List of the properties. */
+    properties: PropertyPreview[];
+    /** List of the entries. Specified for <code>map</code> and <code>set</code> subtype values only. */
+    entries?: EntryPreview[];
+  }
+  export interface PropertyPreview {
+    /** Property name. */
+    name: string;
+    /** Object type. Accessor means that the property itself is an accessor property. */
+    type: "object" | "function" | "undefined" | "string" | "number" | "boolean" | "symbol" | "accessor";
+    /** User-friendly property value string. */
+    value?: string;
+    /** Nested value preview. */
+    valuePreview?: ObjectPreview;
+    /** Object subtype hint. Specified for <code>object</code> type values only. */
+    subtype?: "array" | "null" | "node" | "regexp" | "date" | "map" | "set" | "weakmap" | "weakset" | "iterator" | "generator" | "error";
+  }
+  export interface EntryPreview {
+    /** Preview of the key. Specified for map-like collection entries. */
+    key?: ObjectPreview;
+    /** Preview of the value. */
+    value: ObjectPreview;
+  }
+  /** Object property descriptor. */
+  export interface PropertyDescriptor {
+    /** Property name or symbol description. */
+    name: string;
+    /** The value associated with the property. */
+    value?: RemoteObject;
+    /** True if the value associated with the property may be changed (data descriptors only). */
+    writable?: boolean;
+    /** A function which serves as a getter for the property, or <code>undefined</code> if there is no getter (accessor descriptors only). */
+    get?: RemoteObject;
+    /** A function which serves as a setter for the property, or <code>undefined</code> if there is no setter (accessor descriptors only). */
+    set?: RemoteObject;
+    /** True if the type of this property descriptor may be changed and if the property may be deleted from the corresponding object. */
+    configurable: boolean;
+    /** True if this property shows up during enumeration of the properties on the corresponding object. */
+    enumerable: boolean;
+    /** True if the result was thrown during the evaluation. */
+    wasThrown?: boolean;
+    /** True if the property is owned for the object. */
+    isOwn?: boolean;
+    /** Property symbol object, if the property is of the <code>symbol</code> type. */
+    symbol?: RemoteObject;
+  }
+  /** Object internal property descriptor. This property isn't normally visible in JavaScript code. */
+  export interface InternalPropertyDescriptor {
+    /** Conventional property name. */
+    name: string;
+    /** The value associated with the property. */
+    value?: RemoteObject;
+  }
+  /** Represents function call argument. Either remote object id <code>objectId</code>, primitive <code>value</code>, unserializable primitive value or neither of (for undefined) them should be specified. */
+  export interface CallArgument {
+    /** Primitive value. */
+    value?: any;
+    /** Primitive value which can not be JSON-stringified. */
+    unserializableValue?: UnserializableValue;
+    /** Remote object handle. */
+    objectId?: RemoteObjectId;
+  }
+  /** Id of an execution context. */
+  export type ExecutionContextId = number;
+  /** Description of an isolated world. */
+  export interface ExecutionContextDescription {
+    /** Unique id of the execution context. It can be used to specify in which execution context script evaluation should be performed. */
+    id: ExecutionContextId;
+    /** Execution context origin. */
+    origin: string;
+    /** Human readable name describing given context. */
+    name: string;
+    /** Embedder-specific auxiliary data. */
+    auxData?: any;
+  }
+  /** Detailed information about exception (or error) that was thrown during script compilation or execution. */
+  export interface ExceptionDetails {
+    /** Exception id. */
+    exceptionId: number;
+    /** Exception text, which should be used together with exception object when available. */
+    text: string;
+    /** Line number of the exception location (0-based). */
+    lineNumber: number;
+    /** Column number of the exception location (0-based). */
+    columnNumber: number;
+    /** Script ID of the exception location. */
+    scriptId?: ScriptId;
+    /** URL of the exception location, to be used when the script was not reported. */
+    url?: string;
+    /** JavaScript stack trace if available. */
+    stackTrace?: StackTrace;
+    /** Exception object if available. */
+    exception?: RemoteObject;
+    /** Identifier of the context where exception happened. */
+    executionContextId?: ExecutionContextId;
+  }
+  /** Number of milliseconds since epoch. */
+  export type Timestamp = number;
+  /** Stack entry for runtime errors and assertions. */
+  export interface CallFrame {
+    /** JavaScript function name. */
+    functionName: string;
+    /** JavaScript script id. */
+    scriptId: ScriptId;
+    /** JavaScript script name or url. */
+    url: string;
+    /** JavaScript script line number (0-based). */
+    lineNumber: number;
+    /** JavaScript script column number (0-based). */
+    columnNumber: number;
+  }
+  /** Call frames for assertions or error messages. */
+  export interface StackTrace {
+    /** String label of this stack trace. For async traces this may be a name of the function that initiated the async call. */
+    description?: string;
+    /** JavaScript function name. */
+    callFrames: CallFrame[];
+    /** Asynchronous JavaScript stack trace that preceded this stack, if available. */
+    parent?: StackTrace;
+    /** Creation frame of the Promise which produced the next synchronous trace when resolved, if available. */
+    promiseCreationFrame?: CallFrame;
+  }
+  export type executionContextCreated_Parameters = {
+    /** A newly created execution contex. */
+    context: ExecutionContextDescription;
+  };
+  export type executionContextCreated_Handler = (params: executionContextCreated_Parameters) => void;
+  export type executionContextDestroyed_Parameters = {
+    /** Id of the destroyed context */
+    executionContextId: ExecutionContextId;
+  };
+  export type executionContextDestroyed_Handler = (params: executionContextDestroyed_Parameters) => void;
+  export type executionContextsCleared_Handler = () => void;
+  export type exceptionThrown_Parameters = {
+    /** Timestamp of the exception. */
+    timestamp: Timestamp;
+    exceptionDetails: ExceptionDetails;
+  };
+  export type exceptionThrown_Handler = (params: exceptionThrown_Parameters) => void;
+  export type exceptionRevoked_Parameters = {
+    /** Reason describing why exception was revoked. */
+    reason: string;
+    /** The id of revoked exception, as reported in <code>exceptionUnhandled</code>. */
+    exceptionId: number;
+  };
+  export type exceptionRevoked_Handler = (params: exceptionRevoked_Parameters) => void;
+  export type consoleAPICalled_Parameters = {
+    /** Type of the call. */
+    type: "log" | "debug" | "info" | "error" | "warning" | "dir" | "dirxml" | "table" | "trace" | "clear" | "startGroup" | "startGroupCollapsed" | "endGroup" | "assert" | "profile" | "profileEnd" | "count" | "timeEnd";
+    /** Call arguments. */
+    args: RemoteObject[];
+    /** Identifier of the context where the call was made. */
+    executionContextId: ExecutionContextId;
+    /** Call timestamp. */
+    timestamp: Timestamp;
+    /** Stack trace captured when the call was made. */
+    stackTrace?: StackTrace;
+  };
+  export type consoleAPICalled_Handler = (params: consoleAPICalled_Parameters) => void;
+  export type inspectRequested_Parameters = {
+    object: RemoteObject;
+    hints: any;
+  };
+  export type inspectRequested_Handler = (params: inspectRequested_Parameters) => void;
+  export type evaluate_Parameters = {
+    /** Expression to evaluate. */
+    expression: string;
+    /** Symbolic group name that can be used to release multiple objects. */
+    objectGroup?: string;
+    /** Determines whether Command Line API should be available during the evaluation. */
+    includeCommandLineAPI?: boolean;
+    /** In silent mode exceptions thrown during evaluation are not reported and do not pause execution. Overrides <code>setPauseOnException</code> state. */
+    silent?: boolean;
+    /** Specifies in which execution context to perform evaluation. If the parameter is omitted the evaluation will be performed in the context of the inspected page. */
+    contextId?: ExecutionContextId;
+    /** Whether the result is expected to be a JSON object that should be sent by value. */
+    returnByValue?: boolean;
+    /** Whether preview should be generated for the result. */
+    generatePreview?: boolean;
+    /** Whether execution should be treated as initiated by user in the UI. */
+    userGesture?: boolean;
+    /** Whether execution should wait for promise to be resolved. If the result of evaluation is not a Promise, it's considered to be an error. */
+    awaitPromise?: boolean;
+  };
+  export type evaluate_Return = {
+    /** Evaluation result. */
+    result: RemoteObject;
+    /** Exception details. */
+    exceptionDetails?: ExceptionDetails;
+  };
+  export type awaitPromise_Parameters = {
+    /** Identifier of the promise. */
+    promiseObjectId: RemoteObjectId;
+    /** Whether the result is expected to be a JSON object that should be sent by value. */
+    returnByValue?: boolean;
+    /** Whether preview should be generated for the result. */
+    generatePreview?: boolean;
+  };
+  export type awaitPromise_Return = {
+    /** Promise result. Will contain rejected value if promise was rejected. */
+    result: RemoteObject;
+    /** Exception details if stack strace is available. */
+    exceptionDetails?: ExceptionDetails;
+  };
+  export type callFunctionOn_Parameters = {
+    /** Identifier of the object to call function on. */
+    objectId: RemoteObjectId;
+    /** Declaration of the function to call. */
+    functionDeclaration: string;
+    /** Call arguments. All call arguments must belong to the same JavaScript world as the target object. */
+    arguments?: CallArgument[];
+    /** In silent mode exceptions thrown during evaluation are not reported and do not pause execution. Overrides <code>setPauseOnException</code> state. */
+    silent?: boolean;
+    /** Whether the result is expected to be a JSON object which should be sent by value. */
+    returnByValue?: boolean;
+    /** Whether preview should be generated for the result. */
+    generatePreview?: boolean;
+    /** Whether execution should be treated as initiated by user in the UI. */
+    userGesture?: boolean;
+    /** Whether execution should wait for promise to be resolved. If the result of evaluation is not a Promise, it's considered to be an error. */
+    awaitPromise?: boolean;
+  };
+  export type callFunctionOn_Return = {
+    /** Call result. */
+    result: RemoteObject;
+    /** Exception details. */
+    exceptionDetails?: ExceptionDetails;
+  };
+  export type getProperties_Parameters = {
+    /** Identifier of the object to return properties for. */
+    objectId: RemoteObjectId;
+    /** If true, returns properties belonging only to the element itself, not to its prototype chain. */
+    ownProperties?: boolean;
+    /** If true, returns accessor properties (with getter/setter) only; internal properties are not returned either. */
+    accessorPropertiesOnly?: boolean;
+    /** Whether preview should be generated for the results. */
+    generatePreview?: boolean;
+  };
+  export type getProperties_Return = {
+    /** Object properties. */
+    result: PropertyDescriptor[];
+    /** Internal object properties (only of the element itself). */
+    internalProperties?: InternalPropertyDescriptor[];
+    /** Exception details. */
+    exceptionDetails?: ExceptionDetails;
+  };
+  export type releaseObject_Parameters = {
+    /** Identifier of the object to release. */
+    objectId: RemoteObjectId;
+  };
+  export type releaseObjectGroup_Parameters = {
+    /** Symbolic object group name. */
+    objectGroup: string;
+  };
+  export type setCustomObjectFormatterEnabled_Parameters = {
+    enabled: boolean;
+  };
+  export type compileScript_Parameters = {
+    /** Expression to compile. */
+    expression: string;
+    /** Source url to be set for the script. */
+    sourceURL: string;
+    /** Specifies whether the compiled script should be persisted. */
+    persistScript: boolean;
+    /** Specifies in which execution context to perform script run. If the parameter is omitted the evaluation will be performed in the context of the inspected page. */
+    executionContextId?: ExecutionContextId;
+  };
+  export type compileScript_Return = {
+    /** Id of the script. */
+    scriptId?: ScriptId;
+    /** Exception details. */
+    exceptionDetails?: ExceptionDetails;
+  };
+  export type runScript_Parameters = {
+    /** Id of the script to run. */
+    scriptId: ScriptId;
+    /** Specifies in which execution context to perform script run. If the parameter is omitted the evaluation will be performed in the context of the inspected page. */
+    executionContextId?: ExecutionContextId;
+    /** Symbolic group name that can be used to release multiple objects. */
+    objectGroup?: string;
+    /** In silent mode exceptions thrown during evaluation are not reported and do not pause execution. Overrides <code>setPauseOnException</code> state. */
+    silent?: boolean;
+    /** Determines whether Command Line API should be available during the evaluation. */
+    includeCommandLineAPI?: boolean;
+    /** Whether the result is expected to be a JSON object which should be sent by value. */
+    returnByValue?: boolean;
+    /** Whether preview should be generated for the result. */
+    generatePreview?: boolean;
+    /** Whether execution should wait for promise to be resolved. If the result of evaluation is not a Promise, it's considered to be an error. */
+    awaitPromise?: boolean;
+  };
+  export type runScript_Return = {
+    /** Run result. */
+    result: RemoteObject;
+    /** Exception details. */
+    exceptionDetails?: ExceptionDetails;
+  };
+}
+/** Debugger domain exposes JavaScript debugging capabilities. It allows setting and removing breakpoints, stepping through execution, exploring stack traces, etc. */
+export class Debugger {
+  private _scriptParsed: Debugger.scriptParsed_Handler = undefined;
+  private _scriptFailedToParse: Debugger.scriptFailedToParse_Handler = undefined;
+  private _breakpointResolved: Debugger.breakpointResolved_Handler = undefined;
+  private _paused: Debugger.paused_Handler = undefined;
+  private _resumed: Debugger.resumed_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
+  constructor(client: IDebuggingProtocolClient) {
+    this._client = client;
+  }
+  /** Enables debugger for the given page. Clients should not assume that the debugging has been enabled until the result for this command is received. */
+  enable(): Promise<void> {
+    return this._client.send<void>("Debugger.enable");
+  }
+  /** Disables debugger for given page. */
+  disable(): Promise<void> {
+    return this._client.send<void>("Debugger.disable");
+  }
+  /** Activates / deactivates all breakpoints on the page. */
+  setBreakpointsActive(params: Debugger.setBreakpointsActive_Parameters): Promise<void> {
+    return this._client.send<void>("Debugger.setBreakpointsActive", params);
+  }
+  /** Makes page not interrupt on any pauses (breakpoint, exception, dom exception etc). */
+  setSkipAllPauses(params: Debugger.setSkipAllPauses_Parameters): Promise<void> {
+    return this._client.send<void>("Debugger.setSkipAllPauses", params);
+  }
+  /** Sets JavaScript breakpoint at given location specified either by URL or URL regex. Once this command is issued, all existing parsed scripts will have breakpoints resolved and returned in <code>locations</code> property. Further matching script parsing will result in subsequent <code>breakpointResolved</code> events issued. This logical breakpoint will survive page reloads. */
+  setBreakpointByUrl(params: Debugger.setBreakpointByUrl_Parameters): Promise<Debugger.setBreakpointByUrl_Return> {
+    return this._client.send<Debugger.setBreakpointByUrl_Return>("Debugger.setBreakpointByUrl", params);
+  }
+  /** Sets JavaScript breakpoint at a given location. */
+  setBreakpoint(params: Debugger.setBreakpoint_Parameters): Promise<Debugger.setBreakpoint_Return> {
+    return this._client.send<Debugger.setBreakpoint_Return>("Debugger.setBreakpoint", params);
+  }
+  /** Removes JavaScript breakpoint. */
+  removeBreakpoint(params: Debugger.removeBreakpoint_Parameters): Promise<void> {
+    return this._client.send<void>("Debugger.removeBreakpoint", params);
+  }
+  /** Returns possible locations for breakpoint. scriptId in start and end range locations should be the same. */
+  getPossibleBreakpoints(params: Debugger.getPossibleBreakpoints_Parameters): Promise<Debugger.getPossibleBreakpoints_Return> {
+    return this._client.send<Debugger.getPossibleBreakpoints_Return>("Debugger.getPossibleBreakpoints", params);
+  }
+  /** Continues execution until specific location is reached. */
+  continueToLocation(params: Debugger.continueToLocation_Parameters): Promise<void> {
+    return this._client.send<void>("Debugger.continueToLocation", params);
+  }
+  /** Steps over the statement. */
+  stepOver(): Promise<void> {
+    return this._client.send<void>("Debugger.stepOver");
+  }
+  /** Steps into the function call. */
+  stepInto(): Promise<void> {
+    return this._client.send<void>("Debugger.stepInto");
+  }
+  /** Steps out of the function call. */
+  stepOut(): Promise<void> {
+    return this._client.send<void>("Debugger.stepOut");
+  }
+  /** Stops on the next JavaScript statement. */
+  pause(): Promise<void> {
+    return this._client.send<void>("Debugger.pause");
+  }
+  /** Steps into next scheduled async task if any is scheduled before next pause. Returns success when async task is actually scheduled, returns error if no task were scheduled or another scheduleStepIntoAsync was called. */
+  scheduleStepIntoAsync(): Promise<void> {
+    return this._client.send<void>("Debugger.scheduleStepIntoAsync");
+  }
+  /** Resumes JavaScript execution. */
+  resume(): Promise<void> {
+    return this._client.send<void>("Debugger.resume");
+  }
+  /** Searches for given string in script content. */
+  searchInContent(params: Debugger.searchInContent_Parameters): Promise<Debugger.searchInContent_Return> {
+    return this._client.send<Debugger.searchInContent_Return>("Debugger.searchInContent", params);
+  }
+  /** Edits JavaScript source live. */
+  setScriptSource(params: Debugger.setScriptSource_Parameters): Promise<Debugger.setScriptSource_Return> {
+    return this._client.send<Debugger.setScriptSource_Return>("Debugger.setScriptSource", params);
+  }
+  /** Restarts particular call frame from the beginning. */
+  restartFrame(params: Debugger.restartFrame_Parameters): Promise<Debugger.restartFrame_Return> {
+    return this._client.send<Debugger.restartFrame_Return>("Debugger.restartFrame", params);
+  }
+  /** Returns source for the script with given id. */
+  getScriptSource(params: Debugger.getScriptSource_Parameters): Promise<Debugger.getScriptSource_Return> {
+    return this._client.send<Debugger.getScriptSource_Return>("Debugger.getScriptSource", params);
+  }
+  /** Defines pause on exceptions state. Can be set to stop on all exceptions, uncaught exceptions or no exceptions. Initial pause on exceptions state is <code>none</code>. */
+  setPauseOnExceptions(params: Debugger.setPauseOnExceptions_Parameters): Promise<void> {
+    return this._client.send<void>("Debugger.setPauseOnExceptions", params);
+  }
+  /** Evaluates expression on a given call frame. */
+  evaluateOnCallFrame(params: Debugger.evaluateOnCallFrame_Parameters): Promise<Debugger.evaluateOnCallFrame_Return> {
+    return this._client.send<Debugger.evaluateOnCallFrame_Return>("Debugger.evaluateOnCallFrame", params);
+  }
+  /** Changes value of variable in a callframe. Object-based scopes are not supported and must be mutated manually. */
+  setVariableValue(params: Debugger.setVariableValue_Parameters): Promise<void> {
+    return this._client.send<void>("Debugger.setVariableValue", params);
+  }
+  /** Enables or disables async call stacks tracking. */
+  setAsyncCallStackDepth(params: Debugger.setAsyncCallStackDepth_Parameters): Promise<void> {
+    return this._client.send<void>("Debugger.setAsyncCallStackDepth", params);
+  }
+  /** Replace previous blackbox patterns with passed ones. Forces backend to skip stepping/pausing in scripts with url matching one of the patterns. VM will try to leave blackboxed script by performing 'step in' several times, finally resorting to 'step out' if unsuccessful. */
+  setBlackboxPatterns(params: Debugger.setBlackboxPatterns_Parameters): Promise<void> {
+    return this._client.send<void>("Debugger.setBlackboxPatterns", params);
+  }
+  /** Makes backend skip steps in the script in blackboxed ranges. VM will try leave blacklisted scripts by performing 'step in' several times, finally resorting to 'step out' if unsuccessful. Positions array contains positions where blackbox state is changed. First interval isn't blackboxed. Array should be sorted. */
+  setBlackboxedRanges(params: Debugger.setBlackboxedRanges_Parameters): Promise<void> {
+    return this._client.send<void>("Debugger.setBlackboxedRanges", params);
+  }
+  /** Fired when virtual machine parses script. This event is also fired for all known and uncollected scripts upon enabling debugger. */
+  get scriptParsed(): Debugger.scriptParsed_Handler {
+    return this._scriptParsed;
+  }
+  set scriptParsed(handler: Debugger.scriptParsed_Handler) {
+    if (this._scriptParsed) {
+      this._client.removeListener("Debugger.scriptParsed", this._scriptParsed);
+    }
+    this._scriptParsed = handler;
+    if (handler) {
+      this._client.on("Debugger.scriptParsed", handler);
+    }
+  }
+  /** Fired when virtual machine fails to parse the script. */
+  get scriptFailedToParse(): Debugger.scriptFailedToParse_Handler {
+    return this._scriptFailedToParse;
+  }
+  set scriptFailedToParse(handler: Debugger.scriptFailedToParse_Handler) {
+    if (this._scriptFailedToParse) {
+      this._client.removeListener("Debugger.scriptFailedToParse", this._scriptFailedToParse);
+    }
+    this._scriptFailedToParse = handler;
+    if (handler) {
+      this._client.on("Debugger.scriptFailedToParse", handler);
+    }
+  }
+  /** Fired when breakpoint is resolved to an actual script and location. */
+  get breakpointResolved(): Debugger.breakpointResolved_Handler {
+    return this._breakpointResolved;
+  }
+  set breakpointResolved(handler: Debugger.breakpointResolved_Handler) {
+    if (this._breakpointResolved) {
+      this._client.removeListener("Debugger.breakpointResolved", this._breakpointResolved);
+    }
+    this._breakpointResolved = handler;
+    if (handler) {
+      this._client.on("Debugger.breakpointResolved", handler);
+    }
+  }
+  /** Fired when the virtual machine stopped on breakpoint or exception or any other stop criteria. */
+  get paused(): Debugger.paused_Handler {
+    return this._paused;
+  }
+  set paused(handler: Debugger.paused_Handler) {
+    if (this._paused) {
+      this._client.removeListener("Debugger.paused", this._paused);
+    }
+    this._paused = handler;
+    if (handler) {
+      this._client.on("Debugger.paused", handler);
+    }
+  }
+  /** Fired when the virtual machine resumed execution. */
+  get resumed(): Debugger.resumed_Handler {
+    return this._resumed;
+  }
+  set resumed(handler: Debugger.resumed_Handler) {
+    if (this._resumed) {
+      this._client.removeListener("Debugger.resumed", this._resumed);
+    }
+    this._resumed = handler;
+    if (handler) {
+      this._client.on("Debugger.resumed", handler);
+    }
+  }
+}
+export namespace Debugger {
+  /** Breakpoint identifier. */
+  export type BreakpointId = string;
+  /** Call frame identifier. */
+  export type CallFrameId = string;
+  /** Location in the source code. */
+  export interface Location {
+    /** Script identifier as reported in the <code>Debugger.scriptParsed</code>. */
+    scriptId: Runtime.ScriptId;
+    /** Line number in the script (0-based). */
+    lineNumber: number;
+    /** Column number in the script (0-based). */
+    columnNumber?: number;
+  }
+  /** Location in the source code. */
+  export interface ScriptPosition {
+    lineNumber: number;
+    columnNumber: number;
+  }
+  /** JavaScript call frame. Array of call frames form the call stack. */
+  export interface CallFrame {
+    /** Call frame identifier. This identifier is only valid while the virtual machine is paused. */
+    callFrameId: CallFrameId;
+    /** Name of the JavaScript function called on this call frame. */
+    functionName: string;
+    /** Location in the source code. */
+    functionLocation?: Location;
+    /** Location in the source code. */
+    location: Location;
+    /** Scope chain for this call frame. */
+    scopeChain: Scope[];
+    /** <code>this</code> object for this call frame. */
+    this: Runtime.RemoteObject;
+    /** The value being returned, if the function is at return point. */
+    returnValue?: Runtime.RemoteObject;
+  }
+  /** Scope description. */
+  export interface Scope {
+    /** Scope type. */
+    type: "global" | "local" | "with" | "closure" | "catch" | "block" | "script" | "eval" | "module";
+    /** Object representing the scope. For <code>global</code> and <code>with</code> scopes it represents the actual object; for the rest of the scopes, it is artificial transient object enumerating scope variables as its properties. */
+    object: Runtime.RemoteObject;
+    name?: string;
+    /** Location in the source code where scope starts */
+    startLocation?: Location;
+    /** Location in the source code where scope ends */
+    endLocation?: Location;
+  }
+  /** Search match for resource. */
+  export interface SearchMatch {
+    /** Line number in resource content. */
+    lineNumber: number;
+    /** Line with match content. */
+    lineContent: string;
+  }
+  export interface BreakLocation {
+    /** Script identifier as reported in the <code>Debugger.scriptParsed</code>. */
+    scriptId: Runtime.ScriptId;
+    /** Line number in the script (0-based). */
+    lineNumber: number;
+    /** Column number in the script (0-based). */
+    columnNumber?: number;
+    type?: "debuggerStatement" | "call" | "return";
+  }
+  export type scriptParsed_Parameters = {
+    /** Identifier of the script parsed. */
+    scriptId: Runtime.ScriptId;
+    /** URL or name of the script parsed (if any). */
+    url: string;
+    /** Line offset of the script within the resource with given URL (for script tags). */
+    startLine: number;
+    /** Column offset of the script within the resource with given URL. */
+    startColumn: number;
+    /** Last line of the script. */
+    endLine: number;
+    /** Length of the last line of the script. */
+    endColumn: number;
+    /** Specifies script creation context. */
+    executionContextId: Runtime.ExecutionContextId;
+    /** Content hash of the script. */
+    hash: string;
+    /** Embedder-specific auxiliary data. */
+    executionContextAuxData?: any;
+    /** True, if this script is generated as a result of the live edit operation. */
+    isLiveEdit?: boolean;
+    /** URL of source map associated with script (if any). */
+    sourceMapURL?: string;
+    /** True, if this script has sourceURL. */
+    hasSourceURL?: boolean;
+    /** True, if this script is ES6 module. */
+    isModule?: boolean;
+    /** This script length. */
+    length?: number;
+    /** JavaScript top stack frame of where the script parsed event was triggered if available. */
+    stackTrace?: Runtime.StackTrace;
+  };
+  export type scriptParsed_Handler = (params: scriptParsed_Parameters) => void;
+  export type scriptFailedToParse_Parameters = {
+    /** Identifier of the script parsed. */
+    scriptId: Runtime.ScriptId;
+    /** URL or name of the script parsed (if any). */
+    url: string;
+    /** Line offset of the script within the resource with given URL (for script tags). */
+    startLine: number;
+    /** Column offset of the script within the resource with given URL. */
+    startColumn: number;
+    /** Last line of the script. */
+    endLine: number;
+    /** Length of the last line of the script. */
+    endColumn: number;
+    /** Specifies script creation context. */
+    executionContextId: Runtime.ExecutionContextId;
+    /** Content hash of the script. */
+    hash: string;
+    /** Embedder-specific auxiliary data. */
+    executionContextAuxData?: any;
+    /** URL of source map associated with script (if any). */
+    sourceMapURL?: string;
+    /** True, if this script has sourceURL. */
+    hasSourceURL?: boolean;
+    /** True, if this script is ES6 module. */
+    isModule?: boolean;
+    /** This script length. */
+    length?: number;
+    /** JavaScript top stack frame of where the script parsed event was triggered if available. */
+    stackTrace?: Runtime.StackTrace;
+  };
+  export type scriptFailedToParse_Handler = (params: scriptFailedToParse_Parameters) => void;
+  export type breakpointResolved_Parameters = {
+    /** Breakpoint unique identifier. */
+    breakpointId: BreakpointId;
+    /** Actual breakpoint location. */
+    location: Location;
+  };
+  export type breakpointResolved_Handler = (params: breakpointResolved_Parameters) => void;
+  export type paused_Parameters = {
+    /** Call stack the virtual machine stopped on. */
+    callFrames: CallFrame[];
+    /** Pause reason. */
+    reason: "XHR" | "DOM" | "EventListener" | "exception" | "assert" | "debugCommand" | "promiseRejection" | "OOM" | "other" | "ambiguous";
+    /** Object containing break-specific auxiliary properties. */
+    data?: any;
+    /** Hit breakpoints IDs */
+    hitBreakpoints?: string[];
+    /** Async stack trace, if any. */
+    asyncStackTrace?: Runtime.StackTrace;
+  };
+  export type paused_Handler = (params: paused_Parameters) => void;
+  export type resumed_Handler = () => void;
+  export type setBreakpointsActive_Parameters = {
+    /** New value for breakpoints active state. */
+    active: boolean;
+  };
+  export type setSkipAllPauses_Parameters = {
+    /** New value for skip pauses state. */
+    skip: boolean;
+  };
+  export type setBreakpointByUrl_Parameters = {
+    /** Line number to set breakpoint at. */
+    lineNumber: number;
+    /** URL of the resources to set breakpoint on. */
+    url?: string;
+    /** Regex pattern for the URLs of the resources to set breakpoints on. Either <code>url</code> or <code>urlRegex</code> must be specified. */
+    urlRegex?: string;
+    /** Offset in the line to set breakpoint at. */
+    columnNumber?: number;
+    /** Expression to use as a breakpoint condition. When specified, debugger will only stop on the breakpoint if this expression evaluates to true. */
+    condition?: string;
+  };
+  export type setBreakpointByUrl_Return = {
+    /** Id of the created breakpoint for further reference. */
+    breakpointId: BreakpointId;
+    /** List of the locations this breakpoint resolved into upon addition. */
+    locations: Location[];
+  };
+  export type setBreakpoint_Parameters = {
+    /** Location to set breakpoint in. */
+    location: Location;
+    /** Expression to use as a breakpoint condition. When specified, debugger will only stop on the breakpoint if this expression evaluates to true. */
+    condition?: string;
+  };
+  export type setBreakpoint_Return = {
+    /** Id of the created breakpoint for further reference. */
+    breakpointId: BreakpointId;
+    /** Location this breakpoint resolved into. */
+    actualLocation: Location;
+  };
+  export type removeBreakpoint_Parameters = {
+    breakpointId: BreakpointId;
+  };
+  export type getPossibleBreakpoints_Parameters = {
+    /** Start of range to search possible breakpoint locations in. */
+    start: Location;
+    /** End of range to search possible breakpoint locations in (excluding). When not specifed, end of scripts is used as end of range. */
+    end?: Location;
+    /** Only consider locations which are in the same (non-nested) function as start. */
+    restrictToFunction?: boolean;
+  };
+  export type getPossibleBreakpoints_Return = {
+    /** List of the possible breakpoint locations. */
+    locations: BreakLocation[];
+  };
+  export type continueToLocation_Parameters = {
+    /** Location to continue to. */
+    location: Location;
+  };
+  export type searchInContent_Parameters = {
+    /** Id of the script to search in. */
+    scriptId: Runtime.ScriptId;
+    /** String to search for. */
+    query: string;
+    /** If true, search is case sensitive. */
+    caseSensitive?: boolean;
+    /** If true, treats string parameter as regex. */
+    isRegex?: boolean;
+  };
+  export type searchInContent_Return = {
+    /** List of search matches. */
+    result: SearchMatch[];
+  };
+  export type setScriptSource_Parameters = {
+    /** Id of the script to edit. */
+    scriptId: Runtime.ScriptId;
+    /** New content of the script. */
+    scriptSource: string;
+    /**  If true the change will not actually be applied. Dry run may be used to get result description without actually modifying the code. */
+    dryRun?: boolean;
+  };
+  export type setScriptSource_Return = {
+    /** New stack trace in case editing has happened while VM was stopped. */
+    callFrames?: CallFrame[];
+    /** Whether current call stack  was modified after applying the changes. */
+    stackChanged?: boolean;
+    /** Async stack trace, if any. */
+    asyncStackTrace?: Runtime.StackTrace;
+    /** Exception details if any. */
+    exceptionDetails?: Runtime.ExceptionDetails;
+  };
+  export type restartFrame_Parameters = {
+    /** Call frame identifier to evaluate on. */
+    callFrameId: CallFrameId;
+  };
+  export type restartFrame_Return = {
+    /** New stack trace. */
+    callFrames: CallFrame[];
+    /** Async stack trace, if any. */
+    asyncStackTrace?: Runtime.StackTrace;
+  };
+  export type getScriptSource_Parameters = {
+    /** Id of the script to get source for. */
+    scriptId: Runtime.ScriptId;
+  };
+  export type getScriptSource_Return = {
+    /** Script source. */
+    scriptSource: string;
+  };
+  export type setPauseOnExceptions_Parameters = {
+    /** Pause on exceptions mode. */
+    state: "none" | "uncaught" | "all";
+  };
+  export type evaluateOnCallFrame_Parameters = {
+    /** Call frame identifier to evaluate on. */
+    callFrameId: CallFrameId;
+    /** Expression to evaluate. */
+    expression: string;
+    /** String object group name to put result into (allows rapid releasing resulting object handles using <code>releaseObjectGroup</code>). */
+    objectGroup?: string;
+    /** Specifies whether command line API should be available to the evaluated expression, defaults to false. */
+    includeCommandLineAPI?: boolean;
+    /** In silent mode exceptions thrown during evaluation are not reported and do not pause execution. Overrides <code>setPauseOnException</code> state. */
+    silent?: boolean;
+    /** Whether the result is expected to be a JSON object that should be sent by value. */
+    returnByValue?: boolean;
+    /** Whether preview should be generated for the result. */
+    generatePreview?: boolean;
+    /** Whether to throw an exception if side effect cannot be ruled out during evaluation. */
+    throwOnSideEffect?: boolean;
+  };
+  export type evaluateOnCallFrame_Return = {
+    /** Object wrapper for the evaluation result. */
+    result: Runtime.RemoteObject;
+    /** Exception details. */
+    exceptionDetails?: Runtime.ExceptionDetails;
+  };
+  export type setVariableValue_Parameters = {
+    /** 0-based number of scope as was listed in scope chain. Only 'local', 'closure' and 'catch' scope types are allowed. Other scopes could be manipulated manually. */
+    scopeNumber: number;
+    /** Variable name. */
+    variableName: string;
+    /** New variable value. */
+    newValue: Runtime.CallArgument;
+    /** Id of callframe that holds variable. */
+    callFrameId: CallFrameId;
+  };
+  export type setAsyncCallStackDepth_Parameters = {
+    /** Maximum depth of async call stacks. Setting to <code>0</code> will effectively disable collecting async call stacks (default). */
+    maxDepth: number;
+  };
+  export type setBlackboxPatterns_Parameters = {
+    /** Array of regexps that will be used to check script url for blackbox state. */
+    patterns: string[];
+  };
+  export type setBlackboxedRanges_Parameters = {
+    /** Id of the script. */
+    scriptId: Runtime.ScriptId;
+    positions: ScriptPosition[];
+  };
+}
+/** This domain is deprecated - use Runtime or Log instead. */
+export class Console {
+  private _messageAdded: Console.messageAdded_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
+  constructor(client: IDebuggingProtocolClient) {
+    this._client = client;
+  }
+  /** Enables console domain, sends the messages collected so far to the client by means of the <code>messageAdded</code> notification. */
+  enable(): Promise<void> {
+    return this._client.send<void>("Console.enable");
+  }
+  /** Disables console domain, prevents further console messages from being reported to the client. */
+  disable(): Promise<void> {
+    return this._client.send<void>("Console.disable");
+  }
+  /** Does nothing. */
+  clearMessages(): Promise<void> {
+    return this._client.send<void>("Console.clearMessages");
+  }
+  /** Issued when new console message is added. */
+  get messageAdded(): Console.messageAdded_Handler {
+    return this._messageAdded;
+  }
+  set messageAdded(handler: Console.messageAdded_Handler) {
+    if (this._messageAdded) {
+      this._client.removeListener("Console.messageAdded", this._messageAdded);
+    }
+    this._messageAdded = handler;
+    if (handler) {
+      this._client.on("Console.messageAdded", handler);
+    }
+  }
+}
+export namespace Console {
+  /** Console message. */
+  export interface ConsoleMessage {
+    /** Message source. */
+    source: "xml" | "javascript" | "network" | "console-api" | "storage" | "appcache" | "rendering" | "security" | "other" | "deprecation" | "worker";
+    /** Message severity. */
+    level: "log" | "warning" | "error" | "debug" | "info";
+    /** Message text. */
+    text: string;
+    /** URL of the message origin. */
+    url?: string;
+    /** Line number in the resource that generated this message (1-based). */
+    line?: number;
+    /** Column number in the resource that generated this message (1-based). */
+    column?: number;
+  }
+  export type messageAdded_Parameters = {
+    /** Console message that has been added. */
+    message: ConsoleMessage;
+  };
+  export type messageAdded_Handler = (params: messageAdded_Parameters) => void;
+}
+export class Profiler {
+  private _consoleProfileStarted: Profiler.consoleProfileStarted_Handler = undefined;
+  private _consoleProfileFinished: Profiler.consoleProfileFinished_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
+  constructor(client: IDebuggingProtocolClient) {
+    this._client = client;
+  }
+  enable(): Promise<void> {
+    return this._client.send<void>("Profiler.enable");
+  }
+  disable(): Promise<void> {
+    return this._client.send<void>("Profiler.disable");
+  }
+  /** Changes CPU profiler sampling interval. Must be called before CPU profiles recording started. */
+  setSamplingInterval(params: Profiler.setSamplingInterval_Parameters): Promise<void> {
+    return this._client.send<void>("Profiler.setSamplingInterval", params);
+  }
+  start(): Promise<void> {
+    return this._client.send<void>("Profiler.start");
+  }
+  stop(): Promise<Profiler.stop_Return> {
+    return this._client.send<Profiler.stop_Return>("Profiler.stop");
+  }
+  /** Enable precise code coverage. Coverage data for JavaScript executed before enabling precise code coverage may be incomplete. Enabling prevents running optimized code and resets execution counters. */
+  startPreciseCoverage(params: Profiler.startPreciseCoverage_Parameters): Promise<void> {
+    return this._client.send<void>("Profiler.startPreciseCoverage", params);
+  }
+  /** Disable precise code coverage. Disabling releases unnecessary execution count records and allows executing optimized code. */
+  stopPreciseCoverage(): Promise<void> {
+    return this._client.send<void>("Profiler.stopPreciseCoverage");
+  }
+  /** Collect coverage data for the current isolate, and resets execution counters. Precise code coverage needs to have started. */
+  takePreciseCoverage(): Promise<Profiler.takePreciseCoverage_Return> {
+    return this._client.send<Profiler.takePreciseCoverage_Return>("Profiler.takePreciseCoverage");
+  }
+  /** Collect coverage data for the current isolate. The coverage data may be incomplete due to garbage collection. */
+  getBestEffortCoverage(): Promise<Profiler.getBestEffortCoverage_Return> {
+    return this._client.send<Profiler.getBestEffortCoverage_Return>("Profiler.getBestEffortCoverage");
+  }
+  /** Sent when new profile recodring is started using console.profile() call. */
+  get consoleProfileStarted(): Profiler.consoleProfileStarted_Handler {
+    return this._consoleProfileStarted;
+  }
+  set consoleProfileStarted(handler: Profiler.consoleProfileStarted_Handler) {
+    if (this._consoleProfileStarted) {
+      this._client.removeListener("Profiler.consoleProfileStarted", this._consoleProfileStarted);
+    }
+    this._consoleProfileStarted = handler;
+    if (handler) {
+      this._client.on("Profiler.consoleProfileStarted", handler);
+    }
+  }
+  get consoleProfileFinished(): Profiler.consoleProfileFinished_Handler {
+    return this._consoleProfileFinished;
+  }
+  set consoleProfileFinished(handler: Profiler.consoleProfileFinished_Handler) {
+    if (this._consoleProfileFinished) {
+      this._client.removeListener("Profiler.consoleProfileFinished", this._consoleProfileFinished);
+    }
+    this._consoleProfileFinished = handler;
+    if (handler) {
+      this._client.on("Profiler.consoleProfileFinished", handler);
+    }
+  }
+}
+export namespace Profiler {
+  /** Profile node. Holds callsite information, execution statistics and child nodes. */
+  export interface ProfileNode {
+    /** Unique id of the node. */
+    id: number;
+    /** Function location. */
+    callFrame: Runtime.CallFrame;
+    /** Number of samples where this node was on top of the call stack. */
+    hitCount?: number;
+    /** Child node ids. */
+    children?: number[];
+    /** The reason of being not optimized. The function may be deoptimized or marked as don't optimize. */
+    deoptReason?: string;
+    /** An array of source position ticks. */
+    positionTicks?: PositionTickInfo[];
+  }
+  /** Profile. */
+  export interface Profile {
+    /** The list of profile nodes. First item is the root node. */
+    nodes: ProfileNode[];
+    /** Profiling start timestamp in microseconds. */
+    startTime: number;
+    /** Profiling end timestamp in microseconds. */
+    endTime: number;
+    /** Ids of samples top nodes. */
+    samples?: number[];
+    /** Time intervals between adjacent samples in microseconds. The first delta is relative to the profile startTime. */
+    timeDeltas?: number[];
+  }
+  /** Specifies a number of samples attributed to a certain source position. */
+  export interface PositionTickInfo {
+    /** Source line number (1-based). */
+    line: number;
+    /** Number of samples attributed to the source line. */
+    ticks: number;
+  }
+  /** Coverage data for a source range. */
+  export interface CoverageRange {
+    /** JavaScript script source offset for the range start. */
+    startOffset: number;
+    /** JavaScript script source offset for the range end. */
+    endOffset: number;
+    /** Collected execution count of the source range. */
+    count: number;
+  }
+  /** Coverage data for a JavaScript function. */
+  export interface FunctionCoverage {
+    /** JavaScript function name. */
+    functionName: string;
+    /** Source ranges inside the function with coverage data. */
+    ranges: CoverageRange[];
+  }
+  /** Coverage data for a JavaScript script. */
+  export interface ScriptCoverage {
+    /** JavaScript script id. */
+    scriptId: Runtime.ScriptId;
+    /** JavaScript script name or url. */
+    url: string;
+    /** Functions contained in the script that has coverage data. */
+    functions: FunctionCoverage[];
+  }
+  export type consoleProfileStarted_Parameters = {
+    id: string;
+    /** Location of console.profile(). */
+    location: Debugger.Location;
+    /** Profile title passed as an argument to console.profile(). */
+    title?: string;
+  };
+  export type consoleProfileStarted_Handler = (params: consoleProfileStarted_Parameters) => void;
+  export type consoleProfileFinished_Parameters = {
+    id: string;
+    /** Location of console.profileEnd(). */
+    location: Debugger.Location;
+    profile: Profile;
+    /** Profile title passed as an argument to console.profile(). */
+    title?: string;
+  };
+  export type consoleProfileFinished_Handler = (params: consoleProfileFinished_Parameters) => void;
+  export type setSamplingInterval_Parameters = {
+    /** New sampling interval in microseconds. */
+    interval: number;
+  };
+  export type stop_Return = {
+    /** Recorded profile. */
+    profile: Profile;
+  };
+  export type startPreciseCoverage_Parameters = {
+    /** Collect accurate call counts beyond simple 'covered' or 'not covered'. */
+    callCount?: boolean;
+  };
+  export type takePreciseCoverage_Return = {
+    /** Coverage data for the current isolate. */
+    result: ScriptCoverage[];
+  };
+  export type getBestEffortCoverage_Return = {
+    /** Coverage data for the current isolate. */
+    result: ScriptCoverage[];
+  };
+}
+export class HeapProfiler {
+  private _addHeapSnapshotChunk: HeapProfiler.addHeapSnapshotChunk_Handler = undefined;
+  private _resetProfiles: HeapProfiler.resetProfiles_Handler = undefined;
+  private _reportHeapSnapshotProgress: HeapProfiler.reportHeapSnapshotProgress_Handler = undefined;
+  private _lastSeenObjectId: HeapProfiler.lastSeenObjectId_Handler = undefined;
+  private _heapStatsUpdate: HeapProfiler.heapStatsUpdate_Handler = undefined;
+  private _client: IDebuggingProtocolClient = undefined;
+  constructor(client: IDebuggingProtocolClient) {
+    this._client = client;
+  }
+  enable(): Promise<void> {
+    return this._client.send<void>("HeapProfiler.enable");
+  }
+  disable(): Promise<void> {
+    return this._client.send<void>("HeapProfiler.disable");
+  }
+  startTrackingHeapObjects(params: HeapProfiler.startTrackingHeapObjects_Parameters): Promise<void> {
+    return this._client.send<void>("HeapProfiler.startTrackingHeapObjects", params);
+  }
+  stopTrackingHeapObjects(params: HeapProfiler.stopTrackingHeapObjects_Parameters): Promise<void> {
+    return this._client.send<void>("HeapProfiler.stopTrackingHeapObjects", params);
+  }
+  takeHeapSnapshot(params: HeapProfiler.takeHeapSnapshot_Parameters): Promise<void> {
+    return this._client.send<void>("HeapProfiler.takeHeapSnapshot", params);
+  }
+  collectGarbage(): Promise<void> {
+    return this._client.send<void>("HeapProfiler.collectGarbage");
+  }
+  getObjectByHeapObjectId(params: HeapProfiler.getObjectByHeapObjectId_Parameters): Promise<HeapProfiler.getObjectByHeapObjectId_Return> {
+    return this._client.send<HeapProfiler.getObjectByHeapObjectId_Return>("HeapProfiler.getObjectByHeapObjectId", params);
+  }
+  /** Enables console to refer to the node with given id via $x (see Command Line API for more details $x functions). */
+  addInspectedHeapObject(params: HeapProfiler.addInspectedHeapObject_Parameters): Promise<void> {
+    return this._client.send<void>("HeapProfiler.addInspectedHeapObject", params);
+  }
+  getHeapObjectId(params: HeapProfiler.getHeapObjectId_Parameters): Promise<HeapProfiler.getHeapObjectId_Return> {
+    return this._client.send<HeapProfiler.getHeapObjectId_Return>("HeapProfiler.getHeapObjectId", params);
+  }
+  startSampling(params: HeapProfiler.startSampling_Parameters): Promise<void> {
+    return this._client.send<void>("HeapProfiler.startSampling", params);
+  }
+  stopSampling(): Promise<HeapProfiler.stopSampling_Return> {
+    return this._client.send<HeapProfiler.stopSampling_Return>("HeapProfiler.stopSampling");
+  }
+  get addHeapSnapshotChunk(): HeapProfiler.addHeapSnapshotChunk_Handler {
+    return this._addHeapSnapshotChunk;
+  }
+  set addHeapSnapshotChunk(handler: HeapProfiler.addHeapSnapshotChunk_Handler) {
+    if (this._addHeapSnapshotChunk) {
+      this._client.removeListener("HeapProfiler.addHeapSnapshotChunk", this._addHeapSnapshotChunk);
+    }
+    this._addHeapSnapshotChunk = handler;
+    if (handler) {
+      this._client.on("HeapProfiler.addHeapSnapshotChunk", handler);
+    }
+  }
+  get resetProfiles(): HeapProfiler.resetProfiles_Handler {
+    return this._resetProfiles;
+  }
+  set resetProfiles(handler: HeapProfiler.resetProfiles_Handler) {
+    if (this._resetProfiles) {
+      this._client.removeListener("HeapProfiler.resetProfiles", this._resetProfiles);
+    }
+    this._resetProfiles = handler;
+    if (handler) {
+      this._client.on("HeapProfiler.resetProfiles", handler);
+    }
+  }
+  get reportHeapSnapshotProgress(): HeapProfiler.reportHeapSnapshotProgress_Handler {
+    return this._reportHeapSnapshotProgress;
+  }
+  set reportHeapSnapshotProgress(handler: HeapProfiler.reportHeapSnapshotProgress_Handler) {
+    if (this._reportHeapSnapshotProgress) {
+      this._client.removeListener("HeapProfiler.reportHeapSnapshotProgress", this._reportHeapSnapshotProgress);
+    }
+    this._reportHeapSnapshotProgress = handler;
+    if (handler) {
+      this._client.on("HeapProfiler.reportHeapSnapshotProgress", handler);
+    }
+  }
+  /** If heap objects tracking has been started then backend regulary sends a current value for last seen object id and corresponding timestamp. If the were changes in the heap since last event then one or more heapStatsUpdate events will be sent before a new lastSeenObjectId event. */
+  get lastSeenObjectId(): HeapProfiler.lastSeenObjectId_Handler {
+    return this._lastSeenObjectId;
+  }
+  set lastSeenObjectId(handler: HeapProfiler.lastSeenObjectId_Handler) {
+    if (this._lastSeenObjectId) {
+      this._client.removeListener("HeapProfiler.lastSeenObjectId", this._lastSeenObjectId);
+    }
+    this._lastSeenObjectId = handler;
+    if (handler) {
+      this._client.on("HeapProfiler.lastSeenObjectId", handler);
+    }
+  }
+  /** If heap objects tracking has been started then backend may send update for one or more fragments */
+  get heapStatsUpdate(): HeapProfiler.heapStatsUpdate_Handler {
+    return this._heapStatsUpdate;
+  }
+  set heapStatsUpdate(handler: HeapProfiler.heapStatsUpdate_Handler) {
+    if (this._heapStatsUpdate) {
+      this._client.removeListener("HeapProfiler.heapStatsUpdate", this._heapStatsUpdate);
+    }
+    this._heapStatsUpdate = handler;
+    if (handler) {
+      this._client.on("HeapProfiler.heapStatsUpdate", handler);
+    }
+  }
+}
+export namespace HeapProfiler {
+  /** Heap snapshot object id. */
+  export type HeapSnapshotObjectId = string;
+  /** Sampling Heap Profile node. Holds callsite information, allocation statistics and child nodes. */
+  export interface SamplingHeapProfileNode {
+    /** Function location. */
+    callFrame: Runtime.CallFrame;
+    /** Allocations size in bytes for the node excluding children. */
+    selfSize: number;
+    /** Child nodes. */
+    children: SamplingHeapProfileNode[];
+  }
+  /** Profile. */
+  export interface SamplingHeapProfile {
+    head: SamplingHeapProfileNode;
+  }
+  export type addHeapSnapshotChunk_Parameters = {
+    chunk: string;
+  };
+  export type addHeapSnapshotChunk_Handler = (params: addHeapSnapshotChunk_Parameters) => void;
+  export type resetProfiles_Handler = () => void;
+  export type reportHeapSnapshotProgress_Parameters = {
+    done: number;
+    total: number;
+    finished?: boolean;
+  };
+  export type reportHeapSnapshotProgress_Handler = (params: reportHeapSnapshotProgress_Parameters) => void;
+  export type lastSeenObjectId_Parameters = {
+    lastSeenObjectId: number;
+    timestamp: number;
+  };
+  export type lastSeenObjectId_Handler = (params: lastSeenObjectId_Parameters) => void;
+  export type heapStatsUpdate_Parameters = {
+    /** An array of triplets. Each triplet describes a fragment. The first integer is the fragment index, the second integer is a total count of objects for the fragment, the third integer is a total size of the objects for the fragment. */
+    statsUpdate: number[];
+  };
+  export type heapStatsUpdate_Handler = (params: heapStatsUpdate_Parameters) => void;
+  export type startTrackingHeapObjects_Parameters = {
+    trackAllocations?: boolean;
+  };
+  export type stopTrackingHeapObjects_Parameters = {
+    /** If true 'reportHeapSnapshotProgress' events will be generated while snapshot is being taken when the tracking is stopped. */
+    reportProgress?: boolean;
+  };
+  export type takeHeapSnapshot_Parameters = {
+    /** If true 'reportHeapSnapshotProgress' events will be generated while snapshot is being taken. */
+    reportProgress?: boolean;
+  };
+  export type getObjectByHeapObjectId_Parameters = {
+    objectId: HeapSnapshotObjectId;
+    /** Symbolic group name that can be used to release multiple objects. */
+    objectGroup?: string;
+  };
+  export type getObjectByHeapObjectId_Return = {
+    /** Evaluation result. */
+    result: Runtime.RemoteObject;
+  };
+  export type addInspectedHeapObject_Parameters = {
+    /** Heap snapshot object id to be accessible by means of $x command line API. */
+    heapObjectId: HeapSnapshotObjectId;
+  };
+  export type getHeapObjectId_Parameters = {
+    /** Identifier of the object to get heap object id for. */
+    objectId: Runtime.RemoteObjectId;
+  };
+  export type getHeapObjectId_Return = {
+    /** Id of the heap snapshot object corresponding to the passed remote object id. */
+    heapSnapshotObjectId: HeapSnapshotObjectId;
+  };
+  export type startSampling_Parameters = {
+    /** Average sample interval in bytes. Poisson distribution is used for the intervals. The default value is 32768 bytes. */
+    samplingInterval?: number;
+  };
+  export type stopSampling_Return = {
+    /** Recorded sampling heap profile. */
+    profile: SamplingHeapProfile;
   };
 }

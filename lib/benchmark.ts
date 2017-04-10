@@ -297,7 +297,7 @@ class TabDSL implements ITab {
 
   /** Clear browser cache and memory cache */
   async clearBrowserCache(): Promise<void> {
-    await this.network.enable();
+    await this.network.enable({maxTotalBufferSize: 0});
     let res = await this.network.canClearBrowserCache();
     if (!res.result) {
       throw new Error("Cannot clear browser cache");
