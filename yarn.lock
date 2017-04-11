@@ -48,6 +48,10 @@ ansi-styles@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/ansi-styles/-/ansi-styles-2.2.1.tgz#b432dd3358b634cf75e1e4664368240533c1ddbe"
 
+array-binsearch@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/array-binsearch/-/array-binsearch-1.0.1.tgz#35586dca04ca9ab259c4c4708435acd1babb08ad"
+
 babel-code-frame@^6.22.0:
   version "6.22.0"
   resolved "https://registry.yarnpkg.com/babel-code-frame/-/babel-code-frame-6.22.0.tgz#027620bee567a88c32561574e7fd0801d33118e4"

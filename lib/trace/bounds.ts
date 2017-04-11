@@ -1,4 +1,4 @@
-import { TraceEvent, TRACE_EVENT_PHASE_COMPLETE } from "./trace_event";
+import { TraceEvent, TRACE_EVENT_PHASE_COMPLETE, TRACE_EVENT_PHASE_METADATA, TRACE_EVENT_PHASE_INSTANT } from "./trace_event";
 
 export default class Bounds {
   min: number = 0;
@@ -16,6 +16,10 @@ export default class Bounds {
   }
 
   addEvent(event: TraceEvent) {
+    if (event.ph === TRACE_EVENT_PHASE_METADATA ||
+        event.ph === TRACE_EVENT_PHASE_INSTANT) {
+      return;
+    }
     this.addValue(event.ts);
     if (event.ph === TRACE_EVENT_PHASE_COMPLETE) {
       let end = event.ts + event.dur;

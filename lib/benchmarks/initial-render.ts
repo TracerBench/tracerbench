@@ -45,7 +45,7 @@ export type InterationSample = {
     live: string,
     /** json string of stats object */
     dead: string
-  }
+  };
 }
 
 export type InitialRenderSamples = {
@@ -75,6 +75,7 @@ export interface InitialRenderBenchmarkParams extends BenchmarkParams {
   runtimeStats?: boolean;
   cpuThrottleRate?: number;
   networkConditions?: NetworkConditions;
+  saveFirstTrace?: string;
 }
 
 class InitialRenderMetric {
@@ -191,9 +192,13 @@ class InitialRenderMetric {
     let { sample } = this;
     for (let name in runtimeCallStats) {
       let stat = runtimeCallStats[name];
-      let entry = sample.runtimeCallStats[name];
+      let stats = sample.runtimeCallStats;
+      if (!stats) {
+        stats = sample.runtimeCallStats = {};
+      }
+      let entry = stats[name];
       if (!entry) {
-        entry = sample.runtimeCallStats[name] = { count: [], time: [] };
+        entry = stats[name] = { count: [], time: [] };
       }
       entry.count.push(stat[0]);
       entry.time.push(stat[1]);
@@ -329,11 +334,9 @@ export class InitialRenderBenchmark extends Benchmark<InitialRenderSamples> {
 
     let mainThread = trace.mainProcess.mainThread;
 
-    mainThread.events.sort((a, b) => a.ts - b.ts);
-
-    // if (i === 0) {
-    //   fs.writeFileSync("trace.json", JSON.stringify(mainThread.events, null, 2));
-    // }
+    if (i === 0 && this.params.saveFirstTrace) {
+      fs.writeFileSync(this.params.saveFirstTrace, JSON.stringify(trace.events, null, 2));
+    }
 
     let metric = new InitialRenderMetric(mainThread.events, markers);
     let sample = metric.measure();

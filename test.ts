@@ -1,14 +1,6 @@
 import { InitialRenderBenchmark, Runner } from "./index";
-import build from "./test/build";
-
-let versions = [
-  "ember-2.6",
-  "ember-2.7",
-  "ember-beta",
-  "ember-alpha"
-];
-
-let result = build(versions);
+import { sync as globSync } from "glob";
+import { resolve } from "path";
 
 let browserOpts = process.env.CHROME_BIN ? {
   type: "exact",
@@ -17,10 +9,14 @@ let browserOpts = process.env.CHROME_BIN ? {
   type: "system"
 };
 
-let benchmarks = versions.map(version => {
+let tests = globSync("dist/test/*/index.html");
+
+let benchmarks: InitialRenderBenchmark[] = tests.map(indexFile => {
+  let url = `file://${resolve(indexFile)}?tracing`;
+  let version = /dist\/test\/([^\/]+)/.exec(indexFile)[1];
   return new InitialRenderBenchmark({
     name: version,
-    url: `file://${__dirname}/test/${version}/index.html?tracing`,
+    url: url,
     markers: [
       { start: "domLoading",     label: "jquery" },
       { start: "jqueryLoaded",   label: "ember" },
@@ -30,7 +26,10 @@ let benchmarks = versions.map(version => {
       { start: "didTransition",  label: "render" },
       { start: "renderEnd",      label: "afterRender" }
     ],
-    browser: browserOpts
+    gcStats: true,
+    runtimeStats: true,
+    browser: browserOpts,
+    saveFirstTrace: `trace-${version}.json`
   });
 });
 

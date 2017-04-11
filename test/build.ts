@@ -2,7 +2,14 @@ import * as fs from "fs";
 import * as vm from "vm";
 import * as UglifyJS from "uglify-js";
 
-export default function build(versions: string[]) {
+build([
+  "ember-2.6",
+  "ember-2.7",
+  "ember-beta",
+  "ember-alpha"
+]);
+
+function build(versions: string[]) {
   fs.writeFileSync(
     "dist/test/jquery.js",
     fs.readFileSync("bower_components/jquery/dist/jquery.js", "utf8")
@@ -17,7 +24,6 @@ export default function build(versions: string[]) {
   );
 
   versions.forEach(version => {
-
     let emberjs = fs.readFileSync(`bower_components/${version}/ember.prod.js`, "utf8");
     let precompile = getPrecompile(version);
     let templates = compileTemplates(precompile);
