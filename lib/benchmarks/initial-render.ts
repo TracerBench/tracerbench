@@ -21,6 +21,13 @@ export type GCSample = {
   usedHeapSizeAfter: number;
 }
 
+export type RuntimeCallStats = {
+  [key: string]: {
+    count: number[];
+    time: number[];
+  };
+};
+
 export type InterationSample = {
   // during an initial render
   duration: number;
@@ -30,6 +37,15 @@ export type InterationSample = {
   run: number;
   gc: number;
   gcSamples: GCSample[];
+  /** if param.runtimeStats enabled */
+  runtimeCallStats?: RuntimeCallStats;
+  /** if params.gcStats enabled (adds 10% overhead) */
+  gcStats?: {
+    /** json string of stats object */
+    live: string,
+    /** json string of stats object */
+    dead: string
+  }
 }
 
 export type InitialRenderSamples = {
@@ -140,6 +156,11 @@ class InitialRenderMetric {
   }
 
   measureComplete(event: TraceEvent) {
+    let { args } = event;
+    let runtimeCallStats = args && args["runtime-call-stats"];
+    if (runtimeCallStats) {
+      this.addRuntimeCallStats(runtimeCallStats);
+    }
     switch (event.name) {
       // js entry points from browser
       // it is parsing and running a script
@@ -158,7 +179,33 @@ class InitialRenderMetric {
       case "Paint":
         this.measurePaint(event);
         break;
+      case "V8.GC_Objects_Stats":
+        this.addGCStats(event);
+        break;
     }
+  }
+
+  addRuntimeCallStats(runtimeCallStats: {
+    [name: string]: [number, number] // count, time
+  }) {
+    let { sample } = this;
+    for (let name in runtimeCallStats) {
+      let stat = runtimeCallStats[name];
+      let entry = sample.runtimeCallStats[name];
+      if (!entry) {
+        entry = sample.runtimeCallStats[name] = { count: [], time: [] };
+      }
+      entry.count.push(stat[0]);
+      entry.time.push(stat[1]);
+    }
+  }
+
+  addGCStats(event: TraceEvent) {
+    // these are largs strings of json, parse after testing
+    this.sample.gcStats = {
+      live: event.args["live"],
+      dead: event.args["dead"]
+    };
   }
 
   measureGC(event: TraceEvent) {
