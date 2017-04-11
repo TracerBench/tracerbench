@@ -1,4 +1,4 @@
-import { Benchmark, BenchmarkParams, BenchmarkMeta, ITab } from "../benchmark";
+import { Benchmark, BenchmarkParams, BenchmarkMeta, ITab, NetworkConditions } from "../benchmark";
 import {
   TraceEvent,
   TRACE_EVENT_PHASE_BEGIN,
@@ -57,6 +57,8 @@ export interface InitialRenderBenchmarkParams extends BenchmarkParams {
   markers: Marker[];
   gcStats?: boolean;
   runtimeStats?: boolean;
+  cpuThrottleRate?: number;
+  networkConditions?: NetworkConditions;
 }
 
 class InitialRenderMetric {
@@ -252,6 +254,14 @@ export class InitialRenderBenchmark extends Benchmark<InitialRenderSamples> {
       categories += ",disabled-by-default-v8.runtime_stats";
     }
 
+    if (this.params.cpuThrottleRate !== undefined) {
+      t.setCPUThrottlingRate(this.params.cpuThrottleRate);
+    }
+
+    if (this.params.networkConditions !== undefined) {
+      t.emulateNetworkConditions(this.params.networkConditions)
+    }
+
     let tracing = await t.startTracing(categories);
 
     await t.navigate(url);
@@ -260,6 +270,14 @@ export class InitialRenderBenchmark extends Benchmark<InitialRenderSamples> {
 
     if (!trace.mainProcess || !trace.mainProcess.mainThread) {
       return;
+    }
+
+    if (this.params.cpuThrottleRate !== undefined) {
+      t.setCPUThrottlingRate(1);
+    }
+
+    if (this.params.networkConditions !== undefined) {
+      t.disableNetworkEmulation();
     }
 
     let mainThread = trace.mainProcess.mainThread;

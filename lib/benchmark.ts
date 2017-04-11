@@ -9,7 +9,7 @@ import {
   Tab,
   IDebuggingProtocolClient
 } from "chrome-debugging-client";
-import { Page, Tracing, HeapProfiler, Network } from "./debugging-protocol-domains";
+import { Page, Tracing, HeapProfiler, Network, Emulation } from "./debugging-protocol-domains";
 import { Trace } from "./trace";
 import * as os from "os";
 
@@ -57,6 +57,10 @@ export interface ITab {
   clearBrowserCache(): Promise<void>;
   /** Perform GC */
   collectGarbage(): Promise<void>;
+
+  setCPUThrottlingRate(rate: number): Promise<void>;
+  emulateNetworkConditions(conditions: NetworkConditions): Promise<void>;
+  disableNetworkEmulation();
 }
 
 export interface ITracing {
@@ -203,6 +207,8 @@ export abstract class Benchmark<R> implements IBenchmark<BenchmarkState<R>, R> {
   }
 }
 
+export type NetworkConditions = Network.emulateNetworkConditions_Parameters;
+
 class TabDSL implements ITab {
   id: string;
   client: IDebuggingProtocolClient;
@@ -214,6 +220,7 @@ class TabDSL implements ITab {
 
   tracing: Tracing;
   currentTrace: TracingDSL;
+  emulation: Emulation;
   network: Network;
   heapProfiler: HeapProfiler;
 
@@ -223,6 +230,7 @@ class TabDSL implements ITab {
     this.frame = frame;
     this.tracing = new Tracing(client);
     this.network = new Network(client);
+    this.emulation = new Emulation(client);
     this.heapProfiler = new HeapProfiler(client);
     this.currentTrace = null;
     let pid = this.pid =  parseInt(frame.id.split(".")[0], 10);
@@ -306,6 +314,23 @@ class TabDSL implements ITab {
     // causes MemoryCache entries to be evicted
     await this.network.setCacheDisabled({cacheDisabled: true});
     await this.network.disable();
+  }
+
+  async setCPUThrottlingRate(rate: number) {
+    await this.emulation.setCPUThrottlingRate({ rate });
+  }
+
+  async emulateNetworkConditions(conditions: NetworkConditions) {
+    await this.network.emulateNetworkConditions(conditions);
+  }
+
+  async disableNetworkEmulation() {
+    await this.network.emulateNetworkConditions({
+      offline: false,
+      latency: 0,
+      downloadThroughput: 0,
+      uploadThroughput: 0
+    });
   }
 
   async collectGarbage(): Promise<void> {
