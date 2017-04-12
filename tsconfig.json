@@ -12,6 +12,7 @@
 	],
 	"files": [
 		"index.ts",
-		"test.ts"
+		"test.ts",
+		"test/build.ts"
 	]
 }
