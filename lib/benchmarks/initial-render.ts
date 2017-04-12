@@ -13,8 +13,19 @@ import traceEventComparator from "../trace/trace_event_comparator";
 import Trace from "../trace/trace";
 
 export type PhaseSample = {
+  /**
+   * Name of phase as defined by the label property of the marker config.
+   */
   phase: string;
+
+  /**
+   * The self time of the phase.
+   */
   self: number;
+
+  /**
+   * The time of this phase and prior phases.
+   */
   cumulative: number;
 }
 
@@ -32,21 +43,73 @@ export type RuntimeCallStats = {
 };
 
 export type InterationSample = {
-  // during an initial render
+  /**
+   * Time from start mark until the Paint event after the last mark.
+   */
   duration: number;
+
+  /**
+   * Samples for phases duration the iteration.
+   */
   phaseSamples: PhaseSample[];
+
+  /**
+   * Total duration of callFunction, run, parseOnBackground,
+   * and compile trace events.
+   */
   js: number;
+
+  /**
+   * Total for v8.compile trace events.
+   */
   compile: number;
+
+  /**
+   * Total for v8.callFunction trace events.
+   */
+  callFunction: number;
+
+  /**
+   * Total for v8.run trace events.
+   */
   run: number;
+
+  /**
+   * Total for v8.parseOnBackground trace events.
+   */
+  parseOnBackground: number;
+
+  /**
+   * Time spent in GC (overlaps JS time).
+   */
   gc: number;
+
+  /**
+   * Samples of MinorGC/MajorGC during trace.
+   */
   gcSamples: GCSample[];
-  /** if param.runtimeStats enabled */
+
+  /**
+   * Runtime call stats.
+   *
+   * Present if param.runtimeStats enabled.
+   */
   runtimeCallStats?: RuntimeCallStats;
-  /** if params.gcStats enabled (adds 10% overhead) */
+
+  /**
+   * GC Object stats.
+   *
+   * Present if params.gcStats enabled (though doesn't seem consistently added).
+   */
   gcStats?: Array<{
-    /** json string of stats object */
+    /**
+     * json string of stats object
+     */
     live: string,
-    /** json string of stats object */
+
+    /**
+     * json string of stats object
+     */
     dead: string
   }>;
 }
@@ -59,9 +122,10 @@ export type InitialRenderSamples = {
 
 export interface Marker {
   /**
-   * window.performance.mark
+   * performance.mark name
    */
   start: string;
+
   /**
    * Label of phase
    */
@@ -73,12 +137,50 @@ export interface InitialRenderBenchmarkParams extends BenchmarkParams {
    * URL to measure initial render of.
    */
   url: string;
+
+  /**
+   * Performance marks to divide up phases.
+   *
+   * The last mark until paint will define the duration sample.
+   */
   markers: Marker[];
+
+  /**
+   * Collect GC stats (experimental). Does not seem to get consistently output
+   * in each trace.
+   */
   gcStats?: boolean;
+
+  /**
+   * Collect runtime call stats.
+   *
+   * This is a disabled-by-default tracing category so may add some overhead
+   * to result.
+   */
   runtimeStats?: boolean;
+
+  /**
+   * Trace while throttling CPU.
+   */
   cpuThrottleRate?: number;
+
+  /**
+   * Trace while emulating network conditions.
+   */
   networkConditions?: NetworkConditions;
+
+  /**
+   * Save trace for first iteration.
+   *
+   * Useful for double checking you are measuring what you think you are
+   * measuring.
+   */
   saveFirstTrace?: string;
+
+  /**
+   * Save trace for each iteration, useful for debugging outliers in data.
+   */
+  saveTraces?: (iteration: number) => string;
 }
 
 class InitialRenderMetric {
@@ -86,7 +188,9 @@ class InitialRenderMetric {
     duration: 0,
     phaseSamples: [],
     js: 0,
+    parseOnBackground: 0,
     compile: 0,
+    callFunction: 0,
     run: 0,
     gc: 0,
     gcSamples: []
@@ -184,12 +288,16 @@ class InitialRenderMetric {
       // it is parsing and running a script
       // or it is calling a function on an event
       case "v8.compile":
-      case "v8.parseOnBackground":
         this.measureCompile(event);
         break;
+      case "v8.parseOnBackground":
+        this.measureParseOnBackground(event);
+        break;
       case "v8.run":
-      case "v8.callFunction":
         this.measureRun(event);
+        break;
+      case "v8.callFunction":
+        this.measureCallFunction(event);
         break;
       case "MajorGC":
       case "MinorGC":
@@ -240,9 +348,19 @@ class InitialRenderMetric {
     });
   }
 
+  measureParseOnBackground(event: TraceEvent) {
+    this.sample.js += event.dur;
+    this.sample.parseOnBackground += event.dur;
+  }
+
   measureCompile(event: TraceEvent) {
     this.sample.js += event.dur;
     this.sample.compile += event.dur;
+  }
+
+  measureCallFunction(event: TraceEvent) {
+    this.sample.js += event.dur;
+    this.sample.callFunction += event.dur;
   }
 
   measureRun(event: TraceEvent) {
@@ -311,6 +429,10 @@ export class InitialRenderBenchmark extends Benchmark<InitialRenderSamples> {
 
     if (i === 0 && this.params.saveFirstTrace) {
       fs.writeFileSync(this.params.saveFirstTrace, JSON.stringify(trace.events, null, 2));
+    }
+
+    if (this.params.saveTraces) {
+      fs.writeFileSync(this.params.saveTraces(i), JSON.stringify(trace.events, null, 2));
     }
 
     let metric = new InitialRenderMetric(markers, this.params.gcStats);
