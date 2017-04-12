@@ -4,11 +4,9 @@ export default function traceEventComparator(a: TraceEvent, b: TraceEvent) {
   let res = 0;
   if (a.ts !== b.ts) {
     res = a.ts - b.ts;
-  } else if (a.ph === TRACE_EVENT_PHASE_METADATA ||
-             a.ph === TRACE_EVENT_PHASE_INSTANT) {
+  } else if (a.ph === TRACE_EVENT_PHASE_METADATA) {
     res = -1;
-  } else if (b.ph === TRACE_EVENT_PHASE_METADATA ||
-             b.ph === TRACE_EVENT_PHASE_INSTANT) {
+  } else if (b.ph === TRACE_EVENT_PHASE_METADATA) {
     res = 1;
   }
   return res;

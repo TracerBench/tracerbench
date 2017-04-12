@@ -18,7 +18,7 @@ let benchmarks: InitialRenderBenchmark[] = tests.map(indexFile => {
     name: version,
     url: url,
     markers: [
-      { start: "domLoading",     label: "jquery" },
+      { start: "navigationStart",label: "jquery" },
       { start: "jqueryLoaded",   label: "ember" },
       { start: "emberLoaded",    label: "application" },
       { start: "startRouting",   label: "routing" },

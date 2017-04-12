@@ -8,6 +8,9 @@ import {
   TRACE_EVENT_PHASE_MARK
 } from "../trace/trace_event";
 import * as fs from "fs";
+import binsearch from "array-binsearch";
+import traceEventComparator from "../trace/trace_event_comparator";
+import Trace from "../trace/trace";
 
 export type PhaseSample = {
   phase: string;
@@ -40,12 +43,12 @@ export type InterationSample = {
   /** if param.runtimeStats enabled */
   runtimeCallStats?: RuntimeCallStats;
   /** if params.gcStats enabled (adds 10% overhead) */
-  gcStats?: {
+  gcStats?: Array<{
     /** json string of stats object */
     live: string,
     /** json string of stats object */
     dead: string
-  };
+  }>;
 }
 
 export type InitialRenderSamples = {
@@ -79,12 +82,6 @@ export interface InitialRenderBenchmarkParams extends BenchmarkParams {
 }
 
 class InitialRenderMetric {
-  private start = 0;
-  private markerIdx = 0;
-  private lastMarkEvent: TraceEvent = undefined;
-  private seenAllMarks = false;
-  private done = false;
-  private stack: TraceEvent[] = [];
   private sample: InterationSample = {
     duration: 0,
     phaseSamples: [],
@@ -95,78 +92,99 @@ class InitialRenderMetric {
     gcSamples: []
   };
 
-  constructor(private events: TraceEvent[], private markers: Marker[]) {
+  markerEvents: TraceEvent[];
+  paint: TraceEvent;
+  min: number = 0;
+  max: number = 0;
+
+  constructor(private markers: Marker[], private includeGCStats: boolean) {
   }
 
-  public measure(): InterationSample {
-    let events = this.events;
-    for (let i = 0; i < events.length; i++) {
-      if (this.done) break;
-      let event = events[i];
-      switch (event.ph) {
-      case TRACE_EVENT_PHASE_MARK:
-        if (!this.seenAllMarks) {
-          this.measureMark(event);
-        }
-        break;
-      case TRACE_EVENT_PHASE_COMPLETE:
-        this.measureComplete(event);
-        break;
-      case TRACE_EVENT_PHASE_BEGIN:
-        this.measureBegin(event);
-        break;
-      case TRACE_EVENT_PHASE_END:
-        this.measureEnd(event);
-        break;
-      case TRACE_EVENT_PHASE_INSTANT:
-        this.measureInstant(event);
-        break;
-      }
+  public measure(trace: Trace): InterationSample {
+    this.findMarkerEvents(trace.mainProcess.mainThread.events);
+    this.addPhaseSamples();
+    this.addV8Samples(trace.mainProcess.events);
+    if (this.includeGCStats) {
+      this.addGCStats(trace.mainProcess.events);
     }
     return this.sample;
   }
 
-  measureInstant(event: TraceEvent) {
-    switch (event.name) {
+  public findMarkerEvents(events: TraceEvent[]) {
+    let markers = this.markers;
+    let markerEvents = [];
+    let eventIdx = 0;
+    for (let markerIdx = 0; markerIdx < markers.length; markerIdx++) {
+      let marker = markers[markerIdx];
+      for (; eventIdx < events.length; eventIdx++) {
+        let event = events[eventIdx];
+        if (event.ph === TRACE_EVENT_PHASE_MARK &&
+            event.name === marker.start) {
+          markerEvents.push(event);
+          break;
+        }
+      }
+    }
+    let paint: TraceEvent;
+    for (; eventIdx < events.length; eventIdx++) {
+      let event = events[eventIdx];
+      if (event.ph === TRACE_EVENT_PHASE_COMPLETE &&
+          event.name === "Paint") {
+        markerEvents.push(event);
+        paint = event;
+        break;
+      }
+    }
+    this.markerEvents = markerEvents;
+    this.paint = paint;
+    this.min = markerEvents[0].ts;
+    this.max = paint.ts;
+  }
+
+  public addPhaseSamples() {
+    let { markers, markerEvents, paint } = this;
+
+    let cumulative = 0;
+    for (let i = 0; i < markerEvents.length - 1; i++) {
+      let marker = markers[i];
+      let begin = markerEvents[i];
+      let end = markerEvents[i + 1];
+      let dur = end.ts - begin.ts;
+      cumulative += dur;
+      this.sample.phaseSamples.push({
+        phase: marker.label,
+        self: dur,
+        cumulative: cumulative
+      });
+    }
+    this.sample.duration = cumulative;
+  }
+
+  addV8Samples(events: TraceEvent[]) {
+    let startIndex = binsearch(events, this.markerEvents[0], traceEventComparator);
+    let endIndex = binsearch(events, this.paint, traceEventComparator);
+    for (let i = startIndex; i < endIndex; i++) {
+      let event = events[i];
+
+      let { args } = event;
+      let runtimeCallStats = args && args["runtime-call-stats"];
+      if (runtimeCallStats) {
+        this.addRuntimeCallStats(runtimeCallStats);
+      }
+
+      if (event.ph === TRACE_EVENT_PHASE_COMPLETE) {
+        this.addV8Sample(event);
+      }
     }
   }
 
-  measureBegin(begin: TraceEvent) {
-    this.stack.push(begin);
-  }
-
-  measureEnd(end: TraceEvent) {
-    let begin = this.stack.pop();
-
-    let args = {};
-    Object.keys(begin.args).forEach(key => args[key] = begin.args[key]);
-    Object.keys(end.args).forEach(key => args[key] = end.args[key]);
-
-    this.measureComplete({
-      "pid": begin.pid,
-      "tid": begin.tid,
-      "ts": begin.ts,
-      "ph": "X",
-      "cat": begin.cat,
-      "name": begin.name,
-      "args": args,
-      "dur": end.ts - begin.ts,
-      "tdur": end.tts - begin.tts,
-      "tts": begin.tts
-    });
-  }
-
-  measureComplete(event: TraceEvent) {
-    let { args } = event;
-    let runtimeCallStats = args && args["runtime-call-stats"];
-    if (runtimeCallStats) {
-      this.addRuntimeCallStats(runtimeCallStats);
-    }
+  addV8Sample(event: TraceEvent) {
     switch (event.name) {
       // js entry points from browser
       // it is parsing and running a script
       // or it is calling a function on an event
       case "v8.compile":
+      case "v8.parseOnBackground":
         this.measureCompile(event);
         break;
       case "v8.run":
@@ -176,12 +194,6 @@ class InitialRenderMetric {
       case "MajorGC":
       case "MinorGC":
         this.measureGC(event);
-        break;
-      case "Paint":
-        this.measurePaint(event);
-        break;
-      case "V8.GC_Objects_Stats":
-        this.addGCStats(event);
         break;
     }
   }
@@ -205,12 +217,18 @@ class InitialRenderMetric {
     }
   }
 
-  addGCStats(event: TraceEvent) {
-    // these are largs strings of json, parse after testing
-    this.sample.gcStats = {
-      live: event.args["live"],
-      dead: event.args["dead"]
-    };
+  addGCStats(events: TraceEvent[]) {
+    this.sample.gcStats = [];
+    for (let i = 0; i < events.length; i++) {
+      let event = events[i];
+      if (event.ph === TRACE_EVENT_PHASE_INSTANT &&
+        event.name === "V8.GC_Objects_Stats") {
+        this.sample.gcStats.push({
+          live: event.args["live"],
+          dead: event.args["dead"]
+        });
+      }
+    }
   }
 
   measureGC(event: TraceEvent) {
@@ -230,48 +248,6 @@ class InitialRenderMetric {
   measureRun(event: TraceEvent) {
     this.sample.js += event.dur;
     this.sample.run += event.dur;
-  }
-
-  measurePaint(event: TraceEvent) {
-    if (this.seenAllMarks) {
-      let marker = this.markers[this.markerIdx - 1];
-
-      this.sample.phaseSamples.push({
-        phase: marker.label,
-        self: event.ts - this.lastMarkEvent.ts,
-        cumulative: event.ts - this.start
-      }, {
-        phase: "paint",
-        self: event.dur,
-        cumulative: event.ts - this.start + event.dur
-      });
-      this.sample.duration = event.ts - this.start + event.dur;
-      this.done = true;
-    }
-  }
-
-  measureMark(event: TraceEvent) {
-    let marker = this.markers[this.markerIdx];
-    if (marker.start !== event.name) {
-      return;
-    }
-
-    if (this.lastMarkEvent) {
-      let lastMarker = this.markers[this.markerIdx - 1];
-      let sample = event.ts - this.lastMarkEvent.ts;
-      this.sample.phaseSamples.push({
-        phase: lastMarker.label,
-        self: event.ts - this.lastMarkEvent.ts,
-        cumulative: event.ts - this.start
-      });
-    } else {
-      this.start = event.ts;
-    }
-
-    this.lastMarkEvent = event;
-    if (++this.markerIdx === this.markers.length) {
-      this.seenAllMarks = true;
-    }
   }
 }
 
@@ -321,6 +297,7 @@ export class InitialRenderBenchmark extends Benchmark<InitialRenderSamples> {
     let trace = await tracing.traceComplete;
 
     if (!trace.mainProcess || !trace.mainProcess.mainThread) {
+      console.warn("unable to find main process")
       return;
     }
 
@@ -332,14 +309,12 @@ export class InitialRenderBenchmark extends Benchmark<InitialRenderSamples> {
       t.disableNetworkEmulation();
     }
 
-    let mainThread = trace.mainProcess.mainThread;
-
     if (i === 0 && this.params.saveFirstTrace) {
       fs.writeFileSync(this.params.saveFirstTrace, JSON.stringify(trace.events, null, 2));
     }
 
-    let metric = new InitialRenderMetric(mainThread.events, markers);
-    let sample = metric.measure();
+    let metric = new InitialRenderMetric(markers, this.params.gcStats);
+    let sample = metric.measure(trace);
 
     // log progress to stderr
     // TODO make some events or logger

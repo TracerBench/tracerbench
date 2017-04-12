@@ -44,7 +44,6 @@ export default class Trace {
     for (let i = 0; i < events.length; i++) {
       this.addEvent(events[i]);
     }
-    this.buildModel();
   }
 
   buildModel() {

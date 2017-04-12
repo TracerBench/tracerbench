@@ -16,8 +16,7 @@ export default class Bounds {
   }
 
   addEvent(event: TraceEvent) {
-    if (event.ph === TRACE_EVENT_PHASE_METADATA ||
-        event.ph === TRACE_EVENT_PHASE_INSTANT) {
+    if (event.ph === TRACE_EVENT_PHASE_METADATA) {
       return;
     }
     this.addValue(event.ts);

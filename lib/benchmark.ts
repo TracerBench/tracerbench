@@ -362,6 +362,7 @@ class TracingDSL implements ITracing {
         tracing.tracingComplete = null;
         this.isTracing = false;
         this.isComplete = true;
+        trace.buildModel();
         trace.mainProcess = trace.processMap[pid];
         resolve(trace);
       };
