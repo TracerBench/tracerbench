@@ -1,13 +1,28 @@
-export * from "./trace/index";
-export * from "./benchmarks/initial-render";
+import * as Domains from "./debugging-protocol-domains";
+import * as Trace from "./trace/index";
+export { Domains, Trace };
+export {
+  IGCSample,
+  IGCStat,
+  IInitialRenderSamples,
+  IInterationSample,
+  IMarker,
+  IPhaseSample,
+  IRuntimeCallStats,
+} from "./benchmarks/initial-render-metric";
+export {
+  InitialRenderBenchmark,
+  IInitialRenderBenchmarkParams,
+} from "./benchmarks/initial-render";
+export {
+  Benchmark,
+  IBenchmarkMeta,
+  IBenchmarkParams,
+  IBenchmarkState,
+  BrowserOptions,
+} from "./benchmark";
 export {
   Runner,
-  Benchmark,
-  BenchmarkMeta,
-  BenchmarkParams,
-  BenchmarkState,
-  BrowserOptions,
   IBenchmark,
-  ITab,
-  ITracing
-} from "./benchmark";
+} from "./runner";
+export { ITab } from "./tab";

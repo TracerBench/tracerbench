@@ -1,6 +1,6 @@
-import { TraceEvent, TRACE_EVENT_PHASE_INSTANT, TRACE_EVENT_PHASE_METADATA } from "./trace_event";
+import { ITraceEvent, TRACE_EVENT_PHASE_INSTANT, TRACE_EVENT_PHASE_METADATA } from "./trace_event";
 
-export default function traceEventComparator(a: TraceEvent, b: TraceEvent) {
+export default function traceEventComparator(a: ITraceEvent, b: ITraceEvent) {
   let res = 0;
   if (a.ts !== b.ts) {
     res = a.ts - b.ts;
