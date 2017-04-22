@@ -98,11 +98,11 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
     }
 
     if (this.params.cpuThrottleRate !== undefined) {
-      t.setCPUThrottlingRate(this.params.cpuThrottleRate);
+      await t.setCPUThrottlingRate(this.params.cpuThrottleRate);
     }
 
     if (this.params.networkConditions !== undefined) {
-      t.emulateNetworkConditions(this.params.networkConditions);
+      await t.emulateNetworkConditions(this.params.networkConditions);
     }
 
     await t.startTracing(categories);
@@ -128,11 +128,11 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
     }
 
     if (this.params.cpuThrottleRate !== undefined) {
-      t.setCPUThrottlingRate(1);
+      await t.setCPUThrottlingRate(1);
     }
 
     if (this.params.networkConditions !== undefined) {
-      t.disableNetworkEmulation();
+      await t.disableNetworkEmulation();
     }
 
     if (i === 0 && this.params.saveFirstTrace) {
@@ -148,7 +148,7 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
 
     // log progress to stderr
     // TODO make some events or logger
-    console.error(this.name, sample.duration, "µs");
+    console.error(`${this.name} ${sample.duration} µs`);
 
     results.samples.push(sample);
   }
@@ -165,8 +165,3 @@ function validateParams(params: IInitialRenderBenchmarkParams) {
     throw new Error("url is required");
   }
 }
-
-// kGCTypeScavenge = 1 << 0,
-// kGCTypeMarkSweepCompact = 1 << 1,
-// kGCTypeIncrementalMarking = 1 << 2,
-// kGCTypeProcessWeakCallbacks = 1 << 3
