@@ -6,6 +6,7 @@ import {
 } from "../benchmark";
 import { Network } from "../debugging-protocol-domains";
 import { ITab } from "../tab";
+import { Trace } from "../trace";
 import InitialRenderMetric, {
   IInitialRenderSamples,
   IMarker,
@@ -105,22 +106,25 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
       await t.emulateNetworkConditions(this.params.networkConditions);
     }
 
-    await t.startTracing(categories);
-    // TODO this assumes that complete won't happen before we call
-    // endTracing, this is normally true but need to revisit.
-    await Promise.all([
-      new Promise((resolve) => {
-        t.onNavigate = () => {
-          if (t.frame.url === "about:blank") {
-            t.onNavigate = null;
-            resolve();
-          }
-        };
-      }),
-      await t.navigate(url),
+    const tracing = await t.startTracing(categories);
+    const { traceComplete } = tracing;
+
+    const navigateToBlank = new Promise<void>((resolve) => {
+      t.onNavigate = () => {
+        if (t.frame.url === "about:blank") {
+          resolve(tracing.end());
+        }
+      };
+    });
+
+    await t.navigate(url);
+
+    const trace = await Promise.race([
+      traceComplete,
+      navigateToBlank.then(() => traceComplete),
     ]);
 
-    const trace = await t.endTracing();
+    t.onNavigate = null;
 
     if (!trace.mainProcess || !trace.mainProcess.mainThread) {
       console.warn("unable to find main process");

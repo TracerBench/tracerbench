@@ -16,6 +16,7 @@ const benchmarks: InitialRenderBenchmark[] = tests.map((indexFile) => {
   const version = /dist\/test\/([^\/]+)/.exec(indexFile)[1];
   return new InitialRenderBenchmark({
     browser: browserOpts,
+    delay: 1000,
     gcStats: true,
     markers: [
       { start: "navigationStart", label: "jquery" },

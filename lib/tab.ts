@@ -9,6 +9,8 @@ import {
 import Trace from "./trace/trace";
 
 export interface ITab {
+  isTracing: boolean;
+
   /** The process id of the tab */
   pid: number;
   /** The current frame for the tab */
@@ -21,9 +23,7 @@ export interface ITab {
   /** Navigates to the specified url */
   navigate(url: string, waitForLoad?: boolean): Promise<void>;
   /** Start tracing */
-  startTracing(categories: string, options?: string): Promise<void>;
-  /** End tracing */
-  endTracing(): Promise<Trace>;
+  startTracing(categories: string, options?: string): Promise<ITracing>;
 
   /** Clear browser cache and memory cache */
   clearBrowserCache(): Promise<void>;
@@ -39,7 +39,15 @@ export default function createTab(id: string, client: IDebuggingProtocolClient, 
   return new Tab(id, client, page, frame);
 }
 
+export interface ITracing {
+  traceComplete: Promise<Trace>;
+  end(): Promise<void>;
+}
+
 class Tab implements ITab {
+  public isTracing = false;
+  public tracingComplete: Promise<Trace> | undefined;
+
   /**
    * The current frame for the tab
    */
@@ -63,8 +71,6 @@ class Tab implements ITab {
   private emulation: Emulation;
   private network: Network;
   private heapProfiler: HeapProfiler;
-
-  private trace: Trace | undefined = undefined;
 
   constructor(id: string, client: IDebuggingProtocolClient, page: Page, frame: Page.Frame) {
     this.client = client;
@@ -114,40 +120,48 @@ class Tab implements ITab {
   }
 
   /** Start tracing */
-  public async startTracing(categories: string, options?: string): Promise<void> {
-    if (this.trace) {
+  public async startTracing(categories: string, options?: string): Promise<ITracing> {
+    if (this.isTracing) {
       throw new Error("already tracing");
     }
-    this.trace = new Trace();
-    await this.tracing.start({ categories });
-  }
 
-  public async endTracing() {
-    const { trace, tracing, pid } = this;
+    this.isTracing = true;
 
-    if (!trace) {
-      throw new Error("not tracing");
-    }
+    const { tracing, pid } = this;
 
-    tracing.dataCollected = (evt) => {
-      trace.addEvents(evt.value);
-    };
+    const traceComplete = (async () => {
+      const trace = new Trace();
 
-    await Promise.all([
-      new Promise<void>((resolve) => {
+      tracing.dataCollected = (evt) => {
+        trace.addEvents(evt.value);
+      };
+
+      await new Promise((resolve) => {
         tracing.tracingComplete = () => {
-          tracing.tracingComplete = null;
           resolve();
         };
-      }),
-      tracing.end(),
-    ]);
+      });
 
-    trace.buildModel();
-    trace.mainProcess = trace.process(pid);
+      this.isTracing = false;
 
-    this.trace = undefined;
-    return trace;
+      tracing.tracingComplete = null;
+      tracing.dataCollected = null;
+
+      trace.buildModel();
+      trace.mainProcess = trace.process(pid);
+
+      return trace;
+    })();
+
+    const end = async () => {
+      if (this.isTracing) {
+        await tracing.end();
+      }
+    };
+
+    await this.tracing.start({ categories });
+
+    return { end, traceComplete };
   }
 
   /** Clear browser cache and memory cache */

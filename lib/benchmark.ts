@@ -46,15 +46,21 @@ export type BrowserOptions = {
 export interface IBenchmarkParams {
   name: string;
   browser: BrowserOptions;
+  /**
+   * Delay between samples.
+   */
+  delay?: number;
 }
 
 export abstract class Benchmark<R> implements IBenchmark<IBenchmarkState<R>, R> {
   public name: string;
   private browserOptions: BrowserOptions;
+  private delay: number;
 
   constructor(params: IBenchmarkParams) {
     this.name = params.name;
     this.browserOptions = params.browser;
+    this.delay = params.delay === undefined ? 800 : params.delay;
   }
 
   public async run(iterations: number): Promise<R> {
@@ -118,7 +124,7 @@ export abstract class Benchmark<R> implements IBenchmark<IBenchmarkState<R>, R> 
 
     await apiClient.activateTab(tab.id);
 
-    await delay(500);
+    await delay(this.delay);
 
     await apiClient.activateTab(tab.id);
 
