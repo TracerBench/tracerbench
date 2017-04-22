@@ -1,3 +1,4 @@
+/* tslint:disable */
 /**
  * Debugging Protocol 1.2 Domains
  * Generated on Mon Apr 10 2017 12:58:29 GMT-0700 (PDT)

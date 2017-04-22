@@ -1,27 +1,26 @@
-import Thread from "./thread";
 import Bounds from "./bounds";
-import { TraceEvent } from "./trace_event";
+import Thread from "./thread";
+import { ITraceEvent } from "./trace_event";
 
 export default class Process {
-  threadMap: { [tid: number]: Thread; } = {};
-  threads: Thread[] = [];
-  mainThread: Thread = null;
-  scriptStreamerThread: Thread = null;
-  bounds: Bounds = new Bounds();
-  events: TraceEvent[] = [];
-  name: string;
-  labels: string;
-  sortIndex: number;
-  traceBufferOverflowedAt: number;
-  isTimeTicksHighResolution: boolean;
-  traceConfig: any;
+  public threads: Thread[] = [];
+  public mainThread: Thread = null;
+  public scriptStreamerThread: Thread = null;
+  public bounds: Bounds = new Bounds();
+  public events: ITraceEvent[] = [];
+  public name: string;
+  public labels: string;
+  public sortIndex: number;
+  public traceBufferOverflowedAt: number;
+  public isTimeTicksHighResolution: boolean;
+  public traceConfig: any;
 
-  id: number;
-  constructor(id: number) {
-    this.id = id;
+  private threadMap: { [tid: number]: Thread; } = {};
+
+  constructor(public id: number) {
   }
 
-  thread(tid: number) {
+  public thread(tid: number) {
     let thread = this.threadMap[tid];
     if (thread === undefined) {
       this.threadMap[tid] = thread = new Thread(tid);
@@ -30,7 +29,7 @@ export default class Process {
     return thread;
   }
 
-  addEvent(event: TraceEvent) {
+  public addEvent(event: ITraceEvent) {
     this.bounds.addEvent(event);
     this.events.push(event);
     this.thread(event.tid).addEvent(event);
