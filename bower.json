@@ -20,10 +20,8 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "^2.2.4",
-    "ember-2.6": "ember#2.6",
-    "ember-2.7": "ember#2.7",
-    "ember-beta": "ember#beta",
-    "ember-alpha": "ember#alpha"
+    "ember-2.11": "ember#2.11",
+    "ember-2.12": "ember#2.12",
+    "ember-2.13": "ember#2.13"
   }
 }

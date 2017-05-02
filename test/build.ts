@@ -3,13 +3,14 @@ import * as UglifyJS from "uglify-js";
 import * as vm from "vm";
 
 build([
-  "ember-2.6",
-  "ember-2.7",
-  "ember-beta",
-  "ember-alpha",
+  "ember-2.11",
+  "ember-2.12",
+  "ember-2.13",
 ]);
 
+/* tslint:disable:no-console */
 function build(versions: string[]) {
+  console.log("building fixtures");
   fs.writeFileSync(
     "dist/test/jquery.js",
     fs.readFileSync("bower_components/jquery/dist/jquery.js", "utf8"),
@@ -24,6 +25,7 @@ function build(versions: string[]) {
   );
 
   versions.forEach((version) => {
+    console.log(`building fixture app for "${version}"...`);
     const emberjs = fs.readFileSync(`bower_components/${version}/ember.prod.js`, "utf8");
     const precompile = getPrecompile(version);
     const templates = compileTemplates(precompile);
@@ -56,6 +58,7 @@ function build(versions: string[]) {
       fs.writeFileSync("app.min.js", result.code);
       fs.writeFileSync("app.min.map", result.map);
 
+      console.log("done");
     } finally {
       process.chdir(pwd);
     }
