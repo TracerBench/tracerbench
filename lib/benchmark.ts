@@ -111,6 +111,10 @@ export abstract class Benchmark<R> implements IBenchmark<IBenchmarkState<R>, R> 
     const apiClient = state.apiClient;
     const tab = state.tab;
 
+    if (!tab.webSocketDebuggerUrl) {
+      throw new Error("tab is missing a web socket url");
+    }
+
     const client = await session.openDebuggingProtocol(tab.webSocketDebuggerUrl);
     const page = new Page(client);
     await page.enable();

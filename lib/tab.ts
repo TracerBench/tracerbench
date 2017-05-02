@@ -15,7 +15,7 @@ export interface ITab {
   pid: number;
   /** The current frame for the tab */
   frame: Page.Frame;
-  onNavigate: () => void | undefined;
+  onNavigate: (() => void) | undefined;
   /** Add a script to execute on load */
   addScriptToEvaluateOnLoad(source: string): Promise<Page.ScriptIdentifier>;
   /** Remove a previously added script */
@@ -61,7 +61,7 @@ class Tab implements ITab {
   /**
    * Called when the frame navigates
    */
-  public onNavigate: () => void | undefined = undefined;
+  public onNavigate: (() => void) | undefined = undefined;
 
   private id: string;
   private client: IDebuggingProtocolClient;

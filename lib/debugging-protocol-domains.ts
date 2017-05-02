@@ -5,12 +5,9 @@
  */
 import { IDebuggingProtocolClient } from "chrome-debugging-client";
 export class Inspector {
-  private _detached: Inspector.detached_Handler = undefined;
-  private _targetCrashed: Inspector.targetCrashed_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _detached: Inspector.detached_Handler | null = null;
+  private _targetCrashed: Inspector.targetCrashed_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Enables inspector domain notifications. */
   enable(): Promise<void> {
     return this._client.send<void>("Inspector.enable");
@@ -20,10 +17,10 @@ export class Inspector {
     return this._client.send<void>("Inspector.disable");
   }
   /** Fired when remote debugging connection is about to be terminated. Contains detach reason. */
-  get detached(): Inspector.detached_Handler {
+  get detached(): Inspector.detached_Handler | null {
     return this._detached;
   }
-  set detached(handler: Inspector.detached_Handler) {
+  set detached(handler: Inspector.detached_Handler | null) {
     if (this._detached) {
       this._client.removeListener("Inspector.detached", this._detached);
     }
@@ -33,10 +30,10 @@ export class Inspector {
     }
   }
   /** Fired when debugging target has crashed */
-  get targetCrashed(): Inspector.targetCrashed_Handler {
+  get targetCrashed(): Inspector.targetCrashed_Handler | null {
     return this._targetCrashed;
   }
-  set targetCrashed(handler: Inspector.targetCrashed_Handler) {
+  set targetCrashed(handler: Inspector.targetCrashed_Handler | null) {
     if (this._targetCrashed) {
       this._client.removeListener("Inspector.targetCrashed", this._targetCrashed);
     }
@@ -55,10 +52,7 @@ export namespace Inspector {
   export type targetCrashed_Handler = () => void;
 }
 export class Memory {
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  constructor(private _client: IDebuggingProtocolClient) { }
   getDOMCounters(): Promise<Memory.getDOMCounters_Return> {
     return this._client.send<Memory.getDOMCounters_Return>("Memory.getDOMCounters");
   }
@@ -90,28 +84,25 @@ export namespace Memory {
 }
 /** Actions and events related to the inspected page belong to the page domain. */
 export class Page {
-  private _domContentEventFired: Page.domContentEventFired_Handler = undefined;
-  private _loadEventFired: Page.loadEventFired_Handler = undefined;
-  private _frameAttached: Page.frameAttached_Handler = undefined;
-  private _frameNavigated: Page.frameNavigated_Handler = undefined;
-  private _frameDetached: Page.frameDetached_Handler = undefined;
-  private _frameStartedLoading: Page.frameStartedLoading_Handler = undefined;
-  private _frameStoppedLoading: Page.frameStoppedLoading_Handler = undefined;
-  private _frameScheduledNavigation: Page.frameScheduledNavigation_Handler = undefined;
-  private _frameClearedScheduledNavigation: Page.frameClearedScheduledNavigation_Handler = undefined;
-  private _frameResized: Page.frameResized_Handler = undefined;
-  private _javascriptDialogOpening: Page.javascriptDialogOpening_Handler = undefined;
-  private _javascriptDialogClosed: Page.javascriptDialogClosed_Handler = undefined;
-  private _screencastFrame: Page.screencastFrame_Handler = undefined;
-  private _screencastVisibilityChanged: Page.screencastVisibilityChanged_Handler = undefined;
-  private _colorPicked: Page.colorPicked_Handler = undefined;
-  private _interstitialShown: Page.interstitialShown_Handler = undefined;
-  private _interstitialHidden: Page.interstitialHidden_Handler = undefined;
-  private _navigationRequested: Page.navigationRequested_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _domContentEventFired: Page.domContentEventFired_Handler | null = null;
+  private _loadEventFired: Page.loadEventFired_Handler | null = null;
+  private _frameAttached: Page.frameAttached_Handler | null = null;
+  private _frameNavigated: Page.frameNavigated_Handler | null = null;
+  private _frameDetached: Page.frameDetached_Handler | null = null;
+  private _frameStartedLoading: Page.frameStartedLoading_Handler | null = null;
+  private _frameStoppedLoading: Page.frameStoppedLoading_Handler | null = null;
+  private _frameScheduledNavigation: Page.frameScheduledNavigation_Handler | null = null;
+  private _frameClearedScheduledNavigation: Page.frameClearedScheduledNavigation_Handler | null = null;
+  private _frameResized: Page.frameResized_Handler | null = null;
+  private _javascriptDialogOpening: Page.javascriptDialogOpening_Handler | null = null;
+  private _javascriptDialogClosed: Page.javascriptDialogClosed_Handler | null = null;
+  private _screencastFrame: Page.screencastFrame_Handler | null = null;
+  private _screencastVisibilityChanged: Page.screencastVisibilityChanged_Handler | null = null;
+  private _colorPicked: Page.colorPicked_Handler | null = null;
+  private _interstitialShown: Page.interstitialShown_Handler | null = null;
+  private _interstitialHidden: Page.interstitialHidden_Handler | null = null;
+  private _navigationRequested: Page.navigationRequested_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Enables page domain notifications. */
   enable(): Promise<void> {
     return this._client.send<void>("Page.enable");
@@ -252,10 +243,10 @@ export class Page {
   getLayoutMetrics(): Promise<Page.getLayoutMetrics_Return> {
     return this._client.send<Page.getLayoutMetrics_Return>("Page.getLayoutMetrics");
   }
-  get domContentEventFired(): Page.domContentEventFired_Handler {
+  get domContentEventFired(): Page.domContentEventFired_Handler | null {
     return this._domContentEventFired;
   }
-  set domContentEventFired(handler: Page.domContentEventFired_Handler) {
+  set domContentEventFired(handler: Page.domContentEventFired_Handler | null) {
     if (this._domContentEventFired) {
       this._client.removeListener("Page.domContentEventFired", this._domContentEventFired);
     }
@@ -264,10 +255,10 @@ export class Page {
       this._client.on("Page.domContentEventFired", handler);
     }
   }
-  get loadEventFired(): Page.loadEventFired_Handler {
+  get loadEventFired(): Page.loadEventFired_Handler | null {
     return this._loadEventFired;
   }
-  set loadEventFired(handler: Page.loadEventFired_Handler) {
+  set loadEventFired(handler: Page.loadEventFired_Handler | null) {
     if (this._loadEventFired) {
       this._client.removeListener("Page.loadEventFired", this._loadEventFired);
     }
@@ -277,10 +268,10 @@ export class Page {
     }
   }
   /** Fired when frame has been attached to its parent. */
-  get frameAttached(): Page.frameAttached_Handler {
+  get frameAttached(): Page.frameAttached_Handler | null {
     return this._frameAttached;
   }
-  set frameAttached(handler: Page.frameAttached_Handler) {
+  set frameAttached(handler: Page.frameAttached_Handler | null) {
     if (this._frameAttached) {
       this._client.removeListener("Page.frameAttached", this._frameAttached);
     }
@@ -290,10 +281,10 @@ export class Page {
     }
   }
   /** Fired once navigation of the frame has completed. Frame is now associated with the new loader. */
-  get frameNavigated(): Page.frameNavigated_Handler {
+  get frameNavigated(): Page.frameNavigated_Handler | null {
     return this._frameNavigated;
   }
-  set frameNavigated(handler: Page.frameNavigated_Handler) {
+  set frameNavigated(handler: Page.frameNavigated_Handler | null) {
     if (this._frameNavigated) {
       this._client.removeListener("Page.frameNavigated", this._frameNavigated);
     }
@@ -303,10 +294,10 @@ export class Page {
     }
   }
   /** Fired when frame has been detached from its parent. */
-  get frameDetached(): Page.frameDetached_Handler {
+  get frameDetached(): Page.frameDetached_Handler | null {
     return this._frameDetached;
   }
-  set frameDetached(handler: Page.frameDetached_Handler) {
+  set frameDetached(handler: Page.frameDetached_Handler | null) {
     if (this._frameDetached) {
       this._client.removeListener("Page.frameDetached", this._frameDetached);
     }
@@ -316,10 +307,10 @@ export class Page {
     }
   }
   /** Fired when frame has started loading. */
-  get frameStartedLoading(): Page.frameStartedLoading_Handler {
+  get frameStartedLoading(): Page.frameStartedLoading_Handler | null {
     return this._frameStartedLoading;
   }
-  set frameStartedLoading(handler: Page.frameStartedLoading_Handler) {
+  set frameStartedLoading(handler: Page.frameStartedLoading_Handler | null) {
     if (this._frameStartedLoading) {
       this._client.removeListener("Page.frameStartedLoading", this._frameStartedLoading);
     }
@@ -329,10 +320,10 @@ export class Page {
     }
   }
   /** Fired when frame has stopped loading. */
-  get frameStoppedLoading(): Page.frameStoppedLoading_Handler {
+  get frameStoppedLoading(): Page.frameStoppedLoading_Handler | null {
     return this._frameStoppedLoading;
   }
-  set frameStoppedLoading(handler: Page.frameStoppedLoading_Handler) {
+  set frameStoppedLoading(handler: Page.frameStoppedLoading_Handler | null) {
     if (this._frameStoppedLoading) {
       this._client.removeListener("Page.frameStoppedLoading", this._frameStoppedLoading);
     }
@@ -342,10 +333,10 @@ export class Page {
     }
   }
   /** Fired when frame schedules a potential navigation. */
-  get frameScheduledNavigation(): Page.frameScheduledNavigation_Handler {
+  get frameScheduledNavigation(): Page.frameScheduledNavigation_Handler | null {
     return this._frameScheduledNavigation;
   }
-  set frameScheduledNavigation(handler: Page.frameScheduledNavigation_Handler) {
+  set frameScheduledNavigation(handler: Page.frameScheduledNavigation_Handler | null) {
     if (this._frameScheduledNavigation) {
       this._client.removeListener("Page.frameScheduledNavigation", this._frameScheduledNavigation);
     }
@@ -355,10 +346,10 @@ export class Page {
     }
   }
   /** Fired when frame no longer has a scheduled navigation. */
-  get frameClearedScheduledNavigation(): Page.frameClearedScheduledNavigation_Handler {
+  get frameClearedScheduledNavigation(): Page.frameClearedScheduledNavigation_Handler | null {
     return this._frameClearedScheduledNavigation;
   }
-  set frameClearedScheduledNavigation(handler: Page.frameClearedScheduledNavigation_Handler) {
+  set frameClearedScheduledNavigation(handler: Page.frameClearedScheduledNavigation_Handler | null) {
     if (this._frameClearedScheduledNavigation) {
       this._client.removeListener("Page.frameClearedScheduledNavigation", this._frameClearedScheduledNavigation);
     }
@@ -367,10 +358,10 @@ export class Page {
       this._client.on("Page.frameClearedScheduledNavigation", handler);
     }
   }
-  get frameResized(): Page.frameResized_Handler {
+  get frameResized(): Page.frameResized_Handler | null {
     return this._frameResized;
   }
-  set frameResized(handler: Page.frameResized_Handler) {
+  set frameResized(handler: Page.frameResized_Handler | null) {
     if (this._frameResized) {
       this._client.removeListener("Page.frameResized", this._frameResized);
     }
@@ -380,10 +371,10 @@ export class Page {
     }
   }
   /** Fired when a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload) is about to open. */
-  get javascriptDialogOpening(): Page.javascriptDialogOpening_Handler {
+  get javascriptDialogOpening(): Page.javascriptDialogOpening_Handler | null {
     return this._javascriptDialogOpening;
   }
-  set javascriptDialogOpening(handler: Page.javascriptDialogOpening_Handler) {
+  set javascriptDialogOpening(handler: Page.javascriptDialogOpening_Handler | null) {
     if (this._javascriptDialogOpening) {
       this._client.removeListener("Page.javascriptDialogOpening", this._javascriptDialogOpening);
     }
@@ -393,10 +384,10 @@ export class Page {
     }
   }
   /** Fired when a JavaScript initiated dialog (alert, confirm, prompt, or onbeforeunload) has been closed. */
-  get javascriptDialogClosed(): Page.javascriptDialogClosed_Handler {
+  get javascriptDialogClosed(): Page.javascriptDialogClosed_Handler | null {
     return this._javascriptDialogClosed;
   }
-  set javascriptDialogClosed(handler: Page.javascriptDialogClosed_Handler) {
+  set javascriptDialogClosed(handler: Page.javascriptDialogClosed_Handler | null) {
     if (this._javascriptDialogClosed) {
       this._client.removeListener("Page.javascriptDialogClosed", this._javascriptDialogClosed);
     }
@@ -406,10 +397,10 @@ export class Page {
     }
   }
   /** Compressed image data requested by the <code>startScreencast</code>. */
-  get screencastFrame(): Page.screencastFrame_Handler {
+  get screencastFrame(): Page.screencastFrame_Handler | null {
     return this._screencastFrame;
   }
-  set screencastFrame(handler: Page.screencastFrame_Handler) {
+  set screencastFrame(handler: Page.screencastFrame_Handler | null) {
     if (this._screencastFrame) {
       this._client.removeListener("Page.screencastFrame", this._screencastFrame);
     }
@@ -419,10 +410,10 @@ export class Page {
     }
   }
   /** Fired when the page with currently enabled screencast was shown or hidden </code>. */
-  get screencastVisibilityChanged(): Page.screencastVisibilityChanged_Handler {
+  get screencastVisibilityChanged(): Page.screencastVisibilityChanged_Handler | null {
     return this._screencastVisibilityChanged;
   }
-  set screencastVisibilityChanged(handler: Page.screencastVisibilityChanged_Handler) {
+  set screencastVisibilityChanged(handler: Page.screencastVisibilityChanged_Handler | null) {
     if (this._screencastVisibilityChanged) {
       this._client.removeListener("Page.screencastVisibilityChanged", this._screencastVisibilityChanged);
     }
@@ -432,10 +423,10 @@ export class Page {
     }
   }
   /** Fired when a color has been picked. */
-  get colorPicked(): Page.colorPicked_Handler {
+  get colorPicked(): Page.colorPicked_Handler | null {
     return this._colorPicked;
   }
-  set colorPicked(handler: Page.colorPicked_Handler) {
+  set colorPicked(handler: Page.colorPicked_Handler | null) {
     if (this._colorPicked) {
       this._client.removeListener("Page.colorPicked", this._colorPicked);
     }
@@ -445,10 +436,10 @@ export class Page {
     }
   }
   /** Fired when interstitial page was shown */
-  get interstitialShown(): Page.interstitialShown_Handler {
+  get interstitialShown(): Page.interstitialShown_Handler | null {
     return this._interstitialShown;
   }
-  set interstitialShown(handler: Page.interstitialShown_Handler) {
+  set interstitialShown(handler: Page.interstitialShown_Handler | null) {
     if (this._interstitialShown) {
       this._client.removeListener("Page.interstitialShown", this._interstitialShown);
     }
@@ -458,10 +449,10 @@ export class Page {
     }
   }
   /** Fired when interstitial page was hidden */
-  get interstitialHidden(): Page.interstitialHidden_Handler {
+  get interstitialHidden(): Page.interstitialHidden_Handler | null {
     return this._interstitialHidden;
   }
-  set interstitialHidden(handler: Page.interstitialHidden_Handler) {
+  set interstitialHidden(handler: Page.interstitialHidden_Handler | null) {
     if (this._interstitialHidden) {
       this._client.removeListener("Page.interstitialHidden", this._interstitialHidden);
     }
@@ -471,10 +462,10 @@ export class Page {
     }
   }
   /** Fired when a navigation is started if navigation throttles are enabled.  The navigation will be deferred until processNavigation is called. */
-  get navigationRequested(): Page.navigationRequested_Handler {
+  get navigationRequested(): Page.navigationRequested_Handler | null {
     return this._navigationRequested;
   }
-  set navigationRequested(handler: Page.navigationRequested_Handler) {
+  set navigationRequested(handler: Page.navigationRequested_Handler | null) {
     if (this._navigationRequested) {
       this._client.removeListener("Page.navigationRequested", this._navigationRequested);
     }
@@ -907,10 +898,7 @@ export namespace Page {
 }
 /** This domain allows to control rendering of the page. */
 export class Rendering {
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Requests that backend shows paint rectangles */
   setShowPaintRects(params: Rendering.setShowPaintRects_Parameters): Promise<void> {
     return this._client.send<void>("Rendering.setShowPaintRects", params);
@@ -956,11 +944,8 @@ export namespace Rendering {
 }
 /** This domain emulates different environments for the page. */
 export class Emulation {
-  private _virtualTimeBudgetExpired: Emulation.virtualTimeBudgetExpired_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _virtualTimeBudgetExpired: Emulation.virtualTimeBudgetExpired_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Overrides the values of device screen dimensions (window.screen.width, window.screen.height, window.innerWidth, window.innerHeight, and "device-width"/"device-height"-related CSS media query results). */
   setDeviceMetricsOverride(params: Emulation.setDeviceMetricsOverride_Parameters): Promise<void> {
     return this._client.send<void>("Emulation.setDeviceMetricsOverride", params);
@@ -1026,10 +1011,10 @@ export class Emulation {
     return this._client.send<void>("Emulation.setDefaultBackgroundColorOverride", params);
   }
   /** Notification sent after the virual time budget for the current VirtualTimePolicy has run out. */
-  get virtualTimeBudgetExpired(): Emulation.virtualTimeBudgetExpired_Handler {
+  get virtualTimeBudgetExpired(): Emulation.virtualTimeBudgetExpired_Handler | null {
     return this._virtualTimeBudgetExpired;
   }
-  set virtualTimeBudgetExpired(handler: Emulation.virtualTimeBudgetExpired_Handler) {
+  set virtualTimeBudgetExpired(handler: Emulation.virtualTimeBudgetExpired_Handler | null) {
     if (this._virtualTimeBudgetExpired) {
       this._client.removeListener("Emulation.virtualTimeBudgetExpired", this._virtualTimeBudgetExpired);
     }
@@ -1138,12 +1123,9 @@ export namespace Emulation {
 }
 /** Security */
 export class Security {
-  private _securityStateChanged: Security.securityStateChanged_Handler = undefined;
-  private _certificateError: Security.certificateError_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _securityStateChanged: Security.securityStateChanged_Handler | null = null;
+  private _certificateError: Security.certificateError_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Enables tracking security state changes. */
   enable(): Promise<void> {
     return this._client.send<void>("Security.enable");
@@ -1165,10 +1147,10 @@ export class Security {
     return this._client.send<void>("Security.setOverrideCertificateErrors", params);
   }
   /** The security state of the page changed. */
-  get securityStateChanged(): Security.securityStateChanged_Handler {
+  get securityStateChanged(): Security.securityStateChanged_Handler | null {
     return this._securityStateChanged;
   }
-  set securityStateChanged(handler: Security.securityStateChanged_Handler) {
+  set securityStateChanged(handler: Security.securityStateChanged_Handler | null) {
     if (this._securityStateChanged) {
       this._client.removeListener("Security.securityStateChanged", this._securityStateChanged);
     }
@@ -1178,10 +1160,10 @@ export class Security {
     }
   }
   /** There is a certificate error. If overriding certificate errors is enabled, then it should be handled with the handleCertificateError command. Note: this event does not fire if the certificate error has been allowed internally. */
-  get certificateError(): Security.certificateError_Handler {
+  get certificateError(): Security.certificateError_Handler | null {
     return this._certificateError;
   }
-  set certificateError(handler: Security.certificateError_Handler) {
+  set certificateError(handler: Security.certificateError_Handler | null) {
     if (this._certificateError) {
       this._client.removeListener("Security.certificateError", this._certificateError);
     }
@@ -1261,25 +1243,22 @@ export namespace Security {
 }
 /** Network domain allows tracking network activities of the page. It exposes information about http, file, data and other requests and responses, their headers, bodies, timing, etc. */
 export class Network {
-  private _resourceChangedPriority: Network.resourceChangedPriority_Handler = undefined;
-  private _requestWillBeSent: Network.requestWillBeSent_Handler = undefined;
-  private _requestServedFromCache: Network.requestServedFromCache_Handler = undefined;
-  private _responseReceived: Network.responseReceived_Handler = undefined;
-  private _dataReceived: Network.dataReceived_Handler = undefined;
-  private _loadingFinished: Network.loadingFinished_Handler = undefined;
-  private _loadingFailed: Network.loadingFailed_Handler = undefined;
-  private _webSocketWillSendHandshakeRequest: Network.webSocketWillSendHandshakeRequest_Handler = undefined;
-  private _webSocketHandshakeResponseReceived: Network.webSocketHandshakeResponseReceived_Handler = undefined;
-  private _webSocketCreated: Network.webSocketCreated_Handler = undefined;
-  private _webSocketClosed: Network.webSocketClosed_Handler = undefined;
-  private _webSocketFrameReceived: Network.webSocketFrameReceived_Handler = undefined;
-  private _webSocketFrameError: Network.webSocketFrameError_Handler = undefined;
-  private _webSocketFrameSent: Network.webSocketFrameSent_Handler = undefined;
-  private _eventSourceMessageReceived: Network.eventSourceMessageReceived_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _resourceChangedPriority: Network.resourceChangedPriority_Handler | null = null;
+  private _requestWillBeSent: Network.requestWillBeSent_Handler | null = null;
+  private _requestServedFromCache: Network.requestServedFromCache_Handler | null = null;
+  private _responseReceived: Network.responseReceived_Handler | null = null;
+  private _dataReceived: Network.dataReceived_Handler | null = null;
+  private _loadingFinished: Network.loadingFinished_Handler | null = null;
+  private _loadingFailed: Network.loadingFailed_Handler | null = null;
+  private _webSocketWillSendHandshakeRequest: Network.webSocketWillSendHandshakeRequest_Handler | null = null;
+  private _webSocketHandshakeResponseReceived: Network.webSocketHandshakeResponseReceived_Handler | null = null;
+  private _webSocketCreated: Network.webSocketCreated_Handler | null = null;
+  private _webSocketClosed: Network.webSocketClosed_Handler | null = null;
+  private _webSocketFrameReceived: Network.webSocketFrameReceived_Handler | null = null;
+  private _webSocketFrameError: Network.webSocketFrameError_Handler | null = null;
+  private _webSocketFrameSent: Network.webSocketFrameSent_Handler | null = null;
+  private _eventSourceMessageReceived: Network.eventSourceMessageReceived_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Enables network tracking, network events will now be delivered to the client. */
   enable(params: Network.enable_Parameters): Promise<void> {
     return this._client.send<void>("Network.enable", params);
@@ -1369,10 +1348,10 @@ export class Network {
     return this._client.send<Network.getCertificate_Return>("Network.getCertificate", params);
   }
   /** Fired when resource loading priority is changed */
-  get resourceChangedPriority(): Network.resourceChangedPriority_Handler {
+  get resourceChangedPriority(): Network.resourceChangedPriority_Handler | null {
     return this._resourceChangedPriority;
   }
-  set resourceChangedPriority(handler: Network.resourceChangedPriority_Handler) {
+  set resourceChangedPriority(handler: Network.resourceChangedPriority_Handler | null) {
     if (this._resourceChangedPriority) {
       this._client.removeListener("Network.resourceChangedPriority", this._resourceChangedPriority);
     }
@@ -1382,10 +1361,10 @@ export class Network {
     }
   }
   /** Fired when page is about to send HTTP request. */
-  get requestWillBeSent(): Network.requestWillBeSent_Handler {
+  get requestWillBeSent(): Network.requestWillBeSent_Handler | null {
     return this._requestWillBeSent;
   }
-  set requestWillBeSent(handler: Network.requestWillBeSent_Handler) {
+  set requestWillBeSent(handler: Network.requestWillBeSent_Handler | null) {
     if (this._requestWillBeSent) {
       this._client.removeListener("Network.requestWillBeSent", this._requestWillBeSent);
     }
@@ -1395,10 +1374,10 @@ export class Network {
     }
   }
   /** Fired if request ended up loading from cache. */
-  get requestServedFromCache(): Network.requestServedFromCache_Handler {
+  get requestServedFromCache(): Network.requestServedFromCache_Handler | null {
     return this._requestServedFromCache;
   }
-  set requestServedFromCache(handler: Network.requestServedFromCache_Handler) {
+  set requestServedFromCache(handler: Network.requestServedFromCache_Handler | null) {
     if (this._requestServedFromCache) {
       this._client.removeListener("Network.requestServedFromCache", this._requestServedFromCache);
     }
@@ -1408,10 +1387,10 @@ export class Network {
     }
   }
   /** Fired when HTTP response is available. */
-  get responseReceived(): Network.responseReceived_Handler {
+  get responseReceived(): Network.responseReceived_Handler | null {
     return this._responseReceived;
   }
-  set responseReceived(handler: Network.responseReceived_Handler) {
+  set responseReceived(handler: Network.responseReceived_Handler | null) {
     if (this._responseReceived) {
       this._client.removeListener("Network.responseReceived", this._responseReceived);
     }
@@ -1421,10 +1400,10 @@ export class Network {
     }
   }
   /** Fired when data chunk was received over the network. */
-  get dataReceived(): Network.dataReceived_Handler {
+  get dataReceived(): Network.dataReceived_Handler | null {
     return this._dataReceived;
   }
-  set dataReceived(handler: Network.dataReceived_Handler) {
+  set dataReceived(handler: Network.dataReceived_Handler | null) {
     if (this._dataReceived) {
       this._client.removeListener("Network.dataReceived", this._dataReceived);
     }
@@ -1434,10 +1413,10 @@ export class Network {
     }
   }
   /** Fired when HTTP request has finished loading. */
-  get loadingFinished(): Network.loadingFinished_Handler {
+  get loadingFinished(): Network.loadingFinished_Handler | null {
     return this._loadingFinished;
   }
-  set loadingFinished(handler: Network.loadingFinished_Handler) {
+  set loadingFinished(handler: Network.loadingFinished_Handler | null) {
     if (this._loadingFinished) {
       this._client.removeListener("Network.loadingFinished", this._loadingFinished);
     }
@@ -1447,10 +1426,10 @@ export class Network {
     }
   }
   /** Fired when HTTP request has failed to load. */
-  get loadingFailed(): Network.loadingFailed_Handler {
+  get loadingFailed(): Network.loadingFailed_Handler | null {
     return this._loadingFailed;
   }
-  set loadingFailed(handler: Network.loadingFailed_Handler) {
+  set loadingFailed(handler: Network.loadingFailed_Handler | null) {
     if (this._loadingFailed) {
       this._client.removeListener("Network.loadingFailed", this._loadingFailed);
     }
@@ -1460,10 +1439,10 @@ export class Network {
     }
   }
   /** Fired when WebSocket is about to initiate handshake. */
-  get webSocketWillSendHandshakeRequest(): Network.webSocketWillSendHandshakeRequest_Handler {
+  get webSocketWillSendHandshakeRequest(): Network.webSocketWillSendHandshakeRequest_Handler | null {
     return this._webSocketWillSendHandshakeRequest;
   }
-  set webSocketWillSendHandshakeRequest(handler: Network.webSocketWillSendHandshakeRequest_Handler) {
+  set webSocketWillSendHandshakeRequest(handler: Network.webSocketWillSendHandshakeRequest_Handler | null) {
     if (this._webSocketWillSendHandshakeRequest) {
       this._client.removeListener("Network.webSocketWillSendHandshakeRequest", this._webSocketWillSendHandshakeRequest);
     }
@@ -1473,10 +1452,10 @@ export class Network {
     }
   }
   /** Fired when WebSocket handshake response becomes available. */
-  get webSocketHandshakeResponseReceived(): Network.webSocketHandshakeResponseReceived_Handler {
+  get webSocketHandshakeResponseReceived(): Network.webSocketHandshakeResponseReceived_Handler | null {
     return this._webSocketHandshakeResponseReceived;
   }
-  set webSocketHandshakeResponseReceived(handler: Network.webSocketHandshakeResponseReceived_Handler) {
+  set webSocketHandshakeResponseReceived(handler: Network.webSocketHandshakeResponseReceived_Handler | null) {
     if (this._webSocketHandshakeResponseReceived) {
       this._client.removeListener("Network.webSocketHandshakeResponseReceived", this._webSocketHandshakeResponseReceived);
     }
@@ -1486,10 +1465,10 @@ export class Network {
     }
   }
   /** Fired upon WebSocket creation. */
-  get webSocketCreated(): Network.webSocketCreated_Handler {
+  get webSocketCreated(): Network.webSocketCreated_Handler | null {
     return this._webSocketCreated;
   }
-  set webSocketCreated(handler: Network.webSocketCreated_Handler) {
+  set webSocketCreated(handler: Network.webSocketCreated_Handler | null) {
     if (this._webSocketCreated) {
       this._client.removeListener("Network.webSocketCreated", this._webSocketCreated);
     }
@@ -1499,10 +1478,10 @@ export class Network {
     }
   }
   /** Fired when WebSocket is closed. */
-  get webSocketClosed(): Network.webSocketClosed_Handler {
+  get webSocketClosed(): Network.webSocketClosed_Handler | null {
     return this._webSocketClosed;
   }
-  set webSocketClosed(handler: Network.webSocketClosed_Handler) {
+  set webSocketClosed(handler: Network.webSocketClosed_Handler | null) {
     if (this._webSocketClosed) {
       this._client.removeListener("Network.webSocketClosed", this._webSocketClosed);
     }
@@ -1512,10 +1491,10 @@ export class Network {
     }
   }
   /** Fired when WebSocket frame is received. */
-  get webSocketFrameReceived(): Network.webSocketFrameReceived_Handler {
+  get webSocketFrameReceived(): Network.webSocketFrameReceived_Handler | null {
     return this._webSocketFrameReceived;
   }
-  set webSocketFrameReceived(handler: Network.webSocketFrameReceived_Handler) {
+  set webSocketFrameReceived(handler: Network.webSocketFrameReceived_Handler | null) {
     if (this._webSocketFrameReceived) {
       this._client.removeListener("Network.webSocketFrameReceived", this._webSocketFrameReceived);
     }
@@ -1525,10 +1504,10 @@ export class Network {
     }
   }
   /** Fired when WebSocket frame error occurs. */
-  get webSocketFrameError(): Network.webSocketFrameError_Handler {
+  get webSocketFrameError(): Network.webSocketFrameError_Handler | null {
     return this._webSocketFrameError;
   }
-  set webSocketFrameError(handler: Network.webSocketFrameError_Handler) {
+  set webSocketFrameError(handler: Network.webSocketFrameError_Handler | null) {
     if (this._webSocketFrameError) {
       this._client.removeListener("Network.webSocketFrameError", this._webSocketFrameError);
     }
@@ -1538,10 +1517,10 @@ export class Network {
     }
   }
   /** Fired when WebSocket frame is sent. */
-  get webSocketFrameSent(): Network.webSocketFrameSent_Handler {
+  get webSocketFrameSent(): Network.webSocketFrameSent_Handler | null {
     return this._webSocketFrameSent;
   }
-  set webSocketFrameSent(handler: Network.webSocketFrameSent_Handler) {
+  set webSocketFrameSent(handler: Network.webSocketFrameSent_Handler | null) {
     if (this._webSocketFrameSent) {
       this._client.removeListener("Network.webSocketFrameSent", this._webSocketFrameSent);
     }
@@ -1551,10 +1530,10 @@ export class Network {
     }
   }
   /** Fired when EventSource message is received. */
-  get eventSourceMessageReceived(): Network.eventSourceMessageReceived_Handler {
+  get eventSourceMessageReceived(): Network.eventSourceMessageReceived_Handler | null {
     return this._eventSourceMessageReceived;
   }
-  set eventSourceMessageReceived(handler: Network.eventSourceMessageReceived_Handler) {
+  set eventSourceMessageReceived(handler: Network.eventSourceMessageReceived_Handler | null) {
     if (this._eventSourceMessageReceived) {
       this._client.removeListener("Network.eventSourceMessageReceived", this._eventSourceMessageReceived);
     }
@@ -2084,11 +2063,8 @@ export namespace Network {
   };
 }
 export class Database {
-  private _addDatabase: Database.addDatabase_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _addDatabase: Database.addDatabase_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Enables database tracking, database events will now be delivered to the client. */
   enable(): Promise<void> {
     return this._client.send<void>("Database.enable");
@@ -2103,10 +2079,10 @@ export class Database {
   executeSQL(params: Database.executeSQL_Parameters): Promise<Database.executeSQL_Return> {
     return this._client.send<Database.executeSQL_Return>("Database.executeSQL", params);
   }
-  get addDatabase(): Database.addDatabase_Handler {
+  get addDatabase(): Database.addDatabase_Handler | null {
     return this._addDatabase;
   }
-  set addDatabase(handler: Database.addDatabase_Handler) {
+  set addDatabase(handler: Database.addDatabase_Handler | null) {
     if (this._addDatabase) {
       this._client.removeListener("Database.addDatabase", this._addDatabase);
     }
@@ -2158,10 +2134,7 @@ export namespace Database {
   };
 }
 export class IndexedDB {
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Enables events from backend. */
   enable(): Promise<void> {
     return this._client.send<void>("IndexedDB.enable");
@@ -2323,10 +2296,7 @@ export namespace IndexedDB {
   export type deleteDatabase_Return = any;
 }
 export class CacheStorage {
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Requests cache names. */
   requestCacheNames(params: CacheStorage.requestCacheNames_Parameters): Promise<CacheStorage.requestCacheNames_Return> {
     return this._client.send<CacheStorage.requestCacheNames_Return>("CacheStorage.requestCacheNames", params);
@@ -2398,14 +2368,11 @@ export namespace CacheStorage {
 }
 /** Query and modify DOM storage. */
 export class DOMStorage {
-  private _domStorageItemsCleared: DOMStorage.domStorageItemsCleared_Handler = undefined;
-  private _domStorageItemRemoved: DOMStorage.domStorageItemRemoved_Handler = undefined;
-  private _domStorageItemAdded: DOMStorage.domStorageItemAdded_Handler = undefined;
-  private _domStorageItemUpdated: DOMStorage.domStorageItemUpdated_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _domStorageItemsCleared: DOMStorage.domStorageItemsCleared_Handler | null = null;
+  private _domStorageItemRemoved: DOMStorage.domStorageItemRemoved_Handler | null = null;
+  private _domStorageItemAdded: DOMStorage.domStorageItemAdded_Handler | null = null;
+  private _domStorageItemUpdated: DOMStorage.domStorageItemUpdated_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Enables storage tracking, storage events will now be delivered to the client. */
   enable(): Promise<void> {
     return this._client.send<void>("DOMStorage.enable");
@@ -2426,10 +2393,10 @@ export class DOMStorage {
   removeDOMStorageItem(params: DOMStorage.removeDOMStorageItem_Parameters): Promise<void> {
     return this._client.send<void>("DOMStorage.removeDOMStorageItem", params);
   }
-  get domStorageItemsCleared(): DOMStorage.domStorageItemsCleared_Handler {
+  get domStorageItemsCleared(): DOMStorage.domStorageItemsCleared_Handler | null {
     return this._domStorageItemsCleared;
   }
-  set domStorageItemsCleared(handler: DOMStorage.domStorageItemsCleared_Handler) {
+  set domStorageItemsCleared(handler: DOMStorage.domStorageItemsCleared_Handler | null) {
     if (this._domStorageItemsCleared) {
       this._client.removeListener("DOMStorage.domStorageItemsCleared", this._domStorageItemsCleared);
     }
@@ -2438,10 +2405,10 @@ export class DOMStorage {
       this._client.on("DOMStorage.domStorageItemsCleared", handler);
     }
   }
-  get domStorageItemRemoved(): DOMStorage.domStorageItemRemoved_Handler {
+  get domStorageItemRemoved(): DOMStorage.domStorageItemRemoved_Handler | null {
     return this._domStorageItemRemoved;
   }
-  set domStorageItemRemoved(handler: DOMStorage.domStorageItemRemoved_Handler) {
+  set domStorageItemRemoved(handler: DOMStorage.domStorageItemRemoved_Handler | null) {
     if (this._domStorageItemRemoved) {
       this._client.removeListener("DOMStorage.domStorageItemRemoved", this._domStorageItemRemoved);
     }
@@ -2450,10 +2417,10 @@ export class DOMStorage {
       this._client.on("DOMStorage.domStorageItemRemoved", handler);
     }
   }
-  get domStorageItemAdded(): DOMStorage.domStorageItemAdded_Handler {
+  get domStorageItemAdded(): DOMStorage.domStorageItemAdded_Handler | null {
     return this._domStorageItemAdded;
   }
-  set domStorageItemAdded(handler: DOMStorage.domStorageItemAdded_Handler) {
+  set domStorageItemAdded(handler: DOMStorage.domStorageItemAdded_Handler | null) {
     if (this._domStorageItemAdded) {
       this._client.removeListener("DOMStorage.domStorageItemAdded", this._domStorageItemAdded);
     }
@@ -2462,10 +2429,10 @@ export class DOMStorage {
       this._client.on("DOMStorage.domStorageItemAdded", handler);
     }
   }
-  get domStorageItemUpdated(): DOMStorage.domStorageItemUpdated_Handler {
+  get domStorageItemUpdated(): DOMStorage.domStorageItemUpdated_Handler | null {
     return this._domStorageItemUpdated;
   }
-  set domStorageItemUpdated(handler: DOMStorage.domStorageItemUpdated_Handler) {
+  set domStorageItemUpdated(handler: DOMStorage.domStorageItemUpdated_Handler | null) {
     if (this._domStorageItemUpdated) {
       this._client.removeListener("DOMStorage.domStorageItemUpdated", this._domStorageItemUpdated);
     }
@@ -2527,12 +2494,9 @@ export namespace DOMStorage {
   };
 }
 export class ApplicationCache {
-  private _applicationCacheStatusUpdated: ApplicationCache.applicationCacheStatusUpdated_Handler = undefined;
-  private _networkStateUpdated: ApplicationCache.networkStateUpdated_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _applicationCacheStatusUpdated: ApplicationCache.applicationCacheStatusUpdated_Handler | null = null;
+  private _networkStateUpdated: ApplicationCache.networkStateUpdated_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Returns array of frame identifiers with manifest urls for each frame containing a document associated with some application cache. */
   getFramesWithManifests(): Promise<ApplicationCache.getFramesWithManifests_Return> {
     return this._client.send<ApplicationCache.getFramesWithManifests_Return>("ApplicationCache.getFramesWithManifests");
@@ -2549,10 +2513,10 @@ export class ApplicationCache {
   getApplicationCacheForFrame(params: ApplicationCache.getApplicationCacheForFrame_Parameters): Promise<ApplicationCache.getApplicationCacheForFrame_Return> {
     return this._client.send<ApplicationCache.getApplicationCacheForFrame_Return>("ApplicationCache.getApplicationCacheForFrame", params);
   }
-  get applicationCacheStatusUpdated(): ApplicationCache.applicationCacheStatusUpdated_Handler {
+  get applicationCacheStatusUpdated(): ApplicationCache.applicationCacheStatusUpdated_Handler | null {
     return this._applicationCacheStatusUpdated;
   }
-  set applicationCacheStatusUpdated(handler: ApplicationCache.applicationCacheStatusUpdated_Handler) {
+  set applicationCacheStatusUpdated(handler: ApplicationCache.applicationCacheStatusUpdated_Handler | null) {
     if (this._applicationCacheStatusUpdated) {
       this._client.removeListener("ApplicationCache.applicationCacheStatusUpdated", this._applicationCacheStatusUpdated);
     }
@@ -2561,10 +2525,10 @@ export class ApplicationCache {
       this._client.on("ApplicationCache.applicationCacheStatusUpdated", handler);
     }
   }
-  get networkStateUpdated(): ApplicationCache.networkStateUpdated_Handler {
+  get networkStateUpdated(): ApplicationCache.networkStateUpdated_Handler | null {
     return this._networkStateUpdated;
   }
-  set networkStateUpdated(handler: ApplicationCache.networkStateUpdated_Handler) {
+  set networkStateUpdated(handler: ApplicationCache.networkStateUpdated_Handler | null) {
     if (this._networkStateUpdated) {
       this._client.removeListener("ApplicationCache.networkStateUpdated", this._networkStateUpdated);
     }
@@ -2642,26 +2606,23 @@ export namespace ApplicationCache {
 }
 /** This domain exposes DOM read/write operations. Each DOM Node is represented with its mirror object that has an <code>id</code>. This <code>id</code> can be used to get additional information on the Node, resolve it into the JavaScript object wrapper, etc. It is important that client receives DOM events only for the nodes that are known to the client. Backend keeps track of the nodes that were sent to the client and never sends the same node twice. It is client's responsibility to collect information about the nodes that were sent to the client.<p>Note that <code>iframe</code> owner elements will return corresponding document elements as their child nodes.</p> */
 export class DOM {
-  private _documentUpdated: DOM.documentUpdated_Handler = undefined;
-  private _inspectNodeRequested: DOM.inspectNodeRequested_Handler = undefined;
-  private _setChildNodes: DOM.setChildNodes_Handler = undefined;
-  private _attributeModified: DOM.attributeModified_Handler = undefined;
-  private _attributeRemoved: DOM.attributeRemoved_Handler = undefined;
-  private _inlineStyleInvalidated: DOM.inlineStyleInvalidated_Handler = undefined;
-  private _characterDataModified: DOM.characterDataModified_Handler = undefined;
-  private _childNodeCountUpdated: DOM.childNodeCountUpdated_Handler = undefined;
-  private _childNodeInserted: DOM.childNodeInserted_Handler = undefined;
-  private _childNodeRemoved: DOM.childNodeRemoved_Handler = undefined;
-  private _shadowRootPushed: DOM.shadowRootPushed_Handler = undefined;
-  private _shadowRootPopped: DOM.shadowRootPopped_Handler = undefined;
-  private _pseudoElementAdded: DOM.pseudoElementAdded_Handler = undefined;
-  private _pseudoElementRemoved: DOM.pseudoElementRemoved_Handler = undefined;
-  private _distributedNodesUpdated: DOM.distributedNodesUpdated_Handler = undefined;
-  private _nodeHighlightRequested: DOM.nodeHighlightRequested_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _documentUpdated: DOM.documentUpdated_Handler | null = null;
+  private _inspectNodeRequested: DOM.inspectNodeRequested_Handler | null = null;
+  private _setChildNodes: DOM.setChildNodes_Handler | null = null;
+  private _attributeModified: DOM.attributeModified_Handler | null = null;
+  private _attributeRemoved: DOM.attributeRemoved_Handler | null = null;
+  private _inlineStyleInvalidated: DOM.inlineStyleInvalidated_Handler | null = null;
+  private _characterDataModified: DOM.characterDataModified_Handler | null = null;
+  private _childNodeCountUpdated: DOM.childNodeCountUpdated_Handler | null = null;
+  private _childNodeInserted: DOM.childNodeInserted_Handler | null = null;
+  private _childNodeRemoved: DOM.childNodeRemoved_Handler | null = null;
+  private _shadowRootPushed: DOM.shadowRootPushed_Handler | null = null;
+  private _shadowRootPopped: DOM.shadowRootPopped_Handler | null = null;
+  private _pseudoElementAdded: DOM.pseudoElementAdded_Handler | null = null;
+  private _pseudoElementRemoved: DOM.pseudoElementRemoved_Handler | null = null;
+  private _distributedNodesUpdated: DOM.distributedNodesUpdated_Handler | null = null;
+  private _nodeHighlightRequested: DOM.nodeHighlightRequested_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Enables DOM agent for the given page. */
   enable(): Promise<void> {
     return this._client.send<void>("DOM.enable");
@@ -2831,10 +2792,10 @@ export class DOM {
     return this._client.send<DOM.getHighlightObjectForTest_Return>("DOM.getHighlightObjectForTest", params);
   }
   /** Fired when <code>Document</code> has been totally updated. Node ids are no longer valid. */
-  get documentUpdated(): DOM.documentUpdated_Handler {
+  get documentUpdated(): DOM.documentUpdated_Handler | null {
     return this._documentUpdated;
   }
-  set documentUpdated(handler: DOM.documentUpdated_Handler) {
+  set documentUpdated(handler: DOM.documentUpdated_Handler | null) {
     if (this._documentUpdated) {
       this._client.removeListener("DOM.documentUpdated", this._documentUpdated);
     }
@@ -2844,10 +2805,10 @@ export class DOM {
     }
   }
   /** Fired when the node should be inspected. This happens after call to <code>setInspectMode</code>. */
-  get inspectNodeRequested(): DOM.inspectNodeRequested_Handler {
+  get inspectNodeRequested(): DOM.inspectNodeRequested_Handler | null {
     return this._inspectNodeRequested;
   }
-  set inspectNodeRequested(handler: DOM.inspectNodeRequested_Handler) {
+  set inspectNodeRequested(handler: DOM.inspectNodeRequested_Handler | null) {
     if (this._inspectNodeRequested) {
       this._client.removeListener("DOM.inspectNodeRequested", this._inspectNodeRequested);
     }
@@ -2857,10 +2818,10 @@ export class DOM {
     }
   }
   /** Fired when backend wants to provide client with the missing DOM structure. This happens upon most of the calls requesting node ids. */
-  get setChildNodes(): DOM.setChildNodes_Handler {
+  get setChildNodes(): DOM.setChildNodes_Handler | null {
     return this._setChildNodes;
   }
-  set setChildNodes(handler: DOM.setChildNodes_Handler) {
+  set setChildNodes(handler: DOM.setChildNodes_Handler | null) {
     if (this._setChildNodes) {
       this._client.removeListener("DOM.setChildNodes", this._setChildNodes);
     }
@@ -2870,10 +2831,10 @@ export class DOM {
     }
   }
   /** Fired when <code>Element</code>'s attribute is modified. */
-  get attributeModified(): DOM.attributeModified_Handler {
+  get attributeModified(): DOM.attributeModified_Handler | null {
     return this._attributeModified;
   }
-  set attributeModified(handler: DOM.attributeModified_Handler) {
+  set attributeModified(handler: DOM.attributeModified_Handler | null) {
     if (this._attributeModified) {
       this._client.removeListener("DOM.attributeModified", this._attributeModified);
     }
@@ -2883,10 +2844,10 @@ export class DOM {
     }
   }
   /** Fired when <code>Element</code>'s attribute is removed. */
-  get attributeRemoved(): DOM.attributeRemoved_Handler {
+  get attributeRemoved(): DOM.attributeRemoved_Handler | null {
     return this._attributeRemoved;
   }
-  set attributeRemoved(handler: DOM.attributeRemoved_Handler) {
+  set attributeRemoved(handler: DOM.attributeRemoved_Handler | null) {
     if (this._attributeRemoved) {
       this._client.removeListener("DOM.attributeRemoved", this._attributeRemoved);
     }
@@ -2896,10 +2857,10 @@ export class DOM {
     }
   }
   /** Fired when <code>Element</code>'s inline style is modified via a CSS property modification. */
-  get inlineStyleInvalidated(): DOM.inlineStyleInvalidated_Handler {
+  get inlineStyleInvalidated(): DOM.inlineStyleInvalidated_Handler | null {
     return this._inlineStyleInvalidated;
   }
-  set inlineStyleInvalidated(handler: DOM.inlineStyleInvalidated_Handler) {
+  set inlineStyleInvalidated(handler: DOM.inlineStyleInvalidated_Handler | null) {
     if (this._inlineStyleInvalidated) {
       this._client.removeListener("DOM.inlineStyleInvalidated", this._inlineStyleInvalidated);
     }
@@ -2909,10 +2870,10 @@ export class DOM {
     }
   }
   /** Mirrors <code>DOMCharacterDataModified</code> event. */
-  get characterDataModified(): DOM.characterDataModified_Handler {
+  get characterDataModified(): DOM.characterDataModified_Handler | null {
     return this._characterDataModified;
   }
-  set characterDataModified(handler: DOM.characterDataModified_Handler) {
+  set characterDataModified(handler: DOM.characterDataModified_Handler | null) {
     if (this._characterDataModified) {
       this._client.removeListener("DOM.characterDataModified", this._characterDataModified);
     }
@@ -2922,10 +2883,10 @@ export class DOM {
     }
   }
   /** Fired when <code>Container</code>'s child node count has changed. */
-  get childNodeCountUpdated(): DOM.childNodeCountUpdated_Handler {
+  get childNodeCountUpdated(): DOM.childNodeCountUpdated_Handler | null {
     return this._childNodeCountUpdated;
   }
-  set childNodeCountUpdated(handler: DOM.childNodeCountUpdated_Handler) {
+  set childNodeCountUpdated(handler: DOM.childNodeCountUpdated_Handler | null) {
     if (this._childNodeCountUpdated) {
       this._client.removeListener("DOM.childNodeCountUpdated", this._childNodeCountUpdated);
     }
@@ -2935,10 +2896,10 @@ export class DOM {
     }
   }
   /** Mirrors <code>DOMNodeInserted</code> event. */
-  get childNodeInserted(): DOM.childNodeInserted_Handler {
+  get childNodeInserted(): DOM.childNodeInserted_Handler | null {
     return this._childNodeInserted;
   }
-  set childNodeInserted(handler: DOM.childNodeInserted_Handler) {
+  set childNodeInserted(handler: DOM.childNodeInserted_Handler | null) {
     if (this._childNodeInserted) {
       this._client.removeListener("DOM.childNodeInserted", this._childNodeInserted);
     }
@@ -2948,10 +2909,10 @@ export class DOM {
     }
   }
   /** Mirrors <code>DOMNodeRemoved</code> event. */
-  get childNodeRemoved(): DOM.childNodeRemoved_Handler {
+  get childNodeRemoved(): DOM.childNodeRemoved_Handler | null {
     return this._childNodeRemoved;
   }
-  set childNodeRemoved(handler: DOM.childNodeRemoved_Handler) {
+  set childNodeRemoved(handler: DOM.childNodeRemoved_Handler | null) {
     if (this._childNodeRemoved) {
       this._client.removeListener("DOM.childNodeRemoved", this._childNodeRemoved);
     }
@@ -2961,10 +2922,10 @@ export class DOM {
     }
   }
   /** Called when shadow root is pushed into the element. */
-  get shadowRootPushed(): DOM.shadowRootPushed_Handler {
+  get shadowRootPushed(): DOM.shadowRootPushed_Handler | null {
     return this._shadowRootPushed;
   }
-  set shadowRootPushed(handler: DOM.shadowRootPushed_Handler) {
+  set shadowRootPushed(handler: DOM.shadowRootPushed_Handler | null) {
     if (this._shadowRootPushed) {
       this._client.removeListener("DOM.shadowRootPushed", this._shadowRootPushed);
     }
@@ -2974,10 +2935,10 @@ export class DOM {
     }
   }
   /** Called when shadow root is popped from the element. */
-  get shadowRootPopped(): DOM.shadowRootPopped_Handler {
+  get shadowRootPopped(): DOM.shadowRootPopped_Handler | null {
     return this._shadowRootPopped;
   }
-  set shadowRootPopped(handler: DOM.shadowRootPopped_Handler) {
+  set shadowRootPopped(handler: DOM.shadowRootPopped_Handler | null) {
     if (this._shadowRootPopped) {
       this._client.removeListener("DOM.shadowRootPopped", this._shadowRootPopped);
     }
@@ -2987,10 +2948,10 @@ export class DOM {
     }
   }
   /** Called when a pseudo element is added to an element. */
-  get pseudoElementAdded(): DOM.pseudoElementAdded_Handler {
+  get pseudoElementAdded(): DOM.pseudoElementAdded_Handler | null {
     return this._pseudoElementAdded;
   }
-  set pseudoElementAdded(handler: DOM.pseudoElementAdded_Handler) {
+  set pseudoElementAdded(handler: DOM.pseudoElementAdded_Handler | null) {
     if (this._pseudoElementAdded) {
       this._client.removeListener("DOM.pseudoElementAdded", this._pseudoElementAdded);
     }
@@ -3000,10 +2961,10 @@ export class DOM {
     }
   }
   /** Called when a pseudo element is removed from an element. */
-  get pseudoElementRemoved(): DOM.pseudoElementRemoved_Handler {
+  get pseudoElementRemoved(): DOM.pseudoElementRemoved_Handler | null {
     return this._pseudoElementRemoved;
   }
-  set pseudoElementRemoved(handler: DOM.pseudoElementRemoved_Handler) {
+  set pseudoElementRemoved(handler: DOM.pseudoElementRemoved_Handler | null) {
     if (this._pseudoElementRemoved) {
       this._client.removeListener("DOM.pseudoElementRemoved", this._pseudoElementRemoved);
     }
@@ -3013,10 +2974,10 @@ export class DOM {
     }
   }
   /** Called when distrubution is changed. */
-  get distributedNodesUpdated(): DOM.distributedNodesUpdated_Handler {
+  get distributedNodesUpdated(): DOM.distributedNodesUpdated_Handler | null {
     return this._distributedNodesUpdated;
   }
-  set distributedNodesUpdated(handler: DOM.distributedNodesUpdated_Handler) {
+  set distributedNodesUpdated(handler: DOM.distributedNodesUpdated_Handler | null) {
     if (this._distributedNodesUpdated) {
       this._client.removeListener("DOM.distributedNodesUpdated", this._distributedNodesUpdated);
     }
@@ -3025,10 +2986,10 @@ export class DOM {
       this._client.on("DOM.distributedNodesUpdated", handler);
     }
   }
-  get nodeHighlightRequested(): DOM.nodeHighlightRequested_Handler {
+  get nodeHighlightRequested(): DOM.nodeHighlightRequested_Handler | null {
     return this._nodeHighlightRequested;
   }
-  set nodeHighlightRequested(handler: DOM.nodeHighlightRequested_Handler) {
+  set nodeHighlightRequested(handler: DOM.nodeHighlightRequested_Handler | null) {
     if (this._nodeHighlightRequested) {
       this._client.removeListener("DOM.nodeHighlightRequested", this._nodeHighlightRequested);
     }
@@ -3599,15 +3560,12 @@ export namespace DOM {
 }
 /** This domain exposes CSS read/write operations. All CSS objects (stylesheets, rules, and styles) have an associated <code>id</code> used in subsequent operations on the related object. Each object type has a specific <code>id</code> structure, and those are not interchangeable between objects of different kinds. CSS objects can be loaded using the <code>get*ForNode()</code> calls (which accept a DOM node id). A client can also discover all the existing stylesheets with the <code>getAllStyleSheets()</code> method (or keeping track of the <code>styleSheetAdded</code>/<code>styleSheetRemoved</code> events) and subsequently load the required stylesheet contents using the <code>getStyleSheet[Text]()</code> methods. */
 export class CSS {
-  private _mediaQueryResultChanged: CSS.mediaQueryResultChanged_Handler = undefined;
-  private _fontsUpdated: CSS.fontsUpdated_Handler = undefined;
-  private _styleSheetChanged: CSS.styleSheetChanged_Handler = undefined;
-  private _styleSheetAdded: CSS.styleSheetAdded_Handler = undefined;
-  private _styleSheetRemoved: CSS.styleSheetRemoved_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _mediaQueryResultChanged: CSS.mediaQueryResultChanged_Handler | null = null;
+  private _fontsUpdated: CSS.fontsUpdated_Handler | null = null;
+  private _styleSheetChanged: CSS.styleSheetChanged_Handler | null = null;
+  private _styleSheetAdded: CSS.styleSheetAdded_Handler | null = null;
+  private _styleSheetRemoved: CSS.styleSheetRemoved_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Enables the CSS agent for the given page. Clients should not assume that the CSS agent has been enabled until the result of this command is received. */
   enable(): Promise<void> {
     return this._client.send<void>("CSS.enable");
@@ -3700,10 +3658,10 @@ export class CSS {
     return this._client.send<CSS.stopRuleUsageTracking_Return>("CSS.stopRuleUsageTracking");
   }
   /** Fires whenever a MediaQuery result changes (for example, after a browser window has been resized.) The current implementation considers only viewport-dependent media features. */
-  get mediaQueryResultChanged(): CSS.mediaQueryResultChanged_Handler {
+  get mediaQueryResultChanged(): CSS.mediaQueryResultChanged_Handler | null {
     return this._mediaQueryResultChanged;
   }
-  set mediaQueryResultChanged(handler: CSS.mediaQueryResultChanged_Handler) {
+  set mediaQueryResultChanged(handler: CSS.mediaQueryResultChanged_Handler | null) {
     if (this._mediaQueryResultChanged) {
       this._client.removeListener("CSS.mediaQueryResultChanged", this._mediaQueryResultChanged);
     }
@@ -3713,10 +3671,10 @@ export class CSS {
     }
   }
   /** Fires whenever a web font gets loaded. */
-  get fontsUpdated(): CSS.fontsUpdated_Handler {
+  get fontsUpdated(): CSS.fontsUpdated_Handler | null {
     return this._fontsUpdated;
   }
-  set fontsUpdated(handler: CSS.fontsUpdated_Handler) {
+  set fontsUpdated(handler: CSS.fontsUpdated_Handler | null) {
     if (this._fontsUpdated) {
       this._client.removeListener("CSS.fontsUpdated", this._fontsUpdated);
     }
@@ -3726,10 +3684,10 @@ export class CSS {
     }
   }
   /** Fired whenever a stylesheet is changed as a result of the client operation. */
-  get styleSheetChanged(): CSS.styleSheetChanged_Handler {
+  get styleSheetChanged(): CSS.styleSheetChanged_Handler | null {
     return this._styleSheetChanged;
   }
-  set styleSheetChanged(handler: CSS.styleSheetChanged_Handler) {
+  set styleSheetChanged(handler: CSS.styleSheetChanged_Handler | null) {
     if (this._styleSheetChanged) {
       this._client.removeListener("CSS.styleSheetChanged", this._styleSheetChanged);
     }
@@ -3739,10 +3697,10 @@ export class CSS {
     }
   }
   /** Fired whenever an active document stylesheet is added. */
-  get styleSheetAdded(): CSS.styleSheetAdded_Handler {
+  get styleSheetAdded(): CSS.styleSheetAdded_Handler | null {
     return this._styleSheetAdded;
   }
-  set styleSheetAdded(handler: CSS.styleSheetAdded_Handler) {
+  set styleSheetAdded(handler: CSS.styleSheetAdded_Handler | null) {
     if (this._styleSheetAdded) {
       this._client.removeListener("CSS.styleSheetAdded", this._styleSheetAdded);
     }
@@ -3752,10 +3710,10 @@ export class CSS {
     }
   }
   /** Fired whenever an active document stylesheet is removed. */
-  get styleSheetRemoved(): CSS.styleSheetRemoved_Handler {
+  get styleSheetRemoved(): CSS.styleSheetRemoved_Handler | null {
     return this._styleSheetRemoved;
   }
-  set styleSheetRemoved(handler: CSS.styleSheetRemoved_Handler) {
+  set styleSheetRemoved(handler: CSS.styleSheetRemoved_Handler | null) {
     if (this._styleSheetRemoved) {
       this._client.removeListener("CSS.styleSheetRemoved", this._styleSheetRemoved);
     }
@@ -4183,10 +4141,7 @@ export namespace CSS {
 }
 /** Input/Output operations for streams produced by DevTools. */
 export class IO {
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Read a chunk of the stream */
   read(params: IO.read_Parameters): Promise<IO.read_Return> {
     return this._client.send<IO.read_Return>("IO.read", params);
@@ -4219,10 +4174,7 @@ export namespace IO {
 }
 /** DOM debugging allows setting breakpoints on particular DOM operations and events. JavaScript execution will stop on these operations as if there was a regular breakpoint set. */
 export class DOMDebugger {
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Sets breakpoint on particular operation with DOM. */
   setDOMBreakpoint(params: DOMDebugger.setDOMBreakpoint_Parameters): Promise<void> {
     return this._client.send<void>("DOMDebugger.setDOMBreakpoint", params);
@@ -4341,15 +4293,12 @@ export namespace DOMDebugger {
 }
 /** Supports additional targets discovery and allows to attach to them. */
 export class Target {
-  private _targetCreated: Target.targetCreated_Handler = undefined;
-  private _targetDestroyed: Target.targetDestroyed_Handler = undefined;
-  private _attachedToTarget: Target.attachedToTarget_Handler = undefined;
-  private _detachedFromTarget: Target.detachedFromTarget_Handler = undefined;
-  private _receivedMessageFromTarget: Target.receivedMessageFromTarget_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _targetCreated: Target.targetCreated_Handler | null = null;
+  private _targetDestroyed: Target.targetDestroyed_Handler | null = null;
+  private _attachedToTarget: Target.attachedToTarget_Handler | null = null;
+  private _detachedFromTarget: Target.detachedFromTarget_Handler | null = null;
+  private _receivedMessageFromTarget: Target.receivedMessageFromTarget_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Controls whether to discover available targets and notify via <code>targetCreated/targetDestroyed</code> events. */
   setDiscoverTargets(params: Target.setDiscoverTargets_Parameters): Promise<void> {
     return this._client.send<void>("Target.setDiscoverTargets", params);
@@ -4406,10 +4355,10 @@ export class Target {
     return this._client.send<Target.getTargets_Return>("Target.getTargets");
   }
   /** Issued when a possible inspection target is created. */
-  get targetCreated(): Target.targetCreated_Handler {
+  get targetCreated(): Target.targetCreated_Handler | null {
     return this._targetCreated;
   }
-  set targetCreated(handler: Target.targetCreated_Handler) {
+  set targetCreated(handler: Target.targetCreated_Handler | null) {
     if (this._targetCreated) {
       this._client.removeListener("Target.targetCreated", this._targetCreated);
     }
@@ -4419,10 +4368,10 @@ export class Target {
     }
   }
   /** Issued when a target is destroyed. */
-  get targetDestroyed(): Target.targetDestroyed_Handler {
+  get targetDestroyed(): Target.targetDestroyed_Handler | null {
     return this._targetDestroyed;
   }
-  set targetDestroyed(handler: Target.targetDestroyed_Handler) {
+  set targetDestroyed(handler: Target.targetDestroyed_Handler | null) {
     if (this._targetDestroyed) {
       this._client.removeListener("Target.targetDestroyed", this._targetDestroyed);
     }
@@ -4432,10 +4381,10 @@ export class Target {
     }
   }
   /** Issued when attached to target because of auto-attach or <code>attachToTarget</code> command. */
-  get attachedToTarget(): Target.attachedToTarget_Handler {
+  get attachedToTarget(): Target.attachedToTarget_Handler | null {
     return this._attachedToTarget;
   }
-  set attachedToTarget(handler: Target.attachedToTarget_Handler) {
+  set attachedToTarget(handler: Target.attachedToTarget_Handler | null) {
     if (this._attachedToTarget) {
       this._client.removeListener("Target.attachedToTarget", this._attachedToTarget);
     }
@@ -4445,10 +4394,10 @@ export class Target {
     }
   }
   /** Issued when detached from target for any reason (including <code>detachFromTarget</code> command). */
-  get detachedFromTarget(): Target.detachedFromTarget_Handler {
+  get detachedFromTarget(): Target.detachedFromTarget_Handler | null {
     return this._detachedFromTarget;
   }
-  set detachedFromTarget(handler: Target.detachedFromTarget_Handler) {
+  set detachedFromTarget(handler: Target.detachedFromTarget_Handler | null) {
     if (this._detachedFromTarget) {
       this._client.removeListener("Target.detachedFromTarget", this._detachedFromTarget);
     }
@@ -4458,10 +4407,10 @@ export class Target {
     }
   }
   /** Notifies about new protocol message from attached target. */
-  get receivedMessageFromTarget(): Target.receivedMessageFromTarget_Handler {
+  get receivedMessageFromTarget(): Target.receivedMessageFromTarget_Handler | null {
     return this._receivedMessageFromTarget;
   }
-  set receivedMessageFromTarget(handler: Target.receivedMessageFromTarget_Handler) {
+  set receivedMessageFromTarget(handler: Target.receivedMessageFromTarget_Handler | null) {
     if (this._receivedMessageFromTarget) {
       this._client.removeListener("Target.receivedMessageFromTarget", this._receivedMessageFromTarget);
     }
@@ -4583,13 +4532,10 @@ export namespace Target {
   };
 }
 export class ServiceWorker {
-  private _workerRegistrationUpdated: ServiceWorker.workerRegistrationUpdated_Handler = undefined;
-  private _workerVersionUpdated: ServiceWorker.workerVersionUpdated_Handler = undefined;
-  private _workerErrorReported: ServiceWorker.workerErrorReported_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _workerRegistrationUpdated: ServiceWorker.workerRegistrationUpdated_Handler | null = null;
+  private _workerVersionUpdated: ServiceWorker.workerVersionUpdated_Handler | null = null;
+  private _workerErrorReported: ServiceWorker.workerErrorReported_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   enable(): Promise<void> {
     return this._client.send<void>("ServiceWorker.enable");
   }
@@ -4623,10 +4569,10 @@ export class ServiceWorker {
   dispatchSyncEvent(params: ServiceWorker.dispatchSyncEvent_Parameters): Promise<void> {
     return this._client.send<void>("ServiceWorker.dispatchSyncEvent", params);
   }
-  get workerRegistrationUpdated(): ServiceWorker.workerRegistrationUpdated_Handler {
+  get workerRegistrationUpdated(): ServiceWorker.workerRegistrationUpdated_Handler | null {
     return this._workerRegistrationUpdated;
   }
-  set workerRegistrationUpdated(handler: ServiceWorker.workerRegistrationUpdated_Handler) {
+  set workerRegistrationUpdated(handler: ServiceWorker.workerRegistrationUpdated_Handler | null) {
     if (this._workerRegistrationUpdated) {
       this._client.removeListener("ServiceWorker.workerRegistrationUpdated", this._workerRegistrationUpdated);
     }
@@ -4635,10 +4581,10 @@ export class ServiceWorker {
       this._client.on("ServiceWorker.workerRegistrationUpdated", handler);
     }
   }
-  get workerVersionUpdated(): ServiceWorker.workerVersionUpdated_Handler {
+  get workerVersionUpdated(): ServiceWorker.workerVersionUpdated_Handler | null {
     return this._workerVersionUpdated;
   }
-  set workerVersionUpdated(handler: ServiceWorker.workerVersionUpdated_Handler) {
+  set workerVersionUpdated(handler: ServiceWorker.workerVersionUpdated_Handler | null) {
     if (this._workerVersionUpdated) {
       this._client.removeListener("ServiceWorker.workerVersionUpdated", this._workerVersionUpdated);
     }
@@ -4647,10 +4593,10 @@ export class ServiceWorker {
       this._client.on("ServiceWorker.workerVersionUpdated", handler);
     }
   }
-  get workerErrorReported(): ServiceWorker.workerErrorReported_Handler {
+  get workerErrorReported(): ServiceWorker.workerErrorReported_Handler | null {
     return this._workerErrorReported;
   }
-  set workerErrorReported(handler: ServiceWorker.workerErrorReported_Handler) {
+  set workerErrorReported(handler: ServiceWorker.workerErrorReported_Handler | null) {
     if (this._workerErrorReported) {
       this._client.removeListener("ServiceWorker.workerErrorReported", this._workerErrorReported);
     }
@@ -4738,10 +4684,7 @@ export namespace ServiceWorker {
   };
 }
 export class Input {
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Dispatches a key event to the page. */
   dispatchKeyEvent(params: Input.dispatchKeyEvent_Parameters): Promise<void> {
     return this._client.send<void>("Input.dispatchKeyEvent", params);
@@ -4917,12 +4860,9 @@ export namespace Input {
   };
 }
 export class LayerTree {
-  private _layerTreeDidChange: LayerTree.layerTreeDidChange_Handler = undefined;
-  private _layerPainted: LayerTree.layerPainted_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _layerTreeDidChange: LayerTree.layerTreeDidChange_Handler | null = null;
+  private _layerPainted: LayerTree.layerPainted_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Enables compositing tree inspection. */
   enable(): Promise<void> {
     return this._client.send<void>("LayerTree.enable");
@@ -4958,10 +4898,10 @@ export class LayerTree {
   snapshotCommandLog(params: LayerTree.snapshotCommandLog_Parameters): Promise<LayerTree.snapshotCommandLog_Return> {
     return this._client.send<LayerTree.snapshotCommandLog_Return>("LayerTree.snapshotCommandLog", params);
   }
-  get layerTreeDidChange(): LayerTree.layerTreeDidChange_Handler {
+  get layerTreeDidChange(): LayerTree.layerTreeDidChange_Handler | null {
     return this._layerTreeDidChange;
   }
-  set layerTreeDidChange(handler: LayerTree.layerTreeDidChange_Handler) {
+  set layerTreeDidChange(handler: LayerTree.layerTreeDidChange_Handler | null) {
     if (this._layerTreeDidChange) {
       this._client.removeListener("LayerTree.layerTreeDidChange", this._layerTreeDidChange);
     }
@@ -4970,10 +4910,10 @@ export class LayerTree {
       this._client.on("LayerTree.layerTreeDidChange", handler);
     }
   }
-  get layerPainted(): LayerTree.layerPainted_Handler {
+  get layerPainted(): LayerTree.layerPainted_Handler | null {
     return this._layerPainted;
   }
-  set layerPainted(handler: LayerTree.layerPainted_Handler) {
+  set layerPainted(handler: LayerTree.layerPainted_Handler | null) {
     if (this._layerPainted) {
       this._client.removeListener("LayerTree.layerPainted", this._layerPainted);
     }
@@ -5117,10 +5057,7 @@ export namespace LayerTree {
   };
 }
 export class DeviceOrientation {
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Overrides the Device Orientation. */
   setDeviceOrientationOverride(params: DeviceOrientation.setDeviceOrientationOverride_Parameters): Promise<void> {
     return this._client.send<void>("DeviceOrientation.setDeviceOrientationOverride", params);
@@ -5141,13 +5078,10 @@ export namespace DeviceOrientation {
   };
 }
 export class Tracing {
-  private _dataCollected: Tracing.dataCollected_Handler = undefined;
-  private _tracingComplete: Tracing.tracingComplete_Handler = undefined;
-  private _bufferUsage: Tracing.bufferUsage_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _dataCollected: Tracing.dataCollected_Handler | null = null;
+  private _tracingComplete: Tracing.tracingComplete_Handler | null = null;
+  private _bufferUsage: Tracing.bufferUsage_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Start trace events collection. */
   start(params: Tracing.start_Parameters): Promise<void> {
     return this._client.send<void>("Tracing.start", params);
@@ -5169,10 +5103,10 @@ export class Tracing {
     return this._client.send<void>("Tracing.recordClockSyncMarker", params);
   }
   /** Contains an bucket of collected trace events. When tracing is stopped collected events will be send as a sequence of dataCollected events followed by tracingComplete event. */
-  get dataCollected(): Tracing.dataCollected_Handler {
+  get dataCollected(): Tracing.dataCollected_Handler | null {
     return this._dataCollected;
   }
-  set dataCollected(handler: Tracing.dataCollected_Handler) {
+  set dataCollected(handler: Tracing.dataCollected_Handler | null) {
     if (this._dataCollected) {
       this._client.removeListener("Tracing.dataCollected", this._dataCollected);
     }
@@ -5182,10 +5116,10 @@ export class Tracing {
     }
   }
   /** Signals that tracing is stopped and there is no trace buffers pending flush, all data were delivered via dataCollected events. */
-  get tracingComplete(): Tracing.tracingComplete_Handler {
+  get tracingComplete(): Tracing.tracingComplete_Handler | null {
     return this._tracingComplete;
   }
-  set tracingComplete(handler: Tracing.tracingComplete_Handler) {
+  set tracingComplete(handler: Tracing.tracingComplete_Handler | null) {
     if (this._tracingComplete) {
       this._client.removeListener("Tracing.tracingComplete", this._tracingComplete);
     }
@@ -5194,10 +5128,10 @@ export class Tracing {
       this._client.on("Tracing.tracingComplete", handler);
     }
   }
-  get bufferUsage(): Tracing.bufferUsage_Handler {
+  get bufferUsage(): Tracing.bufferUsage_Handler | null {
     return this._bufferUsage;
   }
-  set bufferUsage(handler: Tracing.bufferUsage_Handler) {
+  set bufferUsage(handler: Tracing.bufferUsage_Handler | null) {
     if (this._bufferUsage) {
       this._client.removeListener("Tracing.bufferUsage", this._bufferUsage);
     }
@@ -5273,13 +5207,10 @@ export namespace Tracing {
   };
 }
 export class Animation {
-  private _animationCreated: Animation.animationCreated_Handler = undefined;
-  private _animationStarted: Animation.animationStarted_Handler = undefined;
-  private _animationCanceled: Animation.animationCanceled_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _animationCreated: Animation.animationCreated_Handler | null = null;
+  private _animationStarted: Animation.animationStarted_Handler | null = null;
+  private _animationCanceled: Animation.animationCanceled_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Enables animation domain notifications. */
   enable(): Promise<void> {
     return this._client.send<void>("Animation.enable");
@@ -5321,10 +5252,10 @@ export class Animation {
     return this._client.send<Animation.resolveAnimation_Return>("Animation.resolveAnimation", params);
   }
   /** Event for each animation that has been created. */
-  get animationCreated(): Animation.animationCreated_Handler {
+  get animationCreated(): Animation.animationCreated_Handler | null {
     return this._animationCreated;
   }
-  set animationCreated(handler: Animation.animationCreated_Handler) {
+  set animationCreated(handler: Animation.animationCreated_Handler | null) {
     if (this._animationCreated) {
       this._client.removeListener("Animation.animationCreated", this._animationCreated);
     }
@@ -5334,10 +5265,10 @@ export class Animation {
     }
   }
   /** Event for animation that has been started. */
-  get animationStarted(): Animation.animationStarted_Handler {
+  get animationStarted(): Animation.animationStarted_Handler | null {
     return this._animationStarted;
   }
-  set animationStarted(handler: Animation.animationStarted_Handler) {
+  set animationStarted(handler: Animation.animationStarted_Handler | null) {
     if (this._animationStarted) {
       this._client.removeListener("Animation.animationStarted", this._animationStarted);
     }
@@ -5347,10 +5278,10 @@ export class Animation {
     }
   }
   /** Event for when an animation has been cancelled. */
-  get animationCanceled(): Animation.animationCanceled_Handler {
+  get animationCanceled(): Animation.animationCanceled_Handler | null {
     return this._animationCanceled;
   }
-  set animationCanceled(handler: Animation.animationCanceled_Handler) {
+  set animationCanceled(handler: Animation.animationCanceled_Handler | null) {
     if (this._animationCanceled) {
       this._client.removeListener("Animation.animationCanceled", this._animationCanceled);
     }
@@ -5486,10 +5417,7 @@ export namespace Animation {
   };
 }
 export class Accessibility {
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Fetches the accessibility node and partial accessibility tree for this DOM node, if it exists. */
   getPartialAXTree(params: Accessibility.getPartialAXTree_Parameters): Promise<Accessibility.getPartialAXTree_Return> {
     return this._client.send<Accessibility.getPartialAXTree_Return>("Accessibility.getPartialAXTree", params);
@@ -5595,10 +5523,7 @@ export namespace Accessibility {
   };
 }
 export class Storage {
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Clears storage for origin. */
   clearDataForOrigin(params: Storage.clearDataForOrigin_Parameters): Promise<void> {
     return this._client.send<void>("Storage.clearDataForOrigin", params);
@@ -5616,11 +5541,8 @@ export namespace Storage {
 }
 /** Provides access to log entries. */
 export class Log {
-  private _entryAdded: Log.entryAdded_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _entryAdded: Log.entryAdded_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Enables log domain, sends the entries collected so far to the client by means of the <code>entryAdded</code> notification. */
   enable(): Promise<void> {
     return this._client.send<void>("Log.enable");
@@ -5642,10 +5564,10 @@ export class Log {
     return this._client.send<void>("Log.stopViolationsReport");
   }
   /** Issued when new message was logged. */
-  get entryAdded(): Log.entryAdded_Handler {
+  get entryAdded(): Log.entryAdded_Handler | null {
     return this._entryAdded;
   }
-  set entryAdded(handler: Log.entryAdded_Handler) {
+  set entryAdded(handler: Log.entryAdded_Handler | null) {
     if (this._entryAdded) {
       this._client.removeListener("Log.entryAdded", this._entryAdded);
     }
@@ -5696,10 +5618,7 @@ export namespace Log {
 }
 /** The SystemInfo domain defines methods and events for querying low-level system information. */
 export class SystemInfo {
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Returns information about the system. */
   getInfo(): Promise<SystemInfo.getInfo_Return> {
     return this._client.send<SystemInfo.getInfo_Return>("SystemInfo.getInfo");
@@ -5739,11 +5658,8 @@ export namespace SystemInfo {
 }
 /** The Tethering domain defines methods and events for browser port binding. */
 export class Tethering {
-  private _accepted: Tethering.accepted_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _accepted: Tethering.accepted_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Request browser port binding. */
   bind(params: Tethering.bind_Parameters): Promise<void> {
     return this._client.send<void>("Tethering.bind", params);
@@ -5753,10 +5669,10 @@ export class Tethering {
     return this._client.send<void>("Tethering.unbind", params);
   }
   /** Informs that port was successfully bound and got a specified connection id. */
-  get accepted(): Tethering.accepted_Handler {
+  get accepted(): Tethering.accepted_Handler | null {
     return this._accepted;
   }
-  set accepted(handler: Tethering.accepted_Handler) {
+  set accepted(handler: Tethering.accepted_Handler | null) {
     if (this._accepted) {
       this._client.removeListener("Tethering.accepted", this._accepted);
     }
@@ -5785,10 +5701,7 @@ export namespace Tethering {
 }
 /** Provides information about the protocol schema. */
 export class Schema {
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Returns supported domains. */
   getDomains(): Promise<Schema.getDomains_Return> {
     return this._client.send<Schema.getDomains_Return>("Schema.getDomains");
@@ -5809,17 +5722,14 @@ export namespace Schema {
 }
 /** Runtime domain exposes JavaScript runtime by means of remote evaluation and mirror objects. Evaluation results are returned as mirror object that expose object type, string representation and unique identifier that can be used for further object reference. Original objects are maintained in memory unless they are either explicitly released or are released along with the other objects in their object group. */
 export class Runtime {
-  private _executionContextCreated: Runtime.executionContextCreated_Handler = undefined;
-  private _executionContextDestroyed: Runtime.executionContextDestroyed_Handler = undefined;
-  private _executionContextsCleared: Runtime.executionContextsCleared_Handler = undefined;
-  private _exceptionThrown: Runtime.exceptionThrown_Handler = undefined;
-  private _exceptionRevoked: Runtime.exceptionRevoked_Handler = undefined;
-  private _consoleAPICalled: Runtime.consoleAPICalled_Handler = undefined;
-  private _inspectRequested: Runtime.inspectRequested_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _executionContextCreated: Runtime.executionContextCreated_Handler | null = null;
+  private _executionContextDestroyed: Runtime.executionContextDestroyed_Handler | null = null;
+  private _executionContextsCleared: Runtime.executionContextsCleared_Handler | null = null;
+  private _exceptionThrown: Runtime.exceptionThrown_Handler | null = null;
+  private _exceptionRevoked: Runtime.exceptionRevoked_Handler | null = null;
+  private _consoleAPICalled: Runtime.consoleAPICalled_Handler | null = null;
+  private _inspectRequested: Runtime.inspectRequested_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Evaluates expression on global object. */
   evaluate(params: Runtime.evaluate_Parameters): Promise<Runtime.evaluate_Return> {
     return this._client.send<Runtime.evaluate_Return>("Runtime.evaluate", params);
@@ -5872,10 +5782,10 @@ export class Runtime {
     return this._client.send<Runtime.runScript_Return>("Runtime.runScript", params);
   }
   /** Issued when new execution context is created. */
-  get executionContextCreated(): Runtime.executionContextCreated_Handler {
+  get executionContextCreated(): Runtime.executionContextCreated_Handler | null {
     return this._executionContextCreated;
   }
-  set executionContextCreated(handler: Runtime.executionContextCreated_Handler) {
+  set executionContextCreated(handler: Runtime.executionContextCreated_Handler | null) {
     if (this._executionContextCreated) {
       this._client.removeListener("Runtime.executionContextCreated", this._executionContextCreated);
     }
@@ -5885,10 +5795,10 @@ export class Runtime {
     }
   }
   /** Issued when execution context is destroyed. */
-  get executionContextDestroyed(): Runtime.executionContextDestroyed_Handler {
+  get executionContextDestroyed(): Runtime.executionContextDestroyed_Handler | null {
     return this._executionContextDestroyed;
   }
-  set executionContextDestroyed(handler: Runtime.executionContextDestroyed_Handler) {
+  set executionContextDestroyed(handler: Runtime.executionContextDestroyed_Handler | null) {
     if (this._executionContextDestroyed) {
       this._client.removeListener("Runtime.executionContextDestroyed", this._executionContextDestroyed);
     }
@@ -5898,10 +5808,10 @@ export class Runtime {
     }
   }
   /** Issued when all executionContexts were cleared in browser */
-  get executionContextsCleared(): Runtime.executionContextsCleared_Handler {
+  get executionContextsCleared(): Runtime.executionContextsCleared_Handler | null {
     return this._executionContextsCleared;
   }
-  set executionContextsCleared(handler: Runtime.executionContextsCleared_Handler) {
+  set executionContextsCleared(handler: Runtime.executionContextsCleared_Handler | null) {
     if (this._executionContextsCleared) {
       this._client.removeListener("Runtime.executionContextsCleared", this._executionContextsCleared);
     }
@@ -5911,10 +5821,10 @@ export class Runtime {
     }
   }
   /** Issued when exception was thrown and unhandled. */
-  get exceptionThrown(): Runtime.exceptionThrown_Handler {
+  get exceptionThrown(): Runtime.exceptionThrown_Handler | null {
     return this._exceptionThrown;
   }
-  set exceptionThrown(handler: Runtime.exceptionThrown_Handler) {
+  set exceptionThrown(handler: Runtime.exceptionThrown_Handler | null) {
     if (this._exceptionThrown) {
       this._client.removeListener("Runtime.exceptionThrown", this._exceptionThrown);
     }
@@ -5924,10 +5834,10 @@ export class Runtime {
     }
   }
   /** Issued when unhandled exception was revoked. */
-  get exceptionRevoked(): Runtime.exceptionRevoked_Handler {
+  get exceptionRevoked(): Runtime.exceptionRevoked_Handler | null {
     return this._exceptionRevoked;
   }
-  set exceptionRevoked(handler: Runtime.exceptionRevoked_Handler) {
+  set exceptionRevoked(handler: Runtime.exceptionRevoked_Handler | null) {
     if (this._exceptionRevoked) {
       this._client.removeListener("Runtime.exceptionRevoked", this._exceptionRevoked);
     }
@@ -5937,10 +5847,10 @@ export class Runtime {
     }
   }
   /** Issued when console API was called. */
-  get consoleAPICalled(): Runtime.consoleAPICalled_Handler {
+  get consoleAPICalled(): Runtime.consoleAPICalled_Handler | null {
     return this._consoleAPICalled;
   }
-  set consoleAPICalled(handler: Runtime.consoleAPICalled_Handler) {
+  set consoleAPICalled(handler: Runtime.consoleAPICalled_Handler | null) {
     if (this._consoleAPICalled) {
       this._client.removeListener("Runtime.consoleAPICalled", this._consoleAPICalled);
     }
@@ -5950,10 +5860,10 @@ export class Runtime {
     }
   }
   /** Issued when object should be inspected (for example, as a result of inspect() command line API call). */
-  get inspectRequested(): Runtime.inspectRequested_Handler {
+  get inspectRequested(): Runtime.inspectRequested_Handler | null {
     return this._inspectRequested;
   }
-  set inspectRequested(handler: Runtime.inspectRequested_Handler) {
+  set inspectRequested(handler: Runtime.inspectRequested_Handler | null) {
     if (this._inspectRequested) {
       this._client.removeListener("Runtime.inspectRequested", this._inspectRequested);
     }
@@ -6307,15 +6217,12 @@ export namespace Runtime {
 }
 /** Debugger domain exposes JavaScript debugging capabilities. It allows setting and removing breakpoints, stepping through execution, exploring stack traces, etc. */
 export class Debugger {
-  private _scriptParsed: Debugger.scriptParsed_Handler = undefined;
-  private _scriptFailedToParse: Debugger.scriptFailedToParse_Handler = undefined;
-  private _breakpointResolved: Debugger.breakpointResolved_Handler = undefined;
-  private _paused: Debugger.paused_Handler = undefined;
-  private _resumed: Debugger.resumed_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _scriptParsed: Debugger.scriptParsed_Handler | null = null;
+  private _scriptFailedToParse: Debugger.scriptFailedToParse_Handler | null = null;
+  private _breakpointResolved: Debugger.breakpointResolved_Handler | null = null;
+  private _paused: Debugger.paused_Handler | null = null;
+  private _resumed: Debugger.resumed_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Enables debugger for the given page. Clients should not assume that the debugging has been enabled until the result for this command is received. */
   enable(): Promise<void> {
     return this._client.send<void>("Debugger.enable");
@@ -6417,10 +6324,10 @@ export class Debugger {
     return this._client.send<void>("Debugger.setBlackboxedRanges", params);
   }
   /** Fired when virtual machine parses script. This event is also fired for all known and uncollected scripts upon enabling debugger. */
-  get scriptParsed(): Debugger.scriptParsed_Handler {
+  get scriptParsed(): Debugger.scriptParsed_Handler | null {
     return this._scriptParsed;
   }
-  set scriptParsed(handler: Debugger.scriptParsed_Handler) {
+  set scriptParsed(handler: Debugger.scriptParsed_Handler | null) {
     if (this._scriptParsed) {
       this._client.removeListener("Debugger.scriptParsed", this._scriptParsed);
     }
@@ -6430,10 +6337,10 @@ export class Debugger {
     }
   }
   /** Fired when virtual machine fails to parse the script. */
-  get scriptFailedToParse(): Debugger.scriptFailedToParse_Handler {
+  get scriptFailedToParse(): Debugger.scriptFailedToParse_Handler | null {
     return this._scriptFailedToParse;
   }
-  set scriptFailedToParse(handler: Debugger.scriptFailedToParse_Handler) {
+  set scriptFailedToParse(handler: Debugger.scriptFailedToParse_Handler | null) {
     if (this._scriptFailedToParse) {
       this._client.removeListener("Debugger.scriptFailedToParse", this._scriptFailedToParse);
     }
@@ -6443,10 +6350,10 @@ export class Debugger {
     }
   }
   /** Fired when breakpoint is resolved to an actual script and location. */
-  get breakpointResolved(): Debugger.breakpointResolved_Handler {
+  get breakpointResolved(): Debugger.breakpointResolved_Handler | null {
     return this._breakpointResolved;
   }
-  set breakpointResolved(handler: Debugger.breakpointResolved_Handler) {
+  set breakpointResolved(handler: Debugger.breakpointResolved_Handler | null) {
     if (this._breakpointResolved) {
       this._client.removeListener("Debugger.breakpointResolved", this._breakpointResolved);
     }
@@ -6456,10 +6363,10 @@ export class Debugger {
     }
   }
   /** Fired when the virtual machine stopped on breakpoint or exception or any other stop criteria. */
-  get paused(): Debugger.paused_Handler {
+  get paused(): Debugger.paused_Handler | null {
     return this._paused;
   }
-  set paused(handler: Debugger.paused_Handler) {
+  set paused(handler: Debugger.paused_Handler | null) {
     if (this._paused) {
       this._client.removeListener("Debugger.paused", this._paused);
     }
@@ -6469,10 +6376,10 @@ export class Debugger {
     }
   }
   /** Fired when the virtual machine resumed execution. */
-  get resumed(): Debugger.resumed_Handler {
+  get resumed(): Debugger.resumed_Handler | null {
     return this._resumed;
   }
-  set resumed(handler: Debugger.resumed_Handler) {
+  set resumed(handler: Debugger.resumed_Handler | null) {
     if (this._resumed) {
       this._client.removeListener("Debugger.resumed", this._resumed);
     }
@@ -6792,11 +6699,8 @@ export namespace Debugger {
 }
 /** This domain is deprecated - use Runtime or Log instead. */
 export class Console {
-  private _messageAdded: Console.messageAdded_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _messageAdded: Console.messageAdded_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   /** Enables console domain, sends the messages collected so far to the client by means of the <code>messageAdded</code> notification. */
   enable(): Promise<void> {
     return this._client.send<void>("Console.enable");
@@ -6810,10 +6714,10 @@ export class Console {
     return this._client.send<void>("Console.clearMessages");
   }
   /** Issued when new console message is added. */
-  get messageAdded(): Console.messageAdded_Handler {
+  get messageAdded(): Console.messageAdded_Handler | null {
     return this._messageAdded;
   }
-  set messageAdded(handler: Console.messageAdded_Handler) {
+  set messageAdded(handler: Console.messageAdded_Handler | null) {
     if (this._messageAdded) {
       this._client.removeListener("Console.messageAdded", this._messageAdded);
     }
@@ -6846,12 +6750,9 @@ export namespace Console {
   export type messageAdded_Handler = (params: messageAdded_Parameters) => void;
 }
 export class Profiler {
-  private _consoleProfileStarted: Profiler.consoleProfileStarted_Handler = undefined;
-  private _consoleProfileFinished: Profiler.consoleProfileFinished_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _consoleProfileStarted: Profiler.consoleProfileStarted_Handler | null = null;
+  private _consoleProfileFinished: Profiler.consoleProfileFinished_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   enable(): Promise<void> {
     return this._client.send<void>("Profiler.enable");
   }
@@ -6885,10 +6786,10 @@ export class Profiler {
     return this._client.send<Profiler.getBestEffortCoverage_Return>("Profiler.getBestEffortCoverage");
   }
   /** Sent when new profile recodring is started using console.profile() call. */
-  get consoleProfileStarted(): Profiler.consoleProfileStarted_Handler {
+  get consoleProfileStarted(): Profiler.consoleProfileStarted_Handler | null {
     return this._consoleProfileStarted;
   }
-  set consoleProfileStarted(handler: Profiler.consoleProfileStarted_Handler) {
+  set consoleProfileStarted(handler: Profiler.consoleProfileStarted_Handler | null) {
     if (this._consoleProfileStarted) {
       this._client.removeListener("Profiler.consoleProfileStarted", this._consoleProfileStarted);
     }
@@ -6897,10 +6798,10 @@ export class Profiler {
       this._client.on("Profiler.consoleProfileStarted", handler);
     }
   }
-  get consoleProfileFinished(): Profiler.consoleProfileFinished_Handler {
+  get consoleProfileFinished(): Profiler.consoleProfileFinished_Handler | null {
     return this._consoleProfileFinished;
   }
-  set consoleProfileFinished(handler: Profiler.consoleProfileFinished_Handler) {
+  set consoleProfileFinished(handler: Profiler.consoleProfileFinished_Handler | null) {
     if (this._consoleProfileFinished) {
       this._client.removeListener("Profiler.consoleProfileFinished", this._consoleProfileFinished);
     }
@@ -7010,15 +6911,12 @@ export namespace Profiler {
   };
 }
 export class HeapProfiler {
-  private _addHeapSnapshotChunk: HeapProfiler.addHeapSnapshotChunk_Handler = undefined;
-  private _resetProfiles: HeapProfiler.resetProfiles_Handler = undefined;
-  private _reportHeapSnapshotProgress: HeapProfiler.reportHeapSnapshotProgress_Handler = undefined;
-  private _lastSeenObjectId: HeapProfiler.lastSeenObjectId_Handler = undefined;
-  private _heapStatsUpdate: HeapProfiler.heapStatsUpdate_Handler = undefined;
-  private _client: IDebuggingProtocolClient = undefined;
-  constructor(client: IDebuggingProtocolClient) {
-    this._client = client;
-  }
+  private _addHeapSnapshotChunk: HeapProfiler.addHeapSnapshotChunk_Handler | null = null;
+  private _resetProfiles: HeapProfiler.resetProfiles_Handler | null = null;
+  private _reportHeapSnapshotProgress: HeapProfiler.reportHeapSnapshotProgress_Handler | null = null;
+  private _lastSeenObjectId: HeapProfiler.lastSeenObjectId_Handler | null = null;
+  private _heapStatsUpdate: HeapProfiler.heapStatsUpdate_Handler | null = null;
+  constructor(private _client: IDebuggingProtocolClient) { }
   enable(): Promise<void> {
     return this._client.send<void>("HeapProfiler.enable");
   }
@@ -7053,10 +6951,10 @@ export class HeapProfiler {
   stopSampling(): Promise<HeapProfiler.stopSampling_Return> {
     return this._client.send<HeapProfiler.stopSampling_Return>("HeapProfiler.stopSampling");
   }
-  get addHeapSnapshotChunk(): HeapProfiler.addHeapSnapshotChunk_Handler {
+  get addHeapSnapshotChunk(): HeapProfiler.addHeapSnapshotChunk_Handler | null {
     return this._addHeapSnapshotChunk;
   }
-  set addHeapSnapshotChunk(handler: HeapProfiler.addHeapSnapshotChunk_Handler) {
+  set addHeapSnapshotChunk(handler: HeapProfiler.addHeapSnapshotChunk_Handler | null) {
     if (this._addHeapSnapshotChunk) {
       this._client.removeListener("HeapProfiler.addHeapSnapshotChunk", this._addHeapSnapshotChunk);
     }
@@ -7065,10 +6963,10 @@ export class HeapProfiler {
       this._client.on("HeapProfiler.addHeapSnapshotChunk", handler);
     }
   }
-  get resetProfiles(): HeapProfiler.resetProfiles_Handler {
+  get resetProfiles(): HeapProfiler.resetProfiles_Handler | null {
     return this._resetProfiles;
   }
-  set resetProfiles(handler: HeapProfiler.resetProfiles_Handler) {
+  set resetProfiles(handler: HeapProfiler.resetProfiles_Handler | null) {
     if (this._resetProfiles) {
       this._client.removeListener("HeapProfiler.resetProfiles", this._resetProfiles);
     }
@@ -7077,10 +6975,10 @@ export class HeapProfiler {
       this._client.on("HeapProfiler.resetProfiles", handler);
     }
   }
-  get reportHeapSnapshotProgress(): HeapProfiler.reportHeapSnapshotProgress_Handler {
+  get reportHeapSnapshotProgress(): HeapProfiler.reportHeapSnapshotProgress_Handler | null {
     return this._reportHeapSnapshotProgress;
   }
-  set reportHeapSnapshotProgress(handler: HeapProfiler.reportHeapSnapshotProgress_Handler) {
+  set reportHeapSnapshotProgress(handler: HeapProfiler.reportHeapSnapshotProgress_Handler | null) {
     if (this._reportHeapSnapshotProgress) {
       this._client.removeListener("HeapProfiler.reportHeapSnapshotProgress", this._reportHeapSnapshotProgress);
     }
@@ -7090,10 +6988,10 @@ export class HeapProfiler {
     }
   }
   /** If heap objects tracking has been started then backend regulary sends a current value for last seen object id and corresponding timestamp. If the were changes in the heap since last event then one or more heapStatsUpdate events will be sent before a new lastSeenObjectId event. */
-  get lastSeenObjectId(): HeapProfiler.lastSeenObjectId_Handler {
+  get lastSeenObjectId(): HeapProfiler.lastSeenObjectId_Handler | null {
     return this._lastSeenObjectId;
   }
-  set lastSeenObjectId(handler: HeapProfiler.lastSeenObjectId_Handler) {
+  set lastSeenObjectId(handler: HeapProfiler.lastSeenObjectId_Handler | null) {
     if (this._lastSeenObjectId) {
       this._client.removeListener("HeapProfiler.lastSeenObjectId", this._lastSeenObjectId);
     }
@@ -7103,10 +7001,10 @@ export class HeapProfiler {
     }
   }
   /** If heap objects tracking has been started then backend may send update for one or more fragments */
-  get heapStatsUpdate(): HeapProfiler.heapStatsUpdate_Handler {
+  get heapStatsUpdate(): HeapProfiler.heapStatsUpdate_Handler | null {
     return this._heapStatsUpdate;
   }
-  set heapStatsUpdate(handler: HeapProfiler.heapStatsUpdate_Handler) {
+  set heapStatsUpdate(handler: HeapProfiler.heapStatsUpdate_Handler | null) {
     if (this._heapStatsUpdate) {
       this._client.removeListener("HeapProfiler.heapStatsUpdate", this._heapStatsUpdate);
     }

@@ -18,18 +18,18 @@ export default class Trace {
   public mainProcess: Process;
   public bounds: Bounds = new Bounds();
   public events: ITraceEvent[] = [];
-  public browserProcess: Process = null;
-  public gpuProcess: Process = null;
+  public browserProcess: Process | null = null;
+  public gpuProcess: Process | null = null;
   public rendererProcesses: Process[] = [];
   public numberOfProcessors: number;
 
-  private processMap: { [pid: number]: Process; } = {};
-  private openBegins: ITraceEvent[] = [];
+  private parents = new Map<ITraceEvent, ITraceEvent>();
+  private stack: ITraceEvent[] = [];
 
   public process(pid: number): Process {
-    let process = this.processMap[pid];
+    let process = this.findProcess(pid);
     if (process === undefined) {
-      this.processMap[pid] = process = new Process(pid);
+      process = new Process(pid);
       this.processes.push(process);
     }
     return process;
@@ -48,9 +48,34 @@ export default class Trace {
   public buildModel() {
     const { events } = this;
     for (const event of events) {
+      this.associateParent(event);
       const process = this.process(event.pid);
       process.addEvent(event);
     }
+  }
+
+  public getParent(event: ITraceEvent) {
+    this.parents.get(event);
+  }
+
+  private associateParent(event: ITraceEvent) {
+    if (event.ph !== TRACE_EVENT_PHASE_COMPLETE) {
+      return;
+    }
+    const { stack, parents } = this;
+    const { ts, pid, tid } = event;
+    for (let i = stack.length - 1; i >= 0; i--) {
+      const parent = stack[i];
+      if (ts < parent.ts + parent.dur!) {
+        if (parent.pid === pid && parent.tid === tid) {
+          parents.set(event, parent);
+          break;
+        }
+      } else {
+        stack.splice(i, 1);
+      }
+    }
+    stack.push(event);
   }
 
   private addEvent(event: ITraceEvent) {
@@ -73,20 +98,28 @@ export default class Trace {
       return;
     }
     if (event.ph === TRACE_EVENT_PHASE_BEGIN) {
-      this.openBegins.push(event);
+      this.stack.push(event);
     }
     this.bounds.addEvent(event);
   }
 
+  private findProcess(pid: number): Process | undefined {
+    for (const process of this.processes) {
+      if (process.id === pid) {
+        return process;
+      }
+    }
+  }
+
   private endEvent(end: ITraceEvent) {
-    const { openBegins } = this;
-    for (let i = openBegins.length - 1; i >= 0; i--) {
-      const begin = openBegins[i];
+    const { stack } = this;
+    for (let i = stack.length - 1; i >= 0; i--) {
+      const begin = stack[i];
       if (begin.name === end.name &&
           begin.cat === end.cat &&
           begin.tid === end.tid &&
           begin.pid === end.pid) {
-        openBegins.splice(i, 1);
+        stack.splice(i, 1);
         this.completeEvent(begin, end);
       }
     }
@@ -107,7 +140,7 @@ export default class Trace {
       name: begin.name,
       ph: TRACE_EVENT_PHASE_COMPLETE,
       pid: begin.pid,
-      tdur: end.tts - begin.tts,
+      tdur: end.tts! - begin.tts!,
       tid: begin.tid,
       ts: begin.ts,
       tts: begin.tts,

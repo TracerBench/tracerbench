@@ -54,7 +54,7 @@ export class Runner<R> {
 
   private async inSequence<T>(callback: (benchmark: IBenchmark<any, R>, i: number) => Promise<T>): Promise<T[]> {
     const benchmarks = this.benchmarks;
-    const results = [];
+    const results: T[] = [];
 
     for (let i = 0; i < benchmarks.length; i++) {
       results.push(await callback(benchmarks[i], i));

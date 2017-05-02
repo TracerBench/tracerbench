@@ -4,8 +4,8 @@ import { ITraceEvent } from "./trace_event";
 
 export default class Process {
   public threads: Thread[] = [];
-  public mainThread: Thread = null;
-  public scriptStreamerThread: Thread = null;
+  public mainThread: Thread | null = null;
+  public scriptStreamerThread: Thread | null = null;
   public bounds: Bounds = new Bounds();
   public events: ITraceEvent[] = [];
   public name: string;

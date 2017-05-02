@@ -4,6 +4,7 @@
 		"module": "commonjs",
 		"target": "es2015",
 		"outDir": "dist",
+		"strictNullChecks": true,
 		"sourceMap": true,
     "moduleResolution": "node"
 	},

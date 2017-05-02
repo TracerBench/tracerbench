@@ -10,6 +10,15 @@ import {
   TRACE_EVENT_PHASE_MARK,
 } from "../trace/trace_event";
 import traceEventComparator from "../trace/trace_event_comparator";
+import { runtimeCallStatGroup } from "../util";
+
+// going to count blink_gc time as js time since it is wrappers
+// that support js like dom nodes.
+const IS_V8_CAT = /(?:^|,)(?:disabled-by-default-)?v8(?:[,.]|$)/;
+const IS_BLINK_GC_CAT = /(?:^|,)(?:disabled-by-default-)?blink_gc(?:[,.]|$)/;
+
+// disable sort keys because I want samples to have a different order.
+/* tslint:disable:object-literal-sort-keys */
 
 export interface IMarker {
   /**
@@ -23,72 +32,82 @@ export interface IMarker {
   label: string;
 }
 
+/*
+Incremental Marking
+event.name == "MajorGC";
+event.args.type == "incremental marking";
+
+Mark Sweep Compact
+event.name == "MajorGC";
+event.args.type == "atomic pause";
+
+Weak Callbacks
+event.name == "MajorGC";
+event.args.type == "weak processing";
+
+Scavenge
+event.name == "MinorGC";
+event.args.type == undefined;
+*/
+
+export type GCKind = "MinorGC" | "MajorGC";
+
+export type GCType = "scavenge" | "incremental marking" | "atomic pause" | "weak processing";
+
 export interface IGCSample {
+  kind: GCKind;
+  type: GCType;
+  start: number;
   duration: number;
   usedHeapSizeBefore: number;
   usedHeapSizeAfter: number;
 }
 
-export interface IRuntimeCallStats {
-  [key: string]: {
-    count: number[];
-    time: number[];
-  };
+export interface IBlinkGCSample {
+  start: number;
+  duration: number;
+}
+
+export interface IRuntimeCallStat {
+  name: string;
+  group: string;
+  count: number;
+  time: number;
 }
 
 export interface IInterationSample {
   /**
-   * Time from start mark until the Paint event after the last mark.
+   * Microseconds from start mark until the start of the first Paint event after the last mark.
    */
   duration: number;
 
   /**
-   * Samples for phases duration the iteration.
-   */
-  phaseSamples: IPhaseSample[];
-
-  /**
-   * Total duration of callFunction, run, parseOnBackground,
-   * and compile trace events.
+   * Non overlapping microseconds spent in a V8 event or blink_gc during
+   * the duration period.
    */
   js: number;
 
   /**
-   * Total for v8.compile trace events.
+   * Samples for phases duration the iteration.
    */
-  compile: number;
+  phases: IPhaseSample[];
 
   /**
-   * Total for v8.callFunction trace events.
+   * Samples of V8 GC during trace.
    */
-  callFunction: number;
+  gc: IGCSample[];
 
   /**
-   * Total for v8.run trace events.
+   * Samples of Blink GC during trace.
    */
-  run: number;
-
-  /**
-   * Total for v8.parseOnBackground trace events.
-   */
-  parseOnBackground: number;
-
-  /**
-   * Time spent in GC (overlaps JS time).
-   */
-  gc: number;
-
-  /**
-   * Samples of MinorGC/MajorGC during trace.
-   */
-  gcSamples: IGCSample[];
+  blinkGC: IBlinkGCSample[];
 
   /**
    * Runtime call stats.
    *
    * Present if param.runtimeStats enabled.
    */
-  runtimeCallStats?: IRuntimeCallStats;
+  runtimeCallStats?: IRuntimeCallStat[];
 
   /**
    * GC Object stats.
@@ -123,207 +142,271 @@ export interface IPhaseSample {
   phase: string;
 
   /**
-   * The self time of the phase.
+   * The start of the phase.
    */
-  self: number;
+  start: number;
 
   /**
-   * The time of this phase and prior phases.
+   * The duration in microseconds of the phase.
    */
-  cumulative: number;
+  duration: number;
 }
 
-export type IncrementalMarkingName = "MajorGC";
-export type IncrementalMarkingType = "incremental marking";
-
-export type MarkSweepCompactName = "MajorGC";
-export type MarkSweepCompactType = "atomic pause";
-
-export type WeakCallbacksName = "MajorGC";
-export type WeakCallbacksType = "weak processing";
-
-export type GCType = "Scavenge" | "MarkSweepCompact" | "IncrementalMarking" | "WeakCallbacks";
-
 export default class InitialRenderMetric {
-  private sample: IInterationSample = {
-    callFunction: 0,
-    compile: 0,
-    duration: 0,
-    gc: 0,
-    gcSamples: [],
-    js: 0,
-    parseOnBackground: 0,
-    phaseSamples: [],
-    run: 0,
-  };
+  protected phaseEvents: ITraceEvent[] = [];
+  protected firstEvent: ITraceEvent | undefined = undefined;
+  protected paintEvent: ITraceEvent | undefined = undefined;
+  protected jsStart: number = 0;
+  protected start: number = 0;
+  protected end: number = 0;
 
-  private markerEvents: ITraceEvent[];
-  private paint: ITraceEvent;
-  private min: number = 0;
-  private max: number = 0;
+  protected duration: number = 0;
+  protected js: number = 0;
+  protected phases: IPhaseSample[] = [];
+  protected gc: IGCSample[] = [];
+  protected blinkGC: IBlinkGCSample[] = [];
+  protected gcStats: IGCStat[] | undefined = undefined;
+  protected runtimeCallStats: IRuntimeCallStat[] | undefined = undefined;
 
-  constructor(private markers: IMarker[], private includeGCStats: boolean) {
+  constructor(private markers: IMarker[], private params: {
+    gcStats?: boolean;
+    runtimeStats?: boolean;
+  }) {
+    if (params.gcStats) {
+      this.gcStats = [];
+    }
+    if (params.runtimeStats) {
+      this.runtimeCallStats = [];
+    }
   }
 
   public measure(trace: Trace): IInterationSample {
-    this.findMarkerEvents(trace.mainProcess.mainThread.events);
-    this.addPhaseSamples();
-    this.addV8Samples(trace.mainProcess.events);
-    if (this.includeGCStats) {
-      this.addGCStats(trace.mainProcess.events);
+    const { mainProcess } = trace;
+    if (!mainProcess) {
+      throw new Error("unable to determine main process for trace");
     }
-    return this.sample;
+    const { mainThread } = mainProcess;
+    if (!mainThread) {
+      throw new Error("unable to determine main thread for process");
+    }
+    this.findMarkerEvents(mainThread.events);
+    this.addPhaseSamples();
+    this.addV8Samples(mainProcess.events);
+    this.addGCStats(mainProcess.events);
+    return {
+      duration: this.duration,
+      js: this.js,
+      phases: this.phases,
+      gc: this.gc,
+      blinkGC: this.blinkGC,
+      runtimeCallStats: this.runtimeCallStats,
+      gcStats: this.gcStats,
+    };
   }
 
   public findMarkerEvents(events: ITraceEvent[]) {
     const markers = this.markers;
-    const markerEvents = [];
+    const phaseEvents: ITraceEvent[] = [];
     let eventIdx = 0;
     for (const marker of markers) {
+      let markEvent: ITraceEvent | undefined;
       for (; eventIdx < events.length; eventIdx++) {
         const event = events[eventIdx];
-        if (event.ph === TRACE_EVENT_PHASE_MARK &&
-            event.name === marker.start) {
-          markerEvents.push(event);
+        if (event.ph === TRACE_EVENT_PHASE_MARK && event.name === marker.start) {
+          markEvent = event;
           break;
         }
       }
+      if (markEvent === undefined) {
+        throw new Error(`Could not find mark "${marker.start}" in trace`);
+      } else {
+        phaseEvents.push(markEvent);
+      }
     }
-    let paint: ITraceEvent;
+    const firstEvent = phaseEvents[0];
+    let paintEvent: ITraceEvent | undefined;
     for (; eventIdx < events.length; eventIdx++) {
       const event = events[eventIdx];
-      if (event.ph === TRACE_EVENT_PHASE_COMPLETE &&
-          event.name === "Paint") {
-        markerEvents.push(event);
-        paint = event;
+      if (event.ph === TRACE_EVENT_PHASE_COMPLETE && event.name === "Paint") {
+        paintEvent = event;
         break;
       }
     }
-    this.markerEvents = markerEvents;
-    this.paint = paint;
-    this.min = markerEvents[0].ts;
-    this.max = paint.ts;
+    if (!paintEvent) {
+      throw new Error(`Could not find Paint after last mark`);
+    }
+    phaseEvents.push(paintEvent);
+    this.firstEvent = phaseEvents[0];
+    this.phaseEvents = phaseEvents;
+    this.paintEvent = paintEvent;
+    this.start = firstEvent.ts;
+    this.end = paintEvent.ts;
+    this.duration = paintEvent.ts - firstEvent.ts;
   }
 
   public addPhaseSamples() {
-    const { markers, markerEvents, paint } = this;
-    let cumulative = 0;
-    for (let i = 0; i < markerEvents.length - 1; i++) {
+    const { markers, phaseEvents, paintEvent, start } = this;
+    for (let i = 0; i < phaseEvents.length - 1; i++) {
       const marker = markers[i];
-      const begin = markerEvents[i];
-      const end = markerEvents[i + 1];
-      const self = end.ts - begin.ts;
-      cumulative += self;
-      this.sample.phaseSamples.push({
-        cumulative,
+      const beginEvent = phaseEvents[i];
+      const endEvent = phaseEvents[i + 1];
+      this.phases.push({
         phase: marker.label,
-        self,
+        start: beginEvent.ts - start,
+        duration: endEvent.ts - beginEvent.ts,
       });
     }
-    this.sample.duration = cumulative;
   }
 
   protected addV8Samples(events: ITraceEvent[]) {
-    const startIndex = binsearch(events, this.markerEvents[0], traceEventComparator);
-    const endIndex = binsearch(events, this.paint, traceEventComparator);
-    for (let i = startIndex; i < endIndex; i++) {
-      const event = events[i];
+    const { start, end } = this;
+    // let toplevel: ITraceEvent | undefined;
+    for (const event of events) {
       const { args } = event;
-      const runtimeCallStats = args && args["runtime-call-stats"];
-      if (runtimeCallStats) {
-        this.addRuntimeCallStats(runtimeCallStats);
+      const ts = event.ts;
+      if (ts < start) {
+        continue;
+      }
+      if (ts >= end) {
+        break;
       }
 
-      if (event.ph === TRACE_EVENT_PHASE_COMPLETE) {
+      if (isV8(event)) {
         this.addV8Sample(event);
+      } else if (isBlinkGC(event)) {
+        this.addBlinkGC(event);
       }
     }
   }
 
-  protected addV8Sample(event: ITraceEvent) {
-    switch (event.name) {
-      // js entry points from browser
-      // it is parsing and running a script
-      // or it is calling a function on an event
-      case "v8.compile":
-        this.measureCompile(event);
-        break;
-      case "v8.parseOnBackground":
-        this.measureParseOnBackground(event);
-        break;
-      case "v8.run":
-        this.measureRun(event);
-        break;
-      case "v8.callFunction":
-        this.measureCallFunction(event);
-        break;
-      case "MajorGC":
-      case "MinorGC":
-        this.measureGC(event);
-        break;
+  protected addV8Sample(event: IV8Event) {
+    this.addRuntimeCallStats(event);
+    this.addGCSample(event);
+    this.addJSTime(event);
+  }
+
+  protected addJSTime(event: IBlinkGCEvent | IV8Event) {
+    if (!isCompleteEvent(event)) {
+      return;
+    }
+
+    const { ts, dur } = event;
+    const end = ts + dur;
+
+    let { jsStart } = this;
+
+    if (ts > jsStart) {
+      jsStart = ts;
+    }
+
+    this.jsStart = end;
+    this.js += end - jsStart;
+  }
+
+  protected addRuntimeCallStats(event: IV8Event) {
+    const { runtimeCallStats } = this;
+    if (!runtimeCallStats) {
+      return;
+    }
+    const { args } = event;
+    if (!isRuntimeCallStatsArgs(args)) {
+      return;
+    }
+    const runtimeCallStatsArg = args["runtime-call-stats"];
+    for (const name of Object.keys(runtimeCallStatsArg)) {
+      const [ count, time ] = runtimeCallStatsArg[name];
+      const group = runtimeCallStatGroup(name);
+      runtimeCallStats.push({ name, group, count, time });
     }
   }
 
-  protected addRuntimeCallStats(runtimeCallStats: {
-    [name: string]: [number, number]; // count, time
-  }) {
-    const { sample } = this;
-    for (const name of Object.keys(runtimeCallStats)) {
-      const stat = runtimeCallStats[name];
-      let stats = sample.runtimeCallStats;
-      if (!stats) {
-        stats = sample.runtimeCallStats = {};
-      }
-      let entry = stats[name];
-      if (!entry) {
-        entry = stats[name] = { count: [], time: [] };
-      }
-      const [ count, time ] = stat;
-      entry.count.push(count);
-      entry.time.push(time);
+  protected addGCSample(event: IV8Event) {
+    const { start } = this;
+    if (event.ph !== TRACE_EVENT_PHASE_INSTANT &&
+        event.name !== "MinorGC" &&
+        event.name !== "MajorGC" ||
+        event.args === "__stripped__") {
+      return;
+    }
+    this.gc.push({
+      kind: event.name as GCKind,
+      type: event.name === "MinorGC" ? "scavenge" : event.args.type as GCType,
+      start: event.ts - start,
+      duration: event.dur as number,
+      usedHeapSizeAfter: event.args.usedHeapSizeAfter as number,
+      usedHeapSizeBefore: event.args.usedHeapSizeBefore as number,
+    });
+  }
+
+  protected addBlinkGC(event: IBlinkGCEvent) {
+    this.addJSTime(event);
+    if (isCompleteEvent(event)) {
+      this.blinkGC.push({
+        start: event.ts - this.start,
+        duration: event.dur,
+      });
     }
   }
 
   protected addGCStats(events: ITraceEvent[]) {
-    this.sample.gcStats = [];
+    const { gcStats } = this;
+    if (!gcStats) {
+      return;
+    }
     for (const event of events) {
       if (event.ph === TRACE_EVENT_PHASE_INSTANT &&
         event.name === "V8.GC_Objects_Stats") {
         if (typeof event.args !== "string") {
-          this.sample.gcStats.push(event.args as IGCStat);
+          gcStats.push(event.args as IGCStat);
         }
       }
     }
   }
+}
 
-  private measureGC(event: ITraceEvent) {
-    this.sample.gc += event.dur;
-    if (event.args !== "__stripped__") {
-      this.sample.gcSamples.push({
-        duration: event.dur,
-        usedHeapSizeAfter: event.args.usedHeapSizeAfter,
-        usedHeapSizeBefore: event.args.usedHeapSizeBefore,
-      });
-    }
+function isRuntimeCallStatsArgs(args: ITraceEvent["args"]): args is IRuntimeCallStatsArgs {
+  if (args === "__stripped__") {
+    return false;
   }
+  const runtimeCallStats = args["runtime-call-stats"];
+  return typeof runtimeCallStats === "object" && runtimeCallStats !== null;
+}
 
-  private measureParseOnBackground(event: ITraceEvent) {
-    this.sample.js += event.dur;
-    this.sample.parseOnBackground += event.dur;
-  }
+interface IRuntimeCallStatsArgs {
+  "runtime-call-stats": {
+    [name: string]: [number, number];
+  };
+}
 
-  private measureCompile(event: ITraceEvent) {
-    this.sample.js += event.dur;
-    this.sample.compile += event.dur;
-  }
+function isCompleteEvent(event: IBlinkGCEvent): event is IBlinkGCCompleteEvent;
+function isCompleteEvent(event: IV8Event): event is IV8CompleteEvent;
+function isCompleteEvent(event: IV8Event | IBlinkGCEvent): event is (IBlinkGCCompleteEvent | IV8CompleteEvent);
+function isCompleteEvent(event: IV8Event | IBlinkGCEvent): event is (IBlinkGCCompleteEvent | IV8CompleteEvent) {
+  return event.ph === TRACE_EVENT_PHASE_COMPLETE;
+}
 
-  private measureCallFunction(event: ITraceEvent) {
-    this.sample.js += event.dur;
-    this.sample.callFunction += event.dur;
-  }
+export interface IV8Event extends ITraceEvent {
+  cat: "v8";
+}
 
-  private measureRun(event: ITraceEvent) {
-    this.sample.js += event.dur;
-    this.sample.run += event.dur;
-  }
+export interface IV8CompleteEvent extends IV8Event {
+  ph: TRACE_EVENT_PHASE_COMPLETE;
+  dur: number;
+}
+
+export interface IBlinkGCEvent extends ITraceEvent {
+  cat: "blink_gc";
+}
+
+export interface IBlinkGCCompleteEvent extends IBlinkGCEvent {
+  ph: TRACE_EVENT_PHASE_COMPLETE;
+  dur: number;
+}
+
+function isV8(event: ITraceEvent): event is IV8Event {
+  return IS_V8_CAT.test(event.cat);
+}
+
+function isBlinkGC(event: ITraceEvent): event is IBlinkGCEvent {
+  return IS_BLINK_GC_CAT.test(event.cat);
 }

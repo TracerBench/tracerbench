@@ -8,7 +8,7 @@ export {
   IInterationSample,
   IMarker,
   IPhaseSample,
-  IRuntimeCallStats,
+  IRuntimeCallStat,
 } from "./benchmarks/initial-render-metric";
 export {
   InitialRenderBenchmark,
@@ -26,3 +26,4 @@ export {
   IBenchmark,
 } from "./runner";
 export { ITab } from "./tab";
+export * from "./util";

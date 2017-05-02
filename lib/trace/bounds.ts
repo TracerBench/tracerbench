@@ -26,7 +26,7 @@ export default class Bounds {
     }
     this.addValue(event.ts);
     if (event.ph === TRACE_EVENT_PHASE_COMPLETE) {
-      this.addValue(event.ts + event.dur);
+      this.addValue(event.ts + event.dur!);
     }
   }
 }

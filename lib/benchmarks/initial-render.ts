@@ -88,7 +88,8 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
     const url = this.params.url;
     const markers = this.params.markers;
 
-    let categories = "blink.user_timing,benchmark,toplevel,devtools.timeline,v8,v8.execute";
+    // in Canary, devtools.timeline can be removed for rail category
+    let categories = "blink.user_timing,blink_gc,devtools.timeline,rail,v8,v8.execute";
 
     if (this.params.gcStats) {
       categories += ",disabled-by-default-v8.gc_stats";
@@ -124,7 +125,7 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
       navigateToBlank.then(() => traceComplete),
     ]);
 
-    t.onNavigate = null;
+    t.onNavigate = undefined;
 
     if (!trace.mainProcess || !trace.mainProcess.mainThread) {
       console.warn("unable to find main process");
@@ -147,7 +148,7 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
       fs.writeFileSync(this.params.saveTraces(i), JSON.stringify(trace.events, null, 2));
     }
 
-    const metric = new InitialRenderMetric(markers, this.params.gcStats);
+    const metric = new InitialRenderMetric(markers, this.params);
     const sample = metric.measure(trace);
 
     // log progress to stderr

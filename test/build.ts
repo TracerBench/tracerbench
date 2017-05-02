@@ -72,7 +72,7 @@ function getPrecompile(version: string): (src: string) => string {
     exports: {},
     require,
     module: {
-      exports: undefined,
+      exports: undefined as (any | undefined),
     },
   };
   sandbox.module.exports = sandbox.exports;
@@ -84,7 +84,7 @@ function getPrecompile(version: string): (src: string) => string {
 
 function compileTemplates(precompile: (src: string) => string): string {
   const files = fs.readdirSync("test/fixtures/templates");
-  const templates = [];
+  const templates: string[] = [];
   files.forEach((file) => {
     if (file.endsWith(".hbs")) {
       const src = fs.readFileSync(`test/fixtures/templates/${file}`, "utf8");
