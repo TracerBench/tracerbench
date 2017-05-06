@@ -5,6 +5,10 @@
 		"target": "es2015",
 		"outDir": "dist",
 		"strictNullChecks": true,
+		"noUnusedParameters": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"noImplicitAny": true,
 		"sourceMap": true,
     "moduleResolution": "node"
 	},

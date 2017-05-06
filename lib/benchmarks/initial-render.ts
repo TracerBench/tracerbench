@@ -1,10 +1,10 @@
+import { Network } from "chrome-debugging-client/dist/protocol/tot";
 import * as fs from "fs";
 import {
   Benchmark,
   IBenchmarkMeta,
   IBenchmarkParams,
 } from "../benchmark";
-import { Network } from "../debugging-protocol-domains";
 import { ITab } from "../tab";
 import { Trace } from "../trace";
 import InitialRenderMetric, {
@@ -47,7 +47,7 @@ export interface IInitialRenderBenchmarkParams extends IBenchmarkParams {
   /**
    * Trace while emulating network conditions.
    */
-  networkConditions?: Network.emulateNetworkConditions_Parameters;
+  networkConditions?: Network.EmulateNetworkConditionsParameters;
 
   /**
    * Save trace for first iteration.

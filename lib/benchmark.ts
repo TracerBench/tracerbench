@@ -3,20 +3,19 @@ import {
   IAPIClient,
   IBrowserProcess,
   IDebuggingProtocolClient,
+  IResolveOptions,
   ISession,
-  ResolveOptions,
-  SpawnOptions,
-  Tab,
-  VersionInfo,
+  ISpawnOptions,
+  ITabResponse,
 } from "chrome-debugging-client";
-import * as os from "os";
 import {
   Emulation,
   HeapProfiler,
   Network,
   Page,
   Tracing,
-} from "./debugging-protocol-domains";
+} from "chrome-debugging-client/dist/protocol/tot";
+import * as os from "os";
 import {
   IBenchmark,
   Runner,
@@ -35,13 +34,13 @@ function delay(ms: number): Promise<void> {
 
 export interface IBenchmarkState<R> {
   apiClient: IAPIClient;
-  tab: Tab;
+  tab: ITabResponse;
   results: R;
 }
 
 export type BrowserOptions = {
   type: string;
-} & ResolveOptions & SpawnOptions;
+} & IResolveOptions & ISpawnOptions;
 
 export interface IBenchmarkParams {
   name: string;
@@ -64,7 +63,10 @@ export abstract class Benchmark<R> implements IBenchmark<IBenchmarkState<R>, R> 
   }
 
   public async run(iterations: number): Promise<R> {
-    return new Runner([this]).run(iterations)[0];
+    const benchmarks = [this];
+    const runner = new Runner(benchmarks);
+    const result = await runner.run(iterations);
+    return result[0];
   }
 
   // create session, spawn browser, get port connect to API to get version
@@ -97,17 +99,20 @@ export abstract class Benchmark<R> implements IBenchmark<IBenchmarkState<R>, R> 
     return state;
   }
 
-  public async finalize(session: ISession, state: IBenchmarkState<R>): Promise<R> {
+  public async finalize(_: ISession, state: IBenchmarkState<R>): Promise<R> {
     return state.results;
   }
 
   protected abstract createResults(meta: IBenchmarkMeta): R;
-  protected async warm(t: ITab) {
+
+  protected async warm(_: ITab) {
     // noop
   }
+
   protected abstract async performIteration(t: ITab, results: R, index: number): Promise<void>;
 
-  private async withTab<T>(session: ISession, state: IBenchmarkState<R>, callback: (TabDSL) => Promise<T>): Promise<T> {
+  private async withTab<T>(session: ISession, state: IBenchmarkState<R>,
+                           callback: (tab: ITab) => Promise<T>): Promise<T> {
     const apiClient = state.apiClient;
     const tab = state.tab;
 
@@ -138,7 +143,7 @@ export abstract class Benchmark<R> implements IBenchmark<IBenchmarkState<R>, R> 
 
     // TODO add a client.close() => Promise<void>
     await new Promise<void>((resolve, reject) => {
-      const handleError = (err) => {
+      const handleError = (err: Error) => {
         reject(err);
         removeListeners();
       };

@@ -109,6 +109,7 @@ export default class Trace {
         return process;
       }
     }
+    return;
   }
 
   private endEvent(end: ITraceEvent) {
@@ -126,13 +127,14 @@ export default class Trace {
   }
 
   private completeEvent(begin: ITraceEvent, end: ITraceEvent) {
-    let args;
+    let args: { [key: string]: any; } | "__stripped__" = "__stripped__";
     if (typeof begin.args === "object" && begin.args !== null) {
       args = Object.assign({}, begin.args);
     }
     if (typeof end.args === "object" && end.args !== null) {
       args = Object.assign(args === undefined ? {} : args, end.args);
     }
+
     const complete: ITraceEvent = {
       args,
       cat: begin.cat,

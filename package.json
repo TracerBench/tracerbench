@@ -12,6 +12,10 @@
     "test:only": "node dist/test.js",
     "test:build": "node dist/test/build.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/krisselden/chrome-tracing.git"
+  },
   "files": [
     "dist/index.d.ts",
     "dist/index.js",
@@ -34,7 +38,7 @@
   },
   "dependencies": {
     "array-binsearch": "^1.0.1",
-    "chrome-debugging-client": "^0.3.0"
+    "chrome-debugging-client": "^0.4.0"
   },
   "engine": "node >= 4.0.0"
 }

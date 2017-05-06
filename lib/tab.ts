@@ -5,7 +5,7 @@ import {
   Network,
   Page,
   Tracing,
-} from "./debugging-protocol-domains";
+} from "chrome-debugging-client/dist/protocol/tot";
 import Trace from "./trace/trace";
 
 export interface ITab {
@@ -31,8 +31,8 @@ export interface ITab {
   collectGarbage(): Promise<void>;
 
   setCPUThrottlingRate(rate: number): Promise<void>;
-  emulateNetworkConditions(conditions: Network.emulateNetworkConditions_Parameters): Promise<void>;
-  disableNetworkEmulation();
+  emulateNetworkConditions(conditions: Network.EmulateNetworkConditionsParameters): Promise<void>;
+  disableNetworkEmulation(): Promise<void>;
 }
 
 export default function createTab(id: string, client: IDebuggingProtocolClient, page: Page, frame: Page.Frame): ITab {
@@ -73,6 +73,7 @@ class Tab implements ITab {
   private heapProfiler: HeapProfiler;
 
   constructor(id: string, client: IDebuggingProtocolClient, page: Page, frame: Page.Frame) {
+    this.id = id;
     this.client = client;
     this.page = page;
     this.frame = frame;
@@ -159,7 +160,7 @@ class Tab implements ITab {
       }
     };
 
-    await this.tracing.start({ categories });
+    await this.tracing.start({ categories, options });
 
     return { end, traceComplete };
   }
@@ -182,7 +183,7 @@ class Tab implements ITab {
     await this.emulation.setCPUThrottlingRate({ rate });
   }
 
-  public async emulateNetworkConditions(conditions: Network.emulateNetworkConditions_Parameters) {
+  public async emulateNetworkConditions(conditions: Network.EmulateNetworkConditionsParameters) {
     await this.network.emulateNetworkConditions(conditions);
   }
 

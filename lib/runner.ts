@@ -1,8 +1,7 @@
 import {
-  createSession,
+  createSessions,
   IAPIClient,
   ISession,
-  Tab,
 } from "chrome-debugging-client";
 
 export interface IBenchmark<State, Result> {
@@ -23,24 +22,12 @@ export interface IBenchmark<State, Result> {
   finalize(session: ISession, state: State): Promise<Result>;
 }
 
-function createSessions<T>(count: number, callback: (sessions: ISession[]) => T | PromiseLike<T>): Promise<T> {
-  if (count === 1) {
-    return createSession((session) => callback([session]));
-  } else {
-    return createSessions(count - 1, (sessions) => createSession((session) => callback([session].concat(sessions))));
-  }
-}
-
-export class Runner<R> {
-  private benchmarks: Array<IBenchmark<any, R>>;
-
-  constructor(benchmarks: Array<IBenchmark<any, R>>) {
-    this.benchmarks = benchmarks;
+export class Runner<R, S> {
+  constructor(private benchmarks: Array<IBenchmark<S, R>>) {
   }
 
   public async run(iterations: number): Promise<R[]> {
     const benchmarks = this.benchmarks;
-
     return createSessions(benchmarks.length, async (sessions) => {
       let states = await this.inSequence((benchmark, i) => benchmark.setup(sessions[i]));
 
@@ -52,7 +39,7 @@ export class Runner<R> {
     });
   }
 
-  private async inSequence<T>(callback: (benchmark: IBenchmark<any, R>, i: number) => Promise<T>): Promise<T[]> {
+  private async inSequence<T>(callback: (benchmark: IBenchmark<S, R>, i: number) => Promise<T>): Promise<T[]> {
     const benchmarks = this.benchmarks;
     const results: T[] = [];
 
@@ -61,5 +48,17 @@ export class Runner<R> {
     }
 
     return results;
+  }
+}
+
+function shuffle(arr: number[]) {
+  // for i from n−1 downto 1 do
+  //      j ← random integer such that 0 ≤ j ≤ i
+  //      exchange a[j] and a[i]
+  for (let i = 0; i < arr.length; i++) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const tmp = arr[j];
+    arr[j] = arr[i];
+    arr[i] = tmp;
   }
 }

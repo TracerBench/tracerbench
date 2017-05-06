@@ -1,4 +1,4 @@
-import * as Domains from "./debugging-protocol-domains";
+import * as Domains from "chrome-debugging-client/dist/protocol/tot";
 import * as Trace from "./trace/index";
 export { Domains, Trace };
 export {
