@@ -141,24 +141,7 @@ export abstract class Benchmark<R> implements IBenchmark<IBenchmarkState<R>, R> 
 
     state.tab = await apiClient.newTab("about:blank");
 
-    // TODO add a client.close() => Promise<void>
-    await new Promise<void>((resolve, reject) => {
-      const handleError = (err: Error) => {
-        reject(err);
-        removeListeners();
-      };
-      const handleClose = () => {
-        resolve();
-        removeListeners();
-      };
-      client.on("error", handleError);
-      client.on("close", handleClose);
-      const removeListeners = () => {
-        client.removeListener("close", handleClose);
-        client.removeListener("error", handleError);
-      };
-      client.socket.close();
-    });
+    await client.socket.dispose();
 
     await apiClient.closeTab(tab.id);
 
