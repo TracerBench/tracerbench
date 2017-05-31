@@ -29,16 +29,16 @@
   "author": "Kris Selden <kris.selden@gmail.com>",
   "license": "Apache-2.0",
   "devDependencies": {
-    "@types/node": "^7.0.12",
+    "@types/node": "^7.0.22",
     "@types/uglify-js": "^2.0.27",
     "bower": "^1.7.9",
-    "tslint": "^5.0.0",
-    "typescript": "2",
+    "tslint": "^5.3.2",
+    "typescript": "^2.3.4",
     "uglify-js": "^2.7.0"
   },
   "dependencies": {
     "array-binsearch": "^1.0.1",
-    "chrome-debugging-client": "^0.4.0"
+    "chrome-debugging-client": "^0.4.1"
   },
   "engine": "node >= 4.0.0"
 }

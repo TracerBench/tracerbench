@@ -1,5 +1,5 @@
 import {
-  createSessions,
+  createSession,
   IAPIClient,
   ISession,
 } from "chrome-debugging-client";
@@ -28,14 +28,14 @@ export class Runner<R, S> {
 
   public async run(iterations: number): Promise<R[]> {
     const benchmarks = this.benchmarks;
-    return createSessions(benchmarks.length, async (sessions) => {
-      let states = await this.inSequence((benchmark, i) => benchmark.setup(sessions[i]));
+    return await createSession<R[]>(async (session: ISession) => {
+      let states = await this.inSequence((benchmark) => benchmark.setup(session));
 
       for (let iteration = 0; iteration < iterations; iteration++) {
-        states = await this.inSequence((benchmark, i) => benchmark.perform(sessions[i], states[i], iteration));
+        states = await this.shuffled((benchmark, i) => benchmark.perform(session, states[i], iteration));
       }
 
-      return this.inSequence((benchmark, i) => benchmark.finalize(sessions[i], states[i]));
+      return this.inSequence((benchmark, i) => benchmark.finalize(session, states[i]));
     });
   }
 
@@ -49,13 +49,27 @@ export class Runner<R, S> {
 
     return results;
   }
+
+  private async shuffled<T>(callback: (benchmark: IBenchmark<S, R>, i: number) => Promise<T>): Promise<T[]> {
+    const benchmarks = this.benchmarks;
+    const results: T[] = new Array(benchmarks.length);
+    const indices = benchmarks.map((_, i) => i);
+
+    shuffle(indices);
+
+    for (const index of indices) {
+      results[index] = await callback(benchmarks[index], index);
+    }
+
+    return results;
+  }
 }
 
 function shuffle(arr: number[]) {
   // for i from n−1 downto 1 do
   //      j ← random integer such that 0 ≤ j ≤ i
   //      exchange a[j] and a[i]
-  for (let i = 0; i < arr.length; i++) {
+  for (let i = arr.length - 1; i >= 1; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     const tmp = arr[j];
     arr[j] = arr[i];

@@ -1,5 +1,4 @@
 import {
-  createSession,
   IAPIClient,
   IBrowserProcess,
   IDebuggingProtocolClient,

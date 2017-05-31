@@ -10,6 +10,7 @@
 		"noImplicitThis": true,
 		"noImplicitAny": true,
 		"sourceMap": true,
+		"strict": true,
     "moduleResolution": "node"
 	},
   "exclude": [
