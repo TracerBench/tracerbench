@@ -1,7 +1,7 @@
 suppressWarnings(suppressMessages(library(tidyjson)))
 suppressWarnings(suppressMessages(library(dplyr)))
 
-results <- read_json('/Users/kselden/src/krisselden/chrome-tracing/results.json')
+results <- read_json('results.json')
 samples <- results %>%
   gather_array(column.name="set.id") %>%
   spread_values(set.name = jstring("set")) %>%

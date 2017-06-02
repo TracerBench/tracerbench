@@ -8,16 +8,18 @@ addons:
     sources:
       - google-chrome
       - r-packages-trusty
+      - sourceline: 'ppa:marutter/rrutter'
+      - sourceline: 'ppa:marutter/c2d4u'
     packages:
       - google-chrome-beta
       - r-recommended
 env:
-  - CHROME_BIN=/usr/bin/google-chrome-beta R_LIBS=~/Rlibs
+  - CHROME_BIN=/usr/bin/google-chrome-beta R_LIBS_USER=~/R/Library
 install:
   - npm install
   - bower install
-  - mkdir ~/Rlibs
+  - mkdir -p ~/R/Library
   - Rscript --version
-  - Rscript -e "install.packages(c('dplyr', 'tidyjson'), repos='https://cran.cnr.berkeley.edu/')"
+  - Rscript -e "install.packages(c('dplyr', 'tidyjson'), repos='https://cloud.r-project.org')"
 after_script:
   - Rscript report.R
