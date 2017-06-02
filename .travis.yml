@@ -11,10 +11,11 @@ addons:
       - google-chrome-beta
       - r-recommended
 env:
-  - CHROME_BIN=/usr/bin/google-chrome-beta
+  - CHROME_BIN=/usr/bin/google-chrome-beta R_LIBS=~/Rlibs
 install:
   - npm install
   - bower install
+  - mkdir ~/Rlibs
   - Rscript --version
   - Rscript -e "install.packages(c('tidyverse', 'tidyjson'), repos='https://cran.cnr.berkeley.edu/')"
 before_script:
