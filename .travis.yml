@@ -3,13 +3,19 @@ dist: trusty
 language: node_js
 node_js:
   - "stable"
-before_install:
-  - export CHROME_BIN=/usr/bin/google-chrome
-  - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
-  - wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-  - sudo apt-get install -y libappindicator1 fonts-liberation
-  - sudo dpkg -i google-chrome*.deb
+addons:
+  apt:
+    sources:
+      - google-chrome
+    packages:
+      - google-chrome-beta
+      - r-recommended
+env:
+  - CHROME_BIN=/usr/bin/google-chrome-beta
 install:
   - npm install
   - bower install
+  - Rscript --version
+  - Rscript -e "install.packages(c('tidyverse', 'tidyjson'), repos='https://cran.cnr.berkeley.edu/')"
+before_script:
+  - Rscript -e "wilcox.test(mpg ~ am, data=mtcars)"
