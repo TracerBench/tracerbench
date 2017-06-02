@@ -47,13 +47,27 @@ function build(versions: string[]) {
       fs.writeFileSync("index.html", index);
 
       let result = UglifyJS.minify("ember.prod.js", {
+        compress: {
+            negate_iife: false,
+            sequences: 0,
+        },
         outSourceMap: "ember.min.map",
+        output: {
+          semicolons: false,
+        } as any,
       });
       fs.writeFileSync("ember.min.js", result.code);
       fs.writeFileSync("ember.min.map", result.map);
 
       result = UglifyJS.minify("app.js", {
+        compress: {
+            negate_iife: false,
+            sequences: 0,
+        },
         outSourceMap: "app.min.map",
+        output: {
+          semicolons: false,
+        } as any,
       });
       fs.writeFileSync("app.min.js", result.code);
       fs.writeFileSync("app.min.map", result.map);
@@ -73,10 +87,10 @@ function getPrecompile(version: string): (src: string) => string {
 
   const sandbox = {
     exports: {},
-    require,
     module: {
       exports: undefined as (any | undefined),
     },
+    require,
   };
   sandbox.module.exports = sandbox.exports;
   const context = vm.createContext(sandbox);

@@ -12,6 +12,8 @@ import InitialRenderMetric, {
   IMarker,
 } from "./initial-render-metric";
 
+/* tslint:disable:no-console */
+
 export interface IInitialRenderBenchmarkParams extends IBenchmarkParams {
   /**
    * URL to measure initial render of.
