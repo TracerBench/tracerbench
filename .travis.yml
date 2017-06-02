@@ -18,5 +18,5 @@ install:
   - mkdir ~/Rlibs
   - Rscript --version
   - Rscript -e "install.packages(c('tidyverse', 'tidyjson'), repos='https://cran.cnr.berkeley.edu/')"
-before_script:
-  - Rscript -e "wilcox.test(mpg ~ am, data=mtcars)"
+after_script:
+  - Rscript report.R
