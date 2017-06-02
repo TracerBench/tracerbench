@@ -1,5 +1,5 @@
 suppressWarnings(suppressMessages(library(tidyjson)))
-suppressWarnings(suppressMessages(library(tidyverse)))
+suppressWarnings(suppressMessages(library(dplyr)))
 
 results <- read_json('/Users/kselden/src/krisselden/chrome-tracing/results.json')
 samples <- results %>%

@@ -18,6 +18,6 @@ install:
   - bower install
   - mkdir ~/Rlibs
   - Rscript --version
-  - Rscript -e "install.packages(c('tidyverse', 'tidyjson'), repos='https://cran.cnr.berkeley.edu/')"
+  - Rscript -e "install.packages(c('dplyr', 'tidyjson'), repos='https://cran.cnr.berkeley.edu/')"
 after_script:
   - Rscript report.R
