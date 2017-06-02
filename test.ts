@@ -7,6 +7,7 @@ const globSync: (glob: string) => string[] = require("glob").sync;
 /* tslint:enable:no-var-requires */
 
 const browserOpts = process.env.CHROME_BIN ? {
+  additionalArguments: ["--headless"],
   executablePath: process.env.CHROME_BIN,
   type: "exact",
 } : {
@@ -46,7 +47,7 @@ tests.forEach((indexFile: string) => {
 const runner = new Runner(benchmarks);
 
 /*tslint:disable:no-console*/
-runner.run(5).then((results) => {
+runner.run(50).then((results) => {
   fs.writeFileSync("results.json", JSON.stringify(results, null, 2));
 }).catch((err) => {
   console.error(err.stack);
