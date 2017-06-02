@@ -7,6 +7,7 @@ addons:
   apt:
     sources:
       - google-chrome
+      - r-packages-trusty
     packages:
       - google-chrome-beta
       - r-recommended
