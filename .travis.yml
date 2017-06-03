@@ -13,6 +13,8 @@ addons:
     packages:
       - google-chrome-beta
       - r-recommended
+      - r-cran-dplyr
+      - r-cran-tidyjson
 env:
   - CHROME_BIN=/usr/bin/google-chrome-beta R_LIBS_USER=~/R/Library
 install:
@@ -20,6 +22,5 @@ install:
   - bower install
   - mkdir -p ~/R/Library
   - Rscript --version
-  - Rscript -e "install.packages(c('dplyr', 'tidyjson'), repos='https://cloud.r-project.org')"
 after_script:
   - Rscript report.R
