@@ -10,22 +10,36 @@ samples <- results %>%
   spread_values(µs = jnumber("duration")) %>%
   mutate(ms = µs / 1000)
 
-samples$set.id        = factor(samples$set.id)
-samples$set.name      = factor(samples$set.name)
-samples$set.iteration = factor(samples$set.iteration)
+samples$set.name = factor(samples$set.name)
 
 set.levels <- levels(samples$set.name)
 set.pairs <- t(combn(set.levels, 2))
 
 for (i in 1:length(set.levels)) {
-  cat(set.levels[i], "\n")
-  print(summary(filter(samples, set.name == set.levels[i])$ms))
   cat("\n")
+  ms <- filter(samples, set.name == set.levels[i])$ms
+  h <- hist(ms, plot=F)
+  for (row in max(h$count):1) {
+    for (col in 1:length(h$count)) {
+      if (h$count[col] >= row) {
+        cat("\u283F\u283F")
+      } else {
+        cat("\u2800\u2800")
+      }
+    }
+    cat("\n")
+  }
+  cat(set.levels[i], "samples\n\n")
+  print(summary(ms))
+  other <- c(mad(ms), length(ms))
+  names(other) <- c("Median Abs. Deviation", "Sample Count")
+  print(prettyNum(other), quote=F)
+  cat("(durations are in milliseconds)\n\n\n");
 }
 
-cat("\n")
 for (i in 1:nrow(set.pairs)) {
-  cat(set.pairs[i,1], "vs", set.pairs[i,2], "\n")
+  cat("\nTest ", set.pairs[i,1], " against ", set.pairs[i,2], "\n", sep="")
   paired <- filter(samples, set.name %in% set.pairs[i,])
   print(wilcox.test(ms ~ set.name, data=paired, conf.int=T))
+  cat("\n")
 }
