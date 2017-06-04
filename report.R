@@ -22,9 +22,9 @@ for (i in 1:length(set.levels)) {
   for (row in max(h$count):1) {
     for (col in 1:length(h$count)) {
       if (h$count[col] >= row) {
-        cat("\u283F\u283F")
+        cat("\u2588\u2588")
       } else {
-        cat("\u2800\u2800")
+        cat("  ")
       }
     }
     cat("\n")
