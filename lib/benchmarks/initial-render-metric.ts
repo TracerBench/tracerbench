@@ -156,7 +156,7 @@ export default class InitialRenderMetric {
   protected phaseEvents: ITraceEvent[] = [];
   protected firstEvent: ITraceEvent | undefined = undefined;
   protected paintEvent: ITraceEvent | undefined = undefined;
-  protected jsStart: number = 0;
+  protected lastEnd: number = 0;
   protected start: number = 0;
   protected end: number = 0;
 
@@ -260,14 +260,15 @@ export default class InitialRenderMetric {
 
   protected addV8Samples(events: ITraceEvent[]) {
     const { start, end } = this;
-    // let toplevel: ITraceEvent | undefined;
+    this.lastEnd = start;
     for (const event of events) {
-      const { args } = event;
-      const ts = event.ts;
-      if (ts < start) {
+      const { ts, dur } = event;
+      const eventStart = ts;
+      const eventEnd = ts + (dur === undefined ? 0 : dur);
+      if (start > eventEnd) {
         continue;
       }
-      if (ts >= end) {
+      if (eventStart >= end) {
         break;
       }
 
@@ -286,21 +287,27 @@ export default class InitialRenderMetric {
   }
 
   protected addJSTime(event: IBlinkGCEvent | IV8Event) {
+    // js sample is all v8 or blink gc events with duration
+    // during the duration sample period (clipped if overlap)
+    // on any thread for the process (main, web workers, service worker)
+    // the idea is to give an idea of the portion of the duration sample
+    // that is js related
     if (!isCompleteEvent(event)) {
       return;
     }
 
+    const { lastEnd } = this;
     const { ts, dur } = event;
-    const end = ts + dur;
 
-    let { jsStart } = this;
+    // start is event start or the last end of js time
+    const start = Math.max(ts, lastEnd);
+    // end is event end or the end of our sample duration
+    const end = Math.min(ts + dur, this.end);
 
-    if (ts > jsStart) {
-      jsStart = ts;
+    if (start < end) {
+      this.js += end - start;
+      this.lastEnd = end;
     }
-
-    this.jsStart = end;
-    this.js += end - jsStart;
   }
 
   protected addRuntimeCallStats(event: IV8Event) {
