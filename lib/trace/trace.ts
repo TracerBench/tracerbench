@@ -47,6 +47,11 @@ export default class Trace {
 
   public buildModel() {
     const { events } = this;
+    if (this.stack.length > 0) {
+      /* tslint:disable:no-console */
+      console.error("trace has incomplete B phase events");
+      this.stack.length = 0;
+    }
     for (const event of events) {
       this.associateParent(event);
       const process = this.process(event.pid);
@@ -121,9 +126,10 @@ export default class Trace {
           begin.tid === end.tid &&
           begin.pid === end.pid) {
         stack.splice(i, 1);
-        this.completeEvent(begin, end);
+        return this.completeEvent(begin, end);
       }
     }
+    throw new Error("could not find matching B phase for E phase event");
   }
 
   private completeEvent(begin: ITraceEvent, end: ITraceEvent) {
