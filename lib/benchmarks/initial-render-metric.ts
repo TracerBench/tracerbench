@@ -32,31 +32,13 @@ export interface IMarker {
   label: string;
 }
 
-/*
-Incremental Marking
-event.name == "MajorGC";
-event.args.type == "incremental marking";
+export type V8GCKind = "MinorGC" | "MajorGC";
 
-Mark Sweep Compact
-event.name == "MajorGC";
-event.args.type == "atomic pause";
+export type V8GCType = "scavenge" | "incremental marking" | "atomic pause" | "weak processing";
 
-Weak Callbacks
-event.name == "MajorGC";
-event.args.type == "weak processing";
-
-Scavenge
-event.name == "MinorGC";
-event.args.type == undefined;
-*/
-
-export type GCKind = "MinorGC" | "MajorGC";
-
-export type GCType = "scavenge" | "incremental marking" | "atomic pause" | "weak processing";
-
-export interface IGCSample {
-  kind: GCKind;
-  type: GCType;
+export interface IV8GCSample {
+  kind: V8GCKind;
+  type: V8GCType;
   start: number;
   duration: number;
   usedHeapSizeBefore: number;
@@ -68,10 +50,25 @@ export interface IBlinkGCSample {
   duration: number;
 }
 
+export interface IRuntimeCallStats {
+  statGroups: {
+    [statGroup: string]: IRuntimeCallStat | undefined;
+  };
+
+  stats: {
+    [stat: string]: IRuntimeCallStat | undefined;
+  };
+}
+
 export interface IRuntimeCallStat {
-  name: string;
-  group: string;
+  /**
+   * count of stat
+   */
   count: number;
+
+  /**
+   * time in microseconds
+   */
   time: number;
 }
 
@@ -95,7 +92,7 @@ export interface IInterationSample {
   /**
    * Samples of V8 GC during trace.
    */
-  gc: IGCSample[];
+  gc: IV8GCSample[];
 
   /**
    * Samples of Blink GC during trace.
@@ -107,7 +104,7 @@ export interface IInterationSample {
    *
    * Present if param.runtimeStats enabled.
    */
-  runtimeCallStats?: IRuntimeCallStat[];
+  runtimeCallStats?: IRuntimeCallStats;
 }
 
 export interface IGCStat {
@@ -156,15 +153,18 @@ export default class InitialRenderMetric {
   protected duration: number = 0;
   protected js: number = 0;
   protected phases: IPhaseSample[] = [];
-  protected gc: IGCSample[] = [];
+  protected gc: IV8GCSample[] = [];
   protected blinkGC: IBlinkGCSample[] = [];
-  protected runtimeCallStats: IRuntimeCallStat[] | undefined = undefined;
+  protected runtimeCallStats: IRuntimeCallStats | undefined = undefined;
 
   constructor(private markers: IMarker[], private params: {
     runtimeStats?: boolean;
   }) {
     if (params.runtimeStats) {
-      this.runtimeCallStats = [];
+      this.runtimeCallStats = {
+        statGroups: {},
+        stats: {},
+      };
     }
   }
 
@@ -309,7 +309,20 @@ export default class InitialRenderMetric {
     for (const name of Object.keys(runtimeCallStatsArg)) {
       const [ count, time ] = runtimeCallStatsArg[name];
       const group = runtimeCallStatGroup(name);
-      runtimeCallStats.push({ name, group, count, time });
+      const statGroup = runtimeCallStats.statGroups[group];
+      if (statGroup === undefined) {
+        runtimeCallStats.statGroups[group] = { count, time };
+      } else {
+        statGroup.count += count;
+        statGroup.time += time;
+      }
+      const stat = runtimeCallStats.stats[name];
+      if (stat === undefined) {
+        runtimeCallStats.stats[name] = { count, time };
+      } else {
+        stat.count += count;
+        stat.time += time;
+      }
     }
   }
 
@@ -322,8 +335,8 @@ export default class InitialRenderMetric {
       return;
     }
     this.gc.push({
-      kind: event.name as GCKind,
-      type: event.name === "MinorGC" ? "scavenge" : event.args.type as GCType,
+      kind: event.name as V8GCKind,
+      type: event.name === "MinorGC" ? "scavenge" : event.args.type as V8GCType,
       start: event.ts - start,
       duration: event.dur as number,
       usedHeapSizeAfter: event.args.usedHeapSizeAfter as number,

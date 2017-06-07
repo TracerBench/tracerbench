@@ -2,7 +2,7 @@ import * as Domains from "chrome-debugging-client/dist/protocol/tot";
 import * as Trace from "./trace/index";
 export { Domains, Trace };
 export {
-  IGCSample,
+  IV8GCSample,
   IGCStat,
   IInitialRenderSamples,
   IInterationSample,
