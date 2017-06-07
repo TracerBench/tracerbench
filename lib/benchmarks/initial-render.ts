@@ -28,12 +28,6 @@ export interface IInitialRenderBenchmarkParams extends IBenchmarkParams {
   markers: IMarker[];
 
   /**
-   * Collect GC stats (experimental). Does not seem to get consistently output
-   * in each trace.
-   */
-  gcStats?: boolean;
-
-  /**
    * Collect runtime call stats.
    *
    * This is a disabled-by-default tracing category so may add some overhead
@@ -92,10 +86,6 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
 
     // in Canary, devtools.timeline can be removed for rail category
     let categories = "blink.user_timing,blink_gc,devtools.timeline,rail,v8,v8.execute";
-
-    if (this.params.gcStats) {
-      categories += ",disabled-by-default-v8.gc_stats";
-    }
 
     if (this.params.runtimeStats) {
       categories += ",disabled-by-default-v8.runtime_stats";

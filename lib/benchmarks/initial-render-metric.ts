@@ -108,13 +108,6 @@ export interface IInterationSample {
    * Present if param.runtimeStats enabled.
    */
   runtimeCallStats?: IRuntimeCallStat[];
-
-  /**
-   * GC Object stats.
-   *
-   * Present if params.gcStats enabled (though doesn't seem consistently added).
-   */
-  gcStats?: IGCStat[];
 }
 
 export interface IGCStat {
@@ -165,16 +158,11 @@ export default class InitialRenderMetric {
   protected phases: IPhaseSample[] = [];
   protected gc: IGCSample[] = [];
   protected blinkGC: IBlinkGCSample[] = [];
-  protected gcStats: IGCStat[] | undefined = undefined;
   protected runtimeCallStats: IRuntimeCallStat[] | undefined = undefined;
 
   constructor(private markers: IMarker[], private params: {
-    gcStats?: boolean;
     runtimeStats?: boolean;
   }) {
-    if (params.gcStats) {
-      this.gcStats = [];
-    }
     if (params.runtimeStats) {
       this.runtimeCallStats = [];
     }
@@ -192,7 +180,6 @@ export default class InitialRenderMetric {
     this.findMarkerEvents(mainThread.events);
     this.addPhaseSamples();
     this.addV8Samples(mainProcess.events);
-    this.addGCStats(mainProcess.events);
     return {
       duration: this.duration,
       js: this.js,
@@ -200,7 +187,6 @@ export default class InitialRenderMetric {
       gc: this.gc,
       blinkGC: this.blinkGC,
       runtimeCallStats: this.runtimeCallStats,
-      gcStats: this.gcStats,
     };
   }
 
@@ -352,21 +338,6 @@ export default class InitialRenderMetric {
         start: event.ts - this.start,
         duration: event.dur,
       });
-    }
-  }
-
-  protected addGCStats(events: ITraceEvent[]) {
-    const { gcStats } = this;
-    if (!gcStats) {
-      return;
-    }
-    for (const event of events) {
-      if (event.ph === TRACE_EVENT_PHASE_INSTANT &&
-        event.name === "V8.GC_Objects_Stats") {
-        if (typeof event.args !== "string") {
-          gcStats.push(event.args as IGCStat);
-        }
-      }
     }
   }
 }
