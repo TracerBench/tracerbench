@@ -13,8 +13,7 @@ addons:
     packages:
       - google-chrome-beta
       - r-recommended
-      - r-cran-dplyr
-      - r-cran-tidyjson
+      - r-cran-jsonlite
 env:
   - CHROME_BIN=/usr/bin/google-chrome-beta R_LIBS_USER=~/R/Library
 install:
