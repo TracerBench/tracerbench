@@ -17,7 +17,9 @@ as.data.frame.results_json <- function(obj, ...) {
 
 print.results_json <- function(obj) {
   df <- as.data.frame(obj)
-  for (level in levels(obj)) {
+  for (i in 1:length(obj)) {
+    level <- obj[[i]]$set
+    meta <- obj[[i]]$meta
     cat("\n")
     ms <- subset(df, set == level)$ms
     h <- hist(ms, plot=F)
@@ -31,7 +33,11 @@ print.results_json <- function(obj) {
       }
       cat("\n")
     }
-    cat(level, length(ms), "samples\n\n")
+    cat(level, "\n")
+    cat(length(ms), "samples\n")
+    cat("browser", meta$browserVersion, "\n")
+    cat(length(meta$cpus), "cpus", meta$cpus[[1]], "\n")
+    cat("\n")
     q <- quantile(ms, c(0.1, 0.25, 0.5, 0.75, 0.9), names=F)
     sum <- c(q, mad(ms), q[4] - q[2])
     names(sum) <- c('P10', 'Q1', 'Median', 'Q3', 'P90', 'MAD', 'IQR')
