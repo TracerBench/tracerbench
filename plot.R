@@ -2,10 +2,15 @@ source('results.R')
 
 library(ggplot2)
 
-r <- results_json('results-2.json')
+argv = commandArgs(trailingOnly=TRUE)
+
+json_filename <- if (length(argv) > 0) argv[1] else 'results.json'
+pdf_filename <- paste0(sub("([^.]+)\\.[[:alnum:]]+$", "\\1", json_filename), '.pdf')
+
+r <- results_json(json_filename)
 df <- as.data.frame(r)
 
-pdf('results.pdf', onefile = TRUE, width=11, height=8.5)
+pdf(pdf_filename, onefile = TRUE, width=11, height=8.5)
 theme_set(theme_bw(base_size = 12) +
           theme(plot.margin = margin(t = 0.5, r = 0.5, b = 0.5, l = 0.5, unit = "in")))
 
@@ -22,7 +27,7 @@ print(
   ggplot(phases, aes(phase, ms, color=set)) +
     facet_wrap(~ type, scales="free_y") +
     geom_boxplot() +
-    theme(strip.background = element_rect(fill = "#eeeeee")) +
+    theme(strip.background = element_rect(fill = "#eeeeee"), axis.text.x = element_text(angle = 45, hjust=1)) +
     labs(title = 'Phase Durations')
 )
 
@@ -40,10 +45,12 @@ for (i in 1:nrow(pairs)) {
     " were equal to ",
     t$null.value,
     sprintf(
-      ", there is a %%%.18f probability of observing these samples",
+      ", there is a %%%.2f chance of observing these samples:\n",
       t$p.value * 100
     ),
-    "\n(less than %5 is the convention for rejecting the null hypothesis).\n\n",
+    "the result is statistically ",
+    if (t$p.value < 0.05) "significant (less than %5" else "insignificant (%5 or greater",
+    " chance of incorrectly rejecting the null hypothesis).\n\n",
     "Estimated ",
     names(t$estimate),
     sprintf(
