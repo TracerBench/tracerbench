@@ -2,9 +2,36 @@ suppressWarnings(suppressMessages(library(jsonlite)))
 
 results_json <- function(path) {
   list <- fromJSON(file(path), simplifyVector=F)
-  levels <- sapply(list, function (x) x$set)
+  levels <- rev(sapply(list, function (x) x$set))
   pairs <- t(combn(levels, 2))
   structure(list, class = c("results_json", class(list)), levels=levels, pairs=pairs)
+}
+
+phases_data_frame <- function(...) {
+  UseMethod("phases_data_frame")
+}
+
+phases_data_frame.results_json <- function(r) {
+  set <- c(sapply(r, function (r) sapply(r$samples, function (s) sapply(s$phases, function (p) {
+    c(r$set,   r$set)
+  }))))
+  phase <- c(sapply(r, function (r) sapply(r$samples, function (s) sapply(s$phases, function (p) {
+    c(p$phase, p$phase)
+  }))))
+  type <- c(sapply(r, function (r) sapply(r$samples, function (s) sapply(s$phases, function (p) {
+    c('self',  'cumulative')
+  }))))
+  ms <- c(sapply(r, function (r) sapply(r$samples, function (s) sapply(s$phases, function (p) {
+    c(p$duration, p$start + p$duration) / 1000
+  }))))
+  df <- data.frame(set, phase, type, ms, stringsAsFactors=FALSE, row.names=NULL)
+  df$set  <- factor(df$set,  levels=attr(r, 'levels'))
+  phases <- sapply(r[[1]]$samples[[1]]$phases, function (x) x$phase)
+  df$phase <- factor(df$phase, levels=phases)
+  df$type <- factor(df$type,
+    levels=c('self', 'cumulative'),
+    labels=c('Phase Self Time', 'Phase Cumulative Time'))
+  return(df)
 }
 
 as.data.frame.results_json <- function(results) {
