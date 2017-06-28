@@ -10,7 +10,7 @@ results_json <- function(path) {
 mapX <- function(...) {
   ARGV <- as.list(sys.call())
   X <- eval(ARGV[[2]], parent.frame())
-  FUN <- as.function(append(alist(x=), ARGV[3]))
+  FUN <- as.function(append(alist(x=), ARGV[3]), parent.frame())
   sapply(X = X, FUN = FUN)
 }
 
@@ -21,9 +21,13 @@ phases_data_frame <- function(results) {
 phases_data_frame.results_json <- function(results) {
   phases <- mapX(results[[1]]$samples[[1]]$phases, x$phase)
 
+
+  types <- c('self', 'cumulative')
+  types.length <- length(types)
+
   row.length <- sum(mapX(results, {
     sum(mapX(x$samples, {
-      length(x$phases) * 2
+      length(x$phases) * types.length
     }))
   }))
 
@@ -35,7 +39,6 @@ phases_data_frame.results_json <- function(results) {
     stringsAsFactors = FALSE,
     row.names = NULL)
 
-  types <- c('self', 'cumulative')
 
   i = 1
   for (result in results) {
@@ -64,9 +67,9 @@ phases_data_frame.results_json <- function(results) {
 }
 
 as.data.frame.results_json <- function(results) {
-  types = c('duration', 'js')
-
-  row.length <- sum(mapX(results, length(x$samples) * 2))
+  types <- c('duration', 'js')
+  types.length <- length(types)
+  row.length <- sum(mapX(results, length(x$samples) * types.length))
 
   df <- data.frame(
     set  = character(row.length),
@@ -124,15 +127,17 @@ summary.results_json <- function(obj) {
   df <- as.data.frame(obj)
   sets <- levels(df$set)
   types <- levels(df$type)
-  array(c(sapply(sets, function (s) c(sapply(types, function (t) {
-    ms <- subset(df, set == s & type == t)$ms
-    ms.q <- quantile(ms, c(0.1, 0.25, 0.5, 0.75, 0.9), names=F)
-    ms.iqr <- ms.q[4] - ms.q[2]
-    ms.mad <- mad(ms)
-    c(ms.q, ms.mad, ms.iqr)
-  })))),
-  dim=c(7, length(types), length(sets)),
-  dimnames=list(ms=c('P10', 'Q1', 'Median', 'Q3', 'P90', 'MAD', 'IQR'), type=types, set=sets))
+  array(
+    c(sapply(sets, function (s) c(sapply(types, function (t) {
+      ms <- subset(df, set == s & type == t)$ms
+      ms.q <- quantile(ms, c(0.1, 0.25, 0.5, 0.75, 0.9), names=F)
+      ms.iqr <- ms.q[4] - ms.q[2]
+      ms.mad <- mad(ms)
+      c(ms.q, ms.mad, ms.iqr)
+    })))),
+    dim=c(7, length(types), length(sets)),
+    dimnames=list(ms=c('P10', 'Q1', 'Median', 'Q3', 'P90', 'MAD', 'IQR'), type=types, set=sets)
+  )
 }
 
 print.results_json <- function(obj) {
