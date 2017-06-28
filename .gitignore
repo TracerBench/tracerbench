@@ -1,5 +1,8 @@
+.Rapp.history
 /dist/
 /node_modules/
 /bower_components/
 /trace*.json
 /results*.json
+/*scratch.R
+/*.pdf

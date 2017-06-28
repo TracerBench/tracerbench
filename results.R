@@ -7,26 +7,55 @@ results_json <- function(path) {
   structure(list, class = c("results_json", class(list)), levels=levels, pairs=pairs)
 }
 
-phases_data_frame <- function(...) {
+mapX <- function(...) {
+  ARGV <- as.list(sys.call())
+  X <- eval(ARGV[[2]], parent.frame())
+  FUN <- as.function(append(alist(x=), ARGV[3]))
+  sapply(X = X, FUN = FUN)
+}
+
+phases_data_frame <- function(results) {
   UseMethod("phases_data_frame")
 }
 
-phases_data_frame.results_json <- function(r) {
-  set <- c(sapply(r, function (r) sapply(r$samples, function (s) sapply(s$phases, function (p) {
-    c(r$set,   r$set)
-  }))))
-  phase <- c(sapply(r, function (r) sapply(r$samples, function (s) sapply(s$phases, function (p) {
-    c(p$phase, p$phase)
-  }))))
-  type <- c(sapply(r, function (r) sapply(r$samples, function (s) sapply(s$phases, function (p) {
-    c('self',  'cumulative')
-  }))))
-  ms <- c(sapply(r, function (r) sapply(r$samples, function (s) sapply(s$phases, function (p) {
-    c(p$duration, p$start + p$duration) / 1000
-  }))))
-  df <- data.frame(set, phase, type, ms, stringsAsFactors=FALSE, row.names=NULL)
-  df$set  <- factor(df$set,  levels=attr(r, 'levels'))
-  phases <- sapply(r[[1]]$samples[[1]]$phases, function (x) x$phase)
+phases_data_frame.results_json <- function(results) {
+  phases <- mapX(results[[1]]$samples[[1]]$phases, x$phase)
+
+  row.length <- sum(mapX(results, {
+    sum(mapX(x$samples, {
+      length(x$phases) * 2
+    }))
+  }))
+
+  df <- data.frame(
+    set  = character(row.length),
+    phase = character(row.length),
+    type = character(row.length),
+    ms   = numeric(row.length),
+    stringsAsFactors = FALSE,
+    row.names = NULL)
+
+  types <- c('self', 'cumulative')
+
+  i = 1
+  for (result in results) {
+    for (sample in result$samples) {
+      for (phase in sample$phases) {
+        df$set[i]   <- result$set
+        df$phase[i] <- phase$phase
+        df$type[i]  <- 'self'
+        df$ms[i]    <- phase$duration / 1000
+        i <- i + 1
+        df$set[i]   <- result$set
+        df$phase[i] <- phase$phase
+        df$type[i]  <- 'cumulative'
+        df$ms[i]    <- (phase$start + phase$duration) / 1000
+        i <- i + 1
+      }
+    }
+  }
+
+  df$set  <- factor(df$set,  levels=attr(results, 'levels'))
   df$phase <- factor(df$phase, levels=phases)
   df$type <- factor(df$type,
     levels=c('self', 'cumulative'),
@@ -35,30 +64,37 @@ phases_data_frame.results_json <- function(r) {
 }
 
 as.data.frame.results_json <- function(results) {
-  types <- c('duration', 'js')
-  set <- c(sapply(results, function(result) {
-    c(sapply(types, function (type) {
-      replicate(length(result$samples), result$set)
-    }))
-  }))
-  type <- c(sapply(results, function(result) {
-    c(sapply(types, function (type) {
-      replicate(length(result$samples), type)
-    }))
-  }))
-  ms <- c(sapply(results, function(result) {
-    c(sapply(types, function (type) {
-      sapply(result$samples, function (x) x[[type]] / 1000)
-    }))
-  }))
-  df <- data.frame(set, type, ms, stringsAsFactors=FALSE, row.names=NULL)
-  df$set  <- factor(df$set,  levels=attr(results, 'levels'))
-  df$type <- factor(df$type, levels=types)
+  types = c('duration', 'js')
+
+  row.length <- sum(mapX(results, length(x$samples) * 2))
+
+  df <- data.frame(
+    set  = character(row.length),
+    type = character(row.length),
+    ms   = numeric(row.length),
+    stringsAsFactors = FALSE,
+    row.names = NULL)
+
+  i = 1
+  for (result in results) {
+    for (sample in result$samples) {
+      for (type in types) {
+        df$set[i]  <- result$set
+        df$type[i] <- type
+        df$ms[i]   <- sample[[type]] / 1000
+        i <- i + 1
+      }
+    }
+  }
+
+  df$set  <- factor(df$set,  levels = attr(results, 'levels'))
+  df$type <- factor(df$type, levels = types)
+
   return(df)
 }
 
 printHistograms <- function(hists) {
-  nrows <- max(sapply(hists, function(x) x$nrows))
+  nrows <- max(mapX(hists, x$nrows))
   for (r in max(nrows):1) {
     cat(paste(sapply(hists, function (h) paste(sapply(1:h$ncols, function (c) {
       if (h$count[c] >= r) {
@@ -69,7 +105,7 @@ printHistograms <- function(hists) {
     }), collapse="")), collapse = "  "))
     cat("\n")
   }
-  cat(paste(sapply(hists, function (h) format(h$type, justify='centre', width=h$ncols * 2)), collapse = "  "))
+  cat(paste(mapX(hists, format(x$type, justify='centre', width=x$ncols * 2)), collapse = "  "))
   cat("\n")
 }
 

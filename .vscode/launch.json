@@ -5,6 +5,7 @@
       "name": "Test",
       "type": "node",
       "request": "launch",
+      "protocol": "inspector",
       "preLaunchTask": "build",
       "program": "${workspaceRoot}/dist/test.js",
       "sourceMaps": true,
