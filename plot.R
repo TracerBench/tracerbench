@@ -1,4 +1,5 @@
-source('results.R')
+#!/usr/bin/env Rscript
+source('ResultSets.R')
 
 library(ggplot2)
 
@@ -7,34 +8,31 @@ argv = commandArgs(trailingOnly=TRUE)
 json_filename <- if (length(argv) > 0) argv[1] else 'results.json'
 pdf_filename <- paste0(sub("([^.]+)\\.[[:alnum:]]+$", "\\1", json_filename), '.pdf')
 
-r <- results_json(json_filename)
-df <- as.data.frame(r)
+r <- ResultSets$new(json_filename)
 
 pdf(pdf_filename, onefile = TRUE, width=11, height=8.5)
 theme_set(theme_bw(base_size = 12) +
           theme(plot.margin = margin(t = 0.5, r = 0.5, b = 0.5, l = 0.5, unit = "in")))
 
 print(
-  ggplot(df, aes(type, ms, color=set)) +
+  ggplot(r$samples, aes(type, ms, color=set)) +
     geom_boxplot(outlier.shape = NA) +
     geom_point(position = position_jitterdodge(), alpha=0.3) +
     labs(x = NULL, title = 'Initial Render Benchmark')
 )
 
-phases <- phases_data_frame(r)
-
 print(
-  ggplot(phases, aes(phase, ms, color=set)) +
+  ggplot(r$phases, aes(phase, ms, color=set)) +
     facet_wrap(~ type, scales="free_y") +
     geom_boxplot() +
     theme(strip.background = element_rect(fill = "#eeeeee"), axis.text.x = element_text(angle = 45, hjust=1)) +
     labs(title = 'Phase Durations')
 )
 
-pairs <- attr(r, 'pairs')
-for (i in 1:nrow(pairs)) {
+pairs <- r$set.pairs
+for (i in seq_len(nrow(pairs))) {
   pair <- pairs[i,]
-  paired <- subset(df, set %in% pair & type == 'js')
+  paired <- subset(r$samples, set %in% pair & type == 'js')
   paired$set <- factor(paired$set, levels=pair)
   paired.title <- paste("Test", pair[1], "JS Samples Against", pair[2], "JS Samples")
   t <- wilcox.test(ms ~ set, data=paired, conf.int=T)

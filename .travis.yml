@@ -14,6 +14,7 @@ addons:
       - google-chrome-beta
       - r-recommended
       - r-cran-jsonlite
+      - r-cran-r6
 env:
   - CHROME_BIN=/usr/bin/google-chrome-beta R_LIBS_USER=~/R/Library
 install:
