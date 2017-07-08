@@ -39,6 +39,7 @@ tests.forEach((indexFile: string) => {
     ],
     name: version,
     runtimeStats: true,
+    cpuThrottleRate: 4,
     saveTraces: (i) => `trace-${version}-${i}.json`,
     url,
   }));
