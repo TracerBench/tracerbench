@@ -48,7 +48,6 @@ ResultSets <- R6Class("ResultSets",
     set.pairs = NULL,
     sample.count = NULL,
     phase.levels = NULL,
-    stats.groups = NULL,
     stats = NULL,
     initialize = function(path = "results.json") {
       path <<- path
@@ -60,8 +59,7 @@ ResultSets <- R6Class("ResultSets",
       sample.count <<- sum(meta$count)
       samples <<- build_samples(json)
       phases <<- build_phases(json)
-      stats.groups <<- build_runtime_call_stats(json, "statGroups")
-      stats <<- build_runtime_call_stats(json, "stats")
+      stats <<- build_runtime_call_stats(json)
     },
     summary = function() {
       s <- xtabs(ms ~ ., aggregate(ms ~ set + type, samples, function (ms) {
@@ -110,17 +108,22 @@ ResultSets <- R6Class("ResultSets",
 
       cursors <- lapply(list(
         set="character",
+        sample="integer",
         type="character",
         ms="double"
       ), Cursor$new, n )
 
       for (result in json) {
-        for (sample in result$samples) {
+        samples <- result$samples
+        for (i in seq_len(length(samples))) {
+          sample <- samples[[i]]
           cursors$set$write(result$set)
+          cursors$sample$write(i)
           cursors$type$write("js")
           cursors$ms$write(sample$js / 1000)
 
           cursors$set$write(result$set)
+          cursors$sample$write(i)
           cursors$type$write("duration")
           cursors$ms$write(sample$duration / 1000)
         }
@@ -137,19 +140,24 @@ ResultSets <- R6Class("ResultSets",
       cursors <- lapply(list(
         set = "character",
         phase = "character",
+        sample = "integer",
         type = "character",
         ms = "double"
       ), Cursor$new, n)
 
       for (result in json) {
-        for (sample in result$samples) {
+        samples <- result$samples
+        for (i in seq_len(length(samples))) {
+          sample <- samples[[i]]
           for (phase in sample$phases) {
             cursors$set$write(result$set)
+            cursors$sample$write(i)
             cursors$phase$write(phase$phase)
             cursors$type$write("self")
             cursors$ms$write(phase$duration / 1000)
 
             cursors$set$write(result$set)
+            cursors$sample$write(i)
             cursors$phase$write(phase$phase)
             cursors$type$write("cumulative")
             cursors$ms$write((phase$start + phase$duration) / 1000)
@@ -162,7 +170,7 @@ ResultSets <- R6Class("ResultSets",
       data$phase <- factor(data$phase, levels = phase.levels)
       data.frame(data)
     },
-    build_runtime_call_stats = function (json, kind) {
+    build_runtime_call_stats = function (json) {
       if (is.null(json[[1]]$samples[[1]]$runtimeCallStats)) {
         return(NULL)
       }
@@ -170,26 +178,36 @@ ResultSets <- R6Class("ResultSets",
       n <- 0
       for (result in json) {
         for (sample in result$samples) {
-          n <- n + length(sample$runtimeCallStats[[kind]])
+          for (group in sample$runtimeCallStats) {
+            n <- n + length(group)
+          }
         }
       }
 
       cursors <- lapply(list(
         set = "character",
+        sample = "integer",
+        group = "character",
         stat = "character",
         count = "integer",
         ms = "double"
       ), Cursor$new, n)
 
       for (result in json) {
-        for (sample in result$samples) {
-          stats <- sample$runtimeCallStats[[kind]]
-          for (name in names(stats)) {
-            stat <- stats[[name]]
-            cursors$set$write( result$set )
-            cursors$stat$write( name )
-            cursors$count$write( stat$count )
-            cursors$ms$write( stat$time / 1000 )
+        samples <- result$samples
+        for (i in seq_len(length(samples))) {
+          groups <- samples[[i]]$runtimeCallStats
+          for (groupName in names(groups)) {
+            group <- groups[[groupName]]
+            for (name in names(group)) {
+              stat <- group[[name]]
+              cursors$set$write( result$set )
+              cursors$sample$write( i )
+              cursors$group$write( groupName )
+              cursors$stat$write( name )
+              cursors$count$write( stat$count )
+              cursors$ms$write( stat$time / 1000 )
+            }
           }
         }
       }

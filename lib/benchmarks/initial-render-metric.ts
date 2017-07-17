@@ -51,13 +51,11 @@ export interface IBlinkGCSample {
 }
 
 export interface IRuntimeCallStats {
-  statGroups: {
-    [statGroup: string]: IRuntimeCallStat | undefined;
-  };
+  [group: string]: IRuntimeCallStatGroup | undefined;
+}
 
-  stats: {
-    [stat: string]: IRuntimeCallStat | undefined;
-  };
+export interface IRuntimeCallStatGroup {
+  [stat: string]: IRuntimeCallStat | undefined;
 }
 
 export interface IRuntimeCallStat {
@@ -161,10 +159,7 @@ export default class InitialRenderMetric {
     runtimeStats?: boolean;
   }) {
     if (params.runtimeStats) {
-      this.runtimeCallStats = {
-        statGroups: {},
-        stats: {},
-      };
+      this.runtimeCallStats = {};
     }
   }
 
@@ -309,16 +304,13 @@ export default class InitialRenderMetric {
     for (const name of Object.keys(runtimeCallStatsArg)) {
       const [ count, time ] = runtimeCallStatsArg[name];
       const group = runtimeCallStatGroup(name);
-      const statGroup = runtimeCallStats.statGroups[group];
+      let statGroup = runtimeCallStats[group];
       if (statGroup === undefined) {
-        runtimeCallStats.statGroups[group] = { count, time };
-      } else {
-        statGroup.count += count;
-        statGroup.time += time;
+        statGroup = runtimeCallStats[group] = {};
       }
-      const stat = runtimeCallStats.stats[name];
+      const stat = statGroup[name];
       if (stat === undefined) {
-        runtimeCallStats.stats[name] = { count, time };
+        statGroup[name] = { count, time };
       } else {
         stat.count += count;
         stat.time += time;
