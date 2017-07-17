@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
-    "prepublish": "tsc",
+    "prepublish": "tsc && cp ./{report.R,plot.R} ./dist/",
     "build": "tsc",
     "compile": "tsc --watch",
     "lint": "tslint -p tsconfig.json",
