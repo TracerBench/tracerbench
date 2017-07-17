@@ -1,8 +1,17 @@
 #!/usr/bin/env Rscript
-suppressWarnings(suppressMessages(source('ResultSets.R')))
 
-argv = commandArgs(trailingOnly=TRUE)
+argv <- commandArgs()
+
+m <- grep("--file", argv)
+srcDir <- if (m) dirname(substring(argv[m], 8)) else "."
+srcDir <- normalizePath(srcDir)
+
+m <- match("--args", argv, 0L)
+argv <- if (m) argv[-seq_len(m)] else character()
+
 json_filename <- if (length(argv) > 0) argv[1] else 'results.json'
+
+suppressWarnings(suppressMessages(source(paste0(srcDir, '/ResultSets.R'))))
 
 r <- ResultSets$new(json_filename)
 
@@ -35,7 +44,7 @@ makeHistograms <- function(df, level) {
 
 s <- r$summary()
 
-for (i in seq_len(length(r$samples))) {
+for (i in seq_len(nrow(r$meta))) {
   cat("\n")
 
   meta <- r$meta[i,]

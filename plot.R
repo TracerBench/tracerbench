@@ -1,12 +1,20 @@
 #!/usr/bin/env Rscript
-source('ResultSets.R')
 
-library(ggplot2)
+argv <- commandArgs()
 
-argv = commandArgs(trailingOnly=TRUE)
+m <- grep("--file", argv)
+srcDir <- if (m) dirname(substring(argv[m], 8)) else "."
+srcDir <- normalizePath(srcDir)
+
+m <- match("--args", argv, 0L)
+argv <- if (m) argv[-seq_len(m)] else character()
 
 json_filename <- if (length(argv) > 0) argv[1] else 'results.json'
 pdf_filename <- paste0(sub("([^.]+)\\.[[:alnum:]]+$", "\\1", json_filename), '.pdf')
+
+library(ggplot2)
+
+source(paste0(srcDir, '/ResultSets.R'))
 
 r <- ResultSets$new(json_filename)
 
