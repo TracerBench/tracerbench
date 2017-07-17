@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 source('results.R')
 
 library(ggplot2)

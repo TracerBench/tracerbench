@@ -1,8 +1,7 @@
+#!/usr/bin/env Rscript
 source('results.R')
 
-r <- results_json('results.json')
-df <- as.data.frame(r)
+argv = commandArgs(trailingOnly=TRUE)
+json_filename <- if (length(argv) > 0) argv[1] else 'results.json'
 
-library(ggplot2)
-
-ggplot(df, aes(ms, type, color=set)) + geom_boxplot()
+print(results_json(json_filename))
