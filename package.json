@@ -21,7 +21,10 @@
     "dist/index.d.ts",
     "dist/index.js",
     "dist/index.js.map",
-    "dist/lib"
+    "dist/lib",
+    "results.R",
+    "report.R",
+    "plot.R"
   ],
   "keywords": [
     "chrome",
