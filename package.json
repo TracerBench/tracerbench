@@ -36,13 +36,13 @@
     "@types/node": "^7.0.23",
     "@types/uglify-js": "^2.6.28",
     "bower": "^1.7.9",
-    "tslint": "^5.4.2",
+    "tslint": "^5.5.0",
     "typescript": "^2.3.4",
     "uglify-js": "^2.7.0"
   },
   "dependencies": {
     "array-binsearch": "^1.0.1",
-    "chrome-debugging-client": "^0.4.1"
+    "chrome-debugging-client": "^0.4.2"
   },
   "engine": "node >= 4.0.0"
 }

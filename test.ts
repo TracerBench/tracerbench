@@ -27,6 +27,7 @@ tests.forEach((indexFile: string) => {
   const version = match[1];
   benchmarks.push(new InitialRenderBenchmark({
     browser: browserOpts,
+    cpuThrottleRate: 4,
     delay: 1000,
     markers: [
       { start: "fetchStart",      label: "jquery" },
@@ -39,7 +40,6 @@ tests.forEach((indexFile: string) => {
     ],
     name: version,
     runtimeStats: true,
-    cpuThrottleRate: 4,
     saveTraces: (i) => `trace-${version}-${i}.json`,
     url,
   }));
