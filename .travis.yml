@@ -23,4 +23,4 @@ install:
   - mkdir -p ~/R/Library
   - Rscript --version
 after_script:
-  - Rscript report.R
+  - bin/report.R
