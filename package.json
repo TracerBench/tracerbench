@@ -21,10 +21,7 @@
     "dist/index.d.ts",
     "dist/index.js",
     "dist/index.js.map",
-    "dist/lib",
-    "ResultSets.R",
-    "report.R",
-    "plot.R"
+    "dist/lib"
   ],
   "keywords": [
     "chrome",
@@ -43,6 +40,11 @@
   "dependencies": {
     "array-binsearch": "^1.0.1",
     "chrome-debugging-client": "^0.4.2"
+  },
+  "bin": {
+    "plot": "./bin/plot.R",
+    "report": "./bin/report.R",
+    "ResultSets.R": "./bin/ResultSets.R"
   },
   "engine": "node >= 4.0.0"
 }
