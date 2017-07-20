@@ -21,7 +21,8 @@
     "dist/index.d.ts",
     "dist/index.js",
     "dist/index.js.map",
-    "dist/lib"
+    "dist/lib",
+    "bin"
   ],
   "keywords": [
     "chrome",
