@@ -54,11 +54,6 @@ class Tab implements ITab {
   public frame: Page.Frame;
 
   /**
-   * The process id of the tab
-   */
-  public pid: number;
-
-  /**
    * Called when the frame navigates
    */
   public onNavigate: (() => void) | undefined = undefined;
@@ -81,7 +76,6 @@ class Tab implements ITab {
     this.network = new Network(client);
     this.emulation = new Emulation(client);
     this.heapProfiler = new HeapProfiler(client);
-    this.pid = parseInt(frame.id.split(".")[0], 10);
     page.frameNavigated = (params) => {
       const newFrame = params.frame;
       if (!newFrame.parentId) {
@@ -128,7 +122,7 @@ class Tab implements ITab {
 
     this.isTracing = true;
 
-    const { tracing, pid } = this;
+    const { tracing } = this;
 
     const traceComplete = (async () => {
       const trace = new Trace();
@@ -149,7 +143,11 @@ class Tab implements ITab {
       tracing.dataCollected = null;
 
       trace.buildModel();
-      trace.mainProcess = trace.process(pid);
+
+      const mainProcess = trace.processes.find((p) => p.name === "Renderer");
+      if (mainProcess !== undefined) {
+        trace.mainProcess = mainProcess;
+      }
 
       return trace;
     })();

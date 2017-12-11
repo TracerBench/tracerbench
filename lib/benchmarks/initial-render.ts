@@ -119,11 +119,6 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
 
     t.onNavigate = undefined;
 
-    if (!trace.mainProcess || !trace.mainProcess.mainThread) {
-      console.warn("unable to find main process");
-      return;
-    }
-
     if (this.params.cpuThrottleRate !== undefined) {
       await t.setCPUThrottlingRate(1);
     }
@@ -138,6 +133,11 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
 
     if (this.params.saveTraces) {
       fs.writeFileSync(this.params.saveTraces(i), JSON.stringify(trace.events, null, 2));
+    }
+
+    if (!trace.mainProcess || !trace.mainProcess.mainThread) {
+      console.warn("unable to find main process");
+      return;
     }
 
     const metric = new InitialRenderMetric(markers, this.params);
