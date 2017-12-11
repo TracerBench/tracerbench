@@ -11,8 +11,6 @@ import Trace from "./trace/trace";
 export interface ITab {
   isTracing: boolean;
 
-  /** The process id of the tab */
-  pid: number;
   /** The current frame for the tab */
   frame: Page.Frame;
   onNavigate: (() => void) | undefined;
