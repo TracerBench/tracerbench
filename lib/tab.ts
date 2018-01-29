@@ -142,8 +142,18 @@ class Tab implements ITab {
 
       trace.buildModel();
 
-      const mainProcess = trace.processes.find((p) => p.name === "Renderer");
-      if (mainProcess !== undefined) {
+      /*
+        Chrome creates a new Renderer with a new PID each time we open a new tab,
+        but the old PID and Renderer processes continues to hang around. Checking
+        the length of the events array helps us to ensure we find the active tab's
+        Renderer process.
+      */
+      const mainProcess = trace.processes.reduce(
+        (c, v) => { return (!c || v.events.length > c.events.length) ? v : c; },
+        null
+      );
+
+      if (mainProcess !== undefined && mainProcess.name === "Renderer") {
         trace.mainProcess = mainProcess;
       }
 
