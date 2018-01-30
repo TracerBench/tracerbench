@@ -5,7 +5,7 @@ export {
   IV8GCSample,
   IGCStat,
   IInitialRenderSamples,
-  IInterationSample,
+  IIterationSample,
   IMarker,
   IPhaseSample,
   IRuntimeCallStat,
