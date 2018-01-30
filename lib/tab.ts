@@ -7,6 +7,7 @@ import {
   Tracing,
 } from "chrome-debugging-client/dist/protocol/tot";
 import Trace from "./trace/trace";
+import Process from "./trace/process";
 
 export interface ITab {
   isTracing: boolean;
@@ -148,14 +149,9 @@ class Tab implements ITab {
         the length of the events array helps us to ensure we find the active tab's
         Renderer process.
       */
-      const mainProcess = trace.processes.reduce(
-        (c, v) => { return (!c || v.events.length > c.events.length) ? v : c; },
-        null
-      );
-
-      if (mainProcess !== undefined && mainProcess.name === "Renderer") {
-        trace.mainProcess = mainProcess;
-      }
+      trace.mainProcess = trace.processes
+        .filter((p) => p.name === "Renderer")
+        .reduce((c, v) => v.events.length > c.events.length ? v : c);
 
       return trace;
     })();
