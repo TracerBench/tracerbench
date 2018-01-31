@@ -70,7 +70,7 @@ export interface IRuntimeCallStat {
   time: number;
 }
 
-export interface IInterationSample {
+export interface IIterationSample {
   /**
    * Microseconds from start mark until the start of the first Paint event after the last mark.
    */
@@ -120,7 +120,7 @@ export interface IGCStat {
 export interface IInitialRenderSamples {
   meta: IBenchmarkMeta;
   set: string;
-  samples: IInterationSample[];
+  samples: IIterationSample[];
 }
 
 export interface IPhaseSample {
@@ -163,7 +163,7 @@ export default class InitialRenderMetric {
     }
   }
 
-  public measure(trace: Trace): IInterationSample {
+  public measure(trace: Trace): IIterationSample {
     const { mainProcess } = trace;
     if (!mainProcess) {
       throw new Error("unable to determine main process for trace");
