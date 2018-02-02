@@ -42,7 +42,7 @@ if (!is.null(r$stats)) {
   library(forcats)
   library(tidyr)
 
-  plotStats <- function(df) {
+  plotStats <- function(df, title) {
     print(
       ggplot(df, aes(set, value)) +
         facet_wrap(~stat+metric, ncol=2, scales = "free", strip.position="left") +
@@ -53,7 +53,8 @@ if (!is.null(r$stats)) {
           axis.title = element_blank(),
           axis.text.y = element_blank(),
           axis.ticks.y = element_blank(),
-          strip.text = element_text(size = 8))
+          strip.text = element_text(size = 8)) +
+        labs(title = title)
     )
   }
 
@@ -63,11 +64,11 @@ if (!is.null(r$stats)) {
     df
   }
 
-  pageStats <- function(df) {
+  pageStats <- function(df, title) {
     lvls <- levels(df$stat)
     len <- length(lvls)
     for (i in seq(1,len,by=5)) {
-      plotStats(filterLevels(df, lvls[i:min(i+4, len)] ))
+      plotStats(filterLevels(df, lvls[i:min(i+4, len)] ), title)
     }
   }
 
@@ -79,7 +80,7 @@ if (!is.null(r$stats)) {
 
   df <- gather(df, metric, value, c(count, ms))
 
-  pageStats(df)
+  pageStats(df, 'Runtime Stats by Group')
 
   df <- r$stats %>%
     group_by(set, stat, sample) %>%
@@ -87,7 +88,7 @@ if (!is.null(r$stats)) {
   df$stat <- fct_reorder(df$stat, df$ms, median, .desc = TRUE)
   df <- gather(df, metric, value, c(count, ms))
 
-  pageStats(df)
+  pageStats(df, 'Runtime Stat Detail')
 }
 
 pairs <- r$set.pairs
