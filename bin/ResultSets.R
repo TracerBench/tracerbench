@@ -1,5 +1,5 @@
 library(R6)
-library(jsonlite)
+suppressMessages(library(jsonlite))
 
 Cursor <- R6Class("Cursor",
   portable = F,
