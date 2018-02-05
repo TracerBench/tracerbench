@@ -35,7 +35,7 @@
     "@types/uglify-js": "^2.6.28",
     "bower": "^1.7.9",
     "tslint": "^5.5.0",
-    "typescript": "^2.3.4",
+    "typescript": "^2.7.1",
     "uglify-js": "^2.7.0"
   },
   "dependencies": {
