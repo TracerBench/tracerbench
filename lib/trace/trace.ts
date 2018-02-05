@@ -15,13 +15,13 @@ import traceEventComparator from "./trace_event_comparator";
 
 export default class Trace {
   public processes: Process[] = [];
-  public mainProcess: Process;
+  public mainProcess?: Process;
   public bounds: Bounds = new Bounds();
   public events: ITraceEvent[] = [];
   public browserProcess: Process | null = null;
   public gpuProcess: Process | null = null;
   public rendererProcesses: Process[] = [];
-  public numberOfProcessors: number;
+  public numberOfProcessors?: number;
 
   private parents = new Map<ITraceEvent, ITraceEvent>();
   private stack: ITraceEvent[] = [];
