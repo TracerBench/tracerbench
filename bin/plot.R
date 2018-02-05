@@ -68,7 +68,7 @@ if (!is.null(r$stats)) {
     lvls <- levels(df$stat)
     len <- length(lvls)
     for (i in seq(1,len,by=5)) {
-      plotStats(filterLevels(df, lvls[i:min(i+4, len)] ), title)
+      plotStats(filterLevels(df, lvls[i:min(i+4, len)] ), paste(title, '(', floor((i + 5)/5), 'of', floor(len/5), ')'))
     }
   }
 
