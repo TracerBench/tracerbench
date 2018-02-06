@@ -8,11 +8,11 @@ export default class Process {
   public scriptStreamerThread: Thread | null = null;
   public bounds: Bounds = new Bounds();
   public events: ITraceEvent[] = [];
-  public name: string;
-  public labels: string;
-  public sortIndex: number;
-  public traceBufferOverflowedAt: number;
-  public isTimeTicksHighResolution: boolean;
+  public name?: string;
+  public labels?: string;
+  public sortIndex?: number;
+  public traceBufferOverflowedAt?: number;
+  public isTimeTicksHighResolution?: boolean;
   public traceConfig: any;
 
   private threadMap: { [tid: number]: Thread; } = {};

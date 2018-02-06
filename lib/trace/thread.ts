@@ -5,8 +5,8 @@ export default class Thread {
   public bounds: Bounds = new Bounds();
   public events: ITraceEvent[] = [];
 
-  public name: string;
-  public sortIndex: number;
+  public name?: string;
+  public sortIndex?: number;
 
   public id: number;
 
