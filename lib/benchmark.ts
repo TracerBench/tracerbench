@@ -72,7 +72,7 @@ export abstract class Benchmark<R> implements IBenchmark<IBenchmarkState<R>, R> 
   public async setup(session: ISession): Promise<IBenchmarkState<R>> {
     const browserOptions = this.browserOptions;
     const browser = await session.spawnBrowser(browserOptions.type, browserOptions);
-    const apiClient = await session.createAPIClient("localhost", browser.remoteDebuggingPort);
+    const apiClient = await session.createAPIClient("127.0.0.1", browser.remoteDebuggingPort);
     const version = await apiClient.version();
     const existingTabs = await apiClient.listTabs();
     // open a blank tab
