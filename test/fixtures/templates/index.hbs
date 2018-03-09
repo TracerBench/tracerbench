@@ -1,6 +1,9 @@
 <h2>Index</h2>
 <ul>
-{{#each items key="id" as |item|}}
-  <li>{{#link-to "item" item.id}}{{item.name}}{{/link-to}}</li>
-{{/each}}
+  {{#each data.items as |item|}}
+  <li>{{buffer-render data=item.a}} {{buffer-render data=item.b}} {{buffer-render data=item.c}} {{buffer-render data=item.d}}</li>
+  <li>{{buffer-render data=item.a}} {{buffer-render data=item.b}} {{buffer-render data=item.c}} {{buffer-render data=item.d}}</li>
+  <li>{{component-render a=item.a b=item.b c=item.c d=item.d}}</li>
+  <li>{{component-render a=item.a b=item.b c=item.c d=item.d}}</li>
+  {{/each}}
 </ul>

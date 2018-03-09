@@ -1,11 +1,11 @@
 var MyApp;
-(function () {
+(function() {
   "use strict";
   function renderEnd() {
     performance.mark("renderEnd");
-    requestAnimationFrame(function () {
+    requestAnimationFrame(function() {
       performance.mark("beforePaint");
-      requestAnimationFrame(function () {
+      requestAnimationFrame(function() {
         performance.mark("afterPaint");
         performance.measure("document", "navigationStart", "domLoading");
         performance.measure("jquery", "domLoading", "jqueryLoaded");
@@ -20,8 +20,8 @@ var MyApp;
           console.profileEnd("initialRender");
         }
         if (location.search === "?tracing") {
-          requestAnimationFrame(function () {
-            setTimeout(function () {
+          requestAnimationFrame(function() {
+            setTimeout(function() {
               document.location.href = "about:blank";
             }, 0);
           });
@@ -35,13 +35,13 @@ var MyApp;
   }).create();
 
   MyApp.Router = Ember.Router.extend({
-    location: 'none',
+    location: "none",
     setupRouter: function() {
       performance.mark("startRouting");
-      this.on("willTransition", function () {
+      this.on("willTransition", function() {
         performance.mark("willTransition");
       });
-      this.on("didTransition", function () {
+      this.on("didTransition", function() {
         performance.mark("didTransition");
         Ember.run.schedule("afterRender", renderEnd);
       });
@@ -50,26 +50,44 @@ var MyApp;
   });
 
   MyApp.Router.map(function() {
-    this.route('item', { path: '/item/:item_id' });
+    this.route("item", { path: "/item/:item_id" });
   });
 
   MyApp.ApplicationController = Ember.Controller.extend({
-    init: function () {
+    init: function() {
       this._super.apply(this, arguments);
-      this.color = 'background-color: #'+Math.floor(Math.random()*16777215).toString(16);
+      this.color =
+        "background-color: #" +
+        Math.floor(Math.random() * 16777215).toString(16);
     }
   });
 
+  MyApp.MyThing = Ember.Object.extend({
+    d: function() {
+      return this.get("a") + this.get("b");
+    }.property("a", "b")
+  });
+
   MyApp.IndexController = Ember.Controller.extend({
-    init: function () {
+    init: function() {
       this._super.apply(this, arguments);
-      var items = this.items = new Array(100);
-      for (var i = 0; i < 100; i++) {
-        items[i] = {
-          id: i,
-          name: "Item " + i
-        };
+      var listItems = [];
+      for (var i = 0; i < 50; i++) {
+        listItems.pushObject(
+          MyApp.MyThing.create({
+            a: "a" + i,
+            b: "b" + i,
+            c: "c" + i
+          })
+        );
       }
+      this.data = { items: listItems };
+    }
+  });
+
+  MyApp.BufferRenderComponent = Ember.Component.extend({
+    didInsertElement: function() {
+      this.element.textContent = this.get('data');
     }
   });
 
