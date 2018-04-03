@@ -14,12 +14,12 @@ function methodNames(val) {
 
 program
   .option('-f, --file <file>', 'Path to trace json file')
-  .option('-m, --methods <names>', 'List of methods to aggregate', methodNames)
+  .option('-m, --methods <names|file>', 'List of methods to aggregate', methodNames)
   .parse(process.argv);
 
 const error = chalk.bold.red;
 
-const { file, methods } = program;
+let { file, methods } = program;
 const defaultProfilePath = `${process.cwd()}/profile.json`;
 const defaultMethodsPath = `${process.cwd()}/.methods.json}`;
 
@@ -30,9 +30,11 @@ if (file === undefined && fs.existsSync(defaultProfilePath) === false) {
 if (methods === undefined && fs.existsSync(defaultMethodsPath) === false) {
   throw new SilentError(error(`Error: Must pass a list of method names or have a ".methods.json" file at the root of the project.`));
 }
-
+debugger
 if (methods === undefined) {
   methods = JSON.parse(fs.readFileSync(defaultMethodsPath, 'utf8'));
+} else if (methods && fs.existsSync(process.cwd() + '/' + methods)) {
+  methods = JSON.parse(fs.readFileSync(process.cwd() + '/' + methods, 'utf8'));
 }
 
 
