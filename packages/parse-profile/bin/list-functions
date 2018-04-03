@@ -1,0 +1,60 @@
+#!/usr/bin/env node
+'use strict';
+
+const Profile = require('../dist/index.cjs');
+const program = require('commander');
+const chalk = require('chalk');
+const fs = require('fs');
+const SilentError = require('silent-error');
+const d3 = require('d3');
+
+function methodNames(val) {
+  return val.split(',');
+}
+
+program
+  .option('-f, --file <file>', 'Path to trace json file')
+  .option('-l, --locations', 'include locations in names')
+  .parse(process.argv);
+
+const error = chalk.bold.red;
+
+const { file, locations } = program;
+const defaultProfilePath = `${process.cwd()}/profile.json`;
+
+if (file === undefined && fs.existsSync(defaultProfilePath) === false) {
+  throw new SilentError(error(`Error: Must pass a path to the trace file 💣`));
+}
+
+const filePath = file || defaultProfilePath;
+const traceEvents = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+const trace = new Profile.Trace();
+
+trace.addEvents(traceEvents);
+trace.buildModel();
+
+trace.mainProcess = trace.processes
+  .filter(p => p.name === 'Renderer')
+  .reduce((c, v) => (v.events.length > c.events.length ? v : c));
+
+const profileEvent = trace.mainProcess.events.find(event => event.name === 'CpuProfile');
+const profile = Profile.CpuProfile.from(profileEvent);
+
+const methods = new Set();
+
+
+if (locations) {
+  profile.nodes.forEach(node => {
+    const {
+      functionName,
+      url,
+      lineNumber,
+      columnNumber
+    } = node.callFrame;
+
+    methods.add(`${url}:${lineNumber}:${columnNumber}.${functionName}`);
+  });
+} else {
+  profile.nodes.forEach(node => methods.add(node.callFrame.functionName));
+}
+methods.forEach(method => console.log(method));
