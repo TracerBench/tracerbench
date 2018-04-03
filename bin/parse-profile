@@ -1,0 +1,90 @@
+#!/usr/bin/env node
+
+const Profile = require('../dist/index.cjs');
+const program = require('commander');
+const chalk = require('chalk');
+const fs = require('fs');
+const SilentError = require('silent-error');
+const d3 = require('d3');
+
+function methodNames(val) {
+  return val.split(',');
+}
+
+program
+  .option('-f, --file <file>', 'Path to trace json file')
+  .option('-m, --methods <names>', 'List of methods to aggregate', methodNames)
+  .parse(process.argv);
+
+const error = chalk.bold.red;
+
+const { file, methods } = program;
+const defaultProfilePath = `${process.cwd()}/profile.json`;
+const defaultMethodsPath = `${process.cwd()}/.methods.json}`;
+
+if (file === undefined && fs.existsSync(defaultProfilePath) === false) {
+  throw new SilentError(error(`Error: Must pass a path to the trace file 💣`));
+}
+
+if (methods === undefined && fs.existsSync(defaultMethodsPath) === false) {
+  throw new SilentError(error(`Error: Must pass a list of method names or have a ".methods.json" file at the root of the project.`));
+}
+
+if (methods === undefined) {
+  methods = JSON.parse(fs.readFileSync(defaultMethodsPath, 'utf8'));
+}
+
+
+const filePath = file || defaultProfilePath;
+const traceEvents = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+const trace = new Profile.Trace();
+
+trace.addEvents(traceEvents);
+trace.buildModel();
+
+trace.mainProcess = trace.processes
+  .filter(p => p.name === 'Renderer')
+  .reduce((c, v) => (v.events.length > c.events.length ? v : c));
+
+const profileEvent = trace.mainProcess.events.find(event => event.name === 'CpuProfile');
+const profile = Profile.CpuProfile.from(profileEvent);
+
+const root = d3.hierarchy(profile.root, (node) => {
+  if (node.children) {
+    return node.children.map((id) => profile.nodes.get(id)).filter(node => node.callFrame.functionName !== '(idle)' && node.callFrame.functionName !== '(program)')
+  }
+}).sum(d => d.hitCount).sort((a, b) => {
+  return b.height - a.height || b.value - a.value;
+});
+
+let sums = {};
+methods.forEach((method) => {
+  sums[method] = 0;
+  root.each(node => {
+    if (node.data.callFrame.functionName.indexOf(method) > -1) {
+      sums[method] += node.data.hitCount;
+      if (node.children) {
+        aggregateChildren(node, method)
+      }
+    }
+  });
+});
+
+function aggregateChildren(node, method) {
+  node.children.forEach((node) => {
+    if (!methods.includes(node.data.callFrame.functionName)) {
+      sums[method] += node.data.hitCount;
+
+      if (node.children) {
+        aggregateChildren(node, method);
+      }
+    }
+  });
+}
+
+let buffer = chalk.bold.white('\nAggregated Sums:\n================\n');
+Object.keys(sums).forEach((methodName) => {
+  buffer += `${chalk.bold.magenta(methodName)}: ${sums[methodName]}ms\n`
+});
+
+console.log(buffer);

@@ -208,7 +208,7 @@ export default class Trace {
         this.process(pid).traceConfig = event.args.value;
         break;
       default:
-        // console.warn("unrecognized metadata:", JSON.stringify(event, null, 2));
+        //console.warn("unrecognized metadata:", JSON.stringify(event, null, 2));
         break;
     }
   }
