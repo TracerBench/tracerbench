@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import { Trace } from './trace';
-import CpuProfile from './cpuprofile';
+import CpuProfile, { ICpuProfile, IProfileNode } from './cpuprofile';
 
 let json = JSON.parse(fs.readFileSync('profile.json', 'utf8'));
 
@@ -18,8 +18,10 @@ console.log('main process', trace.mainProcess.labels);
 
 let profileEvent = trace.mainProcess.events.find(event => event.name === 'CpuProfile');
 
-let profile = CpuProfile.from(profileEvent);
-fs.writeFileSync('cpuProfile.json', JSON.stringify(profile!.profile, null, 2));
+const profile = CpuProfile.from(profileEvent);
+if (profile !== undefined) {
+  fs.writeFileSync('cpuProfile.json', JSON.stringify(profile.profile, null, 2));
+}
 
 console.log(
   'events ' + trace.events.length + ' min ts ' + trace.bounds.min + ' max ts ' + trace.bounds.max
