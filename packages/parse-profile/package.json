@@ -1,0 +1,16 @@
+{
+  "name": "parse-profile",
+  "version": "0.0.1",
+  "main": "index.js",
+  "private": true,
+  "scripts": {
+    "start": "tsc && node dist/index.js"
+  },
+  "devDependencies": {
+    "typescript": "^2.8.1"
+  },
+  "dependencies": {
+    "@types/node": "^9.6.1",
+    "array-binsearch": "^1.0.1"
+  }
+}
