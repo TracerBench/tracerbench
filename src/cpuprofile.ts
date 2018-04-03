@@ -31,11 +31,24 @@ export interface ICpuProfile {
 
 export interface IProfileNode {
   id: number;
-  children: number[];
+  callFrame: {
+    functionName: string;
+    scriptId: string;
+    url: string;
+    lineNumber: number;
+    columnNumber: number;
+  };
+  hitCount: number;
+  children?: number[];
+  positionTicks?: {
+    line: number;
+    ticks: number;
+  };
 }
 
 export default class CpuProfile {
   profile: ICpuProfile;
+  timestamps: number[];
 
   constructor(profile: ICpuProfile) {
     this.profile = profile;
@@ -47,6 +60,7 @@ export default class CpuProfile {
       last += timeDeltas[i];
     }
     timestamps[timeDeltas.length] = last;
+    this.timestamps = timestamps;
   }
 
   static from(traceEvent: ITraceEvent | undefined) {
