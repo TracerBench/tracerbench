@@ -57,16 +57,6 @@ const root = d3.hierarchy(profile.root, (node) => {
   return b.value - a.value;
 });
 
-// console.log(profile.hitCount, profile.duration, profile.timestamps.reduce((a, b) => {
-//   return Math.max(a, b)
-// }), profile.timestamps.reduce((a, b) => {
-//   return Math.min(a, b)
-// }));
-
-// compileLayout
-
-// create | compile
-
 let sums = {};
 methods.forEach((method) => {
   sums[method] = 0;
