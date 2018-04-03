@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node serve.js"
   },
+  "bin": {
+    "parse-profile": "./bin/parse-profile"
+  },
   "devDependencies": {
     "finalhandler": "^1.1.1",
     "rollup": "^0.57.1",
@@ -18,6 +21,9 @@
     "@types/d3": "^5.0.0",
     "@types/node": "^9.6.1",
     "array-binsearch": "^1.0.1",
-    "d3": "^5.0.0"
+    "chalk": "^2.3.2",
+    "commander": "^2.15.1",
+    "d3": "^5.0.0",
+    "silent-error": "^1.1.0"
   }
 }
