@@ -29,6 +29,14 @@ export interface ICpuProfile {
   timeDeltas: number[];
 }
 
+export const enum Constants {
+  ROOT_FUNCTION_NAME = '(root)',
+  PROGRAM_FUNCTION_NAME = '(program)',
+  IDLE_FUNCTION_NAME = '(idle)',
+  GC_FUNCTION_NAME = '(garbage collector)',
+  NATIVE_SCRIPT_ID = '0',
+}
+
 export interface IProfileNode {
   id: number;
   callFrame: {
@@ -48,7 +56,33 @@ export interface IProfileNode {
 
 export default class CpuProfile {
   profile: ICpuProfile;
+  /**
+   * Sample timestamps in microseconds
+   */
   timestamps: number[];
+  /**
+   * Profile duration in microseconds
+   */
+  duration: number;
+  /**
+   * Average interval in microseconds
+   */
+  interval: number;
+
+  /**
+   * Node by node id.
+   */
+  nodes: Map<number, IProfileNode>;
+
+  /**
+   * Parents by child node id.
+   */
+  parents: Map<number, IProfileNode>;
+
+  root?: IProfileNode;
+  program?: IProfileNode;
+  idle?: IProfileNode;
+  gc?: IProfileNode;
 
   constructor(profile: ICpuProfile) {
     this.profile = profile;
@@ -61,6 +95,37 @@ export default class CpuProfile {
     }
     timestamps[timeDeltas.length] = last;
     this.timestamps = timestamps;
+
+    let duration = (this.duration = profile.endTime - profile.startTime);
+    this.interval = duration / profile.samples.length;
+
+    let nodes = (this.nodes = new Map<number, IProfileNode>());
+    let parents = (this.parents = new Map<number, IProfileNode>());
+
+    profile.nodes.forEach(node => {
+      nodes.set(node.id, node);
+      if (node.children) {
+        node.children.forEach(id => {
+          parents.set(id, node);
+        });
+      }
+      if (node.callFrame.scriptId === Constants.NATIVE_SCRIPT_ID) {
+        switch (node.callFrame.functionName) {
+          case Constants.ROOT_FUNCTION_NAME:
+            this.root = node;
+            break;
+          case Constants.PROGRAM_FUNCTION_NAME:
+            this.program = node;
+            break;
+          case Constants.IDLE_FUNCTION_NAME:
+            this.idle = node;
+            break;
+          case Constants.GC_FUNCTION_NAME:
+            this.gc = node;
+            break;
+        }
+      }
+    });
   }
 
   static from(traceEvent: ITraceEvent | undefined) {
