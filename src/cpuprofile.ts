@@ -46,6 +46,7 @@ export default class CpuProfile {
       timestamps[i] = last;
       last += timeDeltas[i];
     }
+    timestamps[timeDeltas.length] = last;
   }
 
   static from(traceEvent: ITraceEvent | undefined) {
