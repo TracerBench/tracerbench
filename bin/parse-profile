@@ -51,11 +51,21 @@ const profile = Profile.CpuProfile.from(profileEvent);
 
 const root = d3.hierarchy(profile.root, (node) => {
   if (node.children) {
-    return node.children.map((id) => profile.nodes.get(id)).filter(node => node.callFrame.functionName !== '(idle)' && node.callFrame.functionName !== '(program)')
+    return node.children.map((id) => profile.nodes.get(id)).filter(node => node.callFrame.functionName !== '(idle)' && node.callFrame.functionName !== '(program)' && node.callFrame.functionName !== '(garbage collector)')
   }
 }).sum(d => d.hitCount).sort((a, b) => {
-  return b.height - a.height || b.value - a.value;
+  return b.value - a.value;
 });
+
+// console.log(profile.hitCount, profile.duration, profile.timestamps.reduce((a, b) => {
+//   return Math.max(a, b)
+// }), profile.timestamps.reduce((a, b) => {
+//   return Math.min(a, b)
+// }));
+
+// compileLayout
+
+// create | compile
 
 let sums = {};
 methods.forEach((method) => {
@@ -68,6 +78,7 @@ methods.forEach((method) => {
       }
     }
   });
+  sums[method] = ((sums[method] / profile.hitCount) * profile.duration) / 1000;
 });
 
 function aggregateChildren(node, method) {
