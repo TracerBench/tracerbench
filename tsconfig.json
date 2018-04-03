@@ -5,7 +5,8 @@
     "rootDir": "src",
     "moduleResolution": "node",
     "module": "commonjs",
-    "target": "es2017"
+    "target": "es2017",
+    "sourceMap": true
   },
   "files": ["src/index.ts"]
 }
