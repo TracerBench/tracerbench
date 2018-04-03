@@ -53,6 +53,8 @@ export interface IProfileNode {
     line: number;
     ticks: number;
   };
+  start?: number;
+  end?: number;
 }
 
 export default class CpuProfile {
@@ -152,6 +154,21 @@ export default class CpuProfile {
             this.gc = node;
             break;
         }
+      }
+    });
+
+    profile.samples.forEach((id, index) => {
+      let node: IProfileNode | undefined = nodes.get(id)!;
+      let start = timestamps[index];
+
+      while (node !== undefined) {
+        if (node.start === undefined) {
+          node.start = node.end = start;
+        } else {
+          node.start = Math.min(node.start, start);
+          node.end = Math.max(node.end!, start);
+        }
+        node = parents.get(node.id);
       }
     });
 
