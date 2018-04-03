@@ -4,13 +4,20 @@
   "main": "dist/index.js",
   "private": true,
   "scripts": {
-    "start": "tsc && node dist/index.js"
+    "start": "node serve.js"
   },
   "devDependencies": {
+    "finalhandler": "^1.1.1",
+    "rollup": "^0.57.1",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-typescript": "^0.8.1",
+    "serve-static": "^1.13.2",
     "typescript": "^2.8.1"
   },
   "dependencies": {
+    "@types/d3": "^5.0.0",
     "@types/node": "^9.6.1",
-    "array-binsearch": "^1.0.1"
+    "array-binsearch": "^1.0.1",
+    "d3": "^5.0.0"
   }
 }

@@ -4,7 +4,6 @@
     "outDir": "dist",
     "rootDir": "src",
     "moduleResolution": "node",
-    "module": "commonjs",
     "target": "es2017",
     "sourceMap": true
   },
