@@ -1,4 +1,5 @@
 import { ITraceEvent } from './trace';
+import { hierarchy, HierarchyNode } from 'd3-hierarchy';
 
 export interface ICpuProfileEvent extends ITraceEvent {
   ph: 'I';
@@ -107,6 +108,8 @@ export default class CpuProfile {
    */
   gc?: IProfileNode;
 
+  hierarchy: HierarchyNode<IProfileNode>;
+
   constructor(profile: ICpuProfile) {
     this.profile = profile;
     let timeDeltas = profile.timeDeltas;
@@ -153,6 +156,11 @@ export default class CpuProfile {
     });
 
     this.hitCount = hitCount;
+
+    this.hierarchy = hierarchy(
+      this.root!,
+      d => (d.children !== undefined ? d.children.map(id => nodes.get(id)!) : [])
+    );
   }
 
   static from(traceEvent: ITraceEvent | undefined) {
