@@ -53,8 +53,9 @@ export interface IProfileNode {
     line: number;
     ticks: number;
   };
-  start?: number;
-  end?: number;
+  min?: number;
+  max?: number;
+  sampleCount?: number;
 }
 
 export default class CpuProfile {
@@ -161,14 +162,13 @@ export default class CpuProfile {
       let node: IProfileNode | undefined = nodes.get(id)!;
       let start = timestamps[index];
 
-      while (node !== undefined) {
-        if (node.start === undefined) {
-          node.start = node.end = start;
-        } else {
-          node.start = Math.min(node.start, start);
-          node.end = Math.max(node.end!, start);
-        }
-        node = parents.get(node.id);
+      if (node.sampleCount === undefined) {
+        node.sampleCount = 1;
+        node.min = node.max = start;
+      } else {
+        node.sampleCount++;
+        node.min = Math.min(node.min!, start);
+        node.max = Math.max(node.max!, start);
       }
     });
 
