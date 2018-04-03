@@ -57,5 +57,5 @@ export default class CpuProfile {
 }
 
 function isCpuProfile(traceEvent: ITraceEvent | undefined): traceEvent is ICpuProfileEvent {
-  return traceEvent && traceEvent.cat === 'I' && traceEvent.name === 'CpuProfile';
+  return traceEvent !== undefined && traceEvent.ph === 'I' && traceEvent.name === 'CpuProfile';
 }

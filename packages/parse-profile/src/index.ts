@@ -19,6 +19,7 @@ console.log('main process', trace.mainProcess.labels);
 let profileEvent = trace.mainProcess.events.find(event => event.name === 'CpuProfile');
 
 let profile = CpuProfile.from(profileEvent);
+fs.writeFileSync('cpuProfile.json', JSON.stringify(profile!.profile, null, 2));
 
 console.log(
   'events ' + trace.events.length + ' min ts ' + trace.bounds.min + ' max ts ' + trace.bounds.max
