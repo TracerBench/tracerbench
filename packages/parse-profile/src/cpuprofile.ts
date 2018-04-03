@@ -56,18 +56,26 @@ export interface IProfileNode {
 
 export default class CpuProfile {
   profile: ICpuProfile;
+
   /**
    * Sample timestamps in microseconds
    */
   timestamps: number[];
+
   /**
    * Profile duration in microseconds
    */
   duration: number;
+
   /**
    * Average interval in microseconds
    */
   interval: number;
+
+  /**
+   * total hitCount of nodes.
+   */
+  hitCount: number;
 
   /**
    * Node by node id.
@@ -79,9 +87,24 @@ export default class CpuProfile {
    */
   parents: Map<number, IProfileNode>;
 
+  /**
+   * Root parent
+   */
   root?: IProfileNode;
+
+  /**
+   * Program node
+   */
   program?: IProfileNode;
+
+  /**
+   * Idle node
+   */
   idle?: IProfileNode;
+
+  /**
+   * GC node
+   */
   gc?: IProfileNode;
 
   constructor(profile: ICpuProfile) {
@@ -101,6 +124,7 @@ export default class CpuProfile {
 
     let nodes = (this.nodes = new Map<number, IProfileNode>());
     let parents = (this.parents = new Map<number, IProfileNode>());
+    let hitCount = 0;
 
     profile.nodes.forEach(node => {
       nodes.set(node.id, node);
@@ -109,6 +133,7 @@ export default class CpuProfile {
           parents.set(id, node);
         });
       }
+      hitCount += node.hitCount;
       if (node.callFrame.scriptId === Constants.NATIVE_SCRIPT_ID) {
         switch (node.callFrame.functionName) {
           case Constants.ROOT_FUNCTION_NAME:
@@ -126,6 +151,8 @@ export default class CpuProfile {
         }
       }
     });
+
+    this.hitCount = hitCount;
   }
 
   static from(traceEvent: ITraceEvent | undefined) {
