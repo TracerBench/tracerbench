@@ -19,8 +19,10 @@ console.log('main process', trace.mainProcess.labels);
 let profileEvent = trace.mainProcess.events.find(event => event.name === 'CpuProfile');
 
 const profile = CpuProfile.from(profileEvent);
+
 if (profile !== undefined) {
   fs.writeFileSync('cpuProfile.json', JSON.stringify(profile.profile, null, 2));
+  debugger;
 }
 
 console.log(
