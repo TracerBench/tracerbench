@@ -1,5 +1,6 @@
 import * as fs from 'fs';
 import { Trace } from './trace';
+import CpuProfile from './cpuprofile';
 
 let json = JSON.parse(fs.readFileSync('profile.json', 'utf8'));
 
@@ -14,6 +15,10 @@ trace.mainProcess = trace.processes
   .reduce((c, v) => (v.events.length > c.events.length ? v : c));
 
 console.log('main process', trace.mainProcess.labels);
+
+let profileEvent = trace.mainProcess.events.find(event => event.name === 'CpuProfile');
+
+let profile = CpuProfile.from(profileEvent);
 
 console.log(
   'events ' + trace.events.length + ' min ts ' + trace.bounds.min + ' max ts ' + trace.bounds.max

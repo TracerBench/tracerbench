@@ -10,6 +10,25 @@ array-binsearch@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/array-binsearch/-/array-binsearch-1.0.1.tgz#35586dca04ca9ab259c4c4708435acd1babb08ad"
 
+chrome-devtools-frontend@1.0.445684:
+  version "1.0.445684"
+  resolved "https://registry.yarnpkg.com/chrome-devtools-frontend/-/chrome-devtools-frontend-1.0.445684.tgz#8540131836024df2b70fe90d0322af368931d762"
+
+chrome-devtools-frontend@^1.0.547358:
+  version "1.0.547358"
+  resolved "https://registry.yarnpkg.com/chrome-devtools-frontend/-/chrome-devtools-frontend-1.0.547358.tgz#c592871339bc1d9e2a002205e1758706f4d8693c"
+
+devtools-timeline-model@^1.4.0:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/devtools-timeline-model/-/devtools-timeline-model-1.4.0.tgz#91f9624fb0313fa3ebeda7bf99865357bc66c726"
+  dependencies:
+    chrome-devtools-frontend "1.0.445684"
+    resolve "1.1.7"
+
+resolve@1.1.7:
+  version "1.1.7"
+  resolved "https://registry.yarnpkg.com/resolve/-/resolve-1.1.7.tgz#203114d82ad2c5ed9e8e0411b3932875e889e97b"
+
 typescript@^2.8.1:
   version "2.8.1"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.8.1.tgz#6160e4f8f195d5ba81d4876f9c0cc1fbc0820624"
