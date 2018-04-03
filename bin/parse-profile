@@ -30,7 +30,7 @@ if (file === undefined && fs.existsSync(defaultProfilePath) === false) {
 if (methods === undefined && fs.existsSync(defaultMethodsPath) === false) {
   throw new SilentError(error(`Error: Must pass a list of method names or have a ".methods.json" file at the root of the project.`));
 }
-debugger
+
 if (methods === undefined) {
   methods = JSON.parse(fs.readFileSync(defaultMethodsPath, 'utf8'));
 } else if (methods && fs.existsSync(process.cwd() + '/' + methods)) {

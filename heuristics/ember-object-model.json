@@ -1,4 +1,6 @@
 [
   "a.extend",
-  "O.applyPartial"
+  "O.applyPartial",
+  "setProperties",
+  "e.addDependentKeys"
 ]
