@@ -48,11 +48,9 @@
       let trace = new Profile.Trace();
       trace.addEvents(traceEvents);
       trace.buildModel();
-      trace.mainProcess = trace.processes
-        .filter(p => p.name === 'Renderer')
-        .reduce((c, v) => (v.events.length > c.events.length ? v : c));
 
-      let profileEvent = trace.mainProcess.events.find(event => event.name === 'CpuProfile');
+      let profileEvent = trace.events.find((e) => e.name === 'CpuProfile');
+      trace.mainProcess = trace.process(profileEvent.pid);
       let profile = Profile.CpuProfile.from(profileEvent);
 
       var root = d3.hierarchy(profile.root, (node) => {
