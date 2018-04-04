@@ -5,6 +5,7 @@ const Profile = require('../dist/index.cjs');
 const program = require('commander');
 const chalk = require('chalk');
 const fs = require('fs');
+const path = require('path');
 const SilentError = require('silent-error');
 const d3 = require('d3');
 
@@ -15,11 +16,12 @@ function methodNames(val) {
 program
   .option('-f, --file <file>', 'Path to trace json file')
   .option('-m, --methods <names|file>', 'List of methods to aggregate', methodNames)
+  .option('-r, --report <heuristicDir>', 'Generates a report with aggregated sums for each heuristic category and aggregated sum across all heuristics')
   .parse(process.argv);
 
 const error = chalk.bold.red;
 
-let { file, methods } = program;
+let { file, methods, report } = program;
 const defaultProfilePath = `${process.cwd()}/profile.json`;
 const defaultMethodsPath = `${process.cwd()}/.methods.json}`;
 
@@ -27,16 +29,28 @@ if (file === undefined && fs.existsSync(defaultProfilePath) === false) {
   throw new SilentError(error(`Error: Must pass a path to the trace file 💣`));
 }
 
-if (methods === undefined && fs.existsSync(defaultMethodsPath) === false) {
-  throw new SilentError(error(`Error: Must pass a list of method names or have a ".methods.json" file at the root of the project.`));
-}
+let categories;
 
-if (methods === undefined) {
-  methods = JSON.parse(fs.readFileSync(defaultMethodsPath, 'utf8'));
-} else if (methods && fs.existsSync(process.cwd() + '/' + methods)) {
-  methods = JSON.parse(fs.readFileSync(process.cwd() + '/' + methods, 'utf8'));
-}
+if (report) {
+  let files = fs.readdirSync(report);
+  categories = {};
+  files.map(file => {
+    let name = path.basename(file).replace('.json', '');
+    let methods = JSON.parse(fs.readFileSync(`${report}/${file}`));
+    categories[name] = methods;
+  });
+} else {
 
+  if (methods === undefined && fs.existsSync(defaultMethodsPath) === false) {
+    throw new SilentError(error(`Error: Must pass a list of method names or have a ".methods.json" file at the root of the project.`));
+  }
+
+  if (methods === undefined) {
+    methods = JSON.parse(fs.readFileSync(defaultMethodsPath, 'utf8'));
+  } else if (methods && fs.existsSync(process.cwd() + '/' + methods)) {
+    methods = JSON.parse(fs.readFileSync(process.cwd() + '/' + methods, 'utf8'));
+  }
+}
 
 const filePath = file || defaultProfilePath;
 const traceEvents = JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -51,39 +65,114 @@ const root = d3.hierarchy(profile.root, (node) => {
   return b.value - a.value;
 });
 
-let sums = {};
-methods.forEach((method) => {
-  sums[method] = 0;
-  root.each(node => {
-    if (node.data.callFrame.functionName.indexOf(method) > -1) {
-      sums[method] += node.data.hitCount;
-      if (node.children) {
-        aggregateChildren(node, method)
-      }
-    }
-  });
-  sums[method] = ((sums[method] / profile.hitCount) * profile.duration) / 1000;
-});
+class Aggregator {
+  constructor(root) {
+    this.root = root;
+    this.methods = undefined;
+  }
 
-function aggregateChildren(node, method) {
-  node.children.forEach((node) => {
-    if (!methods.includes(node.data.callFrame.functionName)) {
-      sums[method] += node.data.hitCount;
-
-      if (node.children) {
-        aggregateChildren(node, method);
+  _sumsPerMethod(methodName) {
+    let sum = 0;
+    this.root.each(node => {
+      if (node.data.callFrame.functionName.indexOf(methodName) > -1) {
+        sum += node.data.hitCount;
+        if (node.children) {
+          sum += this._aggregateChildren(node)
+        }
       }
+    });
+
+    return sum;
+  }
+
+  _aggregateChildren(node, methodName) {
+    let sum = 0;
+
+    const aggregate = (node) => {
+      node.children.forEach((node) => {
+        if (!this.methods.includes(node.data.callFrame.functionName)) {
+          sum += node.data.hitCount;
+          if (node.children) {
+            aggregate(node);
+          }
+        }
+      });
     }
-  });
+
+    aggregate(node);
+    return sum;
+  }
+
+  sumsPerHeuristicCategory(methods) {
+    this.methods = methods;
+    let sums = {};
+    methods.forEach(method => {
+      sums[method] = this._sumsPerMethod(method);
+    });
+    this.methods = undefined;
+
+    let total = Object.keys(sums).reduce((accumulator, current) => {
+      return accumulator += sums[current];
+    }, 0);
+
+    return { sums, total };
+  }
+
+  sumsAllHeuristicCategories(categories) {
+    let _categories = Object.keys(categories);
+    let all = {
+      categorized: {},
+      all: {}
+    }
+
+    let allMethods = [];
+
+    _categories.forEach((category) => {
+      let methods = categories[category];
+      allMethods.push(...methods);
+      all.categorized[category] = this.sumsPerHeuristicCategory(methods);
+    });
+
+    this.methods = allMethods;
+    all.all = this.sumsPerHeuristicCategory(allMethods);
+    this.methods = undefined;
+    return all;
+  }
 }
 
-let buffer = chalk.bold.white('\nAggregated Sums:\n================\n');
-Object.keys(sums).forEach((methodName) => {
-  buffer += `${chalk.bold.magenta(methodName)}: ${round(sums[methodName])}ms\n`
-});
+class Reporter {
+  constructor(aggregator) {
+    this.aggregator = aggregator;
+  }
 
-function round(num) {
-  return Math.round(num * 100) / 100;
+  categoryReport(methods) {
+    let result = this.aggregator.sumsPerHeuristicCategory(methods);
+    this.print(`Aggregated Sum:`, result);
+  }
+
+  fullReport(categories) {
+    let { categorized, all } = this.aggregator.sumsAllHeuristicCategories(categories);
+    Object.keys(categorized).forEach((category) => {
+      this.print(`Aggregated Sum For ${category}:`, categorized[category]);
+    });
+    this.print(`Total Aggregated Sum:`, all);
+  }
+
+  print(title, body) {
+    let buffer = chalk.bold.white(`\n${title}\n================\n`);
+    Object.keys(body.sums).forEach((methodName) => {
+      buffer += `${chalk.bold.magenta(methodName)}: ${body.sums[methodName]}ms\n`
+    });
+    buffer += chalk.bold.white(`================\nTotal: ${body.total}ms`);
+    console.log(buffer);
+  }
 }
 
-console.log(buffer);
+let aggregator = new Aggregator(root);
+let reporter = new Reporter(aggregator);
+
+if (program.report) {
+  reporter.fullReport(categories);
+} else {
+  reporter.categoryReport(methods);
+}

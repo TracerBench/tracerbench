@@ -43,9 +43,18 @@ if (locations) {
       columnNumber
     } = node.callFrame;
 
-    methods.add(`${url}:${lineNumber}:${columnNumber}.${functionName}`);
+    methods.add(`${url}:${lineNumber}:${columnNumber}.${normalizeFnName(functionName)}`);
   });
 } else {
-  profile.nodes.forEach(node => methods.add(node.callFrame.functionName));
+  profile.nodes.forEach(node => {
+    methods.add(normalizeFnName(node.callFrame.functionName))
+  });
 }
 methods.forEach(method => console.log(method));
+
+function normalizeFnName(name) {
+  if (name === '') {
+    name = '(anonymous)'
+  }
+  return name;
+}
