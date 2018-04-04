@@ -23,11 +23,14 @@ const filePath = file || defaultProfilePath;
 const traceEvents = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 const trace = Profile.loadTrace(traceEvents);
 
+let totalDuration = 0;
 trace.events
     .filter(event => event.name === 'ParseAuthorStyleSheet')
     .filter(event => event.args.data.styleSheetUrl)
     .forEach(event => {
       const url = event.args.data.styleSheetUrl;
-      const durationInMs = (event.dur/1000).toFixed(2);
-      console.log(`${url}: ${durationInMs}`);
+      const durationInMs = (event.dur/1000);
+      totalDuration += durationInMs;
+      console.log(`${url}: ${durationInMs.toFixed(2)}`);
     });
+console.log(`Total Duration = ${totalDuration.toFixed(2)}ms`);
