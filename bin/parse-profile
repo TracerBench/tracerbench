@@ -77,7 +77,11 @@ function aggregateChildren(node, method) {
 
 let buffer = chalk.bold.white('\nAggregated Sums:\n================\n');
 Object.keys(sums).forEach((methodName) => {
-  buffer += `${chalk.bold.magenta(methodName)}: ${sums[methodName]}ms\n`
+  buffer += `${chalk.bold.magenta(methodName)}: ${round(sums[methodName])}ms\n`
 });
+
+function round(num) {
+  return Math.round(num * 100) / 100;
+}
 
 console.log(buffer);
