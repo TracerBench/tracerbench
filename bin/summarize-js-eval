@@ -23,13 +23,12 @@ const filePath = file || defaultProfilePath;
 const traceEvents = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 const trace = Profile.loadTrace(traceEvents);
 
-let count = 0;
 trace.events
     .filter(event => event.name === 'EvaluateScript')
     .filter(event => event.args.data.url)
     .forEach(event => {
       const url = event.args.data.url;
-      const durationInMs = (event.tdur/1000).toFixed(2);
+      const durationInMs = (event.dur/1000).toFixed(2);
       console.log(`${url}: ${durationInMs}`);
     });
 
