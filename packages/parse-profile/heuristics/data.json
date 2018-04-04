@@ -1,0 +1,14 @@
+[
+  "ajax",
+  "adapterFor",
+  "serializeFor",
+  "_modelFor",
+  "_findByInternalModel",
+  "e.getRecord",
+  "e.createSnapshot",
+  "buildURL",
+  "normalizeResponse",
+  "_pushInternalModel",
+  "e.getHasMany",
+  "e.setBelongsTo"
+]

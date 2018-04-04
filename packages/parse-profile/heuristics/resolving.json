@@ -1,0 +1,7 @@
+[
+  "normalizeFullName",
+  "findModuleName",
+  "resolveOther",
+  "parseName",
+  "isValidFullName"
+]
