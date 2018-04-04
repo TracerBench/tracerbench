@@ -38,17 +38,8 @@ if (methods === undefined) {
 
 const filePath = file || defaultProfilePath;
 const traceEvents = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-const trace = new Profile.Trace();
-
-trace.addEvents(traceEvents);
-trace.buildModel();
-
-trace.mainProcess = trace.processes
-  .filter(p => p.name === 'Renderer')
-  .reduce((c, v) => (v.events.length > c.events.length ? v : c));
-
-const profileEvent = trace.mainProcess.events.find(event => event.name === 'CpuProfile');
-const profile = Profile.CpuProfile.from(profileEvent);
+const trace = Profile.loadTrace(traceEvents);
+const profile = trace.cpuProfile;
 
 const root = d3.hierarchy(profile.root, (node) => {
   if (node.children) {
