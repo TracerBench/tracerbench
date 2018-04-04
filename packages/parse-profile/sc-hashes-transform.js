@@ -1,7 +1,7 @@
 'use strict';
 const fs = require('fs');
 
-const URL_REGEX_STRING = /"https:\/\/[^"]+\/sc\/h\/(br\/)?([^"\/]+)"/g;
+const URL_REGEX_STRING = /"(https:\/\/[^"]+\/sc\/h\/(br\/)?([^"\/]+))"/g;
 
 function ScHashesTransformer(scHashesFile) {
   // This is a map of filename to hash value
@@ -26,7 +26,7 @@ function ScHashesTransformer(scHashesFile) {
 
 ScHashesTransformer.prototype = {
   transformFromString(profileEventsString) {
-    return profileEventsString.replace(URL_REGEX_STRING, (match, p1, p2) => `"${this._hashToFile[p2]}"`);
+    return profileEventsString.replace(URL_REGEX_STRING, (match, p1, p2, p3) => `"${p1}#${this._hashToFile[p3]}"`);
   }
 }
 
