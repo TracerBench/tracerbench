@@ -66,15 +66,16 @@ const root = d3.hierarchy(profile.root, (node) => {
 });
 
 class Aggregator {
-  constructor(root) {
+  constructor(profile, root) {
     this.root = root;
+    this.profile = profile;
     this.methods = undefined;
   }
 
   _sumsPerMethod(methodName) {
     let sum = 0;
     this.root.each(node => {
-      if (node.data.callFrame.functionName.indexOf(methodName) > -1) {
+      if (node.data.callFrame.functionName === methodName) {
         sum += node.data.hitCount;
         if (node.children) {
           sum += this._aggregateChildren(node)
@@ -85,15 +86,15 @@ class Aggregator {
     return sum;
   }
 
-  _aggregateChildren(node, methodName) {
+  _aggregateChildren(node) {
     let sum = 0;
 
     const aggregate = (node) => {
-      node.children.forEach((node) => {
-        if (!this.methods.includes(node.data.callFrame.functionName)) {
-          sum += node.data.hitCount;
-          if (node.children) {
-            aggregate(node);
+      node.children.forEach((n) => {
+        if (!this.methods.includes(n.data.callFrame.functionName)) {
+          sum += n.data.hitCount;
+          if (n.children) {
+            aggregate(n);
           }
         }
       });
@@ -104,10 +105,11 @@ class Aggregator {
   }
 
   sumsPerHeuristicCategory(methods) {
+    let { profile } = this;
     this.methods = methods;
     let sums = {};
     methods.forEach(method => {
-      sums[method] = this._sumsPerMethod(method);
+      sums[method] = toMS(this._sumsPerMethod(method), profile.hitCount, profile.duration);
     });
     this.methods = undefined;
 
@@ -161,14 +163,22 @@ class Reporter {
   print(title, body) {
     let buffer = chalk.bold.white(`\n${title}\n================\n`);
     Object.keys(body.sums).forEach((methodName) => {
-      buffer += `${chalk.bold.magenta(methodName)}: ${body.sums[methodName]}ms\n`
+      buffer += `${chalk.bold.magenta(methodName)}: ${round(body.sums[methodName])}ms\n`
     });
-    buffer += chalk.bold.white(`================\nTotal: ${body.total}ms`);
+    buffer += chalk.bold.white(`================\nTotal: ${round(body.total)}ms`);
     console.log(buffer);
   }
 }
 
-let aggregator = new Aggregator(root);
+function round(num) {
+  return Math.round(num * 100) / 100;
+}
+
+function toMS(num, freq, dur) {
+  return ((num / freq) * dur) / 1000;
+}
+
+let aggregator = new Aggregator(profile, root);
 let reporter = new Reporter(aggregator);
 
 if (program.report) {
