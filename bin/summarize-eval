@@ -1,0 +1,35 @@
+#!/usr/bin/env node
+'use strict';
+
+const chalk = require('chalk');
+const fs = require('fs');
+const program = require('commander');
+const Profile = require('../dist/index.cjs');
+const SilentError = require('silent-error');
+
+const error = chalk.bold.red;
+
+program
+    .option('-f, --file <file>', 'Path to trace json file')
+    .parse(process.argv);
+
+const { file } = program;
+const defaultProfilePath = `${process.cwd()}/profile.json`;
+if (file === undefined && fs.existsSync(defaultProfilePath) === false) {
+  throw new SilentError(error(`Error: Must pass a path to the trace file 💣`));
+}
+
+const filePath = file || defaultProfilePath;
+const traceEvents = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+const trace = Profile.loadTrace(traceEvents);
+
+let count = 0;
+trace.events
+    .filter(event => event.name === 'EvaluateScript')
+    .filter(event => event.args.data.url)
+    .forEach(event => {
+      const url = event.args.data.url;
+      const durationInMs = (event.tdur/1000).toFixed(2);
+      console.log(`${url}: ${durationInMs}`);
+    });
+
