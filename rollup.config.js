@@ -3,7 +3,7 @@ const resolve = require('rollup-plugin-node-resolve');
 
 module.exports = {
   input: './src/index.ts',
-  external: ['d3-hierarchy'],
+  external: ['d3-hierarchy', 'chalk'],
   plugins: [
     resolve({
       moduleOnly: true,
@@ -24,6 +24,7 @@ module.exports = {
       name: 'Profile',
       globals: {
         'd3-hierarchy': 'd3',
+        'chalk': 'chalk'
       },
       sourcemap: true,
     },
