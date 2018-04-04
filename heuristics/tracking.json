@@ -1,3 +1,7 @@
 [
-  "setTreeId"
+  "setTreeId",
+  "fireWith",
+  "_fireBatch",
+  "_createEvent",
+  "registerImpressionTracking"
 ]

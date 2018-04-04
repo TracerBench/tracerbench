@@ -1,3 +1,5 @@
 [
-  "r.getCompiledBlock"
+  "r.getCompiledBlock",
+  "e.compileLayout",
+  "t.compile"
 ]

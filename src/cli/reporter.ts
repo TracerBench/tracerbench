@@ -27,11 +27,20 @@ export class Reporter {
   private print(title: string, body: CategoryResult) {
     let buffer = chalk.bold.white(`\n${title}\n================\n`);
     Object.keys(body.sums).forEach((methodName) => {
-      buffer += `${chalk.bold.magenta(methodName)}: ${round(body.sums[methodName])}ms\n`
+      let normalizedName = normalizeMethodName(methodName);
+      buffer += `${chalk.bold.magenta(normalizedName)}: ${round(body.sums[methodName])}ms\n`
     });
     buffer += chalk.bold.white(`================\nTotal: ${round(body.total)}ms`);
     console.log(buffer);
   }
+}
+
+function normalizeMethodName(name: string) {
+  if (name === '') {
+    name = '(anonymous function)'
+  }
+
+  return name;
 }
 
 function round(num: number) {
