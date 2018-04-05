@@ -1,0 +1,21 @@
+[
+  "HandleApiCall",
+  "StringSplit",
+  "StoreIC_Premonomorphic",
+  "StackGuard",
+  "StoreIC_Miss",
+  "LoadIC_Miss",
+  "ObjectKeys",
+  "LoadIC_LoadNonexistentDH",
+  "LoadIC_LoadConstantFromPrototypeDH",
+  "HasProperty",
+  "indexOf",
+  "KeyedGetProperty",
+  "CreateObjectLiteral",
+  "RegExpReplace",
+  "AddDictionaryProperty",
+  "ArrayConcat",
+  "DeleteProperty",
+  "InvokeFunctionCallback",
+  "NewObject"
+]
