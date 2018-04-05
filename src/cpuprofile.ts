@@ -53,28 +53,18 @@ export interface IProfileNode {
     line: number;
     ticks: number;
   };
-  min?: number;
-  max?: number;
-  sampleCount?: number;
+
+  sampleCount: number;
+
+  min: number;
+  max: number;
+
+  total: number;
+  self: number;
 }
 
 export default class CpuProfile {
   profile: ICpuProfile;
-
-  /**
-   * Sample timestamps in microseconds
-   */
-  timestamps: number[];
-
-  /**
-   * Profile duration in microseconds
-   */
-  duration: number;
-
-  /**
-   * Average interval in microseconds
-   */
-  interval: number;
 
   /**
    * total hitCount of nodes.
@@ -86,10 +76,7 @@ export default class CpuProfile {
    */
   nodes: Map<number, IProfileNode>;
 
-  /**
-   * Parents by child node id.
-   */
-  parents: Map<number, IProfileNode>;
+  samples: ISample[];
 
   /**
    * Root parent
@@ -111,39 +98,36 @@ export default class CpuProfile {
    */
   gc?: IProfileNode;
 
+  start: number;
+  end: number;
+  duration: number;
+
   hierarchy: HierarchyNode<IProfileNode>;
+
+  private parentLinks: Map<IProfileNode, IProfileNode>;
+  private childrenLinks: Map<IProfileNode, IProfileNode[]>;
 
   constructor(profile: ICpuProfile) {
     this.profile = profile;
-    let timeDeltas = profile.timeDeltas;
-    let timestamps: number[] = new Array(timeDeltas.length);
-    let last = profile.startTime;
-    for (let i = 0; i < timeDeltas.length; i++) {
-      timestamps[i] = last;
-      last += timeDeltas[i];
-    }
-    timestamps[timeDeltas.length] = last;
-    this.timestamps = timestamps;
 
-    let duration = (this.duration = profile.endTime - profile.startTime);
-    this.interval = duration / profile.samples.length;
+    let parentLinks = (this.parentLinks = new Map<IProfileNode, IProfileNode>());
+    let childrenLinks = (this.childrenLinks = new Map<IProfileNode, IProfileNode[]>());
 
-    let nodes = (this.nodes = new Map<number, IProfileNode>());
-    let parents = (this.parents = new Map<number, IProfileNode>());
+    let nodes = profile.nodes;
+
+    let nodeMap = (this.nodes = mapAndLinkNodes(nodes, parentLinks, childrenLinks));
+
     let hitCount = 0;
 
-    profile.nodes.forEach(node => {
-      nodes.set(node.id, node);
-      if (node.children) {
-        node.children.forEach(id => {
-          parents.set(id, node);
-        });
-      }
+    let root: IProfileNode | undefined;
+    for (let i = 0; i < nodes.length; i++) {
+      let node = nodes[i];
       hitCount += node.hitCount;
+
       if (node.callFrame.scriptId === Constants.NATIVE_SCRIPT_ID) {
         switch (node.callFrame.functionName) {
           case Constants.ROOT_FUNCTION_NAME:
-            this.root = node;
+            root = node;
             break;
           case Constants.PROGRAM_FUNCTION_NAME:
             this.program = node;
@@ -156,28 +140,45 @@ export default class CpuProfile {
             break;
         }
       }
-    });
-
-    profile.samples.forEach((id, index) => {
-      let node: IProfileNode | undefined = nodes.get(id)!;
-      let start = timestamps[index];
-
-      if (node.sampleCount === undefined) {
-        node.sampleCount = 1;
-        node.min = node.max = start;
-      } else {
-        node.sampleCount++;
-        node.min = Math.min(node.min!, start);
-        node.max = Math.max(node.max!, start);
-      }
-    });
+    }
 
     this.hitCount = hitCount;
 
-    this.hierarchy = hierarchy(
-      this.root!,
-      d => (d.children !== undefined ? d.children.map(id => nodes.get(id)!) : [])
-    );
+    this.samples = mapSamples(profile, nodeMap);
+
+    if (root === undefined) {
+      throw new Error('missing root node in profile');
+    }
+
+    this.root = root;
+
+    computeTimes(root, childrenLinks);
+
+    let start = (this.start = profile.startTime);
+    let end = (this.end = root.max);
+    this.duration = end - start;
+
+    this.hierarchy = hierarchy(root, node => {
+      let children = childrenLinks.get(node);
+      if (children) {
+        return root === node ? children.filter(n => !isMetaNode(n)) : children;
+      }
+      return null;
+    });
+  }
+
+  parent(node: IProfileNode) {
+    return this.parentLinks.get(node);
+  }
+
+  children(node: IProfileNode) {
+    return this.childrenLinks.get(node);
+  }
+
+  node(id: number) {
+    let n = this.nodes.get(id);
+    if (n === undefined) throw new Error(`invalid node id: ${id}`);
+    return n;
   }
 
   static from(traceEvent: ITraceEvent | undefined) {
@@ -189,4 +190,146 @@ export default class CpuProfile {
 
 function isCpuProfile(traceEvent: ITraceEvent | undefined): traceEvent is ICpuProfileEvent {
   return traceEvent !== undefined && traceEvent.ph === 'I' && traceEvent.name === 'CpuProfile';
+}
+
+function mapAndLinkNodes(
+  nodes: IProfileNode[],
+  parentLinks: Map<IProfileNode, IProfileNode>,
+  childrenLinks: Map<IProfileNode, IProfileNode[]>
+) {
+  let nodeMap = new Map<number, IProfileNode>();
+  for (let i = 0; i < nodes.length; i++) {
+    let node = nodes[i];
+    // initialize our extensions
+    node.min = -1;
+    node.max = -1;
+    node.sampleCount = 0;
+    node.self = 0;
+    nodeMap.set(node.id, node);
+  }
+
+  linkNodes(nodes, nodeMap, parentLinks, childrenLinks);
+  return nodeMap;
+}
+
+function linkNodes(
+  nodes: IProfileNode[],
+  nodeMap: Map<number, IProfileNode>,
+  parentLinks: Map<IProfileNode, IProfileNode>,
+  childrenLinks: Map<IProfileNode, IProfileNode[]>
+) {
+  for (let i = 0; i < nodes.length; i++) {
+    let node = nodes[i];
+    linkChildren(node, nodeMap, parentLinks, childrenLinks);
+  }
+}
+
+function linkChildren(
+  parent: IProfileNode,
+  nodeMap: Map<number, IProfileNode>,
+  parentLinks: Map<IProfileNode, IProfileNode>,
+  childrenLinks: Map<IProfileNode, IProfileNode[]>
+) {
+  let childIds = parent.children;
+  if (childIds === undefined) return;
+
+  let children: IProfileNode[] = new Array(childIds.length);
+  for (let i = 0; i < childIds.length; i++) {
+    let child = nodeMap.get(childIds[i])!;
+    children[i] = child;
+    parentLinks.set(child, parent);
+  }
+  childrenLinks.set(parent, children);
+}
+
+function mapSamples(profile: ICpuProfile, nodeMap: Map<number, IProfileNode>) {
+  let sampleIds = profile.samples;
+  let samples: ISample[] = new Array(sampleIds.length);
+  // deltas can be negative and samples out of order
+  let timeDeltas = profile.timeDeltas;
+  let last = profile.startTime;
+  for (let i = 0; i < sampleIds.length; i++) {
+    let node = nodeMap.get(sampleIds[i])!;
+    let timestamp = last + timeDeltas[i];
+    samples[i] = {
+      node,
+      delta: 0,
+      timestamp,
+      prev: null,
+      next: null,
+    };
+    last = timestamp;
+
+    node.sampleCount++;
+  }
+
+  samples.sort((a, b) => a.timestamp - b.timestamp);
+
+  let prev: ISample | null = null;
+
+  for (let i = 0; i < samples.length; i++) {
+    let sample = samples[i];
+    let timestamp = sample.timestamp;
+
+    if (prev === null) {
+      sample.delta = timestamp - profile.startTime;
+    } else {
+      prev.next = sample;
+      sample.delta = timestamp - prev.timestamp;
+      sample.prev = prev;
+    }
+
+    let node = sample.node;
+    if (node.min === -1) {
+      node.min = timestamp;
+    }
+
+    node.self += sample.delta;
+
+    node.max = timestamp;
+    prev = sample;
+  }
+
+  return samples;
+}
+
+function computeTimes(node: IProfileNode, childrenMap: Map<IProfileNode, IProfileNode[]>) {
+  let children = childrenMap.get(node);
+  let childTotal = 0;
+  let min = node.min;
+  let max = node.max;
+  if (children !== undefined) {
+    for (let i = 0; i < children.length; i++) {
+      let child = children[i];
+      computeTimes(child, childrenMap);
+      childTotal += child.total;
+
+      min = min === -1 ? child.min : Math.min(min, child.min);
+      max = max === -1 ? child.max : Math.max(max, child.max);
+    }
+    children.sort((a, b) => a.min - b.min);
+  }
+  node.min = min;
+  node.max = max;
+  node.total = node.self + childTotal;
+}
+
+export function isMetaNode(node: IProfileNode) {
+  switch (node.callFrame.functionName) {
+    case Constants.ROOT_FUNCTION_NAME:
+    case Constants.PROGRAM_FUNCTION_NAME:
+    case Constants.IDLE_FUNCTION_NAME:
+    case Constants.GC_FUNCTION_NAME:
+      return true;
+  }
+  return false;
+}
+
+interface ISample {
+  delta: number;
+  timestamp: number;
+  prev: ISample | null;
+  next: ISample | null;
+
+  node: IProfileNode;
 }
