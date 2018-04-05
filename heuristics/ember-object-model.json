@@ -6,5 +6,6 @@
   "e.addDependentKeys",
   "t.compute",
   "trigger",
-  "pushObject"
+  "pushObject",
+  "x"
 ]
