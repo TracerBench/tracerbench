@@ -22,7 +22,7 @@ export interface CategoryResult {
 
 export interface FullReport {
   categorized: CategorizedResults;
-  all: CategoryResult | {};
+  all: CategoryResult | undefined;
 }
 
 export class Aggregator {
@@ -50,11 +50,12 @@ export class Aggregator {
   }
 
   private aggregateChildren(node: HierarchyNode<IProfileNode>): number {
+    let { methods } = this;
     let sum = 0;
 
     const aggregate = (node: HierarchyNode<IProfileNode>) => {
       node.children!.forEach((n) => {
-        if (!this.methods.includes(n.data.callFrame.functionName)) {
+        if (!methods.includes(n.data.callFrame.functionName)) {
           sum += n.data.hitCount;
           if (n.children) {
             aggregate(n);
@@ -71,9 +72,11 @@ export class Aggregator {
     let { profile } = this;
     this.methods = methods;
     let sums: Sums = {};
+
     methods.forEach(method => {
       sums[method] = toMS(this.sumsPerMethod(method), profile.hitCount, profile.duration);
     });
+
     this.methods = [];
 
     let total = Object.keys(sums).reduce((accumulator, current) => {
@@ -84,23 +87,21 @@ export class Aggregator {
   }
 
   sumsAllHeuristicCategories(categories: Categories): FullReport {
-    let _categories = Object.keys(categories);
+    let categoryNames = Object.keys(categories);
     let all: FullReport = {
       categorized: {},
-      all: {}
+      all: undefined
     }
 
     let allMethods: string[] = [];
 
-    _categories.forEach((category: string) => {
-      let methods: string[] = categories[category];
+    categoryNames.forEach((category: string) => {
+      let methods = categories[category];
       allMethods.push(...methods);
       all.categorized[category] = this.sumsPerHeuristicCategory(methods);
     });
 
-    this.methods = allMethods;
     all.all = this.sumsPerHeuristicCategory(allMethods);
-    this.methods = [];
     return all;
   }
 }
