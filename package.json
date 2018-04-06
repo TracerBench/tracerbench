@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "finalhandler": "^1.1.1",
+    "fixturify": "^0.3.4",
     "qunit": "^2.6.0",
     "rollup": "^0.57.1",
     "rollup-plugin-node-resolve": "^3.3.0",
