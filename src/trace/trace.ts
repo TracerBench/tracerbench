@@ -2,7 +2,12 @@ import binsearch from 'array-binsearch';
 import Bounds from './bounds';
 import Process from './process';
 import Thread from './thread';
-import CpuProfile, { ICpuProfile } from '../cpuprofile';
+import CpuProfile, {
+  ICpuProfile,
+  ICpuProfileEvent,
+  IProfileChunkEvent,
+  IProfileEvent,
+} from '../cpuprofile';
 
 import {
   ITraceEvent,
@@ -23,7 +28,9 @@ export default class Trace {
   public gpuProcess: Process | null = null;
   public rendererProcesses: Process[] = [];
   public numberOfProcessors?: number;
-  public cpuProfileEvent?: ITraceEvent;
+  public cpuProfileEvent?: ICpuProfileEvent;
+  public profileEvent?: IProfileEvent;
+  public profileChunkEvents: IProfileChunkEvent[] = [];
   public lastTracingStartedInPageEvent?: ITraceEvent;
 
   private _cpuProfile?: CpuProfile;
@@ -72,9 +79,16 @@ export default class Trace {
 
       if (event.ph === 'I' && event.cat === 'disabled-by-default-devtools.timeline') {
         if (event.name === 'CpuProfile') {
-          this.cpuProfileEvent = event;
+          this.cpuProfileEvent = event as ICpuProfileEvent;
         } else if (event.name === 'TracingStartedInPage') {
           this.lastTracingStartedInPageEvent = event;
+        }
+      } else if (event.ph === 'P') {
+        if (event.name === 'Profile') {
+          this.profileEvent = event as IProfileEvent;
+        }
+        if (event.name === 'ProfileChunk') {
+          this.profileChunkEvents.push(event as IProfileChunkEvent);
         }
       }
     }

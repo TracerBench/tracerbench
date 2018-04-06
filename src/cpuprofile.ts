@@ -1,6 +1,46 @@
 import { ITraceEvent } from './trace';
 import { hierarchy, HierarchyNode } from 'd3-hierarchy';
 
+export interface IProfileEvent extends ITraceEvent {
+  ph: 'P';
+  name: 'Profile';
+  args: {
+    data: {
+      startTime: number;
+    };
+  };
+}
+
+export interface IProfileChunkEvent extends ITraceEvent {
+  ph: 'P';
+  name: 'ProfileChunk';
+  args: {
+    data: IProfileChunk;
+  };
+}
+
+export interface IProfileChunk {
+  cpuProfile: {
+    nodes: IProfileNode[];
+    samples: number[];
+  };
+  timeDeltas: number[];
+}
+
+export interface IProfileNode {
+  id: number;
+  parent: number;
+  callFrame: ICallFrame;
+}
+
+export interface ICallFrame {
+  functionName: string;
+  scriptId: string;
+  url: string;
+  lineNumber: number;
+  columnNumber: number;
+}
+
 export interface ICpuProfileEvent extends ITraceEvent {
   ph: 'I';
   name: 'CpuProfile';
@@ -12,7 +52,7 @@ export interface ICpuProfileEvent extends ITraceEvent {
 }
 
 export interface ICpuProfile {
-  nodes: IProfileNode[];
+  nodes: ICpuProfileNode[];
   /**
    * startTime in microseconds of CPU profile
    */
@@ -49,7 +89,7 @@ export interface ICallFrame {
   columnNumber: number;
 }
 
-export interface IProfileNode {
+export interface ICpuProfileNode {
   id: number;
   callFrame: ICallFrame;
   hitCount: number;
@@ -79,43 +119,44 @@ export default class CpuProfile {
   /**
    * Node by node id.
    */
-  nodes: Map<number, IProfileNode>;
+  nodes: Map<number, ICpuProfileNode>;
 
   samples: ISample[];
 
   /**
    * Root parent
    */
-  root?: IProfileNode;
+  root?: ICpuProfileNode;
 
   /**
    * Program node
    */
-  program?: IProfileNode;
+  program?: ICpuProfileNode;
 
   /**
    * Idle node
    */
-  idle?: IProfileNode;
+  idle?: ICpuProfileNode;
 
   /**
    * GC node
    */
-  gc?: IProfileNode;
+  gc?: ICpuProfileNode;
 
   start: number;
   end: number;
   duration: number;
 
-  hierarchy: HierarchyNode<IProfileNode>;
+  hierarchy: HierarchyNode<ICpuProfileNode>;
 
-  private parentLinks: Map<IProfileNode, IProfileNode>;
-  private childrenLinks: Map<IProfileNode, IProfileNode[]>;
+  private parentLinks: Map<ICpuProfileNode, ICpuProfileNode>;
+  private childrenLinks: Map<ICpuProfileNode, ICpuProfileNode[]>;
 
   constructor(profile: ICpuProfile, min: number, max: number) {
     this.profile = profile;
-    let parentLinks = (this.parentLinks = new Map<IProfileNode, IProfileNode>());
-    let childrenLinks = (this.childrenLinks = new Map<IProfileNode, IProfileNode[]>());
+
+    let parentLinks = (this.parentLinks = new Map<ICpuProfileNode, ICpuProfileNode>());
+    let childrenLinks = (this.childrenLinks = new Map<ICpuProfileNode, ICpuProfileNode[]>());
 
     let nodes = profile.nodes;
 
@@ -123,7 +164,7 @@ export default class CpuProfile {
 
     let hitCount = 0;
 
-    let root: IProfileNode | undefined;
+    let root: ICpuProfileNode | undefined;
     for (let i = 0; i < nodes.length; i++) {
       let node = nodes[i];
       hitCount += node.hitCount;
@@ -171,11 +212,11 @@ export default class CpuProfile {
     });
   }
 
-  parent(node: IProfileNode) {
+  parent(node: ICpuProfileNode) {
     return this.parentLinks.get(node);
   }
 
-  children(node: IProfileNode) {
+  children(node: ICpuProfileNode) {
     return this.childrenLinks.get(node);
   }
 
@@ -197,11 +238,11 @@ function isCpuProfile(traceEvent: ITraceEvent | undefined): traceEvent is ICpuPr
 }
 
 function mapAndLinkNodes(
-  nodes: IProfileNode[],
-  parentLinks: Map<IProfileNode, IProfileNode>,
-  childrenLinks: Map<IProfileNode, IProfileNode[]>
+  nodes: ICpuProfileNode[],
+  parentLinks: Map<ICpuProfileNode, ICpuProfileNode>,
+  childrenLinks: Map<ICpuProfileNode, ICpuProfileNode[]>
 ) {
-  let nodeMap = new Map<number, IProfileNode>();
+  let nodeMap = new Map<number, ICpuProfileNode>();
   for (let i = 0; i < nodes.length; i++) {
     let node = nodes[i];
     // initialize our extensions
@@ -217,10 +258,10 @@ function mapAndLinkNodes(
 }
 
 function linkNodes(
-  nodes: IProfileNode[],
-  nodeMap: Map<number, IProfileNode>,
-  parentLinks: Map<IProfileNode, IProfileNode>,
-  childrenLinks: Map<IProfileNode, IProfileNode[]>
+  nodes: ICpuProfileNode[],
+  nodeMap: Map<number, ICpuProfileNode>,
+  parentLinks: Map<ICpuProfileNode, ICpuProfileNode>,
+  childrenLinks: Map<ICpuProfileNode, ICpuProfileNode[]>
 ) {
   for (let i = 0; i < nodes.length; i++) {
     let node = nodes[i];
@@ -229,15 +270,15 @@ function linkNodes(
 }
 
 function linkChildren(
-  parent: IProfileNode,
-  nodeMap: Map<number, IProfileNode>,
-  parentLinks: Map<IProfileNode, IProfileNode>,
-  childrenLinks: Map<IProfileNode, IProfileNode[]>
+  parent: ICpuProfileNode,
+  nodeMap: Map<number, ICpuProfileNode>,
+  parentLinks: Map<ICpuProfileNode, ICpuProfileNode>,
+  childrenLinks: Map<ICpuProfileNode, ICpuProfileNode[]>
 ) {
   let childIds = parent.children;
   if (childIds === undefined) return;
 
-  let children: IProfileNode[] = new Array(childIds.length);
+  let children: ICpuProfileNode[] = new Array(childIds.length);
   for (let i = 0; i < childIds.length; i++) {
     let child = nodeMap.get(childIds[i])!;
     children[i] = child;
@@ -246,7 +287,7 @@ function linkChildren(
   childrenLinks.set(parent, children);
 }
 
-function mapSamples(profile: ICpuProfile, nodeMap: Map<number, IProfileNode>, min: number, max: number) {
+function mapSamples(profile: ICpuProfile, nodeMap: Map<number, ICpuProfileNode>, min: number, max: number) {
   let sampleIds = profile.samples;
   let samples: ISample[] = new Array(sampleIds.length);
   // deltas can be negative and samples out of order
@@ -299,7 +340,7 @@ function mapSamples(profile: ICpuProfile, nodeMap: Map<number, IProfileNode>, mi
   return samples;
 }
 
-function computeTimes(node: IProfileNode, childrenMap: Map<IProfileNode, IProfileNode[]>) {
+function computeTimes(node: ICpuProfileNode, childrenMap: Map<ICpuProfileNode, ICpuProfileNode[]>) {
   let children = childrenMap.get(node);
   let childTotal = 0;
   let min = node.min;
@@ -320,7 +361,7 @@ function computeTimes(node: IProfileNode, childrenMap: Map<IProfileNode, IProfil
   node.total = node.self + childTotal;
 }
 
-export function isMetaNode(node: IProfileNode) {
+export function isMetaNode(node: ICpuProfileNode) {
   switch (node.callFrame.functionName) {
     case Constants.ROOT_FUNCTION_NAME:
     case Constants.IDLE_FUNCTION_NAME:
@@ -335,5 +376,5 @@ export interface ISample {
   prev: ISample | null;
   next: ISample | null;
 
-  node: IProfileNode;
+  node: ICpuProfileNode;
 }
