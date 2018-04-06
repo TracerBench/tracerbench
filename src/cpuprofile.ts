@@ -321,9 +321,7 @@ function computeTimes(node: IProfileNode, childrenMap: Map<IProfileNode, IProfil
 export function isMetaNode(node: IProfileNode) {
   switch (node.callFrame.functionName) {
     case Constants.ROOT_FUNCTION_NAME:
-    case Constants.PROGRAM_FUNCTION_NAME:
     case Constants.IDLE_FUNCTION_NAME:
-    case Constants.GC_FUNCTION_NAME:
       return true;
   }
   return false;
