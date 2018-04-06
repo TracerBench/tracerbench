@@ -13,7 +13,6 @@
   "e.setBelongsTo",
   "e.onreadystatechange",
   "pluralize",
-  "e.getHasMany",
   "e.getBelongsTo",
   "modelFactoryFor",
   "t.flushCanonical",

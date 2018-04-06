@@ -71,6 +71,8 @@ export class Aggregator {
   }
 
   sumsPerHeuristicCategory(methods: string[]): CategoryResult {
+    verifyMethods(methods);
+
     this.methods = methods;
     let sums: Sums = {};
 
@@ -102,8 +104,21 @@ export class Aggregator {
       all.categorized[category] = this.sumsPerHeuristicCategory(methods);
     });
 
+    verifyMethods(allMethods);
+
     all.all = this.sumsPerHeuristicCategory(allMethods);
     return all;
+  }
+}
+
+function verifyMethods(array: string[]) {
+  var valuesSoFar = Object.create(null);
+  for (var i = 0; i < array.length; ++i) {
+      var value = array[i];
+      if (value in valuesSoFar) {
+        throw new Error(`Duplicate heuristic detected ${value}`);
+      }
+      valuesSoFar[value] = true;
   }
 }
 
