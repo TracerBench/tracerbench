@@ -21,7 +21,6 @@
   "e.appendText",
   "e.openElement",
   "e.referenceFromParts",
-  "e.create",
   "e.inlineUnless",
   "e.combinedTag",
   "e.invokeBlock",
