@@ -1,4 +1,4 @@
-import CpuProfile, { IProfileNode } from '../cpuprofile';
+import CpuProfile, { ICpuProfileNode } from '../cpuprofile/index';
 import { HierarchyNode } from 'd3-hierarchy';
 import { Categories } from './reporter';
 import { prototype } from 'events';
@@ -11,7 +11,7 @@ export interface Breakdown {
 }
 
 export interface Result {
-  sums: Sums,
+  sums: Sums;
   all: number;
 }
 
@@ -40,7 +40,7 @@ export interface FullReport {
 
 export class Aggregator {
   methods: string[] = [];
-  root: HierarchyNode<IProfileNode>;
+  root: HierarchyNode<ICpuProfileNode>;
   trace: Trace;
   heuristics: Heuristics;
 
@@ -64,11 +64,11 @@ export class Aggregator {
     return sum;
   }
 
-  private aggregateChildren(node: HierarchyNode<IProfileNode>, category: string): number {
+  private aggregateChildren(node: HierarchyNode<ICpuProfileNode>, category: string): number {
     let { methods } = this;
     let sum = 0;
 
-    const aggregate = (node: HierarchyNode<IProfileNode>) => {
+    const aggregate = (node: HierarchyNode<ICpuProfileNode>) => {
       node.children!.forEach((n) => {
         if (!this.heuristics.isContained(n.data.callFrame)) {
           sum += n.data.self;
@@ -77,7 +77,7 @@ export class Aggregator {
           }
         }
       });
-    }
+    };
 
     aggregate(node);
     return sum;
@@ -128,8 +128,8 @@ export class Aggregator {
 
     let all: FullReport = {
       categorized: {},
-      all: undefined
-    }
+      all: undefined,
+    };
 
     verifyMethods(heuristics.methods)
 
@@ -194,11 +194,11 @@ export class Aggregator {
 function verifyMethods(array: string[]) {
   var valuesSoFar = Object.create(null);
   for (var i = 0; i < array.length; ++i) {
-      var value = array[i];
-      if (value in valuesSoFar) {
-        throw new Error(`Duplicate heuristic detected ${value}`);
-      }
-      valuesSoFar[value] = true;
+    var value = array[i];
+    if (value in valuesSoFar) {
+      throw new Error(`Duplicate heuristic detected ${value}`);
+    }
+    valuesSoFar[value] = true;
   }
 }
 

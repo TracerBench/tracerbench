@@ -43,7 +43,7 @@
   <svg></svg>
   <script>
     d3.json("feed-trace.json").then((traceEvents) => {
-      let trace = new Profile.loadTrace(Array.isArray(traceEvents) ? traceEvents : traceEvents.traceEvents);
+      let trace = new Profile.loadTrace(traceEvents);
       let profile = trace.cpuProfile(-1, -1);
 
       let root = profile.hierarchy.sum(d => d.self);

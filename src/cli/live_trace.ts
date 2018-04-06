@@ -12,6 +12,7 @@ interface ICookie {
 const DEVTOOLS_CATEGORIES = [
   '-*',
   'devtools.timeline',
+  'v8',
   'v8.execute',
   'disabled-by-default-devtools.timeline',
   'disabled-by-default-devtools.timeline.frame',
@@ -76,24 +77,19 @@ export async function liveTrace(url: string, out: string, cookies: ICookie[]) {
       if (mainFrameId === evt.frame.id) console.log('frameNavigated', evt);
     };
 
-    tracing.bufferUsage = evt => {
-      console.log(evt);
-    };
-
     let tracingComplete = new Promise<Tracing.TracingCompleteParameters>(resolve => {
       tracing.tracingComplete = resolve;
     });
 
-    console.log(`navigating to ${url}`);
-    await page.navigate({
-      url,
-    });
-    console.log('after page.navigate');
     console.log(`starting trace`);
-    tracing.start({
+    await tracing.start({
       categories: DEVTOOLS_CATEGORIES.join(','),
       transferMode: 'ReturnAsStream',
       streamCompression: 'gzip',
+    });
+    console.log(`navigating to ${url}`);
+    await page.navigate({
+      url,
     });
 
     console.log(`waiting for load event`);

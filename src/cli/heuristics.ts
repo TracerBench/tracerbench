@@ -2,8 +2,8 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { Categories } from './reporter';
-import CpuProfile, { ICallFrame, ISample, IProfileNode } from '../cpuprofile';
-import { Trace, TRACE_EVENT_PHASE_LEAVE_CONTEXT } from '../trace';
+import CpuProfile, { ICallFrame, ISample, ICpuProfileNode } from '../cpuprofile/index';
+import { Trace } from '../trace';
 import { Hashes, findMangledDefine, findModule, createCallSiteWindow, cdnHashes, getVersion } from './utils';
 import { HAR } from 'har-remix';
 import { Diff, DiffResult } from './diff';
@@ -401,8 +401,8 @@ export class Heuristics {
     }
   }
 
-  private filterSamples(hierarchy: HierarchyNode<IProfileNode>, methods: string[]): IProfileNode[] {
-    let nodes: IProfileNode[] = []
+  private filterSamples(hierarchy: HierarchyNode<ICpuProfileNode>, methods: string[]): ICpuProfileNode[] {
+    let nodes: ICpuProfileNode[] = []
     hierarchy.each(node => {
       if (methods.includes(node.data.callFrame.functionName)) {
         nodes.push(node.data);

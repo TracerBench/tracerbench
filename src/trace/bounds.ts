@@ -1,9 +1,4 @@
-import {
-  ITraceEvent,
-  TRACE_EVENT_PHASE_COMPLETE,
-  TRACE_EVENT_PHASE_INSTANT,
-  TRACE_EVENT_PHASE_METADATA,
-} from './trace_event';
+import { ITraceEvent, TRACE_EVENT_PHASE } from './trace_event';
 
 export default class Bounds {
   public min: number = 0;
@@ -21,7 +16,7 @@ export default class Bounds {
   }
 
   public addEvent(event: ITraceEvent) {
-    if (event.ph === TRACE_EVENT_PHASE_METADATA) {
+    if (event.ph === TRACE_EVENT_PHASE.METADATA) {
       return;
     }
     if (event.ts !== undefined) {

@@ -1,55 +1,5 @@
-import { ITraceEvent } from './trace';
+import { ITraceEvent, TRACE_EVENT_PHASE, ICpuProfileEvent } from '../trace';
 import { hierarchy, HierarchyNode } from 'd3-hierarchy';
-
-export interface IProfileEvent extends ITraceEvent {
-  ph: 'P';
-  name: 'Profile';
-  args: {
-    data: {
-      startTime: number;
-    };
-  };
-}
-
-export interface IProfileChunkEvent extends ITraceEvent {
-  ph: 'P';
-  name: 'ProfileChunk';
-  args: {
-    data: IProfileChunk;
-  };
-}
-
-export interface IProfileChunk {
-  cpuProfile: {
-    nodes: IProfileNode[];
-    samples: number[];
-  };
-  timeDeltas: number[];
-}
-
-export interface IProfileNode {
-  id: number;
-  parent: number;
-  callFrame: ICallFrame;
-}
-
-export interface ICallFrame {
-  functionName: string;
-  scriptId: string;
-  url: string;
-  lineNumber: number;
-  columnNumber: number;
-}
-
-export interface ICpuProfileEvent extends ITraceEvent {
-  ph: 'I';
-  name: 'CpuProfile';
-  args: {
-    data: {
-      cpuProfile: ICpuProfile;
-    };
-  };
-}
 
 export interface ICpuProfile {
   nodes: ICpuProfileNode[];
@@ -83,7 +33,7 @@ export const enum Constants {
 
 export interface ICallFrame {
   functionName: string;
-  scriptId: string;
+  scriptId: string | number;
   url: string;
   lineNumber: number;
   columnNumber: number;
@@ -169,7 +119,7 @@ export default class CpuProfile {
       let node = nodes[i];
       hitCount += node.hitCount;
 
-      if (node.callFrame.scriptId === Constants.NATIVE_SCRIPT_ID) {
+      if (node.callFrame.scriptId === 0 || node.callFrame.scriptId === '0') {
         switch (node.callFrame.functionName) {
           case Constants.ROOT_FUNCTION_NAME:
             root = node;
@@ -227,9 +177,8 @@ export default class CpuProfile {
   }
 
   static from(traceEvent: ITraceEvent | undefined, min: number, max: number) {
-    if (isCpuProfile(traceEvent)) {
-      return new CpuProfile(traceEvent.args.data.cpuProfile, min, max);
-    }
+    if (!isCpuProfile(traceEvent)) throw new Error('trace event is not a CpuProfile event');
+    return new CpuProfile(traceEvent.args.data.cpuProfile as ICpuProfile, min, max);
   }
 }
 
@@ -287,7 +236,12 @@ function linkChildren(
   childrenLinks.set(parent, children);
 }
 
-function mapSamples(profile: ICpuProfile, nodeMap: Map<number, ICpuProfileNode>, min: number, max: number) {
+function mapSamples(
+  profile: ICpuProfile,
+  nodeMap: Map<number, ICpuProfileNode>,
+  min: number,
+  max: number
+) {
   let sampleIds = profile.samples;
   let samples: ISample[] = new Array(sampleIds.length);
   // deltas can be negative and samples out of order

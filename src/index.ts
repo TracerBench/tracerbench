@@ -5,7 +5,7 @@ export { default as CpuProfile } from './cpuprofile';
 export { Aggregator } from './cli/aggregator';
 export { Reporter } from './cli/reporter';
 export { default as CLI } from './cli/cli';
-export { liveTrace } from './live_trace';
+export { liveTrace } from './cli/live_trace';
 
 export interface ITrace {
   metadata: {};
