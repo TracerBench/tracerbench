@@ -1,6 +1,8 @@
-import { ICpuProfile, IProfileNode } from '../cpuprofile';
+import CpuProfile, { IProfileNode } from '../cpuprofile';
 import { HierarchyNode } from 'd3-hierarchy';
 import { Categories } from './reporter';
+import { prototype } from 'events';
+import { Trace, ITraceEvent } from '../trace';
 
 export interface Result {
   sums: Sums,
@@ -26,20 +28,25 @@ export interface FullReport {
 }
 
 export class Aggregator {
-  profile: ICpuProfile;
+  profile: CpuProfile;
   methods: string[] = [];
   root: HierarchyNode<IProfileNode>;
+  time: string | number;
+  trace: Trace;
 
-  constructor(profile: ICpuProfile, root: HierarchyNode<IProfileNode>) {
+  constructor(trace: Trace, root: HierarchyNode<IProfileNode>, time: string | number) {
+    let { cpuProfile: profile } = trace;
     this.root = root;
-    this.profile = profile;
+    this.profile = profile!;
+    this.time = time;
+    this.trace = trace;
   }
 
   private sumsPerMethod(methodName: string): number {
     let sum = 0;
     this.root.each((node) => {
       if (node.data.callFrame.functionName === methodName) {
-        sum += node.data.hitCount;
+        sum += node.data.self;
         if (node.children) {
           sum += this.aggregateChildren(node)
         }
@@ -56,7 +63,7 @@ export class Aggregator {
     const aggregate = (node: HierarchyNode<IProfileNode>) => {
       node.children!.forEach((n) => {
         if (!methods.includes(n.data.callFrame.functionName)) {
-          sum += n.data.hitCount;
+          sum += n.data.self;
           if (n.children) {
             aggregate(n);
           }
@@ -74,7 +81,7 @@ export class Aggregator {
     let sums: Sums = {};
 
     methods.forEach(method => {
-      sums[method] = toMS(this.sumsPerMethod(method), profile.hitCount, profile.duration);
+      sums[method] = toMS(this.sumsPerMethod(method));
     });
 
     this.methods = [];
@@ -106,6 +113,6 @@ export class Aggregator {
   }
 }
 
-function toMS(num: number, freq: number, dur: number) {
-  return ((num / freq) * dur) / 1000;
+function toMS(num: number) {
+  return num / 1000;
 }

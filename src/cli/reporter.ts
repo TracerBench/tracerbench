@@ -1,4 +1,4 @@
-import { Aggregator, CategoryResult, CategorizedResults, FullReport} from './aggregator';
+import { Aggregator, CategoryResult, CategorizedResults, FullReport } from './aggregator';
 import chalk from 'chalk';
 
 export interface Categories {

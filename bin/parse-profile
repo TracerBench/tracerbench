@@ -17,11 +17,12 @@ program
   .option('-f, --file <file>', 'Path to trace json file')
   .option('-m, --methods <names|file>', 'List of methods to aggregate', methodNames)
   .option('-r, --report <heuristicDir>', 'Generates a report with aggregated sums for each heuristic category and aggregated sum across all heuristics')
+  .option('-t, --time <duration|eventName>', 'Slice time and see the events before and after the time slice')
   .parse(process.argv);
 
 const error = chalk.bold.red;
 
-let { file, methods, report } = program;
+let { file, methods, report, time } = program;
 const defaultProfilePath = `${process.cwd()}/profile.json`;
 const defaultMethodsPath = `${process.cwd()}/.methods.json}`;
 
@@ -65,7 +66,12 @@ const root = d3.hierarchy(profile.root, (node) => {
   return b.value - a.value;
 });
 
-let aggregator = new Profile.Aggregator(profile, root);
+if (time) {
+  let parsed = Number.parseInt(time);
+  time = Number.isNaN(parsed) ? time : parsed;
+}
+
+let aggregator = new Profile.Aggregator(trace, root, time);
 let reporter = new Profile.Reporter(aggregator);
 
 if (program.report) {
