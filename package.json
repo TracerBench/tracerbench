@@ -24,6 +24,7 @@
     "@types/node": "^9.6.1",
     "array-binsearch": "^1.0.1",
     "chalk": "^2.3.2",
+    "chrome-debugging-client": "^0.4.6",
     "commander": "^2.15.1",
     "d3": "^5.0.0",
     "har-remix": "^1.2.0",
