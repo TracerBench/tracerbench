@@ -1,6 +1,11 @@
 [
+  "e.create",
   "a.extend",
   "O.applyPartial",
   "setProperties",
-  "e.addDependentKeys"
+  "e.addDependentKeys",
+  "t.compute",
+  "trigger",
+  "pushObject",
+  "x"
 ]

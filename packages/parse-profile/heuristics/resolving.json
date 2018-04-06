@@ -3,5 +3,6 @@
   "findModuleName",
   "resolveOther",
   "parseName",
-  "isValidFullName"
+  "isValidFullName",
+  "u.factoryFor"
 ]

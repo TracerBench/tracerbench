@@ -5,6 +5,7 @@ const Profile = require('../dist/index.cjs');
 const program = require('commander');
 const chalk = require('chalk');
 const fs = require('fs');
+const path = require('path');
 const SilentError = require('silent-error');
 const d3 = require('d3');
 
@@ -15,11 +16,13 @@ function methodNames(val) {
 program
   .option('-f, --file <file>', 'Path to trace json file')
   .option('-m, --methods <names|file>', 'List of methods to aggregate', methodNames)
+  .option('-r, --report <heuristicDir>', 'Generates a report with aggregated sums for each heuristic category and aggregated sum across all heuristics')
+  .option('-t, --time <duration|eventName>', 'Slice time and see the events before and after the time slice')
   .parse(process.argv);
 
 const error = chalk.bold.red;
 
-let { file, methods } = program;
+let { file, methods, report, time } = program;
 const defaultProfilePath = `${process.cwd()}/profile.json`;
 const defaultMethodsPath = `${process.cwd()}/.methods.json}`;
 
@@ -27,16 +30,28 @@ if (file === undefined && fs.existsSync(defaultProfilePath) === false) {
   throw new SilentError(error(`Error: Must pass a path to the trace file 💣`));
 }
 
-if (methods === undefined && fs.existsSync(defaultMethodsPath) === false) {
-  throw new SilentError(error(`Error: Must pass a list of method names or have a ".methods.json" file at the root of the project.`));
-}
+let categories;
 
-if (methods === undefined) {
-  methods = JSON.parse(fs.readFileSync(defaultMethodsPath, 'utf8'));
-} else if (methods && fs.existsSync(process.cwd() + '/' + methods)) {
-  methods = JSON.parse(fs.readFileSync(process.cwd() + '/' + methods, 'utf8'));
-}
+if (report) {
+  let files = fs.readdirSync(report);
+  categories = {};
+  files.map(file => {
+    let name = path.basename(file).replace('.json', '');
+    let methods = JSON.parse(fs.readFileSync(`${report}/${file}`));
+    categories[name] = methods;
+  });
+} else {
 
+  if (methods === undefined && fs.existsSync(defaultMethodsPath) === false) {
+    throw new SilentError(error(`Error: Must pass a list of method names or have a ".methods.json" file at the root of the project.`));
+  }
+
+  if (methods === undefined) {
+    methods = JSON.parse(fs.readFileSync(defaultMethodsPath, 'utf8'));
+  } else if (methods && fs.existsSync(process.cwd() + '/' + methods)) {
+    methods = JSON.parse(fs.readFileSync(process.cwd() + '/' + methods, 'utf8'));
+  }
+}
 
 const filePath = file || defaultProfilePath;
 const traceEvents = JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -51,39 +66,16 @@ const root = d3.hierarchy(profile.root, (node) => {
   return b.value - a.value;
 });
 
-let sums = {};
-methods.forEach((method) => {
-  sums[method] = 0;
-  root.each(node => {
-    if (node.data.callFrame.functionName.indexOf(method) > -1) {
-      sums[method] += node.data.hitCount;
-      if (node.children) {
-        aggregateChildren(node, method)
-      }
-    }
-  });
-  sums[method] = ((sums[method] / profile.hitCount) * profile.duration) / 1000;
-});
-
-function aggregateChildren(node, method) {
-  node.children.forEach((node) => {
-    if (!methods.includes(node.data.callFrame.functionName)) {
-      sums[method] += node.data.hitCount;
-
-      if (node.children) {
-        aggregateChildren(node, method);
-      }
-    }
-  });
+if (time) {
+  let parsed = Number.parseInt(time);
+  time = Number.isNaN(parsed) ? time : parsed;
 }
 
-let buffer = chalk.bold.white('\nAggregated Sums:\n================\n');
-Object.keys(sums).forEach((methodName) => {
-  buffer += `${chalk.bold.magenta(methodName)}: ${round(sums[methodName])}ms\n`
-});
+let aggregator = new Profile.Aggregator(trace, root, time);
+let reporter = new Profile.Reporter(aggregator);
 
-function round(num) {
-  return Math.round(num * 100) / 100;
+if (program.report) {
+  reporter.fullReport(categories);
+} else {
+  reporter.categoryReport(methods);
 }
-
-console.log(buffer);

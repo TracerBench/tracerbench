@@ -10,5 +10,13 @@
   "normalizeResponse",
   "_pushInternalModel",
   "e.getHasMany",
-  "e.setBelongsTo"
+  "e.setBelongsTo",
+  "e.onreadystatechange",
+  "pluralize",
+  "e.getHasMany",
+  "e.getBelongsTo",
+  "modelFactoryFor",
+  "t.flushCanonical",
+  "_flushUpdatedRelationships",
+  "flushAllPendingFetches"
 ]
