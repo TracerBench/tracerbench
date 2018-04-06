@@ -110,9 +110,8 @@ export default class CpuProfile {
   private parentLinks: Map<IProfileNode, IProfileNode>;
   private childrenLinks: Map<IProfileNode, IProfileNode[]>;
 
-  constructor(profile: ICpuProfile) {
+  constructor(profile: ICpuProfile, min: number, max: number) {
     this.profile = profile;
-
     let parentLinks = (this.parentLinks = new Map<IProfileNode, IProfileNode>());
     let childrenLinks = (this.childrenLinks = new Map<IProfileNode, IProfileNode[]>());
 
@@ -147,7 +146,7 @@ export default class CpuProfile {
 
     this.hitCount = hitCount;
 
-    this.samples = mapSamples(profile, nodeMap);
+    this.samples = mapSamples(profile, nodeMap, min, max);
 
     if (root === undefined) {
       throw new Error('missing root node in profile');
@@ -184,9 +183,9 @@ export default class CpuProfile {
     return n;
   }
 
-  static from(traceEvent: ITraceEvent | undefined) {
+  static from(traceEvent: ITraceEvent | undefined, min: number, max: number) {
     if (isCpuProfile(traceEvent)) {
-      return new CpuProfile(traceEvent.args.data.cpuProfile);
+      return new CpuProfile(traceEvent.args.data.cpuProfile, min, max);
     }
   }
 }
@@ -245,7 +244,7 @@ function linkChildren(
   childrenLinks.set(parent, children);
 }
 
-function mapSamples(profile: ICpuProfile, nodeMap: Map<number, IProfileNode>) {
+function mapSamples(profile: ICpuProfile, nodeMap: Map<number, IProfileNode>, min: number, max: number) {
   let sampleIds = profile.samples;
   let samples: ISample[] = new Array(sampleIds.length);
   // deltas can be negative and samples out of order
@@ -282,14 +281,16 @@ function mapSamples(profile: ICpuProfile, nodeMap: Map<number, IProfileNode>) {
       sample.prev = prev;
     }
 
-    let node = sample.node;
-    if (node.min === -1) {
-      node.min = timestamp;
+    if (min < timestamp && (max > timestamp || max === -1)) {
+      let node = sample.node;
+      if (node.min === -1) {
+        node.min = timestamp;
+      }
+
+      node.self += sample.delta;
+      node.max = timestamp;
     }
 
-    node.self += sample.delta;
-
-    node.max = timestamp;
     prev = sample;
   }
 
