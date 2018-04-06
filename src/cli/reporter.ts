@@ -5,12 +5,18 @@ export interface Categories {
   [key: string]: string[];
 }
 
+export interface Row {
+  category: string;
+  heading1: string;
+  heading2: string;
+  space1: string;
+  space2: string;
+}
+
 export class Reporter {
   aggregator: Aggregator;
-  private longestMethodName: number = 0;
-  private longestCategory: number = 0;
-  private longestPhaseTiming: number = 0;
-  private longestAggTiming: number = 0;
+  private cols: number[] = [0,6];
+  private width: number = 0;
 
   constructor(aggregator: Aggregator) {
     this.aggregator = aggregator;
@@ -24,17 +30,7 @@ export class Reporter {
   fullReport(categories: Categories) {
     let report = this.aggregator.sumsAllHeuristicCategories(categories);
     let rows = this.generateRows(report);
-    this.printReport(rows);
-  }
-
-  private get col1Size() {
-    let { longestMethodName, longestCategory } = this;
-    return longestMethodName > longestCategory ? longestMethodName : longestCategory;
-  }
-
-  private get col2Size() {
-    let { longestPhaseTiming } = this;
-    return longestPhaseTiming > 6 ? longestPhaseTiming : 6;
+    this.printReport(rows, Object.keys(categories));
   }
 
   private generateRows(report: FullReport) {
@@ -42,17 +38,17 @@ export class Reporter {
     let rows: string[][] = [];
 
     Object.keys(categorized).forEach(category => {
-      let { longestCategory } = this;
+      let [col1] = this.cols;
 
-      rows.push([category]);
+      rows.push([category, 'Timing', 'Aggregate']);
 
-      if (category.length > longestCategory) {
-        this.longestCategory = category.length;
+      if (category.length > col1) {
+        this.cols[0] = category.length;
       }
 
       let aggregateTotal = 0;
       Object.keys(categorized[category].sums).forEach((methodName) => {
-        let { longestMethodName, longestPhaseTiming } = this;
+        let [col1, col2] = this.cols;
         let phaseTiming = `${round(categorized[category].sums[methodName])}ms`;
         let aggegateTime = round(all!.sums[methodName]);
         aggregateTotal += aggegateTime;
@@ -60,12 +56,12 @@ export class Reporter {
 
         rows.push([methodName, phaseTiming, aggregateTime]);
 
-        if (methodName.length > longestMethodName) {
-          this.longestMethodName = methodName.length;
+        if (methodName.length > col1) {
+          this.cols[0] = methodName.length;
         }
 
-        if (phaseTiming.length > longestPhaseTiming) {
-          this.longestPhaseTiming = phaseTiming.length;
+        if (phaseTiming.length > col2) {
+          this.cols[1] = phaseTiming.length;
         }
       });
 
@@ -85,62 +81,82 @@ export class Reporter {
     return '';
   }
 
-  private printReport(rows: string[][]) {
+  private printReport(rows: string[][], categories: string[]) {
     let buffer = `Aggregated Scripting Time:\n`;
-    let { col1Size, col2Size } = this;
+    let [ col1, col2 ] = this.cols;
 
     const indent = 2;
-    let dividerLen = 0;
 
     for (let i = 0; i < rows.length; i++) {
       let row = rows[i];
-      let [category] = row;
+      let [category, heading1, heading2] = row;
 
-      if (row.length === 1) {
-        let space1 = this.spaceCols(col1Size - category.length + (indent * 2));
-        let space2 = this.spaceCols(col2Size - 4);
-        category = chalk.inverse(category);
-        let header = `\n${category}${space1}Timing${space2}Aggregate\n`;
-        dividerLen = header.length;
-        buffer += header;
-        buffer += `${new Array(dividerLen).join('=')}\n`;
-      } else if (category === 'SubTotal' || category === 'Total') {
-        let [name, totalTime, aggTime] = row;
-        let space1 = this.spaceCols(col1Size - name.length + (indent * 2));
-        let space2 = this.spaceCols(col2Size - totalTime.length + indent)
-        let header = `${space1}${totalTime}${space2}${aggTime}\n`;
+      let header;
+      let space1;
+      let space2;
 
-        if (name === 'SubTotal') {
-          header = `\n${chalk.bold.yellow(name)}${header}`;
-          buffer += `${new Array(dividerLen).join('-')}`
-          buffer += header;
-        } else {
-          header = `\n${chalk.bold.green(name)}${header}`;
-          buffer += `\n${new Array(dividerLen).join('=')}`
-          header = chalk.bold.green(header);
-          buffer += header;
-          buffer += `${new Array(dividerLen).join('=')}`
-        }
-
+      if (isHeader(categories, category)) {
+        space1 = this.spaceCols(col1 - category.length + (indent * 2));
+        space2 = this.spaceCols(col2 - heading1.length + indent);
       } else {
-        let [methodName, timing, aggTime] = row;
-        let space1 = this.spaceCols(col1Size - methodName.length + indent);
-        let space2 = this.spaceCols(col2Size - timing.length + indent);
-
-        buffer += `  ${methodName}${space1}${timing}${space2}${aggTime}\n`
+        space1 = this.spaceCols(col1 - category.length + indent);
+        space2 = this.spaceCols(col2 - heading1.length + indent);
       }
+
+      let rowParts = {
+        category,
+        heading1,
+        heading2,
+        space1,
+        space2
+      };
+
+      buffer += this.formatRow(rowParts, categories);
     }
 
     console.log(buffer);
   }
 
+  private formatRow(row: Row, categories: string[]) {
+    let { category, heading1, heading2, space1, space2 } = row;
+    let { width } = this;
+    let buffer = '';
+
+    if (categories.includes(category)) {
+      category = chalk.inverse(category);
+      let header = `\n${category}${space1}${heading1}${space2}${heading2}\n`;
+      this.width = header.length;
+      buffer += header;
+      buffer += `${new Array(this.width).join('=')}\n`;
+    } else if (category === 'SubTotal' || category === 'Total') {
+      let header = `${space1}${heading1}${space2}${heading2}\n`;
+
+      if (category === 'SubTotal') {
+        header = `\n${yellow(category)}${header}`;
+        buffer += `${new Array(width).join('-')}`
+        buffer += header;
+      } else {
+        header = `\n${green(category)}${header}`;
+        buffer += `\n${new Array(width).join('=')}`
+        header = green(header);
+        buffer += header;
+        buffer += `${new Array(width).join('=')}`
+      }
+
+    } else {
+      buffer += `  ${category}${space1}${heading1}${space2}${heading2}\n`
+    }
+
+    return buffer;
+  }
+
   private print(title: string, body: CategoryResult) {
-    let buffer = chalk.bold.white(`\n${title}\n================\n`);
+    let buffer = white(`\n${title}\n================\n`);
     Object.keys(body.sums).forEach((methodName) => {
       let normalizedName = normalizeMethodName(methodName);
-      buffer += `${chalk.bold.magenta(normalizedName)}: ${round(body.sums[methodName])}ms\n`
+      buffer += `${magenta(normalizedName)}: ${round(body.sums[methodName])}ms\n`
     });
-    buffer += chalk.bold.white(`================\nTotal: ${round(body.total)}ms`);
+    buffer += white(`================\nTotal: ${round(body.total)}ms`);
     console.log(buffer);
   }
 }
@@ -152,6 +168,28 @@ function normalizeMethodName(name: string) {
 
   return name;
 }
+
+function isHeader(categories: string[], category: string) {
+  return categories.includes(category) || category === 'SubTotal' || category === 'Total';
+}
+
+function yellow(str: string) {
+  return chalk.bold.yellow(str);
+}
+
+function green(str: string) {
+  return chalk.bold.green(str);
+}
+
+function magenta(str: string) {
+  return chalk.bold.magenta(str);
+}
+
+function white(str: string) {
+  return chalk.bold.white(str);
+}
+
+
 
 function round(num: number) {
   return Math.round(num * 100) / 100;
