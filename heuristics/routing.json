@@ -1,4 +1,8 @@
 [
   "A.map",
-  "handleURL"
+  "handleURL",
+  "generateURL",
+  "normalizeQueryParams",
+  "_getQPMeta",
+  "applyIntent"
 ]

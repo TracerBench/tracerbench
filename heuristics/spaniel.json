@@ -1,4 +1,5 @@
 [
   "e.tick",
-  "t.applyQueue"
+  "t.applyQueue",
+  "e.handleObserverEntry"
 ]

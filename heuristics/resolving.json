@@ -4,5 +4,6 @@
   "resolveOther",
   "parseName",
   "isValidFullName",
-  "u.factoryFor"
+  "u.factoryFor",
+  "podBasedLookupWithPrefix"
 ]

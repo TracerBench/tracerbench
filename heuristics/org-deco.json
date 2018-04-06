@@ -1,0 +1,10 @@
+[
+  "urlForProjection",
+  "decoExpressionForProjection",
+  "decoExpressionForModel",
+  "decoExpressionForUnionField",
+  "buildUrlForElementModel",
+  "eachDecoProperty",
+  "detectMissingDecoPropertyParams",
+  "_resolveProjection"
+]
