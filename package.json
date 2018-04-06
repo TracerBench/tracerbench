@@ -8,13 +8,15 @@
     "watch": "rollup -cw",
     "start": "node serve.js",
     "lint": "tslint -p tsconfig.json",
-    "prepare": "rollup -c"
+    "prepare": "rollup -c",
+    "test": "qunit tests"
   },
   "bin": {
     "parse-profile": "./bin/parse-profile"
   },
   "devDependencies": {
     "finalhandler": "^1.1.1",
+    "qunit": "^2.6.0",
     "rollup": "^0.57.1",
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-typescript": "^0.8.1",
