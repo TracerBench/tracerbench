@@ -18,5 +18,7 @@
   "modelFactoryFor",
   "t.flushCanonical",
   "_flushUpdatedRelationships",
-  "flushAllPendingFetches"
+  "flushAllPendingFetches",
+  "e.createFilteredRecordArray",
+  "e.updateFilterRecordArray"
 ]

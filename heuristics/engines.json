@@ -1,5 +1,7 @@
 [
   "_constructEngineInstance",
   "_loadEngineInstance",
-  "_getHandlerForEngine"
+  "_getHandlerForEngine",
+  "loadBundle",
+  "buildChildEngineInstance"
 ]
