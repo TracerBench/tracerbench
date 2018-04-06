@@ -1,0 +1,7 @@
+[
+  "setProperties",
+  "e.addDependentKeys",
+  "e.changeProperties",
+  "e.forEachInDeps",
+  "e._getOrCreateOwnMap"
+]
