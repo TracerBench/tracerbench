@@ -28,17 +28,12 @@ export interface FullReport {
 }
 
 export class Aggregator {
-  profile: CpuProfile;
   methods: string[] = [];
   root: HierarchyNode<IProfileNode>;
-  time: string | number;
   trace: Trace;
 
-  constructor(trace: Trace, root: HierarchyNode<IProfileNode>, time: string | number) {
-    let { cpuProfile: profile } = trace;
-    this.root = root;
-    this.profile = profile!;
-    this.time = time;
+  constructor(trace: Trace, profile: CpuProfile) {
+    this.root = profile.hierarchy;
     this.trace = trace;
   }
 
@@ -76,7 +71,6 @@ export class Aggregator {
   }
 
   sumsPerHeuristicCategory(methods: string[]): CategoryResult {
-    let { profile } = this;
     this.methods = methods;
     let sums: Sums = {};
 
