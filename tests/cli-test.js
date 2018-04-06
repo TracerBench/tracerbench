@@ -11,8 +11,4 @@ QUnit.module('cli', function(hooks) {
 
     assert.ok(true);
   });
-
-  test('fail', function(assert) {
-    assert.ok(false);
-  });
 });
