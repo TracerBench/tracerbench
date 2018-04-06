@@ -1,0 +1,11 @@
+[
+  "didInsertElement",
+  "didRender",
+  "didReceiveAttrs",
+  "didUpdateAttrs",
+  "willInsertElement",
+  "init",
+  "_fetchBadgeSuccess",
+  "getImageUrl",
+  "decorateImg"
+]

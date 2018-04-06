@@ -28,6 +28,9 @@ export interface ICpuProfile {
    * offset from startTime if first or previous time
    */
   timeDeltas: number[];
+
+  hitCount: number;
+  duration: number;
 }
 
 export const enum Constants {
