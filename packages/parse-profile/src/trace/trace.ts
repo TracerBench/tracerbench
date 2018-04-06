@@ -30,10 +30,10 @@ export default class Trace {
   private parents = new Map<ITraceEvent, ITraceEvent>();
   private stack: ITraceEvent[] = [];
 
-  public get cpuProfile(): CpuProfile | undefined {
+  public cpuProfile(min: number, max: number): CpuProfile | undefined {
     if (this._cpuProfile) return this._cpuProfile;
     if (this._cpuProfile === undefined && this.cpuProfileEvent !== undefined) {
-      this._cpuProfile = CpuProfile.from(this.cpuProfileEvent);
+      this._cpuProfile = CpuProfile.from(this.cpuProfileEvent, min, max);
     }
     return this._cpuProfile;
   }
