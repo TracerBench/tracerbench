@@ -1,5 +1,6 @@
 import { Aggregator, CategoryResult, CategorizedResults, FullReport } from './aggregator';
 import chalk from 'chalk';
+import { Heuristics } from './heuristics';
 
 export interface Categories {
   [key: string]: string[];
@@ -27,10 +28,10 @@ export class Reporter {
     this.print(`Aggregated Sum:`, result);
   }
 
-  fullReport(categories: Categories) {
-    let report = this.aggregator.sumsAllHeuristicCategories(categories);
+  fullReport(heuristics: Heuristics) {
+    let report = this.aggregator.sumsAllHeuristicCategories(heuristics);
     let rows = this.generateRows(report);
-    this.printReport(rows, Object.keys(categories));
+    this.printReport(rows, Object.keys(heuristics));
   }
 
   private generateRows(report: FullReport) {

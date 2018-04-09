@@ -2,6 +2,7 @@ import * as os from 'os';
 import * as fs from 'fs';
 import * as childProcess from 'child_process';
 import { Trace } from '../trace';
+import { Hash } from 'crypto';
 
 export interface Hashes {
   [key: string]: string;
@@ -32,24 +33,24 @@ export function cdnHashes(version: string): Hashes {
     hashes = fs.readFileSync(hashPath, 'utf8');
   }
 
-  hashes = JSON.parse(hashes);
-  Object.keys(hashes.hashes).forEach(hash => {
-    let h = hashes.hashes[hash];
-    hashes[h] = hash;
+  let mappedHashes: Hashes = {};
+  let parsedHashes = hashes = JSON.parse(hashes);
+  Object.keys(parsedHashes.hashes).forEach(hash => {
+    let h = parsedHashes.hashes[hash];
+    mappedHashes[h] = hash;
   });
 
-  return hashes;
+  return mappedHashes;
 }
 
-export function getVersion(htmlEntry) {
-  let html = htmlEntry.response.content;
+export function getVersion(content: string) {
   let metaTag = '<meta name=\"serviceVersion\" content=\"';
-  let metaTagStart = html.indexOf(metaTag);
+  let metaTagStart = content.indexOf(metaTag);
   let start = metaTagStart + metaTag.length;
   let char;
   let version = '';
-  while (char !== '\\') {
-    char = html[start];
+  while (char !== '"') {
+    char = content[start];
     start++;
     version += char;
   }
@@ -61,8 +62,13 @@ export function computeMinMax(trace: Trace, start: string = 'navigationStart', e
   let min;
   let max;
   if (end) {
-    let startEvent = trace.events.find(e => e.name === start);
+    let startEvent = trace.events.find(e => e.name === start)!;
     let endEvent = trace.events.find(e => e.name === end);
+
+    if (!endEvent) {
+      throw new Error(`Could not find "${end}" marker in the trace.`);
+    }
+
     min = startEvent.ts;
     max = endEvent.ts;
   } else {
@@ -100,7 +106,7 @@ export function findMangledDefine(content: string) {
   return defineToken;
 }
 
-export function findModule(lines: string[], line: number, col: number, tokens: string[]) {
+export function findModule(lines: string[], line: number, col: number, tokens: string[]): string {
   let callSiteLine = lines[line];
   let [define, enifed] = tokens;
   let defineIndex = callSiteLine.indexOf(`${define}("`);
@@ -147,7 +153,7 @@ export function findModule(lines: string[], line: number, col: number, tokens: s
   return extractModuleName(callSiteLine, token, index);
 }
 
-function extractModuleName(line, token, index) {
+function extractModuleName(line: string, token: string, index: number) {
   let start = index + `${token}("`.length;
   let moduleName = '';
   let char;
@@ -160,7 +166,7 @@ function extractModuleName(line, token, index) {
   return moduleName;
 }
 
-export function createCallSiteWindow(lines: string[], line: number, col: number, surrondingLines: number;) {
+export function createCallSiteWindow(lines: string[], line: number, col: number, surrondingLines: number) {
   let callLine = lines[line];
   let before = callLine.slice(0, col);
   let after = callLine.slice(col, callLine.length);

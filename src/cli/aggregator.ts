@@ -3,6 +3,7 @@ import { HierarchyNode } from 'd3-hierarchy';
 import { Categories } from './reporter';
 import { prototype } from 'events';
 import { Trace, ITraceEvent } from '../trace';
+import { Heuristics } from './heuristics';
 
 export interface Result {
   sums: Sums,
@@ -89,8 +90,8 @@ export class Aggregator {
     return { sums, total };
   }
 
-  sumsAllHeuristicCategories(categories: Categories): FullReport {
-    let categoryNames = Object.keys(categories);
+  sumsAllHeuristicCategories(heuristics: Heuristics): FullReport {
+    let categoryNames = Object.keys(heuristics);
     let all: FullReport = {
       categorized: {},
       all: undefined
@@ -98,11 +99,11 @@ export class Aggregator {
 
     let allMethods: string[] = [];
 
-    categoryNames.forEach((category: string) => {
-      let methods = categories[category];
-      allMethods.push(...methods);
-      all.categorized[category] = this.sumsPerHeuristicCategory(methods);
-    });
+    // categoryNames.forEach((category: string) => {
+    //   let methods = heuristics[category];
+    //   allMethods.push(...methods);
+    //   all.categorized[category] = this.sumsPerHeuristicCategory(methods);
+    // });
 
     verifyMethods(allMethods);
 
