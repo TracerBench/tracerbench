@@ -626,6 +626,10 @@ glob-parent@^2.0.0:
   dependencies:
     is-glob "^2.0.0"
 
+har-remix@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/har-remix/-/har-remix-1.2.0.tgz#dcfccfc5674a5314a2a345f4fb6255c8f965b524"
+
 has-flag@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/has-flag/-/has-flag-3.0.0.tgz#b5d454dc2199ae225699f3467e5a07f3b955bafd"

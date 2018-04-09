@@ -8,27 +8,35 @@ const fs = require('fs');
 const path = require('path');
 const SilentError = require('silent-error');
 const d3 = require('d3');
+const childProcess = require('child_process');
+const os = require('os');
 
-function methodNames(val) {
-  return val.split(',');
-}
-
+// profile.date.version.json
 program
   .option('-f, --file <file>', 'Path to trace json file')
   .option('-m, --methods <names|file>', 'List of methods to aggregate', methodNames)
-  .option('-r, --report <heuristicDir>', 'Generates a report with aggregated sums for each heuristic category and aggregated sum across all heuristics')
+  .option('-r, --report <dirPath>', 'Generates a report with aggregated sums for each heuristic category and aggregated sum across all heuristics')
   .option('-t, --time <eventName>', 'Slice time and see the events before and after the time slice')
+  .option('--har <path>', 'Path to HAR file')
   .parse(process.argv);
 
 const error = chalk.bold.red;
 
-let { file, methods, report, time } = program;
+let { file, methods, report, time, har } = program;
 const defaultProfilePath = `${process.cwd()}/profile.json`;
 const defaultMethodsPath = `${process.cwd()}/.methods.json}`;
 
 if (file === undefined && fs.existsSync(defaultProfilePath) === false) {
   throw new SilentError(error(`Error: Must pass a path to the trace file 💣`));
 }
+
+if (har === undefined) {
+  throw new SilentError(error(`Error: Must pass a path to the har file 💣`))
+}
+
+let harData = JSON.parse(fs.readFileSync(har, 'utf8'));
+let version = getVersion(harData.log.entries[0]);
+let hashes = cdnHashes(version);
 
 let categories;
 
@@ -57,26 +65,247 @@ const filePath = file || defaultProfilePath;
 const traceEvents = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 const trace = Profile.loadTrace(traceEvents);
 
-let max;
-let min;
-
-if (time) {
-  let startEvent = trace.events.find(e => e.name === 'navigationStart');
-  let endEvent = trace.events.find(e => e.name === time);
-  min = startEvent.ts;
-  max = endEvent.ts;
-} else {
-  min = -1;
-  max = -1;
-}
-
+let { min, max } = computeMinMax(time, trace);
 const profile = trace.cpuProfile(min, max);
 
-let aggregator = new Profile.Aggregator(trace, profile);
-let reporter = new Profile.Reporter(aggregator);
+let heuristicsMap = new Map();
+profile.samples
+    .filter(s => methods.includes(s.node.callFrame.functionName))
+    .forEach((s, i) => {
 
-if (program.report) {
-  reporter.fullReport(categories);
-} else {
-  reporter.categoryReport(methods);
+
+        let { functionName, columnNumber, lineNumber, url } = s.node.callFrame;
+        let hash = path.basename(url);
+        let unhashedFileName = hashes[hash];
+        url = new RegExp(url);
+        let entry = harData.log.entries.find(entry => url.test(entry.request.url));
+        let text = entry.response.content.text;
+        let lines = text.split('\n');
+        let mangledDefineToken = findMangledDefine(text);
+        let callSiteTokens = createWindow(lines[lineNumber], columnNumber, 50)
+        let moduleName = findModule(lines, lineNumber, columnNumber, ['define', mangledDefineToken]);
+        let key = `${functionName}:${moduleName}:${unhashedFileName}`;
+        if (!heuristicsMap.get(key)) {
+          heuristicsMap.set(key, {
+            moduleName,
+            fileName: unhashedFileName,
+            lineNumber,
+            columnNumber,
+            functionName,
+            callSiteTokens
+          });
+        }
+
+    })
+
+    console.log(heuristicsMap.keys().next().value + ' -> ')
+heuristicsMap.forEach(h => console.log(h));
+
+function findMangledDefine(vendorContent) {
+  let tail = vendorContent.indexOf('.__loader.define');
+  let sub = vendorContent.slice(0, tail);
+  let defineToken = '';
+  let end = sub.length - 1;
+  let scanning = true;
+  let declaration = false;
+  while (scanning) {
+    let char = sub[end--];
+    switch(char) {
+      case '=':
+        declaration = true;
+        break;
+      case ' ':
+        scanning = false;
+        break;
+      default:
+        if (declaration) {
+          defineToken = defineToken + char;
+        }
+      break;
+    }
+  }
+
+  return defineToken;
 }
+
+function findModule(lines, line, col, tokens) {
+  let callSiteLine = lines[line];
+  let [define, enifed] = tokens;
+  let defineIndex = callSiteLine.indexOf(`${define}("`);
+  let enifedIndex = callSiteLine.indexOf(`${enifed}("`);
+
+  // Either no define on the line.
+  // Go to previous line
+  if (defineIndex === -1 && enifedIndex === -1) {
+    return findModule(lines, line - 1, -1, tokens);
+  }
+
+  if (col === -1) {
+    let defineIndex = callSiteLine.lastIndexOf(`${define}("`);
+    let enifedIndex = callSiteLine.lastIndexOf(`${enifed}("`);
+    if (defineIndex === -1 && enifedIndex === -1) {
+      return findModule(lines, line - 1, -1, tokens);
+    }
+
+    let token;
+    let index;
+    if (defineIndex > 0) {
+      token = define;
+      index = defineIndex;
+    } else {
+      token = enifed;
+      index = enifedIndex;
+    }
+
+    return extractModuleName(callSiteLine, token, index);
+  } else if (defineIndex > col || enifedIndex > col) {
+    return findModule(lines, line - 1, -1, tokens);
+  }
+
+  let token;
+  let index;
+  if (defineIndex > 0) {
+    token = define;
+    index = defineIndex;
+  } else {
+    token = enifed;
+    index = enifedIndex;
+  }
+
+  return extractModuleName(callSiteLine, token, index);
+}
+
+function extractModuleName(line, token, index) {
+  let start = index + `${token}("`.length;
+  let moduleName = '';
+  let char;
+  while (char !== '"') {
+    char = line[start];
+    moduleName += char;
+    start++;
+    char = line[start];
+  }
+  return moduleName;
+}
+
+function getVersion(htmlEntry) {
+  let html = htmlEntry.response.content;
+  let metaTag = '<meta name=\"serviceVersion\" content=\"';
+  let metaTagStart = html.indexOf(metaTag);
+  let start = metaTagStart + metaTag.length;
+  let char;
+  let version = '';
+  while (char !== '\\') {
+    char = html[start];
+    start++;
+    version += char;
+  }
+
+  return version;
+}
+
+function createWindow(line, col, windowSize) {
+  let left = col - windowSize;
+
+  let right = windowSize + col;
+  if (left < 0) {
+    left = 0;
+  }
+
+  if (col + windowSize > line.length) {
+    right = line.length;
+  }
+
+  let before = line.slice(left, col).split(/[^A-Za-z]/).filter(token => token !== '');
+  let after = line.slice(col, right).split(/[^A-Za-z]/).filter(token => token !== '');
+  return { before, after }
+}
+
+function getVersion(htmlEntry) {
+  let html = htmlEntry.response.content.text;
+  let metaTag = '<meta name=\"serviceVersion\" content=\"';
+  let metaTagStart = html.indexOf(metaTag);
+  let start = metaTagStart + metaTag.length;
+  let char;
+  let version = '';
+  while (char !== '"') {
+    char = html[start];
+    version += char;
+    start++;
+    char = html[start];
+  }
+
+  return version;
+}
+
+function methodNames(val) {
+  return val.split(',');
+}
+
+function reverse(str) {
+  return str.split('').reverse().join('')
+}
+
+function computeMinMax(time, trace) {
+  let min;
+  let max;
+  if (time) {
+    let startEvent = trace.events.find(e => e.name === 'navigationStart');
+    let endEvent = trace.events.find(e => e.name === time);
+    min = startEvent.ts;
+    max = endEvent.ts;
+  } else {
+    min = -1;
+    max = -1;
+  }
+
+  return { min, max };
+}
+
+// class MetaBuilder {
+//   constructor(savedRun, events) {
+//     this.previousRun = savedRun;
+//     this.meta = new Map();
+//   }
+
+//   // meta(category, node) {
+//   //   let meta = this.meta.get(node);
+
+//   //   if (meta) {
+//   //     return meta;
+//   //   }
+
+//   //   meta = new Heuristic()
+//   // }
+
+//   // metaFor(node) {
+//   //   let meta = this.meta.get(node);
+
+//   //   if (meta) {
+//   //     return meta;
+//   //   }
+
+//   //   meta = new Heuristic()
+
+//   // }
+// }
+
+// class Heuristic {
+//   constructor(category, name) {
+//     this.category = category;
+//     this.name = name;
+//     this.module = null;
+//     this.fileLoc = { l: 0, col: 0 }
+//     this.moduleLoc = { l: 0, col: 0 }
+//   }
+// }
+
+
+// let aggregator = new Profile.Aggregator(trace, profile);
+// let reporter = new Profile.Reporter(aggregator);
+
+// if (program.report) {
+//   reporter.fullReport(categories);
+// } else {
+//   reporter.categoryReport(methods);
+// }

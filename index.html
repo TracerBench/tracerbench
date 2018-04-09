@@ -43,7 +43,7 @@
 <body>
   <svg></svg>
   <script>
-    d3.json("LinkedInFeedProfile.json").then((traceEvents) => {
+    d3.json("LinkedInFeed.json").then((traceEvents) => {
       let trace = new Profile.loadTrace(traceEvents);
       let profile = trace.cpuProfile(-1, -1);
 
