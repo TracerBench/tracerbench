@@ -165,7 +165,6 @@ export class Reporter {
       buffer += `\n    ${body.sums[methodName].heuristics.join('\n    ')}\n`
     });
     buffer += white(`================\nTotal: ${round(body.total)}ms`);
-    spinner.stop();
     console.log(buffer);
   }
 }
