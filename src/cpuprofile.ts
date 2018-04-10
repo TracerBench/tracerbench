@@ -41,15 +41,17 @@ export const enum Constants {
   NATIVE_SCRIPT_ID = '0',
 }
 
+export interface ICallFrame {
+  functionName: string;
+  scriptId: string;
+  url: string;
+  lineNumber: number;
+  columnNumber: number;
+}
+
 export interface IProfileNode {
   id: number;
-  callFrame: {
-    functionName: string;
-    scriptId: string;
-    url: string;
-    lineNumber: number;
-    columnNumber: number;
-  };
+  callFrame: ICallFrame;
   hitCount: number;
   children?: number[];
   positionTicks?: {
@@ -327,7 +329,7 @@ export function isMetaNode(node: IProfileNode) {
   return false;
 }
 
-interface ISample {
+export interface ISample {
   delta: number;
   timestamp: number;
   prev: ISample | null;
