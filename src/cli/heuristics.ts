@@ -2,11 +2,12 @@ import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 import { Categories } from './reporter';
-import CpuProfile, { ICallFrame, ISample } from '../cpuprofile';
-import { Trace } from '../trace';
+import CpuProfile, { ICallFrame, ISample, IProfileNode } from '../cpuprofile';
+import { Trace, TRACE_EVENT_PHASE_LEAVE_CONTEXT } from '../trace';
 import { Hashes, findMangledDefine, findModule, createCallSiteWindow, cdnHashes, getVersion } from './utils';
 import { HAR } from 'har-remix';
 import { Diff, DiffResult } from './diff';
+import { HierarchyNode } from 'd3';
 
 export const enum Relevancy {
   Irrelevant,
@@ -191,9 +192,9 @@ export class Heuristics {
     let { categories } = this;
     if (categories) {
       Object.keys(categories).forEach(category => {
-        let samples = this.filterSamples(profile.samples, categories[category]);
-        samples.forEach(sample => {
-          this.createHeuristic(har, hashes, sample.node.callFrame, category)
+        let nodes = this.filterSamples(profile.hierarchy, categories[category]);
+        nodes.forEach(node => {
+          this.createHeuristic(har, hashes, node.callFrame, category)
         });
       });
     }
@@ -231,6 +232,10 @@ export class Heuristics {
 
   private createHeuristic(har: HAR, hashes: Hashes, callFrame: ICallFrame, category: string) {
     let { url, lineNumber, columnNumber, functionName } = callFrame;
+    if (lineNumber === -1) {
+      return;
+    }
+
     let hash = url.split('/').pop()!;
     let fileName = hashes[hash];
     let parsedFile = this.parsedFiles.get(fileName);
@@ -270,6 +275,7 @@ export class Heuristics {
     }
 
     let callSiteWindow = createCallSiteWindow(lines, lineNumber, columnNumber, 2);
+
 
     let heuristic = new Heuristic({
       hashedFileName: hash,
@@ -321,8 +327,15 @@ export class Heuristics {
     }
   }
 
-  private filterSamples(samples: ISample[], methods: string[]): ISample[] {
-    return samples.filter(sample => methods.includes(sample.node.callFrame.functionName))
+  private filterSamples(hierarchy: HierarchyNode<IProfileNode>, methods: string[]): IProfileNode[] {
+    let nodes: IProfileNode[] = []
+    hierarchy.each(node => {
+      if (methods.includes(node.data.callFrame.functionName)) {
+        nodes.push(node.data);
+      }
+    });
+
+    return nodes;
   }
 }
 

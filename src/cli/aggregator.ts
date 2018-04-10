@@ -84,8 +84,6 @@ export class Aggregator {
   }
 
   sumsPerHeuristicCategory(heuristics: Heuristics): CategoryResult {
-    // verifyMethods(methods);
-
     let heuristicsMap = heuristics.get();
 
     let sums: Sums = {};
