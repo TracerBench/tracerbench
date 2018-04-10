@@ -1,6 +1,6 @@
 import { Aggregator, CategoryResult, CategorizedResults, FullReport } from './aggregator';
 import chalk from 'chalk';
-import { Heuristics } from './heuristics';
+import { Heuristics, IHeuristicJSON } from './heuristics';
 
 export interface Categories {
   [key: string]: string[];
@@ -23,8 +23,8 @@ export class Reporter {
     this.aggregator = aggregator;
   }
 
-  categoryReport(methods: string[]) {
-    let result = this.aggregator.sumsPerHeuristicCategory(methods);
+  categoryReport(heuristics: Heuristics) {
+    let result = this.aggregator.sumsPerHeuristicCategory(heuristics);
     this.print(`Aggregated Sum:`, result);
   }
 
@@ -155,7 +155,9 @@ export class Reporter {
     let buffer = white(`\n${title}\n================\n`);
     Object.keys(body.sums).forEach((methodName) => {
       let normalizedName = normalizeMethodName(methodName);
-      buffer += `${magenta(normalizedName)}: ${round(body.sums[methodName])}ms\n`
+      buffer += `${magenta(normalizedName)}: ${round(body.sums[methodName].total)}ms`;
+      buffer += `\n  From ->`
+      buffer += `\n    ${body.sums[methodName].heuristics.join('\n    ')}\n`
     });
     buffer += white(`================\nTotal: ${round(body.total)}ms`);
     console.log(buffer);

@@ -3,7 +3,7 @@ import { HierarchyNode } from 'd3-hierarchy';
 import { Categories } from './reporter';
 import { prototype } from 'events';
 import { Trace, ITraceEvent } from '../trace';
-import { Heuristics } from './heuristics';
+import { Heuristics, Heuristic } from './heuristics';
 
 export interface Result {
   sums: Sums,
@@ -11,7 +11,12 @@ export interface Result {
 }
 
 export interface Sums {
-  [key: string]: number;
+  [key: string]: SumMeta;
+}
+
+export interface SumMeta {
+  total: number;
+  heuristics: string[];
 }
 
 export interface CategorizedResults {
@@ -32,19 +37,21 @@ export class Aggregator {
   methods: string[] = [];
   root: HierarchyNode<IProfileNode>;
   trace: Trace;
+  heuristics: Heuristics;
 
-  constructor(trace: Trace, profile: CpuProfile) {
+  constructor(trace: Trace, profile: CpuProfile, heuristics: Heuristics) {
     this.root = profile.hierarchy;
     this.trace = trace;
+    this.heuristics = heuristics;
   }
 
-  private sumsPerMethod(methodName: string): number {
+  private sumsPerMethod(heuristic: Heuristic, category: string): number {
     let sum = 0;
     this.root.each((node) => {
-      if (node.data.callFrame.functionName === methodName) {
+      if (heuristic.validate(node.data.callFrame)) {
         sum += node.data.self;
         if (node.children) {
-          sum += this.aggregateChildren(node)
+          sum += this.aggregateChildren(node, category);
         }
       }
     });
@@ -52,13 +59,13 @@ export class Aggregator {
     return sum;
   }
 
-  private aggregateChildren(node: HierarchyNode<IProfileNode>): number {
+  private aggregateChildren(node: HierarchyNode<IProfileNode>, category: string): number {
     let { methods } = this;
     let sum = 0;
 
     const aggregate = (node: HierarchyNode<IProfileNode>) => {
       node.children!.forEach((n) => {
-        if (!methods.includes(n.data.callFrame.functionName)) {
+        if (!this.heuristics.isContained(n.data.callFrame, category)) {
           sum += n.data.self;
           if (n.children) {
             aggregate(n);
@@ -71,20 +78,26 @@ export class Aggregator {
     return sum;
   }
 
-  sumsPerHeuristicCategory(methods: string[]): CategoryResult {
-    verifyMethods(methods);
+  sumsPerHeuristicCategory(heuristics: Heuristics): CategoryResult {
+    // verifyMethods(methods);
 
-    this.methods = methods;
+    let heuristicsMap = heuristics.get();
+
     let sums: Sums = {};
+    heuristicsMap.forEach((heuristic) => {
+      if (!sums[heuristic.functionName]) {
+        sums[heuristic.functionName] = { heuristics: [], total: 0 };
+      }
 
-    methods.forEach(method => {
-      sums[method] = toMS(this.sumsPerMethod(method));
+      let t = toMS(this.sumsPerMethod(heuristic, 'adHoc'));
+      sums[heuristic.functionName].total += t;
+      let { line, col } = heuristic.loc;
+      let shortName = heuristic.fileName.split('/').pop();
+      sums[heuristic.functionName].heuristics.push(`[${shortName}:${heuristic.moduleName}] L${line}:C${col} ${t}ms`);
     });
 
-    this.methods = [];
-
     let total = Object.keys(sums).reduce((accumulator, current) => {
-      return accumulator += sums[current];
+      return accumulator += sums[current].total;
     }, 0);
 
     return { sums, total };

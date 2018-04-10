@@ -41,6 +41,7 @@ export interface CallSiteWindow {
 }
 
 export interface IHeuristicJSON {
+  hashedFileName: string;
   category: string;
   fileName: string;
   moduleName: string;
@@ -53,8 +54,9 @@ export interface IHeuristicMap {
   [key: string]: IHeuristicJSON;
 }
 
-class Heuristic implements IHeuristicJSON {
+export class Heuristic implements IHeuristicJSON {
   category: string;
+  hashedFileName: string;
   fileName: string;
   moduleName: string;
   functionName: string;
@@ -67,6 +69,7 @@ class Heuristic implements IHeuristicJSON {
     this.functionName = json.functionName;
     this.loc = json.loc;
     this.callSiteWindow = json.callSiteWindow;
+    this.hashedFileName = json.hashedFileName;
   }
 
   verify(heuristic: Heuristic) {
@@ -83,7 +86,20 @@ class Heuristic implements IHeuristicJSON {
     }
 
     return { match: false, message: `[Updating]: Previous heuristic "${this.functionName}" in the "${this.category} has been remapped to ${heuristic.functionName}.` };
+  }
 
+  validate(callFrame: ICallFrame) {
+    if (callFrame.lineNumber !== this.loc.line || callFrame.columnNumber !== this.loc.col) {
+      return false;
+    }
+
+    let hash = callFrame.url.split('/').pop()!;
+
+    if (hash !== this.hashedFileName) {
+      return false;
+    }
+
+    return true;
   }
 
   private isRelevant(before: DiffResult, after: DiffResult) {
@@ -109,9 +125,11 @@ class Heuristic implements IHeuristicJSON {
       moduleName,
       functionName,
       loc,
-      callSiteWindow
+      callSiteWindow,
+      hashedFileName
     } = this;
     return {
+      hashedFileName,
       category,
       fileName,
       moduleName,
@@ -161,6 +179,10 @@ export class Heuristics {
     });
   }
 
+  get() {
+    return this.heuristics;
+  }
+
   verify() {
     return this.validations;
   }
@@ -194,13 +216,23 @@ export class Heuristics {
     fs.writeFileSync(path, JSON.stringify(json));
   }
 
-  get() {
-    return this.heuristics;
+  isContained(callFrame: ICallFrame, currentCategory: string) {
+    for (let pair of this.heuristics.entries()) {
+      let [,heuristic] = pair;
+      let { functionName, category } = heuristic;
+
+      if (functionName === callFrame.functionName && category === currentCategory) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   private createHeuristic(har: HAR, hashes: Hashes, callFrame: ICallFrame, category: string) {
     let { url, lineNumber, columnNumber, functionName } = callFrame;
-    let fileName = hashes[url];
+    let hash = url.split('/').pop()!;
+    let fileName = hashes[hash];
     let parsedFile = this.parsedFiles.get(fileName);
     let mangledIdent;
     let lines;
@@ -224,19 +256,23 @@ export class Heuristics {
       return;
     }
 
-    let existingHeuristic = this.canidates.get(key)!;
-    let { line, col } = existingHeuristic.loc;
+    let existingHeuristic = this.canidates.get(key);
 
-    if (line === lineNumber && col === columnNumber) {
-      // Promote
-      this.heuristics.set(key, existingHeuristic);
-      this.canidates.delete(key);
-      return;
+    if (existingHeuristic) {
+      let { line, col } = existingHeuristic.loc;
+
+      if (line === lineNumber && col === columnNumber) {
+        // Promote
+        this.heuristics.set(key, existingHeuristic);
+        this.canidates.delete(key);
+        return;
+      }
     }
 
     let callSiteWindow = createCallSiteWindow(lines, lineNumber, columnNumber, 2);
 
     let heuristic = new Heuristic({
+      hashedFileName: hash,
       moduleName,
       category,
       fileName,
@@ -245,12 +281,18 @@ export class Heuristics {
       functionName
     });
 
-    this.verifyHeuristic(preamble, key, heuristic);
+    this.verifyHeuristic(preamble, functionName, heuristic);
   }
 
   private verifyHeuristic(preamble: string, name: string, heuristic: Heuristic) {
+    if (this.canidates.size === 0) {
+      this.heuristics.set(`${preamble}${name}`, heuristic);
+      return;
+    }
+
     let keys = this.canidates.keys();
     let unmappedKeys = [];
+
     for (let key of keys) {
       let keyparts= key.split('::');
       let fnName = keyparts.pop()!;
@@ -265,7 +307,7 @@ export class Heuristics {
           if (match) {
             // Promote
             this.canidates.delete(key);
-            this.heuristics.set(`${preamble}::${name}`, heuristic);
+            this.heuristics.set(`${preamble}${name}`, heuristic);
             this.validations.updates.push(message);
           } else {
             this.validations.warnings.push(message);
@@ -273,7 +315,7 @@ export class Heuristics {
 
         } else {
           // assume we are setting a unique key
-          this.heuristics.set(`${preamble}::${name}`, heuristic);
+          this.heuristics.set(`${preamble}${name}`, heuristic);
         }
       }
     }
@@ -286,7 +328,7 @@ export class Heuristics {
 
 export class HeuristicsValidator {
   categories: Categories;
-  private _heuristics: Heuristics | undefined = undefined;
+  private _heuristics: Heuristics | undefined;
 
   constructor(options: ValidatorOptions) {
     let { report, methods } = options;
@@ -308,29 +350,33 @@ export class HeuristicsValidator {
     }
   }
 
+  isContained(callFrame: ICallFrame, category: string) {
+    return this._heuristics!.isContained(callFrame, category);
+  }
+
   validate(profile: CpuProfile, har: HAR) {
     let version = getVersion(har.log.entries[0].response.content!.text!);
-    console.log(version);
-    // let hashes = cdnHashes(version);
-    // let prevalidated = `${os.homedir()}/.parse-profile/${version}/heuristics.json`;
+    let hashes = cdnHashes(version);
+    let prevalidated = `${os.homedir()}/.parse-profile/${version}/heuristics.json`;
 
-    // let heuristics;
-    // if (fs.existsSync(prevalidated)) {
-    //   let persistedHeuristics = JSON.parse(fs.readFileSync(prevalidated, 'utf8'));
-    //   heuristics = Heuristics.fromCache(persistedHeuristics, this.categories);
-    // } else {
-    //   heuristics = Heuristics.fromJSON(this.categories);
-    //   heuristics.compute(profile, har, hashes);
-    // }
+    let heuristics;
+    if (fs.existsSync(prevalidated)) {
+      let persistedHeuristics = JSON.parse(fs.readFileSync(prevalidated, 'utf8'));
+      heuristics = Heuristics.fromCache(persistedHeuristics, this.categories);
+    } else {
+      heuristics = Heuristics.fromJSON(this.categories);
+    }
 
-    // let verification = heuristics.verify();
+    heuristics.compute(profile, har, hashes);
+
+    let verification = heuristics.verify();
     // heuristics.persist(prevalidated);
 
-    // this._heuristics = heuristics;
+    this._heuristics = heuristics;
 
-    // return {
-    //   heuristics: heuristics.get(),
-    //   verification
-    // };
+    return {
+      heuristics,
+      verification
+    };
   }
 }

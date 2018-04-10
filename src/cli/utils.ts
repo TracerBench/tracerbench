@@ -50,9 +50,8 @@ export function getVersion(content: string) {
   let char;
   let version = '';
   while (char !== '"') {
-    char = content[start];
-    start++;
-    version += char;
+    version += content[start];
+    char = content[++start]
   }
 
   return version;

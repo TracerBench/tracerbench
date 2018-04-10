@@ -68,8 +68,10 @@ export default class CommandLine {
     let profile = this.cpuProfile(trace)!;
     let validator = this.validator(trace, profile);
     let { verification, heuristics } = validator.validate(profile, har);
-    let aggregator = new Aggregator(trace, profile);
+    let aggregator = new Aggregator(trace, profile, heuristics);
     let reporter = new Reporter(aggregator);
+
+    reporter.categoryReport(heuristics);
 
     // if (report) {
     //   reporter.fullReport(heuristics);
