@@ -27,13 +27,13 @@ export class Reporter {
     this.print(`Aggregated Sum:`, result);
   }
 
-  fullReport(heuristics: Heuristics, _verbose: boolean) {
+  fullReport(heuristics: Heuristics, verbose: boolean) {
     let report = this.aggregator.sumsAllHeuristicCategories(heuristics);
-    let rows = this.generateRows(report);
+    let rows = this.generateRows(report, verbose);
     this.printReport(rows, heuristics.categories);
   }
 
-  private generateRows(report: FullReport) {
+  private generateRows(report: FullReport, verbose: boolean) {
     let { categorized } = report;
     let rows: string[][] = [];
     let aggregateTotal = 0;
@@ -47,15 +47,25 @@ export class Reporter {
         this.cols[0] = category.length;
       }
 
-
       aggregateTotal += categorized[category].total;
       Object.keys(categorized[category].sums).forEach((methodName) => {
         let [col1, col2] = this.cols;
         let phaseTiming = `${round(categorized[category].sums[methodName].total)}ms`;
         rows.push([methodName, phaseTiming]);
 
-        if (methodName.length > col1) {
-          this.cols[0] = methodName.length;
+        if (verbose) {
+          categorized[category].sums[methodName].heuristics.forEach((heuristic) => {
+            let h = `  ${heuristic}`;
+            rows.push([h, '']);
+
+            if (h.length > col1) {
+              this.cols[0] = h.length;
+            }
+          });
+        } else {
+          if (methodName.length > col1) {
+            this.cols[0] = methodName.length;
+          }
         }
 
         if (phaseTiming.length > col2) {
