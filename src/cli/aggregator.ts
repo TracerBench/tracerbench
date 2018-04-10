@@ -5,6 +5,11 @@ import { prototype } from 'events';
 import { Trace, ITraceEvent } from '../trace';
 import { Heuristics, Heuristic } from './heuristics';
 
+export interface Message {
+  mes: string;
+  time: number;
+}
+
 export interface Result {
   sums: Sums,
   all: number;
@@ -84,16 +89,30 @@ export class Aggregator {
     let heuristicsMap = heuristics.get();
 
     let sums: Sums = {};
+    let breakdowns: { [key: string ]: Message[] } = {};
     heuristicsMap.forEach((heuristic) => {
       if (!sums[heuristic.functionName]) {
         sums[heuristic.functionName] = { heuristics: [], total: 0 };
       }
 
-      let t = toMS(this.sumsPerMethod(heuristic, 'adHoc'));
-      sums[heuristic.functionName].total += t;
+      let time = toMS(this.sumsPerMethod(heuristic, 'adHoc'));
+      sums[heuristic.functionName].total += time;
       let { line, col } = heuristic.loc;
-      let shortName = heuristic.fileName.split('/').pop();
-      sums[heuristic.functionName].heuristics.push(`[${shortName}:${heuristic.moduleName}] L${line}:C${col} ${t}ms`);
+      let shortNameFileName = heuristic.fileName.split('/').pop();
+
+      if (breakdowns[heuristic.functionName] === undefined) {
+        breakdowns[heuristic.functionName] = []
+      }
+
+      breakdowns[heuristic.functionName].push({
+        mes: `[${shortNameFileName}:${heuristic.moduleName}] L${line}:C${col} ${time}ms`,
+        time
+      })
+    });
+
+    Object.keys(breakdowns).forEach((breakdown) => {
+      breakdowns[breakdown].sort((a, b) => b.time - a.time);
+      sums[breakdown].heuristics = breakdowns[breakdown].map(b => b.mes);
     });
 
     let total = Object.keys(sums).reduce((accumulator, current) => {
