@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import * as childProcess from 'child_process';
 import { Trace } from '../trace';
 import { Hash } from 'crypto';
+import { SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION } from 'constants';
 
 export interface Hashes {
   [key: string]: string;
@@ -105,11 +106,31 @@ export function findMangledDefine(content: string) {
   return defineToken;
 }
 
+function getModuleIndex(str: string, ident: string) {
+  if (str === undefined) {
+    console.log('wat')
+  }
+  let matcher = new RegExp(`(?:${ident}\\\(")(.*?)(?=",\\\[\\\"(.*)\\\"],(function|\\\(function))`, 'g');
+  let matches = str.match(matcher);
+
+  if (matches === null) {
+    return -1;
+  }
+
+  let lastMatched = matches[matches.length - 1];
+  return str.indexOf(lastMatched);
+}
+
 export function findModule(lines: string[], line: number, col: number, tokens: string[]): string {
+  if (line === -1) {
+    return 'unkown';
+  }
+
   let callSiteLine = lines[line];
   let [define, enifed] = tokens;
-  let defineIndex = callSiteLine.indexOf(`${define}("`);
-  let enifedIndex = callSiteLine.indexOf(`${enifed}("`);
+
+  let defineIndex = getModuleIndex(callSiteLine, define);
+  let enifedIndex = getModuleIndex(callSiteLine, enifed);
 
   // Either no define on the line.
   // Go to previous line
@@ -166,6 +187,10 @@ function extractModuleName(line: string, token: string, index: number) {
 }
 
 export function createCallSiteWindow(lines: string[], line: number, col: number, surrondingLines: number) {
+  if (lines.length === 0) {
+    return { before: '', after: '' }
+  }
+
   let callLine = lines[line];
   let before = callLine.slice(0, col);
   let after = callLine.slice(col, callLine.length);

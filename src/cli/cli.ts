@@ -14,6 +14,7 @@ export interface UI {
   time?: string,
   methods?: string[];
   report?: string;
+  verbose?: boolean;
 }
 
 
@@ -63,7 +64,7 @@ export default class CommandLine {
 
   run() {
     let { har } = this;
-    let { report } = this.ui;
+    let { report, verbose } = this.ui;
     let trace = this.loadTrace();
     let profile = this.cpuProfile(trace)!;
     let validator = this.validator(trace, profile);
@@ -71,12 +72,10 @@ export default class CommandLine {
     let aggregator = new Aggregator(trace, profile, heuristics);
     let reporter = new Reporter(aggregator);
 
-    reporter.categoryReport(heuristics);
-
-    // if (report) {
-    //   reporter.fullReport(heuristics);
-    // } else {
-    //   reporter.categoryReport(heuristics);
-    // }
+    if (report) {
+      reporter.fullReport(heuristics, verbose);
+    } else {
+      reporter.categoryReport(heuristics);
+    }
   }
 }

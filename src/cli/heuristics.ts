@@ -148,7 +148,8 @@ class ParsedFile {
 export class Heuristics {
   private heuristics: Map<string, Heuristic>;
   private canidates: Map<string, Heuristic>;
-  private categories: Categories;
+  private _categories: Categories;
+  private _categoryKeys: string[] = [];
   private prevCategories?: Categories;
   private parsedFiles: Map<string, ParsedFile>;
   private validations: IValidation = { updates: [], warnings: [] };
@@ -166,7 +167,7 @@ export class Heuristics {
   }
 
   constructor(categories: Categories, prevCategories?: Categories) {
-    this.categories = categories;
+    this._categories = categories;
     this.prevCategories = prevCategories;
     this.heuristics = new Map<string, Heuristic>();
     this.canidates = new Map<string, Heuristic>();
@@ -188,11 +189,19 @@ export class Heuristics {
     return this.validations;
   }
 
+  get categories() {
+    if (this._categoryKeys.length === 0) {
+      this._categoryKeys = Object.keys(this._categories);
+    }
+
+    return this._categoryKeys;
+  }
+
   compute(profile: CpuProfile, har: HAR, hashes: Hashes) {
-    let { categories } = this;
-    if (categories) {
-      Object.keys(categories).forEach(category => {
-        let nodes = this.filterSamples(profile.hierarchy, categories[category]);
+    let { _categories } = this;
+    if (_categories) {
+      Object.keys(_categories).forEach(category => {
+        let nodes = this.filterSamples(profile.hierarchy, _categories[category]);
         nodes.forEach(node => {
           this.createHeuristic(har, hashes, node.callFrame, category)
         });
@@ -203,7 +212,7 @@ export class Heuristics {
   persist(path: string) {
     let heuristics: { [key: string]: IHeuristicJSON } = {};
     let keys = this.heuristics.keys();
-    let { categories, validations } = this;
+    let { _categories, validations } = this;
     for (let key of keys) {
       heuristics[key] = this.heuristics.get(key)!.toJSON();
     }
@@ -211,7 +220,7 @@ export class Heuristics {
     let json: IPersistedHeuristics = {
       validations: validations!,
       heuristics,
-      categories
+      categories: _categories
     };
 
     fs.writeFileSync(path, JSON.stringify(json));
@@ -237,45 +246,32 @@ export class Heuristics {
     }
 
     let hash = url.split('/').pop()!;
-    let fileName = hashes[hash];
-    let parsedFile = this.parsedFiles.get(fileName);
-    let mangledIdent;
-    let lines;
-    if (parsedFile === undefined) {
-      let urlRegex = new RegExp(url);
-      let entry = har.log.entries.find(entry => urlRegex.test(entry.request.url))!;
-      let text = entry.response.content!.text!;
-      mangledIdent = findMangledDefine(text);
-      lines = text.split('\n');
-      this.parsedFiles.set(fileName, new ParsedFile(lines, 'define', mangledIdent));
-    } else {
-      lines = parsedFile.lines;
-      mangledIdent = parsedFile.mangledModuleIdent;
+    let fileName = url.includes('native') ? 'native' : hashes[hash];
+    let moduleName = 'native';
+    let { lines, mangledModuleIdent: mangledIdent } = this.parseFile(har, fileName, url, hashes);
+
+    if (fileName !== 'native') {
+      moduleName = findModule(lines, lineNumber, columnNumber, ['define', mangledIdent]);
     }
 
-    let moduleName = findModule(lines, lineNumber, columnNumber, ['define', mangledIdent]);
     let preamble = `${category}::${fileName}::${moduleName}::`
     let key = `${preamble}${functionName}`;
-
-    if (this.heuristics.has(key)) {
-      return;
-    }
-
     let existingHeuristic = this.canidates.get(key);
 
-    if (existingHeuristic) {
+    if (this.heuristics.has(key)) {
+      return this.heuristics.get(key);
+    } else if (existingHeuristic) {
       let { line, col } = existingHeuristic.loc;
 
       if (line === lineNumber && col === columnNumber) {
         // Promote
         this.heuristics.set(key, existingHeuristic);
         this.canidates.delete(key);
-        return;
+        return existingHeuristic;
       }
     }
 
     let callSiteWindow = createCallSiteWindow(lines, lineNumber, columnNumber, 2);
-
 
     let heuristic = new Heuristic({
       hashedFileName: hash,
@@ -288,6 +284,30 @@ export class Heuristics {
     });
 
     this.verifyHeuristic(preamble, functionName, heuristic);
+  }
+
+  private parseFile(har: HAR, fileName: string, url: string, hashes: Hashes) {
+    let parsedFile = this.parsedFiles.get(fileName);
+
+    if (parsedFile === undefined) {
+      if (/native/.test(url)) {
+        let file = new ParsedFile([], '(native)', '(native)');
+        this.parsedFiles.set('native', file);
+        return file;
+      }
+
+      let urlRegex = new RegExp(url);
+      let entry = har.log.entries.find(entry => urlRegex.test(entry.request.url))!;
+      let text = entry.response.content!.text!;
+      let mangledIdent = findMangledDefine(text);
+      let lines = text.split('\n');
+      let file = new ParsedFile(lines, 'define', mangledIdent);
+      this.parsedFiles.set(fileName, file);
+      return file;
+    }
+
+    return parsedFile;
+    // moduleName = findModule(lines, lineNumber, columnNumber, ['define', mangledIdent]);
   }
 
   private verifyHeuristic(preamble: string, name: string, heuristic: Heuristic) {

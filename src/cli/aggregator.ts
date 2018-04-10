@@ -121,24 +121,69 @@ export class Aggregator {
   }
 
   sumsAllHeuristicCategories(heuristics: Heuristics): FullReport {
-    let categoryNames = Object.keys(heuristics);
+    let heuristicsMap = heuristics.get();
+    let keys = heuristicsMap.keys();
+    // let categoryNames = Object.keys(heuristics);
     let all: FullReport = {
       categorized: {},
       all: undefined
     }
 
-    let allMethods: string[] = [];
+    let categories: string[] = [];
+    let breakdowns: {
+      [key: string] : { [key: string ]: Message[] }
+    } = {};
 
-    // categoryNames.forEach((category: string) => {
-    //   let methods = heuristics[category];
-    //   allMethods.push(...methods);
-    //   all.categorized[category] = this.sumsPerHeuristicCategory(methods);
-    // });
 
-    verifyMethods(allMethods);
+    for (let key of keys) {
+      let heuristic = heuristicsMap.get(key)!;
+      let { category, functionName } = heuristic;
 
-    all.all = this.sumsPerHeuristicCategory(allMethods);
+      if (!all.categorized[category]) {
+        all.categorized[category] = {
+          sums: {
+            [functionName]: { heuristics: [], total: 0 }
+          },
+          total: 0
+        }
+      }
+
+      if (!all.categorized[category].sums[functionName]) {
+        all.categorized[category].sums[functionName] = { heuristics: [], total: 0 };
+      }
+
+      let time = toMS(this.sumsPerMethod(heuristic, category));
+      all.categorized[category].sums[functionName].total += time;
+      all.categorized[category].total += time;
+
+      if (!breakdowns[category]) {
+        breakdowns[category] = {}
+      }
+
+      if (!breakdowns[category][functionName]) {
+        breakdowns[category][functionName] = [];
+      }
+
+      breakdowns[category][functionName].push(this.createBreakDown(heuristic, time));
+    }
+
+    Object.keys(breakdowns).forEach((category) => {
+      Object.keys(breakdowns[category]).forEach(method => {
+        breakdowns[category][method].sort((a, b) => b.time - a.time);
+        all.categorized[category].sums[method].heuristics =  breakdowns[category][method].map(b => b.mes);
+      });
+    });
+
     return all;
+  }
+
+  private createBreakDown(heuristic: Heuristic, time: number): Message {
+    let { moduleName, fileName, loc: { line, col } } = heuristic;
+    let shortNameFileName = fileName.split('/').pop();
+    return {
+      mes: `[${shortNameFileName}:${moduleName}] L${line}:C${col} ${time}ms`,
+      time
+    }
   }
 }
 

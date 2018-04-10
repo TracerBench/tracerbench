@@ -9,7 +9,6 @@ export interface Categories {
 export interface Row {
   category: string;
   heading1: string;
-  heading2: string;
   space1: string;
   space2: string;
 }
@@ -28,34 +27,32 @@ export class Reporter {
     this.print(`Aggregated Sum:`, result);
   }
 
-  fullReport(heuristics: Heuristics) {
+  fullReport(heuristics: Heuristics, _verbose: boolean) {
     let report = this.aggregator.sumsAllHeuristicCategories(heuristics);
     let rows = this.generateRows(report);
-    this.printReport(rows, Object.keys(heuristics));
+    this.printReport(rows, heuristics.categories);
   }
 
   private generateRows(report: FullReport) {
-    let { categorized, all } = report;
+    let { categorized } = report;
     let rows: string[][] = [];
+    let aggregateTotal = 0;
 
     Object.keys(categorized).forEach(category => {
       let [col1] = this.cols;
 
-      rows.push([category, 'Timing', 'Aggregate']);
+      rows.push([category, 'Timing']);
 
       if (category.length > col1) {
         this.cols[0] = category.length;
       }
 
-      let aggregateTotal = 0;
+
+      aggregateTotal += categorized[category].total;
       Object.keys(categorized[category].sums).forEach((methodName) => {
         let [col1, col2] = this.cols;
-        let phaseTiming = `${round(categorized[category].sums[methodName])}ms`;
-        let aggegateTime = round(all!.sums[methodName]);
-        aggregateTotal += aggegateTime;
-        let aggregateTime = `${aggegateTime}ms`;
-
-        rows.push([methodName, phaseTiming, aggregateTime]);
+        let phaseTiming = `${round(categorized[category].sums[methodName].total)}ms`;
+        rows.push([methodName, phaseTiming]);
 
         if (methodName.length > col1) {
           this.cols[0] = methodName.length;
@@ -66,10 +63,10 @@ export class Reporter {
         }
       });
 
-      rows.push(['SubTotal', `${round(categorized[category].total)}ms`, `${round(aggregateTotal)}ms`]);
+      rows.push(['SubTotal', `${round(categorized[category].total)}ms`]);
     });
 
-    rows.push(['Total', '', `${round(all!.total)}ms`])
+    rows.push(['Total', `${round(aggregateTotal)}ms`])
 
     return rows;
   }
@@ -90,7 +87,7 @@ export class Reporter {
 
     for (let i = 0; i < rows.length; i++) {
       let row = rows[i];
-      let [category, heading1, heading2] = row;
+      let [category, heading1] = row;
 
       let header;
       let space1;
@@ -107,7 +104,6 @@ export class Reporter {
       let rowParts = {
         category,
         heading1,
-        heading2,
         space1,
         space2
       };
@@ -119,18 +115,18 @@ export class Reporter {
   }
 
   private formatRow(row: Row, categories: string[]) {
-    let { category, heading1, heading2, space1, space2 } = row;
+    let { category, heading1, space1, space2 } = row;
     let { width } = this;
     let buffer = '';
 
     if (categories.includes(category)) {
       category = chalk.inverse(category);
-      let header = `\n${category}${space1}${heading1}${space2}${heading2}\n`;
+      let header = `\n${category}${space1}${heading1}\n`;
       this.width = header.length;
       buffer += header;
       buffer += `${new Array(this.width).join('=')}\n`;
     } else if (category === 'SubTotal' || category === 'Total') {
-      let header = `${space1}${heading1}${space2}${heading2}\n`;
+      let header = `${space1}${heading1}\n`;
 
       if (category === 'SubTotal') {
         header = `\n${yellow(category)}${header}`;
@@ -145,7 +141,7 @@ export class Reporter {
       }
 
     } else {
-      buffer += `  ${category}${space1}${heading1}${space2}${heading2}\n`
+      buffer += `  ${category}${space1}${heading1}\n`
     }
 
     return buffer;
