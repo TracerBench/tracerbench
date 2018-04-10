@@ -3,6 +3,12 @@ import { HierarchyNode } from 'd3-hierarchy';
 import { Categories } from './reporter';
 import { prototype } from 'events';
 import { Trace, ITraceEvent } from '../trace';
+import { Heuristics, Heuristic } from './heuristics';
+
+export interface Breakdown {
+  mes: string;
+  time: number;
+}
 
 export interface Result {
   sums: Sums,
@@ -10,7 +16,12 @@ export interface Result {
 }
 
 export interface Sums {
-  [key: string]: number;
+  [key: string]: SumMeta;
+}
+
+export interface SumMeta {
+  total: number;
+  heuristics: string[];
 }
 
 export interface CategorizedResults {
@@ -31,19 +42,21 @@ export class Aggregator {
   methods: string[] = [];
   root: HierarchyNode<IProfileNode>;
   trace: Trace;
+  heuristics: Heuristics;
 
-  constructor(trace: Trace, profile: CpuProfile) {
+  constructor(trace: Trace, profile: CpuProfile, heuristics: Heuristics) {
     this.root = profile.hierarchy;
     this.trace = trace;
+    this.heuristics = heuristics;
   }
 
-  private sumsPerMethod(methodName: string): number {
+  private sumsPerMethod(heuristic: Heuristic, category: string): number {
     let sum = 0;
     this.root.each((node) => {
-      if (node.data.callFrame.functionName === methodName) {
+      if (heuristic.validate(node.data.callFrame)) {
         sum += node.data.self;
         if (node.children) {
-          sum += this.aggregateChildren(node)
+          sum += this.aggregateChildren(node, category);
         }
       }
     });
@@ -51,13 +64,13 @@ export class Aggregator {
     return sum;
   }
 
-  private aggregateChildren(node: HierarchyNode<IProfileNode>): number {
+  private aggregateChildren(node: HierarchyNode<IProfileNode>, category: string): number {
     let { methods } = this;
     let sum = 0;
 
     const aggregate = (node: HierarchyNode<IProfileNode>) => {
       node.children!.forEach((n) => {
-        if (!methods.includes(n.data.callFrame.functionName)) {
+        if (!this.heuristics.isContained(n.data.callFrame, category)) {
           sum += n.data.self;
           if (n.children) {
             aggregate(n);
@@ -70,44 +83,107 @@ export class Aggregator {
     return sum;
   }
 
-  sumsPerHeuristicCategory(methods: string[]): CategoryResult {
-    verifyMethods(methods);
+  sumsPerHeuristicCategory(heuristics: Heuristics): CategoryResult {
+    let heuristicsMap = heuristics.get();
 
-    this.methods = methods;
     let sums: Sums = {};
+    let breakdowns: { [key: string ]: Breakdown[] } = {};
+    heuristicsMap.forEach((heuristic) => {
+      if (!sums[heuristic.functionName]) {
+        sums[heuristic.functionName] = { heuristics: [], total: 0 };
+      }
 
-    methods.forEach(method => {
-      sums[method] = toMS(this.sumsPerMethod(method));
+      let time = toMS(this.sumsPerMethod(heuristic, 'adHoc'));
+      sums[heuristic.functionName].total += time;
+      let { line, col } = heuristic.loc;
+      let shortNameFileName = heuristic.fileName.split('/').pop();
+
+      if (breakdowns[heuristic.functionName] === undefined) {
+        breakdowns[heuristic.functionName] = []
+      }
+
+      breakdowns[heuristic.functionName].push({
+        mes: `[${shortNameFileName}:${heuristic.moduleName}] L${line}:C${col} ${time}ms`,
+        time
+      })
     });
 
-    this.methods = [];
+    Object.keys(breakdowns).forEach((breakdown) => {
+      breakdowns[breakdown].sort((a, b) => b.time - a.time);
+      sums[breakdown].heuristics = breakdowns[breakdown].map(b => b.mes);
+    });
 
     let total = Object.keys(sums).reduce((accumulator, current) => {
-      return accumulator += sums[current];
+      return accumulator += sums[current].total;
     }, 0);
 
     return { sums, total };
   }
 
-  sumsAllHeuristicCategories(categories: Categories): FullReport {
-    let categoryNames = Object.keys(categories);
+  sumsAllHeuristicCategories(heuristics: Heuristics): FullReport {
+    let heuristicsMap = heuristics.get();
+    let keys = heuristicsMap.keys();
+    // let categoryNames = Object.keys(heuristics);
     let all: FullReport = {
       categorized: {},
       all: undefined
     }
 
-    let allMethods: string[] = [];
+    let categories: string[] = [];
+    let breakdowns: {
+      [key: string] : { [key: string ]: Breakdown[] }
+    } = {};
 
-    categoryNames.forEach((category: string) => {
-      let methods = categories[category];
-      allMethods.push(...methods);
-      all.categorized[category] = this.sumsPerHeuristicCategory(methods);
+
+    for (let key of keys) {
+      let heuristic = heuristicsMap.get(key)!;
+      let { category, functionName } = heuristic;
+
+      if (!all.categorized[category]) {
+        all.categorized[category] = {
+          sums: {
+            [functionName]: { heuristics: [], total: 0 }
+          },
+          total: 0
+        }
+      }
+
+      if (!all.categorized[category].sums[functionName]) {
+        all.categorized[category].sums[functionName] = { heuristics: [], total: 0 };
+      }
+
+      let time = toMS(this.sumsPerMethod(heuristic, category));
+      all.categorized[category].sums[functionName].total += time;
+      all.categorized[category].total += time;
+
+      if (!breakdowns[category]) {
+        breakdowns[category] = {}
+      }
+
+      if (!breakdowns[category][functionName]) {
+        breakdowns[category][functionName] = [];
+      }
+
+      breakdowns[category][functionName].push(this.createBreakDown(heuristic, time));
+    }
+
+    Object.keys(breakdowns).forEach((category) => {
+      Object.keys(breakdowns[category]).forEach(method => {
+        breakdowns[category][method].sort((a, b) => b.time - a.time);
+        all.categorized[category].sums[method].heuristics =  breakdowns[category][method].map(b => b.mes);
+      });
     });
 
-    verifyMethods(allMethods);
-
-    all.all = this.sumsPerHeuristicCategory(allMethods);
     return all;
+  }
+
+  private createBreakDown(heuristic: Heuristic, time: number): Breakdown {
+    let { moduleName, fileName, loc: { line, col } } = heuristic;
+    let shortNameFileName = fileName.split('/').pop();
+    return {
+      mes: `[${shortNameFileName}:${moduleName}] L${line}:C${col} ${time}ms`,
+      time
+    }
   }
 }
 

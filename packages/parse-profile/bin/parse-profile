@@ -2,81 +2,20 @@
 'use strict';
 
 const Profile = require('../dist/index.cjs');
-const program = require('commander');
-const chalk = require('chalk');
-const fs = require('fs');
-const path = require('path');
-const SilentError = require('silent-error');
-const d3 = require('d3');
+const ui = require('commander');
+
+ui
+  .option('-f, --file <file>', 'Path to trace json file')
+  .option('-m, --methods <names|file>', 'List of methods to aggregate', methodNames)
+  .option('-r, --report <dirPath>', 'Generates a report with aggregated sums for each heuristic category and aggregated sum across all heuristics')
+  .option('-t, --time <eventName>', 'Slice time and see the events before and after the time slice')
+  .option('--har <path>', 'Path to HAR file')
+  .option('--verbose', 'Verbose output')
+  .parse(process.argv);
 
 function methodNames(val) {
   return val.split(',');
 }
 
-program
-  .option('-f, --file <file>', 'Path to trace json file')
-  .option('-m, --methods <names|file>', 'List of methods to aggregate', methodNames)
-  .option('-r, --report <heuristicDir>', 'Generates a report with aggregated sums for each heuristic category and aggregated sum across all heuristics')
-  .option('-t, --time <eventName>', 'Slice time and see the events before and after the time slice')
-  .parse(process.argv);
-
-const error = chalk.bold.red;
-
-let { file, methods, report, time } = program;
-const defaultProfilePath = `${process.cwd()}/profile.json`;
-const defaultMethodsPath = `${process.cwd()}/.methods.json}`;
-
-if (file === undefined && fs.existsSync(defaultProfilePath) === false) {
-  throw new SilentError(error(`Error: Must pass a path to the trace file 💣`));
-}
-
-let categories;
-
-if (report) {
-  let files = fs.readdirSync(report);
-  categories = {};
-  files.map(file => {
-    let name = path.basename(file).replace('.json', '');
-    let methods = JSON.parse(fs.readFileSync(`${report}/${file}`));
-    categories[name] = methods;
-  });
-} else {
-
-  if (methods === undefined && fs.existsSync(defaultMethodsPath) === false) {
-    throw new SilentError(error(`Error: Must pass a list of method names or have a ".methods.json" file at the root of the project.`));
-  }
-
-  if (methods === undefined) {
-    methods = JSON.parse(fs.readFileSync(defaultMethodsPath, 'utf8'));
-  } else if (methods && fs.existsSync(process.cwd() + '/' + methods)) {
-    methods = JSON.parse(fs.readFileSync(process.cwd() + '/' + methods, 'utf8'));
-  }
-}
-
-const filePath = file || defaultProfilePath;
-const traceEvents = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-const trace = Profile.loadTrace(traceEvents);
-
-let max;
-let min;
-
-if (time) {
-  let startEvent = trace.events.find(e => e.name === 'navigationStart');
-  let endEvent = trace.events.find(e => e.name === time);
-  min = startEvent.ts;
-  max = endEvent.ts;
-} else {
-  min = -1;
-  max = -1;
-}
-
-const profile = trace.cpuProfile(min, max);
-
-let aggregator = new Profile.Aggregator(trace, profile);
-let reporter = new Profile.Reporter(aggregator);
-
-if (program.report) {
-  reporter.fullReport(categories);
-} else {
-  reporter.categoryReport(methods);
-}
+let cli = new Profile.CLI(ui);
+cli.run();
