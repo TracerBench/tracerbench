@@ -5,7 +5,7 @@ import { prototype } from 'events';
 import { Trace, ITraceEvent } from '../trace';
 import { Heuristics, Heuristic } from './heuristics';
 
-export interface Message {
+export interface Breakdown {
   mes: string;
   time: number;
 }
@@ -87,7 +87,7 @@ export class Aggregator {
     let heuristicsMap = heuristics.get();
 
     let sums: Sums = {};
-    let breakdowns: { [key: string ]: Message[] } = {};
+    let breakdowns: { [key: string ]: Breakdown[] } = {};
     heuristicsMap.forEach((heuristic) => {
       if (!sums[heuristic.functionName]) {
         sums[heuristic.functionName] = { heuristics: [], total: 0 };
@@ -131,7 +131,7 @@ export class Aggregator {
 
     let categories: string[] = [];
     let breakdowns: {
-      [key: string] : { [key: string ]: Message[] }
+      [key: string] : { [key: string ]: Breakdown[] }
     } = {};
 
 
@@ -177,7 +177,7 @@ export class Aggregator {
     return all;
   }
 
-  private createBreakDown(heuristic: Heuristic, time: number): Message {
+  private createBreakDown(heuristic: Heuristic, time: number): Breakdown {
     let { moduleName, fileName, loc: { line, col } } = heuristic;
     let shortNameFileName = fileName.split('/').pop();
     return {

@@ -153,6 +153,7 @@ export class Heuristics {
   private prevCategories?: Categories;
   private parsedFiles: Map<string, ParsedFile>;
   private validations: IValidation = { updates: [], warnings: [] };
+  private version: string = '0.0.0';
 
   static fromJSON(json: Categories) {
     let heuristics = new Heuristics(json);
@@ -172,6 +173,10 @@ export class Heuristics {
     this.heuristics = new Map<string, Heuristic>();
     this.canidates = new Map<string, Heuristic>();
     this.parsedFiles = new Map<string, ParsedFile>();
+  }
+
+  setVersion(version: string) {
+    this.version = version;
   }
 
   load(cachedHeuristics: IHeuristicMap) {
@@ -297,7 +302,12 @@ export class Heuristics {
       }
 
       let urlRegex = new RegExp(url);
-      let entry = har.log.entries.find(entry => urlRegex.test(entry.request.url))!;
+      let entry = har.log.entries.find(entry => urlRegex.test(entry.request.url));
+
+      if (entry === undefined) {
+        throw new Error(`HAR file and CPU profile have diverged. Could not find resource "${url}" in "${this.version}" of the application.`);
+      }
+
       let text = entry.response.content!.text!;
       let mangledIdent = findMangledDefine(text);
       let lines = text.split('\n');
@@ -307,7 +317,6 @@ export class Heuristics {
     }
 
     return parsedFile;
-    // moduleName = findModule(lines, lineNumber, columnNumber, ['define', mangledIdent]);
   }
 
   private verifyHeuristic(preamble: string, name: string, heuristic: Heuristic) {
@@ -400,9 +409,12 @@ export class HeuristicsValidator {
       heuristics = Heuristics.fromJSON(this.categories);
     }
 
+    heuristics.setVersion(version);
     heuristics.compute(profile, har, hashes);
 
     let verification = heuristics.verify();
+
+    // TODO: Enable this
     // heuristics.persist(prevalidated);
 
     this._heuristics = heuristics;

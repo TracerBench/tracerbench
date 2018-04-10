@@ -3,7 +3,7 @@ const resolve = require('rollup-plugin-node-resolve');
 
 module.exports = {
   input: './src/index.ts',
-  external: ['d3-hierarchy', 'chalk', 'fs', 'os', 'path', 'child_process'],
+  external: ['d3-hierarchy', 'chalk', 'fs', 'os', 'path', 'child_process', 'ora'],
   plugins: [
     resolve({
       moduleOnly: true,

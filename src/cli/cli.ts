@@ -73,7 +73,7 @@ export default class CommandLine {
     let reporter = new Reporter(aggregator);
 
     if (report) {
-      reporter.fullReport(heuristics, verbose);
+      reporter.fullReport(heuristics, verbose!!);
     } else {
       reporter.categoryReport(heuristics);
     }
