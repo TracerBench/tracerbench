@@ -231,12 +231,12 @@ export class Heuristics {
     fs.writeFileSync(path, JSON.stringify(json));
   }
 
-  isContained(callFrame: ICallFrame, currentCategory: string) {
+  isContained(callFrame: ICallFrame) {
     for (let pair of this.heuristics.entries()) {
       let [,heuristic] = pair;
-      let { functionName, category } = heuristic;
+      let { functionName } = heuristic;
 
-      if (functionName === callFrame.functionName && category === currentCategory) {
+      if (functionName === callFrame.functionName) {
         return true;
       }
     }
@@ -246,12 +246,13 @@ export class Heuristics {
 
   private createHeuristic(har: HAR, hashes: Hashes, callFrame: ICallFrame, category: string) {
     let { url, lineNumber, columnNumber, functionName } = callFrame;
-    if (lineNumber === -1) {
+    let hash = url.split('/').pop()!;
+    let fileName = url.includes('native') ? 'native' : hashes[hash];
+
+    if (!fileName || lineNumber === -1) {
       return;
     }
 
-    let hash = url.split('/').pop()!;
-    let fileName = url.includes('native') ? 'native' : hashes[hash];
     let moduleName = 'native';
     let { lines, mangledModuleIdent: mangledIdent } = this.parseFile(har, fileName, url, hashes);
 
@@ -392,8 +393,8 @@ export class HeuristicsValidator {
     }
   }
 
-  isContained(callFrame: ICallFrame, category: string) {
-    return this._heuristics!.isContained(callFrame, category);
+  isContained(callFrame: ICallFrame) {
+    return this._heuristics!.isContained(callFrame);
   }
 
   validate(profile: CpuProfile, har: HAR) {

@@ -70,7 +70,7 @@ export class Aggregator {
 
     const aggregate = (node: HierarchyNode<IProfileNode>) => {
       node.children!.forEach((n) => {
-        if (!this.heuristics.isContained(n.data.callFrame, category)) {
+        if (!this.heuristics.isContained(n.data.callFrame)) {
           sum += n.data.self;
           if (n.children) {
             aggregate(n);
