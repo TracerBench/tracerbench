@@ -140,39 +140,36 @@ export class Aggregator {
 
 
     for (let key of keys) {
-      // if (key === 'platform::v8::v8::(garbage collector)') {
+      let heuristic = heuristicsMap.get(key)!;
+      let { category, functionName } = heuristic;
 
-        let heuristic = heuristicsMap.get(key)!;
-        let { category, functionName } = heuristic;
-
-        if (!all.categorized[category]) {
-          all.categorized[category] = {
-            sums: {
-              [functionName]: { heuristics: [], total: 0 }
-            },
-            total: 0
-          }
+      if (!all.categorized[category]) {
+        all.categorized[category] = {
+          sums: {
+            [functionName]: { heuristics: [], total: 0 }
+          },
+          total: 0
         }
-
-        if (!all.categorized[category].sums[functionName]) {
-          all.categorized[category].sums[functionName] = { heuristics: [], total: 0 };
-        }
-
-        let time = toMS(this.sumsPerMethod(heuristic, category));
-        all.categorized[category].sums[functionName].total += time;
-        all.categorized[category].total += time;
-
-        if (!breakdowns[category]) {
-          breakdowns[category] = {}
-        }
-
-        if (!breakdowns[category][functionName]) {
-          breakdowns[category][functionName] = [];
-        }
-
-        breakdowns[category][functionName].push(this.createBreakDown(heuristic, time));
       }
-    // }
+
+      if (!all.categorized[category].sums[functionName]) {
+        all.categorized[category].sums[functionName] = { heuristics: [], total: 0 };
+      }
+
+      let time = toMS(this.sumsPerMethod(heuristic, category));
+      all.categorized[category].sums[functionName].total += time;
+      all.categorized[category].total += time;
+
+      if (!breakdowns[category]) {
+        breakdowns[category] = {}
+      }
+
+      if (!breakdowns[category][functionName]) {
+        breakdowns[category][functionName] = [];
+      }
+
+      breakdowns[category][functionName].push(this.createBreakDown(heuristic, time));
+    }
 
     Object.keys(breakdowns).forEach((category) => {
       Object.keys(breakdowns[category]).forEach(method => {
