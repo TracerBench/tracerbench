@@ -1,6 +1,6 @@
 import { Aggregator, CategoryResult, CategorizedResults, FullReport } from './aggregator';
 import chalk from 'chalk';
-import { Heuristics, IHeuristicJSON } from './heuristics';
+import { Heuristics, IHeuristicJSON, IValidation } from './heuristics';
 
 export interface Categories {
   [key: string]: string[];
@@ -15,11 +15,13 @@ export interface Row {
 
 export class Reporter {
   aggregator: Aggregator;
+  validations: IValidation;
   private cols: number[] = [0,6];
   private width: number = 0;
 
-  constructor(aggregator: Aggregator) {
+  constructor(aggregator: Aggregator, validations: IValidation) {
     this.aggregator = aggregator;
+    this.validations = validations;
   }
 
   categoryReport(heuristics: Heuristics) {
@@ -76,7 +78,11 @@ export class Reporter {
       rows.push(['SubTotal', `${round(categorized[category].total)}ms`]);
     });
 
-    rows.push(['Total', `${round(aggregateTotal)}ms`])
+    rows.push([chalk.bold.yellow('\nDropped'), '']);
+
+    rows.push(...this.validations.warnings.map(w => [w, '']));
+
+    rows.push(['Total', `${round(aggregateTotal)}ms`]);
 
     return rows;
   }
@@ -134,10 +140,10 @@ export class Reporter {
       this.width = header.length;
       buffer += header;
       buffer += `${new Array(this.width).join('=')}\n`;
-    } else if (category === 'SubTotal' || category === 'Total') {
+    } else if (category === 'SubTotal' || category === 'Total' || category === 'Dropped') {
       let header = `${space1}${heading1}\n`;
 
-      if (category === 'SubTotal') {
+      if (category === 'SubTotal' || category === 'Dropped') {
         header = `\n${yellow(category)}${header}`;
         buffer += `${new Array(width).join('-')}`
         buffer += header;

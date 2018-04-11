@@ -86,6 +86,8 @@ export class Aggregator {
   sumsPerHeuristicCategory(heuristics: Heuristics): CategoryResult {
     let heuristicsMap = heuristics.get();
 
+    verifyMethods(heuristics.methods)
+
     let sums: Sums = {};
     let breakdowns: { [key: string ]: Breakdown[] } = {};
     heuristicsMap.forEach((heuristic) => {
@@ -123,11 +125,13 @@ export class Aggregator {
   sumsAllHeuristicCategories(heuristics: Heuristics): FullReport {
     let heuristicsMap = heuristics.get();
     let keys = heuristicsMap.keys();
-    // let categoryNames = Object.keys(heuristics);
+
     let all: FullReport = {
       categorized: {},
       all: undefined
     }
+
+    verifyMethods(heuristics.methods)
 
     let categories: string[] = [];
     let breakdowns: {
@@ -179,7 +183,7 @@ export class Aggregator {
 
   private createBreakDown(heuristic: Heuristic, time: number): Breakdown {
     let { moduleName, fileName, loc: { line, col } } = heuristic;
-    let shortNameFileName = fileName.split('/').pop();
+    let shortNameFileName = fileName;
     return {
       mes: `[${shortNameFileName}:${moduleName}] L${line}:C${col} ${time}ms`,
       time
