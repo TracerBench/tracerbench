@@ -63,6 +63,7 @@ export class Heuristic implements IHeuristicJSON {
   functionName: string;
   loc: Loc;
   callSiteWindow: CallSiteWindow;
+  callFrames: ICallFrame[] = [];
   constructor(json: IHeuristicJSON) {
     this.category = json.category;
     this.fileName = json.fileName;
@@ -71,6 +72,10 @@ export class Heuristic implements IHeuristicJSON {
     this.loc = json.loc;
     this.callSiteWindow = json.callSiteWindow;
     this.hashedFileName = json.hashedFileName;
+  }
+
+  pushCallFrame(callFrame: ICallFrame) {
+    this.callFrames.push(callFrame);
   }
 
   verify(heuristic: Heuristic) {
@@ -90,17 +95,7 @@ export class Heuristic implements IHeuristicJSON {
   }
 
   validate(callFrame: ICallFrame) {
-    if (callFrame.lineNumber !== this.loc.line || callFrame.columnNumber !== this.loc.col) {
-      return false;
-    }
-
-    let hash = callFrame.url.split('/').pop()!;
-
-    if (hash !== this.hashedFileName) {
-      return false;
-    }
-
-    return true;
+    return this.callFrames.includes(callFrame);
   }
 
   private isRelevant(before: DiffResult, after: DiffResult) {
@@ -149,10 +144,11 @@ export class Heuristics {
   private heuristics: Map<string, Heuristic>;
   private canidates: Map<string, Heuristic>;
   private _categories: Categories;
+  private _methods: string[] = [];
   private _categoryKeys: string[] = [];
   private prevCategories?: Categories;
   private parsedFiles: Map<string, ParsedFile>;
-  private validations: IValidation = { updates: [], warnings: [] };
+  public validations: IValidation = { updates: [], warnings: [] };
   private version: string = '0.0.0';
 
   static fromJSON(json: Categories) {
@@ -192,6 +188,16 @@ export class Heuristics {
 
   verify() {
     return this.validations;
+  }
+
+  get methods() {
+    if (this._methods.length === 0) {
+      this._methods = this._methods.concat(...Object.keys(this._categories).map((cat) => {
+        return this._categories[cat];
+      }));
+    }
+
+    return this._methods;
   }
 
   get categories() {
@@ -244,34 +250,71 @@ export class Heuristics {
     return false;
   }
 
+  private createNativeHeuristic(key: string, fileName: string, functionName: string, loc: Loc, hash: string) {
+    let existingHeuristic = this.heuristics.get(key);
+    if (existingHeuristic) {
+      return existingHeuristic;
+    }
+
+    let heuristic = new Heuristic({
+      moduleName: 'v8',
+      category: 'platform',
+      functionName,
+      loc,
+      fileName: fileName,
+      callSiteWindow: { before: '', after: '' },
+      hashedFileName: hash
+    });
+
+    this.heuristics.set(key, heuristic);
+    return heuristic;
+  }
+
   private createHeuristic(har: HAR, hashes: Hashes, callFrame: ICallFrame, category: string) {
     let { url, lineNumber, columnNumber, functionName } = callFrame;
     let hash = url.split('/').pop()!;
-    let fileName = url.includes('native') ? 'native' : hashes[hash];
+    let fileName = hashes[hash];
+    let loc = { col: columnNumber, line: lineNumber };
 
-    if (!fileName || lineNumber === -1) {
+    if (isV8(functionName)) {
+      let key = `${category}::v8::v8::${functionName}`;
+      let heruristic = this.createNativeHeuristic(key, 'v8', functionName, loc, hash);
+      heruristic.pushCallFrame(callFrame);
+      return heruristic;
+    }
+
+    if (isNative(url)) {
+      let key = `${category}::v8::${url}::${functionName}`;
+      let heruristic = this.createNativeHeuristic(key, url, functionName, loc, hash);
+      heruristic.pushCallFrame(callFrame);
+      return heruristic;
+    }
+
+    if (lineNumber === -1) {
+      let msg = `"${functionName}" in "${category}" could not resolve in "${fileName}".`;
+      if (!this.validations.warnings.includes(msg)) {
+        this.validations.warnings.push(msg);
+      }
       return;
     }
 
-    let moduleName = 'native';
     let { lines, mangledModuleIdent: mangledIdent } = this.parseFile(har, fileName, url, hashes);
-
-    if (fileName !== 'native') {
-      moduleName = findModule(lines, lineNumber, columnNumber, ['define', mangledIdent]);
-    }
-
+    let moduleName = findModule(lines, lineNumber, columnNumber, ['define', mangledIdent]);
     let preamble = `${category}::${fileName}::${moduleName}::`
     let key = `${preamble}${functionName}`;
     let existingHeuristic = this.canidates.get(key);
 
     if (this.heuristics.has(key)) {
-      return this.heuristics.get(key);
+      let heruristic = this.heuristics.get(key)!;
+      heruristic.pushCallFrame(callFrame);
+      return heruristic;
     } else if (existingHeuristic) {
       let { line, col } = existingHeuristic.loc;
 
       if (line === lineNumber && col === columnNumber) {
         // Promote
         this.heuristics.set(key, existingHeuristic);
+        existingHeuristic.pushCallFrame(callFrame);
         this.canidates.delete(key);
         return existingHeuristic;
       }
@@ -289,7 +332,9 @@ export class Heuristics {
       functionName
     });
 
+    heuristic.pushCallFrame(callFrame);
     this.verifyHeuristic(preamble, functionName, heuristic);
+    return heuristic;
   }
 
   private parseFile(har: HAR, fileName: string, url: string, hashes: Hashes) {
@@ -323,7 +368,6 @@ export class Heuristics {
   private verifyHeuristic(preamble: string, name: string, heuristic: Heuristic) {
     if (this.canidates.size === 0) {
       this.heuristics.set(`${preamble}${name}`, heuristic);
-      return;
     }
 
     let keys = this.canidates.keys();
@@ -413,7 +457,7 @@ export class HeuristicsValidator {
     heuristics.setVersion(version);
     heuristics.compute(profile, har, hashes);
 
-    let verification = heuristics.verify();
+    let validations = heuristics.verify();
 
     // TODO: Enable this
     // heuristics.persist(prevalidated);
@@ -422,7 +466,15 @@ export class HeuristicsValidator {
 
     return {
       heuristics,
-      verification
+      validations
     };
   }
+}
+
+function isV8(name: string) {
+  return name === '(program)' || name === '(garbage collector)';
+}
+
+function isNative(name: string) {
+  return name.includes('native');
 }
