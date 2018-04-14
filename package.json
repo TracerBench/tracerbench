@@ -1,6 +1,6 @@
 {
   "name": "devtrace",
-  "version": "0.12.2",
+  "version": "0.13.0",
   "description": "Benchmark runner for trace metrics",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
