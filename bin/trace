@@ -6,4 +6,4 @@ const fs = require('fs');
 
 const cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf8'));
 
-Profile.liveTrace('https://www.linkedin.com/feed/', 'feed-trace.json.gz', cookies);
+Profile.liveTrace('https://www.linkedin.com/feed/', 'feed-trace.json', cookies);

@@ -85,7 +85,7 @@ export async function liveTrace(url: string, out: string, cookies: ICookie[]) {
     await tracing.start({
       categories: DEVTOOLS_CATEGORIES.join(','),
       transferMode: 'ReturnAsStream',
-      streamCompression: 'gzip',
+      streamCompression: 'none',
     });
     console.log(`navigating to ${url}`);
     await page.navigate({
