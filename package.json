@@ -1,7 +1,7 @@
 {
-  "name": "chrome-tracing",
+  "name": "devtrace",
   "version": "0.12.2",
-  "description": "Parser for chrome traces",
+  "description": "Benchmark runner for trace metrics",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -15,7 +15,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/krisselden/chrome-tracing.git"
+    "url": "https://github.com/devtrace/chrome-tracing.git"
   },
   "files": [
     "dist/index.d.ts",
