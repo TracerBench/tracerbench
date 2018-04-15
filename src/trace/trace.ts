@@ -1,29 +1,37 @@
 import binsearch from 'array-binsearch';
 import Bounds from './bounds';
+import CpuProfile from './cpuprofile';
 import Process from './process';
 import Thread from './thread';
-import { ICpuProfileEvent, IProfileChunkEvent, IProfileEvent, IProfileNode } from '../trace';
-import CpuProfile, { ICpuProfile, ICpuProfileNode } from '../cpuprofile/index';
-
-import { ITraceEvent, TRACE_EVENT_PHASE, PROCESS_NAME, ARGS } from './trace_event';
-
+import {
+  ARGS,
+  ICpuProfile,
+  ICpuProfileEvent,
+  ICpuProfileNode,
+  IProfileChunkEvent,
+  IProfileEvent,
+  IProfileNode,
+  ITraceEvent,
+  PROCESS_NAME,
+  TRACE_EVENT_PHASE,
+} from './trace_event';
 import traceEventComparator from './trace_event_comparator';
 
 interface IPartialCpuProfile extends ICpuProfile {
-  nodes: (ICpuProfileNode & IProfileNode)[];
+  nodes: Array<ICpuProfileNode & IProfileNode>;
 }
 
 export default class Trace {
-  public processes: Process[] = [];
-  public mainProcess?: Process;
-  public bounds: Bounds = new Bounds();
-  public events: ITraceEvent[] = [];
-  public browserProcess: Process | null = null;
-  public gpuProcess: Process | null = null;
-  public rendererProcesses: Process[] = [];
-  public numberOfProcessors?: number;
+  processes: Process[] = [];
+  mainProcess?: Process;
+  bounds: Bounds = new Bounds();
+  events: ITraceEvent[] = [];
+  browserProcess: Process | null = null;
+  gpuProcess: Process | null = null;
+  rendererProcesses: Process[] = [];
+  numberOfProcessors?: number;
 
-  public lastTracingStartedInPageEvent?: ITraceEvent;
+  lastTracingStartedInPageEvent?: ITraceEvent;
 
   private _cpuProfile?: ICpuProfile;
   private parents = new Map<ITraceEvent, ITraceEvent>();
@@ -38,7 +46,7 @@ export default class Trace {
     }
   >();
 
-  public cpuProfile(min: number, max: number): CpuProfile {
+  cpuProfile(min: number, max: number): CpuProfile {
     const { _cpuProfile } = this;
     if (_cpuProfile === undefined) {
       throw new Error('trace is missing CpuProfile');
@@ -46,7 +54,7 @@ export default class Trace {
     return new CpuProfile(_cpuProfile, min, max);
   }
 
-  public process(pid: number): Process {
+  process(pid: number): Process {
     let process = this.findProcess(pid);
     if (process === undefined) {
       process = new Process(pid);
@@ -55,17 +63,17 @@ export default class Trace {
     return process;
   }
 
-  public thread(pid: number, tid: number): Thread {
+  thread(pid: number, tid: number): Thread {
     return this.process(pid).thread(tid);
   }
 
-  public addEvents(events: ITraceEvent[]) {
+  addEvents(events: ITraceEvent[]) {
     for (const event of events) {
       this.addEvent(event);
     }
   }
 
-  public buildModel() {
+  buildModel() {
     const { events } = this;
     if (this.stack.length > 0) {
       /* tslint:disable:no-console */
@@ -83,7 +91,7 @@ export default class Trace {
         event.cat === 'disabled-by-default-devtools.timeline'
       ) {
         if (event.name === 'CpuProfile') {
-          this._cpuProfile = (event as any).args.data.cpuProfile;
+          this._cpuProfile = (event as ICpuProfileEvent).args.data.cpuProfile;
         } else if (event.name === 'TracingStartedInPage') {
           this.lastTracingStartedInPageEvent = event;
         }
@@ -96,9 +104,8 @@ export default class Trace {
             cpuProfile: {
               startTime: profile.args.data.startTime,
               endTime: 0,
-              hitCount: 0,
               duration: 0,
-              nodes: [] as (ICpuProfileNode & IProfileNode)[],
+              nodes: [] as Array<ICpuProfileNode & IProfileNode>,
               samples: [] as number[],
               timeDeltas: [] as number[],
             },
@@ -106,18 +113,17 @@ export default class Trace {
         }
         if (event.name === 'ProfileChunk') {
           const profileChunk = event as IProfileChunkEvent;
-          let profileEntry = this.profileMap.get(profileChunk.id)!;
+          const profileEntry = this.profileMap.get(profileChunk.id)!;
           if (profileChunk.args.data.cpuProfile.nodes) {
             profileChunk.args.data.cpuProfile.nodes.forEach(node => {
               profileEntry.cpuProfile.nodes.push(
                 Object.assign(node, {
-                  hitCount: 0,
                   sampleCount: 0,
                   min: 0,
                   max: 0,
                   total: 0,
                   self: 0,
-                })
+                }),
               );
             });
           }
@@ -137,9 +143,7 @@ export default class Trace {
         .filter(p => p.name === PROCESS_NAME.RENDERER)
         .reduce((a, b) => (b.events.length > a.events.length ? b : a));
     }
-    let mainPid = this.mainProcess.id;
-    let mainTid = this.mainProcess.mainThread!.id;
-    for (let profileEntry of this.profileMap.values()) {
+    for (const profileEntry of this.profileMap.values()) {
       if (
         profileEntry.pid === this.mainProcess.id &&
         profileEntry.tid === this.mainProcess.mainThread!.id
@@ -163,7 +167,7 @@ export default class Trace {
     }
   }
 
-  public getParent(event: ITraceEvent) {
+  getParent(event: ITraceEvent) {
     this.parents.get(event);
   }
 

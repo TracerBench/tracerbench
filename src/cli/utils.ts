@@ -1,9 +1,11 @@
-import * as os from 'os';
-import * as fs from 'fs';
 import * as childProcess from 'child_process';
-import { Trace } from '../trace';
-import { Hash } from 'crypto';
 import { SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION } from 'constants';
+import { Hash } from 'crypto';
+import * as fs from 'fs';
+import * as os from 'os';
+import { Trace } from '../trace';
+
+// tslint:disable:no-console
 
 export interface Hashes {
   [key: string]: string;
@@ -22,7 +24,8 @@ export function cdnHashes(version: string): Hashes {
     fs.mkdirSync(tmpDir);
   }
 
-  let schashes =`http://artifactory.corp.linkedin.com:8081/artifactory/CNC/com/linkedin/voyager-web/voyager-web/${version}/voyager-web_prod_build-${version}.zip/\!/extended/sc-hashes.json
+  // tslint:disable-next-line:max-line-length
+  let schashes = `http://artifactory.corp.linkedin.com:8081/artifactory/CNC/com/linkedin/voyager-web/voyager-web/${version}/voyager-web_prod_build-${version}.zip/\!/extended/sc-hashes.json
     dest=sc-hashes-${version}.json`;
 
   let hashPath = `${tmpDir}/hashes.json`;
@@ -35,7 +38,7 @@ export function cdnHashes(version: string): Hashes {
   }
 
   let mappedHashes: Hashes = {};
-  let parsedHashes = hashes = JSON.parse(hashes);
+  let parsedHashes = (hashes = JSON.parse(hashes));
   Object.keys(parsedHashes.hashes).forEach(hash => {
     let h = parsedHashes.hashes[hash];
     mappedHashes[h] = hash;
@@ -45,14 +48,14 @@ export function cdnHashes(version: string): Hashes {
 }
 
 export function getVersion(content: string) {
-  let metaTag = '<meta name=\"serviceVersion\" content=\"';
+  let metaTag = '<meta name="serviceVersion" content="';
   let metaTagStart = content.indexOf(metaTag);
   let start = metaTagStart + metaTag.length;
   let char;
   let version = '';
   while (char !== '"') {
     version += content[start];
-    char = content[++start]
+    char = content[++start];
   }
 
   return version;
@@ -88,7 +91,7 @@ export function findMangledDefine(content: string) {
   let declaration = false;
   while (scanning) {
     let char = sub[end--];
-    switch(char) {
+    switch (char) {
       case '=':
         declaration = true;
         break;
@@ -99,7 +102,7 @@ export function findMangledDefine(content: string) {
         if (declaration) {
           defineToken = defineToken + char;
         }
-      break;
+        break;
     }
   }
 
@@ -108,9 +111,12 @@ export function findMangledDefine(content: string) {
 
 function getModuleIndex(str: string, ident: string) {
   if (str === undefined) {
-    console.log('wat')
+    console.log('wat');
   }
-  let matcher = new RegExp(`(?:${ident}\\\(")(.*?)(?=",\\\[\\\"(.*)\\\"],(function|\\\(function))`, 'g');
+  let matcher = new RegExp(
+    `(?:${ident}\\\(")(.*?)(?=",\\\[\\\"(.*)\\\"],(function|\\\(function))`,
+    'g',
+  );
   let matches = str.match(matcher);
 
   if (matches === null) {
@@ -139,13 +145,17 @@ export function findModule(lines: string[], line: number, col: number, tokens: s
   }
 
   if (col === -1) {
+    // tslint:disable-next-line:no-shadowed-variable
     let defineIndex = callSiteLine.lastIndexOf(`${define}("`);
+    // tslint:disable-next-line:no-shadowed-variable
     let enifedIndex = callSiteLine.lastIndexOf(`${enifed}("`);
     if (defineIndex === -1 && enifedIndex === -1) {
       return findModule(lines, line - 1, -1, tokens);
     }
 
+    // tslint:disable-next-line:no-shadowed-variable
     let token;
+    // tslint:disable-next-line:no-shadowed-variable
     let index;
     if (defineIndex > 0) {
       token = define;
@@ -186,9 +196,14 @@ function extractModuleName(line: string, token: string, index: number) {
   return moduleName;
 }
 
-export function createCallSiteWindow(lines: string[], line: number, col: number, surrondingLines: number) {
+export function createCallSiteWindow(
+  lines: string[],
+  line: number,
+  col: number,
+  surrondingLines: number,
+) {
   if (lines.length === 0) {
-    return { before: '', after: '' }
+    return { before: '', after: '' };
   }
 
   let callLine = lines[line];
@@ -203,5 +218,5 @@ export function createCallSiteWindow(lines: string[], line: number, col: number,
     before = lines[i] + before;
   }
 
-  return { before, after }
+  return { before, after };
 }

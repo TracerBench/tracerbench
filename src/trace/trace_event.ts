@@ -33,8 +33,6 @@ export const enum TRACE_EVENT_SCOPE {
   THREAD = 't',
 }
 
-// "disabled-by-default-devtools.timeline","name":"TracingStartedInPage"
-
 export const enum TRACE_EVENT_NAME {
   TRACING_STARTED_IN_PAGE = 'TracingStartedInPage',
   PROFILE = 'Profile',
@@ -193,6 +191,29 @@ export interface ITraceEvent {
   s?: TRACE_EVENT_SCOPE;
 }
 
+export interface ICpuProfile {
+  nodes: ICpuProfileNode[];
+
+  /** startTime in microseconds of CPU profile */
+  startTime: number;
+
+  /** node id of node that was sampled */
+  samples: number[];
+
+  /** delta from when the profile started to when the sample was taken in microseconds */
+  timeDeltas: number[];
+}
+
+export interface ICpuProfileNode {
+  id: number;
+  callFrame: ICallFrame;
+  children?: number[];
+  positionTicks?: {
+    line: number;
+    ticks: number;
+  };
+}
+
 export interface IProfileEvent extends ITraceEvent {
   ph: TRACE_EVENT_PHASE.SAMPLE;
   name: TRACE_EVENT_NAME.PROFILE;
@@ -229,7 +250,7 @@ export interface IProfileNode {
 
 export interface ICallFrame {
   functionName: string;
-  scriptId: string;
+  scriptId: string | number;
   url: string;
   lineNumber: number;
   columnNumber: number;
@@ -247,24 +268,55 @@ export interface ICpuProfileEvent extends ITraceEvent {
 
 export interface ICpuProfile {
   nodes: ICpuProfileNode[];
-
-  /** startTime in microseconds of CPU profile */
+  /**
+   * startTime in microseconds of CPU profile
+   */
   startTime: number;
+  endTime: number;
 
-  /** node id of node that was sampled */
+  /**
+   * id of root node
+   */
   samples: number[];
 
-  /** delta from when the profile started to when the sample was taken in microseconds */
+  /**
+   * offset from startTime if first or previous time
+   */
   timeDeltas: number[];
+
+  duration: number;
+}
+
+export const enum FUNCTION_NAME {
+  ROOT = '(root)',
+  PROGRAM = '(program)',
+  IDLE = '(idle)',
+  GC = '(garbage collector)',
 }
 
 export interface ICpuProfileNode {
   id: number;
   callFrame: ICallFrame;
-  hitCount: number;
   children?: number[];
   positionTicks?: {
     line: number;
     ticks: number;
   };
+
+  sampleCount: number;
+
+  min: number;
+  max: number;
+
+  total: number;
+  self: number;
+}
+
+export interface ISample {
+  delta: number;
+  timestamp: number;
+  prev: ISample | null;
+  next: ISample | null;
+
+  node: ICpuProfileNode;
 }

@@ -1,3 +1,5 @@
+// tslint:disable:member-ordering
+
 export interface DiffResult {
   from: string[];
   to: string[];
@@ -18,8 +20,8 @@ export class Diff {
   matrix: Matrix;
   constructor(fromStr: string, toStr: string) {
     let splitter = '';
-    let from = this.from = fromStr.split(splitter);
-    let to = this.to = toStr.split(splitter);
+    let from = (this.from = fromStr.split(splitter));
+    let to = (this.to = toStr.split(splitter));
 
     let steps = this.buildSteps(from, to);
     this.matrix = this.buildLevenshtein(steps, from, to);
@@ -49,19 +51,15 @@ export class Diff {
     let diagonal;
     let up;
 
-    for(let i = 1; i <= from.length; i++) {
-      for(let j = 1; j <= to.length; j++) {
-        left = steps[i][j-1];
-        diagonal = steps[i-1][j-1];
-        up = steps[i-1][j];
-        if(from[i-1] === to[j-1]) {
+    for (let i = 1; i <= from.length; i++) {
+      for (let j = 1; j <= to.length; j++) {
+        left = steps[i][j - 1];
+        diagonal = steps[i - 1][j - 1];
+        up = steps[i - 1][j];
+        if (from[i - 1] === to[j - 1]) {
           steps[i][j] = diagonal;
         } else {
-          steps[i][j] = Math.min(
-            unbox(left),
-            unbox(diagonal),
-            unbox(up)
-          ) + 1;
+          steps[i][j] = Math.min(unbox(left), unbox(diagonal), unbox(up)) + 1;
         }
       }
     }
@@ -72,8 +70,8 @@ export class Diff {
   diff(): DiffResult {
     let changes: Change[] = [];
     let { from, to, matrix } = this;
-    let i = from.length
-    let j = to.length
+    let i = from.length;
+    let j = to.length;
     let left;
     let diagonal;
     let up;
@@ -100,7 +98,7 @@ export class Diff {
           left = matrix[i][j - 1];
         }
 
-        if(i - 1 < 0 || j - 1 < 0) {
+        if (i - 1 < 0 || j - 1 < 0) {
           diagonal = Number.MAX_SAFE_INTEGER;
         } else {
           diagonal = matrix[i - 1][j - 1];
@@ -118,7 +116,7 @@ export class Diff {
           i--;
         } else if (source === diagonal) {
           char = from[i - 1];
-          diff = { replacedBy: to[j - 1] }
+          diff = { replacedBy: to[j - 1] };
           i--;
           j--;
         }
@@ -132,8 +130,8 @@ export class Diff {
       from,
       to,
       changes,
-      levenshteinDistance: matrix[from.length][to.length] as number
-    }
+      levenshteinDistance: matrix[from.length][to.length] as number,
+    };
   }
 }
 

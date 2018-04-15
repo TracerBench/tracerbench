@@ -1,5 +1,5 @@
-import { createSession, IHTTPClient, IAPIClient } from 'chrome-debugging-client';
-import { IO, Page, Tracing, Network } from 'chrome-debugging-client/dist/protocol/tot';
+import { createSession, IAPIClient, IHTTPClient } from 'chrome-debugging-client';
+import { IO, Network, Page, Tracing } from 'chrome-debugging-client/dist/protocol/tot';
 import * as fs from 'fs';
 
 interface ICookie {
@@ -25,6 +25,8 @@ const DEVTOOLS_CATEGORIES = [
   'disabled-by-default-v8.cpu_profiler.hires',
 ];
 
+// tslint:disable:no-console
+
 export async function liveTrace(url: string, out: string, cookies: ICookie[]) {
   return await createSession(async session => {
     let browserType;
@@ -36,29 +38,29 @@ export async function liveTrace(url: string, out: string, cookies: ICookie[]) {
       browserType = 'system';
     }
 
-    let browser = await session.spawnBrowser(browserType, {
+    const browser = await session.spawnBrowser(browserType, {
       executablePath,
     });
 
-    let tab = await getTab(session.createAPIClient('127.0.0.1', browser.remoteDebuggingPort));
+    const tab = await getTab(session.createAPIClient('127.0.0.1', browser.remoteDebuggingPort));
 
-    let client = await session.openDebuggingProtocol(tab.webSocketDebuggerUrl!);
+    const client = await session.openDebuggingProtocol(tab.webSocketDebuggerUrl!);
 
-    let page = new Page(client);
-    let tracing = new Tracing(client);
-    let network = new Network(client);
-    let io = new IO(client);
+    const page = new Page(client);
+    const tracing = new Tracing(client);
+    const network = new Network(client);
+    const io = new IO(client);
 
     for (let i = 0; i < cookies.length; i++) {
       await network.setCookie(cookies[i]);
     }
 
-    let tree = await page.getFrameTree();
-    let mainFrameId = tree.frameTree.frame.id;
+    const tree = await page.getFrameTree();
+    const mainFrameId = tree.frameTree.frame.id;
     console.log('frame tree', tree);
 
     await page.enable();
-    let pageLoad = new Promise(resolve => {
+    const pageLoad = new Promise(resolve => {
       page.loadEventFired = evt => {
         console.log(evt);
         resolve();
@@ -77,7 +79,7 @@ export async function liveTrace(url: string, out: string, cookies: ICookie[]) {
       if (mainFrameId === evt.frame.id) console.log('frameNavigated', evt);
     };
 
-    let tracingComplete = new Promise<Tracing.TracingCompleteParameters>(resolve => {
+    const tracingComplete = new Promise<Tracing.TracingCompleteParameters>(resolve => {
       tracing.tracingComplete = resolve;
     });
 
@@ -98,16 +100,16 @@ export async function liveTrace(url: string, out: string, cookies: ICookie[]) {
     console.log(`stopping trace`);
     await tracing.end();
 
-    let result = await tracingComplete;
-    let handle = result.stream as string;
-    let file = fs.openSync(out, 'w');
+    const result = await tracingComplete;
+    const handle = result.stream as string;
+    const file = fs.openSync(out, 'w');
     try {
       let read: IO.ReadReturn;
       do {
         read = await io.read({ handle });
         fs.writeSync(
           file,
-          read.base64Encoded ? Buffer.from(read.data, 'base64') : Buffer.from(read.data)
+          read.base64Encoded ? Buffer.from(read.data, 'base64') : Buffer.from(read.data),
         );
       } while (!read.eof);
     } finally {
@@ -118,9 +120,9 @@ export async function liveTrace(url: string, out: string, cookies: ICookie[]) {
 }
 
 async function getTab(apiClient: IAPIClient) {
-  let tabs = await apiClient.listTabs();
+  const tabs = await apiClient.listTabs();
   // create one tab at about:blank
-  let tab = await apiClient.newTab('about:blank');
+  const tab = await apiClient.newTab('about:blank');
   // close other tabs
   for (let i = 0; i < tabs.length; i++) {
     await apiClient.closeTab(tabs[i].id);

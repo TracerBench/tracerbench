@@ -1,13 +1,21 @@
+import { HierarchyNode } from 'd3';
 import * as fs from 'fs';
+import { HAR } from 'har-remix';
 import * as os from 'os';
 import * as path from 'path';
-import { Categories } from './reporter';
-import CpuProfile, { ICallFrame, ISample, ICpuProfileNode } from '../cpuprofile/index';
-import { Trace } from '../trace';
-import { Hashes, findMangledDefine, findModule, createCallSiteWindow, cdnHashes, getVersion } from './utils';
-import { HAR } from 'har-remix';
+import { CpuProfile, ICallFrame, ICpuProfileNode, Trace } from '../trace';
 import { Diff, DiffResult } from './diff';
-import { HierarchyNode } from 'd3';
+import { Categories } from './reporter';
+import {
+  cdnHashes,
+  createCallSiteWindow,
+  findMangledDefine,
+  findModule,
+  getVersion,
+  Hashes,
+} from './utils';
+
+// tslint:disable:member-ordering
 
 export const enum Relevancy {
   Irrelevant,
@@ -22,7 +30,7 @@ export interface ValidatorOptions {
 
 export interface IValidation {
   warnings: string[];
-  updates: string[]
+  updates: string[];
 }
 
 export interface IPersistedHeuristics {
@@ -87,11 +95,21 @@ export class Heuristic implements IHeuristicJSON {
     let beforeDiff = this.diffCallSite(before, newBefore);
     let afterDiff = this.diffCallSite(after, newAfter);
 
-    if(this.isRelevant(beforeDiff, afterDiff)) {
-      return { match: true, message: `[Updating]: Previous heuristic "${this.functionName}" in the "${this.category} has been remapped to ${heuristic.functionName}.` };
+    if (this.isRelevant(beforeDiff, afterDiff)) {
+      return {
+        match: true,
+        message: `[Updating]: Previous heuristic "${this.functionName}" in the "${
+          this.category
+        } has been remapped to ${heuristic.functionName}.`,
+      };
     }
 
-    return { match: false, message: `[Updating]: Previous heuristic "${this.functionName}" in the "${this.category} has been remapped to ${heuristic.functionName}.` };
+    return {
+      match: false,
+      message: `[Updating]: Previous heuristic "${this.functionName}" in the "${
+        this.category
+      } has been remapped to ${heuristic.functionName}.`,
+    };
   }
 
   validate(callFrame: ICallFrame) {
@@ -110,7 +128,7 @@ export class Heuristic implements IHeuristicJSON {
     return false;
   }
 
-  private diffCallSite(from: string, to: string)  {
+  private diffCallSite(from: string, to: string) {
     return new Diff(from, to).diff();
   }
 
@@ -122,7 +140,7 @@ export class Heuristic implements IHeuristicJSON {
       functionName,
       loc,
       callSiteWindow,
-      hashedFileName
+      hashedFileName,
     } = this;
     return {
       hashedFileName,
@@ -131,13 +149,17 @@ export class Heuristic implements IHeuristicJSON {
       moduleName,
       functionName,
       loc,
-      callSiteWindow
-    }
+      callSiteWindow,
+    };
   }
 }
 
 class ParsedFile {
-  constructor(public lines: string[], public moduleIdent: string, public mangledModuleIdent: string) {};
+  constructor(
+    public lines: string[],
+    public moduleIdent: string,
+    public mangledModuleIdent: string,
+  ) {}
 }
 
 export class Heuristics {
@@ -148,7 +170,7 @@ export class Heuristics {
   private _categoryKeys: string[] = [];
   private prevCategories?: Categories;
   private parsedFiles: Map<string, ParsedFile>;
-  public validations: IValidation = { updates: [], warnings: [] };
+  validations: IValidation = { updates: [], warnings: [] };
   private version: string = '0.0.0';
 
   static fromJSON(json: Categories) {
@@ -178,7 +200,7 @@ export class Heuristics {
   load(cachedHeuristics: IHeuristicMap) {
     Object.keys(cachedHeuristics).forEach(key => {
       let heuristic = new Heuristic(cachedHeuristics[key]);
-      this.canidates.set(key, heuristic)
+      this.canidates.set(key, heuristic);
     });
   }
 
@@ -192,9 +214,11 @@ export class Heuristics {
 
   get methods() {
     if (this._methods.length === 0) {
-      this._methods = this._methods.concat(...Object.keys(this._categories).map((cat) => {
-        return this._categories[cat];
-      }));
+      this._methods = this._methods.concat(
+        ...Object.keys(this._categories).map(cat => {
+          return this._categories[cat];
+        }),
+      );
     }
 
     return this._methods;
@@ -214,12 +238,13 @@ export class Heuristics {
       Object.keys(_categories).forEach(category => {
         let nodes = this.filterSamples(profile.hierarchy, _categories[category]);
         nodes.forEach(node => {
-          this.createHeuristic(har, hashes, node.callFrame, category)
+          this.createHeuristic(har, hashes, node.callFrame, category);
         });
       });
     }
   }
 
+  // tslint:disable-next-line:no-shadowed-variable
   persist(path: string) {
     let heuristics: { [key: string]: IHeuristicJSON } = {};
     let keys = this.heuristics.keys();
@@ -231,7 +256,7 @@ export class Heuristics {
     let json: IPersistedHeuristics = {
       validations: validations!,
       heuristics,
-      categories: _categories
+      categories: _categories,
     };
 
     fs.writeFileSync(path, JSON.stringify(json));
@@ -239,7 +264,7 @@ export class Heuristics {
 
   isContained(callFrame: ICallFrame) {
     for (let pair of this.heuristics.entries()) {
-      let [,heuristic] = pair;
+      let [, heuristic] = pair;
       let { functionName } = heuristic;
 
       if (functionName === callFrame.functionName) {
@@ -250,7 +275,13 @@ export class Heuristics {
     return false;
   }
 
-  private createNativeHeuristic(key: string, fileName: string, functionName: string, loc: Loc, hash: string) {
+  private createNativeHeuristic(
+    key: string,
+    fileName: string,
+    functionName: string,
+    loc: Loc,
+    hash: string,
+  ) {
     let existingHeuristic = this.heuristics.get(key);
     if (existingHeuristic) {
       return existingHeuristic;
@@ -261,9 +292,9 @@ export class Heuristics {
       category: 'platform',
       functionName,
       loc,
-      fileName: fileName,
+      fileName,
       callSiteWindow: { before: '', after: '' },
-      hashedFileName: hash
+      hashedFileName: hash,
     });
 
     this.heuristics.set(key, heuristic);
@@ -277,6 +308,7 @@ export class Heuristics {
     let loc = { col: columnNumber, line: lineNumber };
 
     if (isV8(functionName)) {
+      // tslint:disable-next-line:no-shadowed-variable
       let key = `${category}::v8::v8::${functionName}`;
       let heruristic = this.createNativeHeuristic(key, 'v8', functionName, loc, hash);
       heruristic.pushCallFrame(callFrame);
@@ -284,6 +316,7 @@ export class Heuristics {
     }
 
     if (isNative(url)) {
+      // tslint:disable-next-line:no-shadowed-variable
       let key = `${category}::v8::${url}::${functionName}`;
       let heruristic = this.createNativeHeuristic(key, url, functionName, loc, hash);
       heruristic.pushCallFrame(callFrame);
@@ -300,7 +333,7 @@ export class Heuristics {
 
     let { lines, mangledModuleIdent: mangledIdent } = this.parseFile(har, fileName, url, hashes);
     let moduleName = findModule(lines, lineNumber, columnNumber, ['define', mangledIdent]);
-    let preamble = `${category}::${fileName}::${moduleName}::`
+    let preamble = `${category}::${fileName}::${moduleName}::`;
     let key = `${preamble}${functionName}`;
     let existingHeuristic = this.canidates.get(key);
 
@@ -329,7 +362,7 @@ export class Heuristics {
       fileName,
       loc: { col: columnNumber, line: lineNumber },
       callSiteWindow,
-      functionName
+      functionName,
     });
 
     heuristic.pushCallFrame(callFrame);
@@ -342,16 +375,22 @@ export class Heuristics {
 
     if (parsedFile === undefined) {
       if (/native/.test(url)) {
+        // tslint:disable-next-line:no-shadowed-variable
         let file = new ParsedFile([], '(native)', '(native)');
         this.parsedFiles.set('native', file);
         return file;
       }
 
       let urlRegex = new RegExp(url);
+      // tslint:disable-next-line:no-shadowed-variable
       let entry = har.log.entries.find(entry => urlRegex.test(entry.request.url));
 
       if (entry === undefined) {
-        throw new Error(`HAR file and CPU profile have diverged. Could not find resource "${url}" in "${this.version}" of the application.`);
+        throw new Error(
+          `HAR file and CPU profile have diverged. Could not find resource "${url}" in "${
+            this.version
+          }" of the application.`,
+        );
       }
 
       let text = entry.response.content!.text!;
@@ -374,7 +413,7 @@ export class Heuristics {
     let unmappedKeys = [];
 
     for (let key of keys) {
-      let keyparts= key.split('::');
+      let keyparts = key.split('::');
       let fnName = keyparts.pop()!;
       let keyPreamble = keyparts.join('::');
 
@@ -392,7 +431,6 @@ export class Heuristics {
           } else {
             this.validations.warnings.push(message);
           }
-
         } else {
           // assume we are setting a unique key
           this.heuristics.set(`${preamble}${name}`, heuristic);
@@ -401,8 +439,11 @@ export class Heuristics {
     }
   }
 
-  private filterSamples(hierarchy: HierarchyNode<ICpuProfileNode>, methods: string[]): ICpuProfileNode[] {
-    let nodes: ICpuProfileNode[] = []
+  private filterSamples(
+    hierarchy: HierarchyNode<ICpuProfileNode>,
+    methods: string[],
+  ): ICpuProfileNode[] {
+    let nodes: ICpuProfileNode[] = [];
     hierarchy.each(node => {
       if (methods.includes(node.data.callFrame.functionName)) {
         nodes.push(node.data);
@@ -425,6 +466,7 @@ export class HeuristicsValidator {
       this.categories = {};
       files.map(file => {
         let name = path.basename(file).replace('.json', '');
+        // tslint:disable-next-line:no-shadowed-variable
         let methods = JSON.parse(fs.readFileSync(`${report}/${file}`, 'utf8'));
         this.categories[name] = methods;
       });
@@ -466,7 +508,7 @@ export class HeuristicsValidator {
 
     return {
       heuristics,
-      validations
+      validations,
     };
   }
 }

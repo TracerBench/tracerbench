@@ -1,7 +1,6 @@
 import { ITraceEvent, Trace } from './trace';
 
-export { Trace } from './trace';
-export { default as CpuProfile } from './cpuprofile';
+export * from './trace/index';
 export { Aggregator } from './cli/aggregator';
 export { Reporter } from './cli/reporter';
 export { default as CLI } from './cli/cli';
@@ -13,7 +12,7 @@ export interface ITrace {
 }
 
 export function loadTrace(events: ITraceEvent[] | ITrace) {
-  let trace = new Trace();
+  const trace = new Trace();
   if (!Array.isArray(events)) {
     events = events.traceEvents;
   }
