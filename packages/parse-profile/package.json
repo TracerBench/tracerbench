@@ -6,7 +6,9 @@
   "scripts": {
     "build": "rollup -c",
     "watch": "rollup -cw",
-    "start": "node serve.js"
+    "start": "node serve.js",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "rollup -c"
   },
   "bin": {
     "parse-profile": "./bin/parse-profile"
@@ -17,6 +19,7 @@
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-typescript": "^0.8.1",
     "serve-static": "^1.13.2",
+    "tslint": "^5.9.1",
     "typescript": "^2.8.1"
   },
   "dependencies": {
@@ -24,6 +27,7 @@
     "@types/node": "^9.6.1",
     "array-binsearch": "^1.0.1",
     "chalk": "^2.3.2",
+    "chrome-debugging-client": "^0.4.6",
     "commander": "^2.15.1",
     "d3": "^5.0.0",
     "har-remix": "^1.2.0",

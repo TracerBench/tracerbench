@@ -35,7 +35,6 @@
       color: #081F2C;
     }
   </style>
-  <script>window.chalk = {}</script>
   <script src="node_modules/d3/dist/d3.js"></script>
   <script src="dist/index.browser.js"></script>
 </head>
@@ -43,7 +42,7 @@
 <body>
   <svg></svg>
   <script>
-    d3.json("LinkedInFeed.json").then((traceEvents) => {
+    d3.json("feed-trace.json").then((traceEvents) => {
       let trace = new Profile.loadTrace(traceEvents);
       let profile = trace.cpuProfile(-1, -1);
 

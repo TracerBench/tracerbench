@@ -1,13 +1,21 @@
 import { ITraceEvent, Trace } from './trace';
 
-export { Trace } from './trace';
-export { default as CpuProfile } from './cpuprofile';
+export * from './trace/index';
 export { Aggregator } from './cli/aggregator';
 export { Reporter } from './cli/reporter';
 export { default as CLI } from './cli/cli';
+export { liveTrace } from './cli/live_trace';
 
-export function loadTrace(events: ITraceEvent[]) {
-  let trace = new Trace();
+export interface ITrace {
+  metadata: {};
+  traceEvents: ITraceEvent[];
+}
+
+export function loadTrace(events: ITraceEvent[] | ITrace) {
+  const trace = new Trace();
+  if (!Array.isArray(events)) {
+    events = events.traceEvents;
+  }
   trace.addEvents(events);
   trace.buildModel();
   return trace;

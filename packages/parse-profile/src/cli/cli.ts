@@ -1,22 +1,22 @@
+import { UnaryExpression } from 'estree';
 import * as fs from 'fs';
 import { HAR } from 'har-remix';
-import { cdnHashes, Hashes, getVersion, computeMinMax } from './utils';
-import { HeuristicsValidator } from './heuristics';
-import { Trace } from '../trace'
-import CpuProfile from '../cpuprofile';
-import { UnaryExpression } from 'estree';
+import { CpuProfile, Trace } from '../trace';
 import { Aggregator } from './aggregator';
+import { HeuristicsValidator } from './heuristics';
 import { Reporter } from './reporter';
+import { cdnHashes, computeMinMax, getVersion, Hashes } from './utils';
+
+// tslint:disable:member-ordering
 
 export interface UI {
-  file:string;
+  file: string;
   har: string;
-  time?: string,
+  time?: string;
   methods?: string[];
   report?: string;
   verbose?: boolean;
 }
-
 
 export default class CommandLine {
   har: HAR;
@@ -34,14 +34,14 @@ export default class CommandLine {
       throw new Error(`Error: Must pass a path to the har file 💣`);
     }
 
-    let har = this.har = JSON.parse(fs.readFileSync(harPath, 'utf8'));
+    let har = (this.har = JSON.parse(fs.readFileSync(harPath, 'utf8')));
     this.filePath = file || defaultProfilePath;
   }
 
   private validator(trace: Trace, profile: CpuProfile) {
     if (!this._validator) {
       let { report, methods } = this.ui;
-      return this._validator = new HeuristicsValidator({ report, methods });
+      return (this._validator = new HeuristicsValidator({ report, methods }));
     }
 
     return this._validator;
@@ -50,7 +50,7 @@ export default class CommandLine {
   private loadTrace() {
     let { filePath } = this;
     let traceEvents = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    let trace = new Trace()
+    let trace = new Trace();
     trace.addEvents(traceEvents);
     trace.buildModel();
     return trace;

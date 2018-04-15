@@ -1,9 +1,11 @@
-import CpuProfile, { IProfileNode } from '../cpuprofile';
 import { HierarchyNode } from 'd3-hierarchy';
-import { Categories } from './reporter';
 import { prototype } from 'events';
-import { Trace, ITraceEvent } from '../trace';
-import { Heuristics, Heuristic } from './heuristics';
+import { ICpuProfileNode, ITraceEvent, Trace } from '../trace';
+import CpuProfile from '../trace/cpuprofile';
+import { Heuristic, Heuristics } from './heuristics';
+import { Categories } from './reporter';
+
+// tslint:disable:member-ordering
 
 export interface Breakdown {
   mes: string;
@@ -11,7 +13,7 @@ export interface Breakdown {
 }
 
 export interface Result {
-  sums: Sums,
+  sums: Sums;
   all: number;
 }
 
@@ -40,7 +42,7 @@ export interface FullReport {
 
 export class Aggregator {
   methods: string[] = [];
-  root: HierarchyNode<IProfileNode>;
+  root: HierarchyNode<ICpuProfileNode>;
   trace: Trace;
   heuristics: Heuristics;
 
@@ -52,7 +54,7 @@ export class Aggregator {
 
   private sumsPerMethod(heuristic: Heuristic, category: string): number {
     let sum = 0;
-    this.root.each((node) => {
+    this.root.each(node => {
       if (heuristic.validate(node.data.callFrame)) {
         sum += node.data.self;
         if (node.children) {
@@ -64,12 +66,13 @@ export class Aggregator {
     return sum;
   }
 
-  private aggregateChildren(node: HierarchyNode<IProfileNode>, category: string): number {
+  private aggregateChildren(node: HierarchyNode<ICpuProfileNode>, category: string): number {
     let { methods } = this;
     let sum = 0;
 
-    const aggregate = (node: HierarchyNode<IProfileNode>) => {
-      node.children!.forEach((n) => {
+    // tslint:disable-next-line:no-shadowed-variable
+    const aggregate = (node: HierarchyNode<ICpuProfileNode>) => {
+      node.children!.forEach(n => {
         if (!this.heuristics.isContained(n.data.callFrame)) {
           sum += n.data.self;
           if (n.children) {
@@ -77,7 +80,7 @@ export class Aggregator {
           }
         }
       });
-    }
+    };
 
     aggregate(node);
     return sum;
@@ -86,11 +89,11 @@ export class Aggregator {
   sumsPerHeuristicCategory(heuristics: Heuristics): CategoryResult {
     let heuristicsMap = heuristics.get();
 
-    verifyMethods(heuristics.methods)
+    verifyMethods(heuristics.methods);
 
     let sums: Sums = {};
-    let breakdowns: { [key: string ]: Breakdown[] } = {};
-    heuristicsMap.forEach((heuristic) => {
+    let breakdowns: { [key: string]: Breakdown[] } = {};
+    heuristicsMap.forEach(heuristic => {
       if (!sums[heuristic.functionName]) {
         sums[heuristic.functionName] = { heuristics: [], total: 0 };
       }
@@ -101,22 +104,22 @@ export class Aggregator {
       let shortNameFileName = heuristic.fileName.split('/').pop();
 
       if (breakdowns[heuristic.functionName] === undefined) {
-        breakdowns[heuristic.functionName] = []
+        breakdowns[heuristic.functionName] = [];
       }
 
       breakdowns[heuristic.functionName].push({
         mes: `[${shortNameFileName}:${heuristic.moduleName}] L${line}:C${col} ${time}ms`,
-        time
-      })
+        time,
+      });
     });
 
-    Object.keys(breakdowns).forEach((breakdown) => {
+    Object.keys(breakdowns).forEach(breakdown => {
       breakdowns[breakdown].sort((a, b) => b.time - a.time);
       sums[breakdown].heuristics = breakdowns[breakdown].map(b => b.mes);
     });
 
     let total = Object.keys(sums).reduce((accumulator, current) => {
-      return accumulator += sums[current].total;
+      return (accumulator += sums[current].total);
     }, 0);
 
     return { sums, total };
@@ -128,16 +131,15 @@ export class Aggregator {
 
     let all: FullReport = {
       categorized: {},
-      all: undefined
-    }
+      all: undefined,
+    };
 
-    verifyMethods(heuristics.methods)
+    verifyMethods(heuristics.methods);
 
     let categories: string[] = [];
     let breakdowns: {
-      [key: string] : { [key: string ]: Breakdown[] }
+      [key: string]: { [key: string]: Breakdown[] };
     } = {};
-
 
     for (let key of keys) {
       let heuristic = heuristicsMap.get(key)!;
@@ -146,10 +148,10 @@ export class Aggregator {
       if (!all.categorized[category]) {
         all.categorized[category] = {
           sums: {
-            [functionName]: { heuristics: [], total: 0 }
+            [functionName]: { heuristics: [], total: 0 },
           },
-          total: 0
-        }
+          total: 0,
+        };
       }
 
       if (!all.categorized[category].sums[functionName]) {
@@ -161,7 +163,7 @@ export class Aggregator {
       all.categorized[category].total += time;
 
       if (!breakdowns[category]) {
-        breakdowns[category] = {}
+        breakdowns[category] = {};
       }
 
       if (!breakdowns[category][functionName]) {
@@ -171,10 +173,12 @@ export class Aggregator {
       breakdowns[category][functionName].push(this.createBreakDown(heuristic, time));
     }
 
-    Object.keys(breakdowns).forEach((category) => {
+    Object.keys(breakdowns).forEach(category => {
       Object.keys(breakdowns[category]).forEach(method => {
         breakdowns[category][method].sort((a, b) => b.time - a.time);
-        all.categorized[category].sums[method].heuristics =  breakdowns[category][method].map(b => b.mes);
+        all.categorized[category].sums[method].heuristics = breakdowns[category][method].map(
+          b => b.mes,
+        );
       });
     });
 
@@ -186,19 +190,19 @@ export class Aggregator {
     let shortNameFileName = fileName;
     return {
       mes: `[${shortNameFileName}:${moduleName}] L${line}:C${col} ${time}ms`,
-      time
-    }
+      time,
+    };
   }
 }
 
 function verifyMethods(array: string[]) {
-  var valuesSoFar = Object.create(null);
-  for (var i = 0; i < array.length; ++i) {
-      var value = array[i];
-      if (value in valuesSoFar) {
-        throw new Error(`Duplicate heuristic detected ${value}`);
-      }
-      valuesSoFar[value] = true;
+  let valuesSoFar = Object.create(null);
+  for (let i = 0; i < array.length; ++i) {
+    let value = array[i];
+    if (value in valuesSoFar) {
+      throw new Error(`Duplicate heuristic detected ${value}`);
+    }
+    valuesSoFar[value] = true;
   }
 }
 

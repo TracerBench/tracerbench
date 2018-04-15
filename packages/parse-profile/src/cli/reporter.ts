@@ -1,6 +1,8 @@
-import { Aggregator, CategoryResult, CategorizedResults, FullReport } from './aggregator';
 import chalk from 'chalk';
+import { Aggregator, CategorizedResults, CategoryResult, FullReport } from './aggregator';
 import { Heuristics, IHeuristicJSON, IValidation } from './heuristics';
+
+// tslint:disable:no-console
 
 export interface Categories {
   [key: string]: string[];
@@ -16,7 +18,7 @@ export interface Row {
 export class Reporter {
   aggregator: Aggregator;
   validations: IValidation;
-  private cols: number[] = [0,6];
+  private cols: number[] = [0, 6];
   private width: number = 0;
 
   constructor(aggregator: Aggregator, validations: IValidation) {
@@ -50,13 +52,14 @@ export class Reporter {
       }
 
       aggregateTotal += categorized[category].total;
-      Object.keys(categorized[category].sums).forEach((methodName) => {
+      Object.keys(categorized[category].sums).forEach(methodName => {
+        // tslint:disable-next-line:no-shadowed-variable
         let [col1, col2] = this.cols;
         let phaseTiming = `${round(categorized[category].sums[methodName].total)}ms`;
         rows.push([methodName, phaseTiming]);
 
         if (verbose) {
-          categorized[category].sums[methodName].heuristics.forEach((heuristic) => {
+          categorized[category].sums[methodName].heuristics.forEach(heuristic => {
             let h = `  ${heuristic}`;
             rows.push([h, '']);
 
@@ -97,7 +100,7 @@ export class Reporter {
 
   private printReport(rows: string[][], categories: string[]) {
     let buffer = `Aggregated Scripting Time:\n`;
-    let [ col1, col2 ] = this.cols;
+    let [col1, col2] = this.cols;
 
     const indent = 2;
 
@@ -110,7 +113,7 @@ export class Reporter {
       let space2;
 
       if (isHeader(categories, category)) {
-        space1 = this.spaceCols(col1 - category.length + (indent * 2));
+        space1 = this.spaceCols(col1 - category.length + indent * 2);
         space2 = this.spaceCols(col2 - heading1.length + indent);
       } else {
         space1 = this.spaceCols(col1 - category.length + indent);
@@ -121,7 +124,7 @@ export class Reporter {
         category,
         heading1,
         space1,
-        space2
+        space2,
       };
 
       buffer += this.formatRow(rowParts, categories);
@@ -145,18 +148,17 @@ export class Reporter {
 
       if (category === 'SubTotal' || category === 'Dropped') {
         header = `\n${yellow(category)}${header}`;
-        buffer += `${new Array(width).join('-')}`
+        buffer += `${new Array(width).join('-')}`;
         buffer += header;
       } else {
         header = `\n${green(category)}${header}`;
-        buffer += `\n${new Array(width).join('=')}`
+        buffer += `\n${new Array(width).join('=')}`;
         header = green(header);
         buffer += header;
-        buffer += `${new Array(width).join('=')}`
+        buffer += `${new Array(width).join('=')}`;
       }
-
     } else {
-      buffer += `  ${category}${space1}${heading1}\n`
+      buffer += `  ${category}${space1}${heading1}\n`;
     }
 
     return buffer;
@@ -164,11 +166,11 @@ export class Reporter {
 
   private print(title: string, body: CategoryResult) {
     let buffer = white(`\n${title}\n================\n`);
-    Object.keys(body.sums).forEach((methodName) => {
+    Object.keys(body.sums).forEach(methodName => {
       let normalizedName = normalizeMethodName(methodName);
       buffer += `${magenta(normalizedName)}: ${round(body.sums[methodName].total)}ms`;
-      buffer += `\n  From ->`
-      buffer += `\n    ${body.sums[methodName].heuristics.join('\n    ')}\n`
+      buffer += `\n  From ->`;
+      buffer += `\n    ${body.sums[methodName].heuristics.join('\n    ')}\n`;
     });
     buffer += white(`================\nTotal: ${round(body.total)}ms`);
     console.log(buffer);
@@ -177,7 +179,7 @@ export class Reporter {
 
 function normalizeMethodName(name: string) {
   if (name === '') {
-    name = '(anonymous function)'
+    name = '(anonymous function)';
   }
 
   return name;
@@ -202,8 +204,6 @@ function magenta(str: string) {
 function white(str: string) {
   return chalk.bold.white(str);
 }
-
-
 
 function round(num: number) {
   return Math.round(num * 100) / 100;
