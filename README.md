@@ -1,6 +1,6 @@
-chrome-tracing
-==============
-[![Build Status](https://travis-ci.org/krisselden/chrome-tracing.svg?branch=master)](https://travis-ci.org/krisselden/chrome-tracing)
+# browsalyzer
+
+[![Build Status](https://travis-ci.org/devtrace/browsalyzer.svg?branch=master)](https://travis-ci.org/devtrace/browsalyzer)
 
 Chrome tracing allows you to automate Chrome benchmarking. It's goal is to provide a JavaScript variant of [Telemetry](https://www.chromium.org/developers/telemetry/run_locally).
 
@@ -9,7 +9,7 @@ Chrome tracing allows you to automate Chrome benchmarking. It's goal is to provi
 The most basic benchmark is the `InitialRenderBenchmark`.
 
 ```js
-import { InitialRenderBenchmark, Runner } from "chrome-tracing";
+import { InitialRenderBenchmark, Runner } from "browsalyzer";
 
 let control = new InitialRenderBenchmark({
   name: "control",
@@ -30,12 +30,15 @@ let experiment = new InitialRenderBenchmark({
 });
 
 let runner = new Runner([control, experiment]);
-runner.run(50).then(result => {
-  console.log(result);
-}).catch(err => {
-  console.error(err);
-  process.exit(1);
-});
+runner
+  .run(50)
+  .then(result => {
+    console.log(result);
+  })
+  .catch(err => {
+    console.error(err);
+    process.exit(1);
+  });
 ```
 
 In the app you must place a marker to let Chrome Tracing know that you are done rendering. This is done by using a `performance.mark` function call.
@@ -56,7 +59,4 @@ performance.mark("renderEnd");
 endTrace();
 ```
 
-In the example above we would mark right after we render the app and then call an `endTrace` function that ensures that we schedule a micro-task after paint that transitions to a blank page. Internally Chrome-Tracing will see this as the cue to start a new sample.
-
-## Extending Benchmarks
-TODO
+In the example above we would mark right after we render the app and then call an `endTrace` function that ensures that we schedule a micro-task after paint that transitions to a blank page. Internally browsalyzer will see this as the cue to start a new sample.

@@ -1,24 +1,13 @@
 {
-  "name": "chrome-tracing",
+  "name": "browsalyzer",
   "description": "Parser for chrome traces",
   "main": "dist/index.js",
-  "authors": [
-    "Kris Selden <kris.selden@gmail.com>"
-  ],
+  "authors": ["Kris Selden <kris.selden@gmail.com>"],
   "license": "Apache-2.0",
-  "keywords": [
-    "chrome",
-    "tracing"
-  ],
-  "homepage": "https://github.com/krisselden/chrome-tracing",
+  "keywords": ["chrome", "tracing"],
+  "homepage": "https://github.com/devtrace/browsalyzer",
   "private": true,
-  "ignore": [
-    "**/.*",
-    "node_modules",
-    "bower_components",
-    "test",
-    "tests"
-  ],
+  "ignore": ["**/.*", "node_modules", "bower_components", "test", "tests"],
   "dependencies": {
     "ember-2.13.4": "ember#2.13.4",
     "ember-2.14.0-beta.1": "ember#2.14.0-beta.1",
