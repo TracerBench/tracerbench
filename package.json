@@ -1,5 +1,5 @@
 {
-  "name": "devtrace",
+  "name": "browsalyzer",
   "version": "0.13.0",
   "description": "Benchmark runner for trace metrics",
   "main": "dist/index.js",
@@ -26,10 +26,11 @@
   ],
   "keywords": [
     "chrome",
-    "tracing"
+    "tracing",
+    "metrics"
   ],
   "author": "Kris Selden <kris.selden@gmail.com>",
-  "license": "Apache-2.0",
+  "license": "BSD-2-Clause",
   "devDependencies": {
     "@types/node": "^7.0.23",
     "@types/uglify-js": "^2.6.28",
