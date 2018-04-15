@@ -1,20 +1,20 @@
-import Bounds from "./bounds";
-import { ITraceEvent } from "./trace_event";
+import Bounds from './bounds';
+import { ITraceEvent } from './trace_event';
 
 export default class Thread {
-  public bounds: Bounds = new Bounds();
-  public events: ITraceEvent[] = [];
+  bounds: Bounds = new Bounds();
+  events: ITraceEvent[] = [];
 
-  public name?: string;
-  public sortIndex?: number;
+  name?: string;
+  sortIndex?: number;
 
-  public id: number;
+  id: number;
 
   constructor(id: number) {
     this.id = id;
   }
 
-  public addEvent(event: ITraceEvent) {
+  addEvent(event: ITraceEvent) {
     this.bounds.addEvent(event);
     this.events.push(event);
   }

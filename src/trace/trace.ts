@@ -1,44 +1,60 @@
 import binsearch from 'array-binsearch';
 import Bounds from './bounds';
+import CpuProfile from './cpuprofile';
 import Process from './process';
 import Thread from './thread';
-import CpuProfile, { ICpuProfile } from '../cpuprofile';
-
 import {
+  ARGS,
+  ICpuProfile,
+  ICpuProfileEvent,
+  ICpuProfileNode,
+  IProfileChunkEvent,
+  IProfileEvent,
+  IProfileNode,
   ITraceEvent,
-  TRACE_EVENT_PHASE_BEGIN,
-  TRACE_EVENT_PHASE_COMPLETE,
-  TRACE_EVENT_PHASE_END,
-  TRACE_EVENT_PHASE_METADATA,
+  PROCESS_NAME,
+  TRACE_EVENT_PHASE,
 } from './trace_event';
-
 import traceEventComparator from './trace_event_comparator';
 
-export default class Trace {
-  public processes: Process[] = [];
-  public mainProcess?: Process;
-  public bounds: Bounds = new Bounds();
-  public events: ITraceEvent[] = [];
-  public browserProcess: Process | null = null;
-  public gpuProcess: Process | null = null;
-  public rendererProcesses: Process[] = [];
-  public numberOfProcessors?: number;
-  public cpuProfileEvent?: ITraceEvent;
-  public lastTracingStartedInPageEvent?: ITraceEvent;
+interface IPartialCpuProfile extends ICpuProfile {
+  nodes: Array<ICpuProfileNode & IProfileNode>;
+}
 
-  private _cpuProfile?: CpuProfile;
+export default class Trace {
+  processes: Process[] = [];
+  mainProcess?: Process;
+  bounds: Bounds = new Bounds();
+  events: ITraceEvent[] = [];
+  browserProcess: Process | null = null;
+  gpuProcess: Process | null = null;
+  rendererProcesses: Process[] = [];
+  numberOfProcessors?: number;
+
+  lastTracingStartedInPageEvent?: ITraceEvent;
+
+  private _cpuProfile?: ICpuProfile;
   private parents = new Map<ITraceEvent, ITraceEvent>();
   private stack: ITraceEvent[] = [];
 
-  public cpuProfile(min: number, max: number): CpuProfile | undefined {
-    if (this._cpuProfile) return this._cpuProfile;
-    if (this._cpuProfile === undefined && this.cpuProfileEvent !== undefined) {
-      this._cpuProfile = CpuProfile.from(this.cpuProfileEvent, min, max);
+  private profileMap = new Map<
+    string,
+    {
+      pid: number;
+      tid: number;
+      cpuProfile: IPartialCpuProfile;
     }
-    return this._cpuProfile;
+  >();
+
+  cpuProfile(min: number, max: number): CpuProfile {
+    const { _cpuProfile } = this;
+    if (_cpuProfile === undefined) {
+      throw new Error('trace is missing CpuProfile');
+    }
+    return new CpuProfile(_cpuProfile, min, max);
   }
 
-  public process(pid: number): Process {
+  process(pid: number): Process {
     let process = this.findProcess(pid);
     if (process === undefined) {
       process = new Process(pid);
@@ -47,17 +63,17 @@ export default class Trace {
     return process;
   }
 
-  public thread(pid: number, tid: number): Thread {
+  thread(pid: number, tid: number): Thread {
     return this.process(pid).thread(tid);
   }
 
-  public addEvents(events: ITraceEvent[]) {
+  addEvents(events: ITraceEvent[]) {
     for (const event of events) {
       this.addEvent(event);
     }
   }
 
-  public buildModel() {
+  buildModel() {
     const { events } = this;
     if (this.stack.length > 0) {
       /* tslint:disable:no-console */
@@ -70,11 +86,49 @@ export default class Trace {
 
       process.addEvent(event);
 
-      if (event.ph === 'I' && event.cat === 'disabled-by-default-devtools.timeline') {
+      if (
+        event.ph === TRACE_EVENT_PHASE.INSTANT &&
+        event.cat === 'disabled-by-default-devtools.timeline'
+      ) {
         if (event.name === 'CpuProfile') {
-          this.cpuProfileEvent = event;
+          this._cpuProfile = (event as ICpuProfileEvent).args.data.cpuProfile;
         } else if (event.name === 'TracingStartedInPage') {
           this.lastTracingStartedInPageEvent = event;
+        }
+      } else if (event.ph === TRACE_EVENT_PHASE.SAMPLE) {
+        if (event.name === 'Profile') {
+          const profile = event as IProfileEvent;
+          this.profileMap.set(profile.id, {
+            pid: profile.pid,
+            tid: profile.tid,
+            cpuProfile: {
+              startTime: profile.args.data.startTime,
+              endTime: 0,
+              duration: 0,
+              nodes: [] as Array<ICpuProfileNode & IProfileNode>,
+              samples: [] as number[],
+              timeDeltas: [] as number[],
+            },
+          });
+        }
+        if (event.name === 'ProfileChunk') {
+          const profileChunk = event as IProfileChunkEvent;
+          const profileEntry = this.profileMap.get(profileChunk.id)!;
+          if (profileChunk.args.data.cpuProfile.nodes) {
+            profileChunk.args.data.cpuProfile.nodes.forEach(node => {
+              profileEntry.cpuProfile.nodes.push(
+                Object.assign(node, {
+                  sampleCount: 0,
+                  min: 0,
+                  max: 0,
+                  total: 0,
+                  self: 0,
+                }),
+              );
+            });
+          }
+          profileEntry.cpuProfile.samples.push(...profileChunk.args.data.cpuProfile.samples);
+          profileEntry.cpuProfile.timeDeltas.push(...profileChunk.args.data.timeDeltas);
         }
       }
     }
@@ -83,23 +137,42 @@ export default class Trace {
     if (this.lastTracingStartedInPageEvent) {
       // if this was recorded with the Performance tab, this should be the main process
       this.mainProcess = this.process(this.lastTracingStartedInPageEvent.pid);
-    } else if (this.cpuProfileEvent) {
-      // the process with a CPU profile
-      this.mainProcess = this.process(this.cpuProfileEvent.pid);
     } else {
       // fallback to Renderer process with most events
       this.mainProcess = this.processes
-        .filter(p => p.name === 'Renderer')
+        .filter(p => p.name === PROCESS_NAME.RENDERER)
         .reduce((a, b) => (b.events.length > a.events.length ? b : a));
+    }
+    for (const profileEntry of this.profileMap.values()) {
+      if (
+        profileEntry.pid === this.mainProcess.id &&
+        profileEntry.tid === this.mainProcess.mainThread!.id
+      ) {
+        this._cpuProfile = profileEntry.cpuProfile;
+        const { nodes } = profileEntry.cpuProfile;
+        const nodeMap = new Map<number, typeof nodes[0]>();
+        nodes.forEach(node => nodeMap.set(node.id, node));
+        nodes.forEach(node => {
+          if (node.parent !== undefined) {
+            const parent = nodeMap.get(node.parent)!;
+            if (parent.children) {
+              parent.children.push(node.id);
+            } else {
+              parent.children = [node.id];
+            }
+          }
+        });
+        break;
+      }
     }
   }
 
-  public getParent(event: ITraceEvent) {
+  getParent(event: ITraceEvent) {
     this.parents.get(event);
   }
 
   private associateParent(event: ITraceEvent) {
-    if (event.ph !== TRACE_EVENT_PHASE_COMPLETE) {
+    if (event.ph !== TRACE_EVENT_PHASE.COMPLETE) {
       return;
     }
     const { stack, parents } = this;
@@ -119,7 +192,7 @@ export default class Trace {
   }
 
   private addEvent(event: ITraceEvent) {
-    if (event.ph === TRACE_EVENT_PHASE_END) {
+    if (event.ph === TRACE_EVENT_PHASE.END) {
       this.endEvent(event);
       return;
     }
@@ -133,11 +206,11 @@ export default class Trace {
       index++;
     }
     events.splice(index, 0, event);
-    if (event.ph === TRACE_EVENT_PHASE_METADATA) {
+    if (event.ph === TRACE_EVENT_PHASE.METADATA) {
       this.addMetadata(event);
       return;
     }
-    if (event.ph === TRACE_EVENT_PHASE_BEGIN) {
+    if (event.ph === TRACE_EVENT_PHASE.BEGIN) {
       this.stack.push(event);
     }
     this.bounds.addEvent(event);
@@ -170,7 +243,7 @@ export default class Trace {
   }
 
   private completeEvent(begin: ITraceEvent, end: ITraceEvent) {
-    let args: { [key: string]: any } | '__stripped__' = '__stripped__';
+    let args: { [key: string]: any } | ARGS.STRIPPED = ARGS.STRIPPED;
     if (typeof begin.args === 'object' && begin.args !== null) {
       args = Object.assign({}, begin.args);
     }
@@ -183,7 +256,7 @@ export default class Trace {
       cat: begin.cat,
       dur: end.ts - begin.ts,
       name: begin.name,
-      ph: TRACE_EVENT_PHASE_COMPLETE,
+      ph: TRACE_EVENT_PHASE.COMPLETE,
       pid: begin.pid,
       tdur: end.tts! - begin.tts!,
       tid: begin.tid,
@@ -197,7 +270,7 @@ export default class Trace {
 
   private addMetadata(event: ITraceEvent) {
     const { pid, tid } = event;
-    if (event.args === '__stripped__') {
+    if (event.args === ARGS.STRIPPED) {
       return;
     }
     switch (event.name) {
@@ -245,7 +318,7 @@ export default class Trace {
         this.process(pid).traceConfig = event.args.value;
         break;
       default:
-        //console.warn("unrecognized metadata:", JSON.stringify(event, null, 2));
+        console.warn('unrecognized metadata:', JSON.stringify(event, null, 2));
         break;
     }
   }
