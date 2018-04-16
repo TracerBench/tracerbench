@@ -3,7 +3,26 @@
 
 const Profile = require('../dist/index.cjs');
 const fs = require('fs');
+const ui = require('commander');
+
+let networkConditions = Object.keys(Profile.networkConditions).join(', ');
+ui.option('-l, --latency <value>', `Simulated conditions for ${networkConditions}`)
+  .option('-c, --cpu <value>', 'cpu throttle multiplier')
+  .parse(process.argv);
 
 const cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf8'));
 
-Profile.liveTrace('https://www.linkedin.com/feed/', 'feed-trace.json', cookies);
+let conditions = {
+  network: undefined,
+  cpu: 1
+}
+
+if (ui.latency) {
+  conditions.network = ui.latency;
+}
+
+if (ui.cpu) {
+  conditions.cpu = parseInt(ui.cpu, 10);
+}
+
+Profile.liveTrace('https://www.linkedin.com/feed/', 'feed-trace.json', cookies, conditions);
