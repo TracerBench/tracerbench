@@ -1,6 +1,7 @@
 import { createSession, IAPIClient, IHTTPClient } from 'chrome-debugging-client';
-import { IO, Network, Page, Tracing } from 'chrome-debugging-client/dist/protocol/tot';
+import { Emulation, IO, Network, Page, Tracing } from 'chrome-debugging-client/dist/protocol/tot';
 import * as fs from 'fs';
+import { IConditions, INetworkConditions, networkConditions } from './conditions';
 
 interface ICookie {
   url: string;
@@ -27,7 +28,7 @@ const DEVTOOLS_CATEGORIES = [
 
 // tslint:disable:no-console
 
-export async function liveTrace(url: string, out: string, cookies: ICookie[]) {
+export async function liveTrace(url: string, out: string, cookies: ICookie[], conditions: IConditions) {
   return await createSession(async session => {
     let browserType;
     let executablePath;
@@ -49,7 +50,22 @@ export async function liveTrace(url: string, out: string, cookies: ICookie[]) {
     const page = new Page(client);
     const tracing = new Tracing(client);
     const network = new Network(client);
+    const emulation = new Emulation(client);
     const io = new IO(client);
+
+    if (emulation.canEmulate()) {
+      await emulation.setCPUThrottlingRate({ rate: conditions.cpu });
+    }
+
+    if (conditions.network !== undefined && network.canEmulateNetworkConditions()) {
+      let networkCondition = networkConditions[conditions.network];
+
+      if (networkCondition) {
+        await network.emulateNetworkConditions(networkCondition);
+      } else {
+        throw new Error(`Could not find network emulation "${conditions.network}"`);
+      }
+    }
 
     for (let i = 0; i < cookies.length; i++) {
       await network.setCookie(cookies[i]);
