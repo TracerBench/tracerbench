@@ -6,6 +6,7 @@ export { Reporter } from './cli/reporter';
 export { default as CLI } from './cli/cli';
 export { liveTrace } from './cli/live_trace';
 export { networkConditions } from './cli/conditions';
+export { harTrace } from './cli/har_trace';
 
 export interface ITrace {
   metadata: {};
