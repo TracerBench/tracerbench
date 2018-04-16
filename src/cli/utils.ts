@@ -110,9 +110,6 @@ export function findMangledDefine(content: string) {
 }
 
 function getModuleIndex(str: string, ident: string) {
-  if (str === undefined) {
-    console.log('wat');
-  }
   let matcher = new RegExp(
     `(?:${ident}\\\(")(.*?)(?=",\\\[\\\"(.*)\\\"],(function|\\\(function))`,
     'g',

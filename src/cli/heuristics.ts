@@ -108,7 +108,7 @@ export class Heuristic implements IHeuristicJSON {
       match: false,
       message: `[Updating]: Previous heuristic "${this.functionName}" in the "${
         this.category
-      } has been remapped to ${heuristic.functionName}.`,
+      } could not be remapped.`,
     };
   }
 
@@ -324,10 +324,6 @@ export class Heuristics {
     }
 
     if (lineNumber === -1) {
-      let msg = `"${functionName}" in "${category}" could not resolve in "${fileName}".`;
-      if (!this.validations.warnings.includes(msg)) {
-        this.validations.warnings.push(msg);
-      }
       return;
     }
 
