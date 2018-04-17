@@ -1,7 +1,7 @@
 'use strict';
 
-import 'mocha';
 import { expect } from 'chai';
+import 'mocha';
 import CpuProfile from '../src/trace/cpuprofile';
 
 describe('CpuProfile', () => {

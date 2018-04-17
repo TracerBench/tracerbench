@@ -2,7 +2,7 @@ import { HierarchyNode } from 'd3-hierarchy';
 import { prototype } from 'events';
 import { ICpuProfileNode, ITraceEvent, Trace } from '../trace';
 import CpuProfile from '../trace/cpuprofile';
-import { Heuristic, Heuristics } from './heuristics';
+import { Heuristic, Heuristics, Loc } from './heuristics';
 import { Categories } from './reporter';
 
 // tslint:disable:member-ordering
@@ -208,4 +208,75 @@ function verifyMethods(array: string[]) {
 
 function toMS(num: number) {
   return num / 1000;
+}
+
+interface Aggregations {
+  [key: string]: AggregationResult;
+}
+
+interface AggregationResult {
+  total: number;
+  name: string;
+  callsites: CallSite[];
+}
+
+interface CallSite {
+  time: number;
+  moduleName: string;
+  loc: Loc;
+}
+
+export function compute(hierarchy: HierarchyNode<ICpuProfileNode>, methods: string[]) {
+  // let nodes: ICpuProfileNode[] = [];
+
+  let aggregations: Aggregations = {};
+
+  /*
+    {
+      "ember-data": [
+        {
+          name: "t.create", time: 1, callsites: [
+            { time: 1, moduleName: '', loc: { line: 0, col: 0 } }
+          ]
+        }
+      ]
+    }
+  */
+
+  hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {
+    let functionName = node.data.callFrame.functionName;
+    if (methods.includes(functionName)) {
+      let isContained = false;
+
+      if (!aggregations[functionName]) {
+        aggregations[functionName] = {
+          total: 0,
+          name: functionName,
+          callsites: [],
+        };
+      }
+
+      let parent = node.parent;
+      while (parent) {
+        if (methods.includes(parent.data.callFrame.functionName)) {
+          isContained = true;
+        }
+        parent = parent.parent;
+      }
+
+      if (!isContained) {
+        aggregations[functionName].total += node.data.total;
+        let { lineNumber: line, columnNumber: col } = node.data.callFrame;
+        aggregations[functionName].callsites.push({
+          time: node.data.total,
+          moduleName: '',
+          loc: { line, col },
+        });
+      }
+    }
+  });
+
+  return aggregations;
+
+  // return nodes;
 }

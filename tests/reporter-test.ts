@@ -1,7 +1,7 @@
 'use strict';
 
-import 'mocha';
 import { expect } from 'chai';
+import 'mocha';
 import { Reporter } from '../src/cli/reporter';
 
 describe('Reporter', () => {
