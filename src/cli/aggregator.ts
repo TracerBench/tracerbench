@@ -214,15 +214,16 @@ export interface Aggregations {
   [key: string]: AggregationResult;
 }
 
-interface AggregationResult {
+export interface AggregationResult {
   total: number;
   name: string;
   callsites: CallSite[];
 }
 
-interface CallSite {
+export interface CallSite {
   time: number;
   moduleName: string;
+  url: string;
   loc: Loc;
 }
 
@@ -252,6 +253,7 @@ export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, methods: st
   let aggregations: Aggregations = {};
   hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {
     let functionName = node.data.callFrame.functionName;
+
     if (methods.includes(functionName)) {
       let isContained = false;
 
@@ -272,11 +274,13 @@ export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, methods: st
       }
 
       if (!isContained) {
-        aggregations[functionName].total += node.data.total;
-        let { lineNumber: line, columnNumber: col } = node.data.callFrame;
+        let time = toMS(node.data.total);
+        aggregations[functionName].total += time;
+        let { lineNumber: line, columnNumber: col, url } = node.data.callFrame;
         aggregations[functionName].callsites.push({
-          time: node.data.total,
+          time,
           moduleName: '',
+          url,
           loc: { line, col },
         });
       }
