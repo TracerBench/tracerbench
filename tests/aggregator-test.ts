@@ -2,12 +2,12 @@
 
 import { expect } from 'chai';
 import 'mocha';
-import { Aggregator, compute, toCategories, Aggregations } from '../src/cli/aggregator';
+import { aggregate, Aggregations, toCategories } from '../src/cli/aggregator';
 import { CpuProfile } from '../src/index';
 import { ProfileGenerator } from './profile-generator';
 
-describe('compute', () => {
-  it('a subset of the hierarchy', () => {
+describe('aggregate', () => {
+  it('aggregates subset of the hierarchy', () => {
     let generator = new ProfileGenerator();
     let root = generator.start();
 
@@ -22,7 +22,7 @@ describe('compute', () => {
     let json = generator.end();
 
     let profile = new CpuProfile(json, -1, -1);
-    let result = compute(profile.hierarchy, ['a', 'c', 'd', 'f']);
+    let result = aggregate(profile.hierarchy, ['a', 'c', 'd', 'f']);
 
     expect(result.c.total).to.equal(0); // contained by a
     expect(result.a.total).to.equal(225);
@@ -30,7 +30,7 @@ describe('compute', () => {
     expect(result.f.total).to.equal(15);
   });
 
-  it('a subset of the hierarchy with multiple call sites', () => {
+  it('aggregates subset of the hierarchy with multiple call sites', () => {
     let generator = new ProfileGenerator();
     let root = generator.start();
 
@@ -47,7 +47,7 @@ describe('compute', () => {
     let json = generator.end();
 
     let profile = new CpuProfile(json, -1, -1);
-    let aggregations = compute(profile.hierarchy, ['a', 'c', 'd', 'f']);
+    let aggregations = aggregate(profile.hierarchy, ['a', 'c', 'd', 'f']);
 
     expect(aggregations.c.total).to.equal(10);
     expect(aggregations.a.total).to.equal(225);
@@ -75,7 +75,7 @@ describe('toCategories', () => {
     let json = generator.end();
 
     let profile = new CpuProfile(json, -1, -1);
-    aggregations = compute(profile.hierarchy, ['a', 'c', 'd', 'f']);
+    aggregations = aggregate(profile.hierarchy, ['a', 'c', 'd', 'f']);
   });
 
   it('creates a categorized map', () => {

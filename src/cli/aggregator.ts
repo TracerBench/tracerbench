@@ -248,7 +248,7 @@ export function toCategories(aggregations: Aggregations, categories: Categories)
   return categorized;
 }
 
-export function compute(hierarchy: HierarchyNode<ICpuProfileNode>, methods: string[]) {
+export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, methods: string[]) {
   let aggregations: Aggregations = {};
   hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {
     let functionName = node.data.callFrame.functionName;
@@ -284,6 +284,4 @@ export function compute(hierarchy: HierarchyNode<ICpuProfileNode>, methods: stri
   });
 
   return aggregations;
-
-  // return nodes;
 }
