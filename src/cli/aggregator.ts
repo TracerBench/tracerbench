@@ -210,7 +210,7 @@ function toMS(num: number) {
   return num / 1000;
 }
 
-interface Aggregations {
+export interface Aggregations {
   [key: string]: AggregationResult;
 }
 
@@ -226,23 +226,30 @@ interface CallSite {
   loc: Loc;
 }
 
-export function compute(hierarchy: HierarchyNode<ICpuProfileNode>, methods: string[]) {
-  // let nodes: ICpuProfileNode[] = [];
+interface Categorized {
+  [key: string]: AggregationResult[];
+}
 
-  let aggregations: Aggregations = {};
+export function toCategories(aggregations: Aggregations, categories: Categories) {
+  let categorized: Categorized = {};
 
-  /*
-    {
-      "ember-data": [
-        {
-          name: "t.create", time: 1, callsites: [
-            { time: 1, moduleName: '', loc: { line: 0, col: 0 } }
-          ]
-        }
-      ]
+  Object.keys(categories).forEach(category => {
+    if (!categorized[category]) {
+      categorized[category] = [];
     }
-  */
 
+    Object.keys(aggregations).forEach(methodName => {
+      if (categories[category].includes(methodName)) {
+        categorized[category].push(aggregations[methodName]);
+      }
+    });
+  });
+
+  return categorized;
+}
+
+export function compute(hierarchy: HierarchyNode<ICpuProfileNode>, methods: string[]) {
+  let aggregations: Aggregations = {};
   hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {
     let functionName = node.data.callFrame.functionName;
     if (methods.includes(functionName)) {
