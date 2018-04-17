@@ -2,13 +2,7 @@ import { createSession, IAPIClient, IHTTPClient } from 'chrome-debugging-client'
 import { Emulation, IO, Network, Page, Tracing } from 'chrome-debugging-client/dist/protocol/tot';
 import * as fs from 'fs';
 import { IConditions, INetworkConditions, networkConditions } from './conditions';
-
-interface ICookie {
-  url: string;
-  name: string;
-  value: string;
-  domain: string;
-}
+import { createClient, emulate, ICookie, setCookies } from './trace-utils';
 
 const DEVTOOLS_CATEGORIES = [
   '-*',
@@ -30,46 +24,14 @@ const DEVTOOLS_CATEGORIES = [
 
 export async function liveTrace(url: string, out: string, cookies: ICookie[], conditions: IConditions) {
   return await createSession(async session => {
-    let browserType;
-    let executablePath;
-    if (process.env.CHROME_BIN) {
-      executablePath = process.env.CHROME_BIN;
-      browserType = 'exact';
-    } else {
-      browserType = 'system';
-    }
-
-    const browser = await session.spawnBrowser(browserType, {
-      executablePath,
-    });
-
-    const tab = await getTab(session.createAPIClient('127.0.0.1', browser.remoteDebuggingPort));
-
-    const client = await session.openDebuggingProtocol(tab.webSocketDebuggerUrl!);
-
+    const client = await createClient(session);
     const page = new Page(client);
     const tracing = new Tracing(client);
     const network = new Network(client);
-    const emulation = new Emulation(client);
     const io = new IO(client);
 
-    if (emulation.canEmulate()) {
-      await emulation.setCPUThrottlingRate({ rate: conditions.cpu });
-    }
-
-    if (conditions.network !== undefined && network.canEmulateNetworkConditions()) {
-      let networkCondition = networkConditions[conditions.network];
-
-      if (networkCondition) {
-        await network.emulateNetworkConditions(networkCondition);
-      } else {
-        throw new Error(`Could not find network emulation "${conditions.network}"`);
-      }
-    }
-
-    for (let i = 0; i < cookies.length; i++) {
-      await network.setCookie(cookies[i]);
-    }
+    await emulate(client, network, conditions);
+    await setCookies(network, cookies);
 
     const tree = await page.getFrameTree();
     const mainFrameId = tree.frameTree.frame.id;
@@ -133,17 +95,4 @@ export async function liveTrace(url: string, out: string, cookies: ICookie[], co
       await io.close({ handle });
     }
   });
-}
-
-async function getTab(apiClient: IAPIClient) {
-  const tabs = await apiClient.listTabs();
-  // create one tab at about:blank
-  const tab = await apiClient.newTab('about:blank');
-  // close other tabs
-  for (let i = 0; i < tabs.length; i++) {
-    await apiClient.closeTab(tabs[i].id);
-  }
-  await new Promise(resolve => setTimeout(resolve, 2000));
-  await apiClient.activateTab(tab.id);
-  return tab;
 }

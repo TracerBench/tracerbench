@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import { HAR } from 'har-remix';
 import { CpuProfile, Trace } from '../trace';
 import { Aggregator } from './aggregator';
+import { Archive } from './archive_trace';
 import { HeuristicsValidator } from './heuristics';
 import { Reporter } from './reporter';
 import { cdnHashes, computeMinMax, getVersion, Hashes } from './utils';
@@ -11,7 +12,7 @@ import { cdnHashes, computeMinMax, getVersion, Hashes } from './utils';
 
 export interface UI {
   file: string;
-  har: string;
+  archive: string;
   time?: string;
   methods?: string[];
   report?: string;
@@ -19,22 +20,23 @@ export interface UI {
 }
 
 export default class CommandLine {
-  har: HAR;
+  archive: Archive;
   _validator: HeuristicsValidator | undefined;
   filePath: string;
   constructor(private ui: UI) {
-    let { file, har: harPath } = this.ui;
-    let defaultProfilePath = `${process.cwd()}/profile.json`;
+    let { file, archive: archivePath } = this.ui;
+    let defaultProfilePath = `${process.cwd()}/trace.json`;
+    let defaultArchivePath = `${process.cwd()}/trace.archive`;
 
     if (file === undefined && fs.existsSync(defaultProfilePath) === false) {
       throw new Error(`Error: Must pass a path to the trace file 💣`);
     }
 
-    if (harPath === undefined) {
-      throw new Error(`Error: Must pass a path to the har file 💣`);
+    if (archivePath === undefined && fs.existsSync(defaultArchivePath) === false) {
+      throw new Error(`Error: Must pass a path to the archive file 💣`);
     }
 
-    let har = (this.har = JSON.parse(fs.readFileSync(harPath, 'utf8')));
+    this.archive = JSON.parse(fs.readFileSync(archivePath || defaultArchivePath, 'utf8'));
     this.filePath = file || defaultProfilePath;
   }
 
@@ -51,7 +53,7 @@ export default class CommandLine {
     let { filePath } = this;
     let traceEvents = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     let trace = new Trace();
-    trace.addEvents(traceEvents);
+    trace.addEvents(traceEvents.traceEvents);
     trace.buildModel();
     return trace;
   }
@@ -63,12 +65,12 @@ export default class CommandLine {
   }
 
   run() {
-    let { har } = this;
+    let { archive } = this;
     let { report, verbose } = this.ui;
     let trace = this.loadTrace();
     let profile = this.cpuProfile(trace)!;
     let validator = this.validator(trace, profile);
-    let { validations, heuristics } = validator.validate(profile, har);
+    let { validations, heuristics } = validator.validate(profile, archive);
     let aggregator = new Aggregator(trace, profile, heuristics);
     let reporter = new Reporter(aggregator, validations);
 

@@ -6,8 +6,9 @@ const fs = require('fs');
 const ui = require('commander');
 
 let networkConditions = Object.keys(Profile.networkConditions).join(', ');
-ui.option('-l, --latency <value>', `Simulated conditions for ${networkConditions}`)
+ui.option('-n, --network <value>', `Simulated network conditions for ${networkConditions}`)
   .option('-c, --cpu <value>', 'cpu throttle multiplier')
+  .option('-u, --url <url>', 'Url to visit')
   .parse(process.argv);
 
 const cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf8'));
@@ -17,12 +18,16 @@ let conditions = {
   cpu: 1
 }
 
-if (ui.latency) {
-  conditions.network = ui.latency;
+if (ui.network) {
+  conditions.network = ui.network;
 }
 
 if (ui.cpu) {
   conditions.cpu = parseInt(ui.cpu, 10);
 }
 
-Profile.liveTrace('https://www.linkedin.com/feed/', 'feed-trace.json', cookies, conditions);
+if (!ui.url) {
+  throw new Error('Must pass a url');
+}
+
+Profile.liveTrace(ui.url, 'trace.json', cookies, conditions);
