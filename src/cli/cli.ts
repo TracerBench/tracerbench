@@ -25,17 +25,18 @@ export default class CommandLine {
   filePath: string;
   constructor(private ui: UI) {
     let { file, archive: archivePath } = this.ui;
-    let defaultProfilePath = `${process.cwd()}/profile.json`;
+    let defaultProfilePath = `${process.cwd()}/trace.json`;
+    let defaultArchivePath = `${process.cwd()}/trace.archive`;
 
     if (file === undefined && fs.existsSync(defaultProfilePath) === false) {
       throw new Error(`Error: Must pass a path to the trace file 💣`);
     }
 
-    if (archivePath === undefined) {
+    if (archivePath === undefined && fs.existsSync(defaultArchivePath) === false) {
       throw new Error(`Error: Must pass a path to the archive file 💣`);
     }
 
-    this.archive = JSON.parse(fs.readFileSync(archivePath, 'utf8'));
+    this.archive = JSON.parse(fs.readFileSync(archivePath || defaultArchivePath, 'utf8'));
     this.filePath = file || defaultProfilePath;
   }
 

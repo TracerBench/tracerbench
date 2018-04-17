@@ -1,7 +1,6 @@
 import { createSession, IAPIClient, IHTTPClient } from 'chrome-debugging-client';
 import { Network, Page } from 'chrome-debugging-client/dist/protocol/tot';
 import * as fs from 'fs';
-import * as nodeURL from 'url';
 import { createClient, ICookie, setCookies } from './trace-utils';
 // tslint:disable:no-console
 
@@ -85,8 +84,6 @@ export async function harTrace(url: string, cookies: ICookie[]) {
       archive.log.entries.push(entry);
     }
 
-    let _url = new nodeURL.URL(url);
-
-    fs.writeFileSync(`./${_url.host}.archive`, JSON.stringify(archive));
+    fs.writeFileSync(`./trace.archive`, JSON.stringify(archive));
   });
 }
