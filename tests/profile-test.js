@@ -22,16 +22,4 @@ QUnit.module('Profile', function(hooks) {
       'API is defined'
     );
   });
-
-  test('Profile.CLI parameter validation', function(assert) {
-    assert.expect(2);
-debugger;
-    assert.throws(function() {
-      let cli = new Profile.CLI({});
-    }, /Error: Must pass a path to the trace file 💣/);
-
-    assert.throws(function() {
-      let cli = new Profile.CLI({ file: 'my-profile.js' });
-    }, /Error: Must pass a path to the har file 💣/);
-  });
 });
