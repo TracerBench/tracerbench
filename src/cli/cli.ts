@@ -23,12 +23,13 @@ export default class CommandLine {
   archive: Archive;
   _validator: HeuristicsValidator | undefined;
   filePath: string;
+
   constructor(private ui: UI) {
     let { file, archive: archivePath } = this.ui;
     let defaultProfilePath = `${process.cwd()}/trace.json`;
     let defaultArchivePath = `${process.cwd()}/trace.archive`;
 
-    if (file === undefined && fs.existsSync(defaultProfilePath) === false) {
+    if (file === undefined || !fs.existsSync(file) || !fs.existsSync(defaultProfilePath)) {
       throw new Error(`Error: Must pass a path to the trace file 💣`);
     }
 

@@ -9,7 +9,8 @@
     "start": "node serve.js",
     "lint": "tslint -p tsconfig.json",
     "prepare": "rollup -c",
-    "test": "qunit tests"
+     "test": "yarn build && qunit tests",
+    "test:watch": "yarn build && qunit tests --watch"
   },
   "bin": {
     "parse-profile": "./bin/parse-profile"
