@@ -1,0 +1,18 @@
+#!/usr/bin/env node
+'use strict';
+
+const Profile = require('../dist/index.cjs');
+const fs = require('fs');
+const ui = require('commander');
+
+ui
+.option('-u, --url <url>', 'Url to visit')
+.parse(process.argv);
+
+const cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf8'));
+
+if (!ui.url) {
+  throw new Error('Must pass a url');
+}
+
+Profile.harTrace(ui.url, cookies);

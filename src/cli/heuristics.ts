@@ -1,9 +1,9 @@
 import { HierarchyNode } from 'd3';
 import * as fs from 'fs';
-import { HAR } from 'har-remix';
 import * as os from 'os';
 import * as path from 'path';
 import { CpuProfile, ICallFrame, ICpuProfileNode, Trace } from '../trace';
+import { Archive } from './archive_trace';
 import { Diff, DiffResult } from './diff';
 import { Categories } from './reporter';
 import {
@@ -232,7 +232,7 @@ export class Heuristics {
     return this._categoryKeys;
   }
 
-  compute(profile: CpuProfile, har: HAR, hashes: Hashes) {
+  compute(profile: CpuProfile, har: Archive, hashes: Hashes) {
     let { _categories } = this;
     if (_categories) {
       Object.keys(_categories).forEach(category => {
@@ -301,19 +301,20 @@ export class Heuristics {
     return heuristic;
   }
 
-  private createHeuristic(har: HAR, hashes: Hashes, callFrame: ICallFrame, category: string) {
+  private createHeuristic(har: Archive, hashes: Hashes, callFrame: ICallFrame, category: string) {
     let { url, lineNumber, columnNumber, functionName } = callFrame;
-    let hash = url.split('/').pop()!;
-    let fileName = hashes[hash];
     let loc = { col: columnNumber, line: lineNumber };
 
     if (isV8(functionName)) {
       // tslint:disable-next-line:no-shadowed-variable
       let key = `${category}::v8::v8::${functionName}`;
-      let heruristic = this.createNativeHeuristic(key, 'v8', functionName, loc, hash);
+      let heruristic = this.createNativeHeuristic(key, 'v8', functionName, loc, 'native');
       heruristic.pushCallFrame(callFrame);
       return heruristic;
     }
+
+    let hash = url.split('/').pop()!;
+    let fileName = hashes[hash];
 
     if (isNative(url)) {
       // tslint:disable-next-line:no-shadowed-variable
@@ -323,7 +324,7 @@ export class Heuristics {
       return heruristic;
     }
 
-    if (lineNumber === -1) {
+    if (lineNumber === -1 || lineNumber === undefined) {
       return;
     }
 
@@ -366,7 +367,7 @@ export class Heuristics {
     return heuristic;
   }
 
-  private parseFile(har: HAR, fileName: string, url: string, hashes: Hashes) {
+  private parseFile(har: Archive, fileName: string, url: string, hashes: Hashes) {
     let parsedFile = this.parsedFiles.get(fileName);
 
     if (parsedFile === undefined) {
@@ -377,13 +378,14 @@ export class Heuristics {
         return file;
       }
 
-      let urlRegex = new RegExp(url);
       // tslint:disable-next-line:no-shadowed-variable
-      let entry = har.log.entries.find(entry => urlRegex.test(entry.request.url));
+      let entry = har.log.entries.find(entry => {
+        return entry.request.url === url;
+      });
 
       if (entry === undefined) {
         throw new Error(
-          `HAR file and CPU profile have diverged. Could not find resource "${url}" in "${
+          `Archive file and CPU profile have diverged. Could not find resource "${url}" in "${
             this.version
           }" of the application.`,
         );
@@ -479,8 +481,8 @@ export class HeuristicsValidator {
     return this._heuristics!.isContained(callFrame);
   }
 
-  validate(profile: CpuProfile, har: HAR) {
-    let version = getVersion(har.log.entries[0].response.content!.text!);
+  validate(profile: CpuProfile, archive: Archive) {
+    let version = getVersion(archive.log.entries[0].response.content!.text!);
     let hashes = cdnHashes(version);
     let prevalidated = `${os.homedir()}/.parse-profile/${version}/heuristics.json`;
 
@@ -493,7 +495,7 @@ export class HeuristicsValidator {
     }
 
     heuristics.setVersion(version);
-    heuristics.compute(profile, har, hashes);
+    heuristics.compute(profile, archive, hashes);
 
     let validations = heuristics.verify();
 

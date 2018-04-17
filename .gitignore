@@ -2,3 +2,7 @@ LinkedInFeed*.json
 /node_modules/
 /dist/
 *.log
+cookies.json
+feed-trace.json
+trace.json
+*.archive
