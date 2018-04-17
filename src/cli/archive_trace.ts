@@ -41,7 +41,9 @@ export async function harTrace(url: string, cookies: ICookie[]) {
     let responses: Network.Response[] = [];
 
     network.responseReceived = ({ requestId, response }) => {
-      if (response.mimeType === 'text/html' || response.mimeType === 'text/javascript') {
+      if (response.mimeType === 'text/html' ||
+          response.mimeType === 'text/javascript' ||
+          response.mimeType === 'application/javascript') {
         requestIds.push(requestId);
         responses.push(response);
       }

@@ -9,7 +9,7 @@ ui
   .option('-m, --methods <names|file>', 'List of methods to aggregate', methodNames)
   .option('-r, --report <dirPath>', 'Generates a report with aggregated sums for each heuristic category and aggregated sum across all heuristics')
   .option('-t, --time <eventName>', 'Slice time and see the events before and after the time slice')
-  .option('--har <path>', 'Path to HAR file')
+  .option('-a, --archive <path>', 'Path to archive file')
   .option('--verbose', 'Verbose output')
   .parse(process.argv);
 
