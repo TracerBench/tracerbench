@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { Aggregator, CategorizedResults, CategoryResult, FullReport, Aggregations, Categorized } from './aggregator';
+import { Aggregator, CategorizedResults, CategoryResult, FullReport, Aggregations, Categorized, Containment, Containers } from './aggregator';
 import { Heuristics, IHeuristicJSON, IValidation } from './heuristics';
 
 // tslint:disable:no-console
@@ -62,36 +62,35 @@ export class Reporter {
 
       let categoryTotal = 0;
       categorized[category].forEach((result) => {
-        let { name, total, callsites } = result;
+        let { name, total, callsites, containees, containers } = result;
 
-        name = verbose ? white(name) : name;
+        // name = verbose ? white(name) : name;
 
         aggregateTotal += total;
         categoryTotal += total;
 
-        let [col1, col2] = this.cols;
+        let [col1, col2, col3, col4] = this.cols;
 
-        let timing = `${toMS(round(total))}ms`;
+        let timing = `${round(toMS(total))}ms`;
+        let containeeTime = `${round(toMS(this.containmentTime(containees)))}ms`;
+        let containerTime = `${round(toMS(this.containmentTime(containers)))}ms`;
 
-        rows.push([name, '', '', timing]);
+        rows.push([name, containerTime, containeeTime, timing]);
 
-        if (timing.length > col2) {
-          this.cols[1] = timing.length;
-        }
+        this.fitRow(name, containerTime, containeeTime, timing);
 
         if (verbose) {
-          callsites.sort((a, b) => b.time - a.time);
-          callsites.forEach((callsite) => {
-            let { url, moduleName, loc: { line, col }, time } = callsite;
-            let selfTime = `${toMS(round(time))}ms`;
-            let info = `  ${moduleName}-L${line}:C${col} ${chalk.bold.blue(selfTime)}\n    `;
-            info += `  ${url}`;
-            rows.push([info, '', '', '']);
+          if (containerTime !== '0ms') {
+            rows = this.formatContainers(containers, 'Containers', rows);
+            rows.push([' subtotal', `${white(containerTime)}`, '', '']);
+          }
 
-            if (info.length > col1) {
-              this.cols[0] = info.length;
-            }
-          });
+          if (containeeTime !== '0ms') {
+            rows = this.formatContainers(containees, 'Containees', rows);
+            rows.push(['', '', `${white(containeeTime)}`, '']);
+          }
+
+          rows.push(['', '', '', '']);
         } else {
           if (name.length > col1) {
             this.cols[0] = name.length;
@@ -99,66 +98,67 @@ export class Reporter {
         }
       });
 
-      rows.push(['SubTotal', '', '', `${toMS(round(categoryTotal))}ms`]);
+      rows.push(['SubTotal', '', '', `${round(toMS(categoryTotal))}ms`]);
     });
 
-    rows.push(['Total', '', '', `${toMS(round(aggregateTotal))}ms`]);
+    rows.push(['Total', '', '', `${round(toMS(aggregateTotal))}ms`]);
 
     this.printReport(rows, categories);
   }
 
-  // private generateRows(report: FullReport, verbose: boolean) {
-  //   let { categorized } = report;
-  //   let rows: string[][] = [];
-  //   let aggregateTotal = 0;
+  private formatContainers(containers: Containers, label: string, rows: string[][]) {
+    let containerRows: any[] = [];
 
-  //   Object.keys(categorized).forEach(category => {
-  //     let [col1] = this.cols;
+    Object.keys(containers).forEach(container => {
+      let t = containers[container].time;
+      let time = `${round(toMS(containers[container].time))}ms`;
+      let method = `  ${container}`;
+      let row: string[] = [];
+      if (label === 'Containers') {
+        row.push(method, time, '', '');
+      } else {
+        row.push(method, '', time, '');
+      }
+      containerRows.push([row, t]);
+      this.fitRow(method, time);
+    });
 
-  //     rows.push([category, 'Timing']);
+    if (containerRows.length > 0) {
+      rows.push([`  ${label}`, '', '', '']);
+      this.fitRow(label);
+    }
 
-  //     if (category.length > col1) {
-  //       this.cols[0] = category.length;
-  //     }
+    containerRows.sort((a, b) => {
+      return b[1] - a[1];
+    });
 
-  //     aggregateTotal += categorized[category].total;
-  //     Object.keys(categorized[category].sums).forEach(methodName => {
-  //       // tslint:disable-next-line:no-shadowed-variable
-  //       let [col1, col2] = this.cols;
-  //       let phaseTiming = `${round(categorized[category].sums[methodName].total)}ms`;
-  //       rows.push([methodName, phaseTiming]);
+    containerRows.forEach(r => {
+      rows.push(r[0]);
+    });
 
-  //       if (verbose) {
-  //         categorized[category].sums[methodName].heuristics.forEach(heuristic => {
-  //           let h = `  ${heuristic}`;
-  //           rows.push([h, '']);
+    return rows;
+  }
 
-  //           if (h.length > col1) {
-  //             this.cols[0] = h.length;
-  //           }
-  //         });
-  //       } else {
-  //         if (methodName.length > col1) {
-  //           this.cols[0] = methodName.length;
-  //         }
-  //       }
+  private containmentTime(containers: Containers) {
+    return Object.keys(containers).reduce((accum, cur) => {
+      return accum += containers[cur].time;
+    }, 0);
+  }
 
-  //       if (phaseTiming.length > col2) {
-  //         this.cols[1] = phaseTiming.length;
-  //       }
-  //     });
+  private fitRow(...parts: string[]) {
+    // let [a = '', b = '', c = '', d = ''] = parts;
+    let [col1, col2, col3, col4] = this.cols;
 
-  //     rows.push(['SubTotal', `${round(categorized[category].total)}ms`]);
-  //   });
+    this.cols.forEach((_, i) => {
+      let part = parts[i];
+      let col = this.cols[i];
 
-  //   rows.push([chalk.bold.yellow('\nDropped'), '']);
+      if (part && part.length > col) {
+        this.cols[i] = part.length;
+      }
 
-  //   // rows.push(...this.validations.warnings.map(w => [w, '']));
-
-  //   rows.push(['Total', `${round(aggregateTotal)}ms`]);
-
-  //   return rows;
-  // }
+    });
+  }
 
   private spaceCols(num: number) {
     if (num > 0) {
@@ -223,12 +223,21 @@ export class Reporter {
       this.width = header.length;
       buffer += header;
       buffer += `${new Array(this.width).join('=')}\n`;
-    } else if (category === 'SubTotal' || category === 'Total' || category === 'Dropped') {
+    } else if (
+      category === 'SubTotal' ||
+      category === 'Total' ||
+      category === 'Dropped' ||
+      category === '  Containers' ||
+      category === '  Containees'
+    ) {
       let header = `${space1}${heading1}${space2}${heading2}${space3}${heading3}\n`;
 
       if (category === 'SubTotal' || category === 'Dropped') {
         header = `\n${yellow(category)}${header}`;
         buffer += `${new Array(width).join('-')}`;
+        buffer += header;
+      } else if (category === '  Containers' || category === '  Containees') {
+        header = `${white(category)}${header}`;
         buffer += header;
       } else {
         header = `\n${green(category)}${header}`;

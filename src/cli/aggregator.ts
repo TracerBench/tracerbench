@@ -222,7 +222,7 @@ export interface AggregationResult {
   containees: Containers;
 }
 
-interface Containers {
+export interface Containers {
   [key: string]: Containment;
 }
 
