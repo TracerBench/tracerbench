@@ -14,7 +14,7 @@ export interface UI {
   file: string;
   archive: string;
   methods: string[];
-  time?: string;
+  event?: string;
   report?: string;
   verbose?: boolean;
 }
@@ -50,8 +50,8 @@ export default class CommandLine {
   }
 
   private cpuProfile(trace: Trace) {
-    let { time } = this.ui;
-    let { min, max } = computeMinMax(trace, 'navigationStart', time!);
+    let { event } = this.ui;
+    let { min, max } = computeMinMax(trace, 'navigationStart', event!);
     return trace.cpuProfile(min, max);
   }
 
