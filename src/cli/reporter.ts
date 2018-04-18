@@ -3,18 +3,6 @@ import * as path from 'path';
 import { Aggregations, Categorized, Containers } from './aggregator';
 // tslint:disable:no-console
 
-// category               Container  Containee  Aggregate
-// e.create               100ms      110ms      0ms
-//  Containers:
-//  -----------------------------------------------------
-//  e.flush               50ms
-//  Containees:
-//  -----------------------------------------------------
-//  e.flush                          50ms
-//  Callsites:
-//  -----------------------------------------------------
-//  @ember/container
-
 export interface Row {
   category: string;
   heading1: string;
@@ -61,7 +49,6 @@ export class Reporter {
         let containeeTime = `${round(toMS(this.containmentTime(containees)))}ms`;
         let containerTime = `${round(toMS(this.containmentTime(containers)))}ms`;
 
-        name = verbose ? magenta(name) : name;
         rows.push([name, containerTime, containeeTime, timing]);
 
         this.fitRow(name, containerTime, containeeTime, timing);

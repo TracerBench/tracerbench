@@ -156,14 +156,15 @@ export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, methods: st
 
       if (!isContained) {
         aggregations[functionName].total += total;
-        let { lineNumber: line, columnNumber: col, url } = node.data.callFrame;
-        aggregations[functionName].callsites.push({
-          time: total,
-          moduleName: '',
-          url,
-          loc: { line, col },
-        });
       }
+
+      let { lineNumber: line, columnNumber: col, url } = node.data.callFrame;
+      aggregations[functionName].callsites.push({
+        time: total,
+        moduleName: '',
+        url,
+        loc: { line, col },
+      });
     }
   });
 
