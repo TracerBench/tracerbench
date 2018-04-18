@@ -3,7 +3,7 @@ import { prototype } from 'events';
 import { ICpuProfileNode, ITraceEvent, Trace } from '../trace';
 import CpuProfile from '../trace/cpuprofile';
 import { Heuristic, Heuristics, Loc } from './heuristics';
-import { Categories } from './reporter';
+import { Categories } from './utils';
 
 // tslint:disable:member-ordering
 
@@ -218,6 +218,17 @@ export interface AggregationResult {
   total: number;
   name: string;
   callsites: CallSite[];
+  containers: Containers;
+  containees: Containers;
+}
+
+interface Containers {
+  [key: string]: Containment;
+}
+
+export interface Containment {
+  time: number;
+  message: string;
 }
 
 export interface CallSite {
@@ -273,22 +284,48 @@ export function collapseCallSites(aggregations: Aggregations) {
   return aggregations;
 }
 
+function populateContainment(aggregations: Aggregations, parent: string, child: string, time: number) {
+  if (!aggregations[parent].containees[child]) {
+    aggregations[parent].containees[child] = {
+      time,
+      message: `Contains "${child}"`,
+    };
+  } else {
+    aggregations[parent].containees[child].time += time;
+  }
+
+  if (!aggregations[child].containers[parent]) {
+    aggregations[child].containers[parent] = {
+      time,
+      message: `Contained by "${parent}"`,
+    };
+  } else {
+    aggregations[child].containers[parent].time += time;
+  }
+
+  return aggregations;
+}
+
 export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, methods: string[]) {
   let aggregations: Aggregations = {};
   let containments: string[] = [];
+
+  methods.forEach(method => {
+    aggregations[method] = {
+      total: 0,
+      name: method,
+      callsites: [],
+      containers: {},
+      containees: {},
+    };
+  });
+
   hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {
-    let functionName = node.data.callFrame.functionName;
+    let { total } = node.data;
+    let { functionName } = node.data.callFrame;
 
     if (methods.includes(functionName)) {
       let isContained = false;
-
-      if (!aggregations[functionName]) {
-        aggregations[functionName] = {
-          total: 0,
-          name: functionName,
-          callsites: [],
-        };
-      }
 
       let parent = node.parent;
       while (parent) {
@@ -297,19 +334,19 @@ export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, methods: st
           parentFnName !== functionName &&
           methods.includes(parent.data.callFrame.functionName)
         ) {
-          let message = `${parentFnName} > ${functionName}`;
-          if (!containments.includes(message)) containments.push(message);
+
           isContained = true;
+          aggregations = populateContainment(aggregations, parentFnName, functionName, total);
+
         }
         parent = parent.parent;
       }
 
       if (!isContained) {
-        let time = toMS(node.data.total);
-        aggregations[functionName].total += time;
+        aggregations[functionName].total += total;
         let { lineNumber: line, columnNumber: col, url } = node.data.callFrame;
         aggregations[functionName].callsites.push({
-          time,
+          time: total,
           moduleName: '',
           url,
           loc: { line, col },
@@ -318,6 +355,5 @@ export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, methods: st
     }
   });
 
-  console.log(containments.join('\n'));
   return aggregations;
 }

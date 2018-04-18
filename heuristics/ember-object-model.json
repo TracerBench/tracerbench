@@ -2,7 +2,5 @@
   "e.create",
   "a.extend",
   "O.applyPartial",
-  "t.compute",
-  "trigger",
   "pushObject"
 ]

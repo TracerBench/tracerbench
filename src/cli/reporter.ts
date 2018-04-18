@@ -4,15 +4,31 @@ import { Heuristics, IHeuristicJSON, IValidation } from './heuristics';
 
 // tslint:disable:no-console
 
+// category               Container  Containee  Aggregate
+// e.create               100ms      110ms      0ms
+//  Containers:
+//  -----------------------------------------------------
+//  e.flush               50ms
+//  Containees:
+//  -----------------------------------------------------
+//  e.flush                          50ms
+//  Callsites:
+//  -----------------------------------------------------
+//  @ember/container
+
 export interface Row {
   category: string;
   heading1: string;
+  heading2: string;
+  heading3: string;
   space1: string;
   space2: string;
+  space3: string;
+  space4: string;
 }
 
 export class Reporter {
-  private cols: number[] = [0, 6];
+  private cols: number[] = [0, 6, 12, 18];
   private width: number = 0;
 
   constructor(public categorized: Categorized) {}
@@ -38,7 +54,7 @@ export class Reporter {
       let [c1] = this.cols;
       categories.push(category);
 
-      rows.push([category, 'Timing']);
+      rows.push([category, 'Container', 'Containee', 'Aggregate']);
 
       if (category.length > c1) {
         this.cols[0] = category.length;
@@ -48,14 +64,16 @@ export class Reporter {
       categorized[category].forEach((result) => {
         let { name, total, callsites } = result;
 
+        name = verbose ? white(name) : name;
+
         aggregateTotal += total;
         categoryTotal += total;
 
         let [col1, col2] = this.cols;
 
-        let timing = `${round(total)}ms`;
+        let timing = `${toMS(round(total))}ms`;
 
-        rows.push([name, timing]);
+        rows.push([name, '', '', timing]);
 
         if (timing.length > col2) {
           this.cols[1] = timing.length;
@@ -65,8 +83,10 @@ export class Reporter {
           callsites.sort((a, b) => b.time - a.time);
           callsites.forEach((callsite) => {
             let { url, moduleName, loc: { line, col }, time } = callsite;
-            let info = `  ${url}@${moduleName}-L${line}:C${col} ${round(time)}ms`;
-            rows.push([info, '']);
+            let selfTime = `${toMS(round(time))}ms`;
+            let info = `  ${moduleName}-L${line}:C${col} ${chalk.bold.blue(selfTime)}\n    `;
+            info += `  ${url}`;
+            rows.push([info, '', '', '']);
 
             if (info.length > col1) {
               this.cols[0] = info.length;
@@ -79,10 +99,10 @@ export class Reporter {
         }
       });
 
-      rows.push(['SubTotal', `${round(categoryTotal)}ms`]);
+      rows.push(['SubTotal', '', '', `${toMS(round(categoryTotal))}ms`]);
     });
 
-    rows.push(['Total', `${round(aggregateTotal)}ms`]);
+    rows.push(['Total', '', '', `${toMS(round(aggregateTotal))}ms`]);
 
     this.printReport(rows, categories);
   }
@@ -150,31 +170,41 @@ export class Reporter {
 
   private printReport(rows: string[][], categories: string[]) {
     let buffer = `Aggregated Scripting Time:\n`;
-    let [col1, col2] = this.cols;
+    let [col1, col2, col3, col4] = this.cols;
 
     const indent = 2;
 
     for (let i = 0; i < rows.length; i++) {
       let row = rows[i];
-      let [category, heading1] = row;
+      let [category, heading1, heading2, heading3] = row;
 
       let header;
       let space1;
       let space2;
+      let space3;
+      let space4;
 
       if (isHeader(categories, category)) {
         space1 = this.spaceCols(col1 - category.length + indent * 2);
         space2 = this.spaceCols(col2 - heading1.length + indent);
+        space3 = this.spaceCols(col3 - heading2.length + indent);
+        space4 = this.spaceCols(col4 - heading3.length + indent);
       } else {
         space1 = this.spaceCols(col1 - category.length + indent);
         space2 = this.spaceCols(col2 - heading1.length + indent);
+        space3 = this.spaceCols(col3 - heading2.length + indent);
+        space4 = this.spaceCols(col4 - heading3.length + indent);
       }
 
       let rowParts = {
         category,
         heading1,
+        heading2,
+        heading3,
         space1,
         space2,
+        space3,
+        space4,
       };
 
       buffer += this.formatRow(rowParts, categories);
@@ -183,18 +213,18 @@ export class Reporter {
   }
 
   private formatRow(row: Row, categories: string[]) {
-    let { category, heading1, space1, space2 } = row;
+    let { category, heading1, heading2, heading3, space1, space2, space3, space4 } = row;
     let { width } = this;
     let buffer = '';
 
     if (categories.includes(category)) {
       category = chalk.inverse(category);
-      let header = `\n${category}${space1}${heading1}\n`;
+      let header = `\n${category}${space1}${heading1}${space2}${heading2}${space3}${heading3}\n`;
       this.width = header.length;
       buffer += header;
       buffer += `${new Array(this.width).join('=')}\n`;
     } else if (category === 'SubTotal' || category === 'Total' || category === 'Dropped') {
-      let header = `${space1}${heading1}\n`;
+      let header = `${space1}${heading1}${space2}${heading2}${space3}${heading3}\n`;
 
       if (category === 'SubTotal' || category === 'Dropped') {
         header = `\n${yellow(category)}${header}`;
@@ -208,7 +238,7 @@ export class Reporter {
         buffer += `${new Array(width).join('=')}`;
       }
     } else {
-      buffer += `  ${category}${space1}${heading1}\n`;
+      buffer += `  ${category}${space1}${heading1}${space2}${heading2}${space3}${heading3}\n`;
     }
 
     return buffer;
@@ -257,4 +287,8 @@ function white(str: string) {
 
 function round(num: number) {
   return Math.round(num * 100) / 100;
+}
+
+function toMS(num: number) {
+  return num / 1000;
 }

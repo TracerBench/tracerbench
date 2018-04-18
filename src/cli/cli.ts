@@ -6,8 +6,8 @@ import { aggregate, categorizeAggregations, Aggregations, CallSite, collapseCall
 import { Archive } from './archive_trace';
 import { HeuristicsValidator } from './heuristics';
 import { MetaData } from './metadata';
-import { Reporter, Categories } from './reporter';
-import { cdnHashes, computeMinMax, getVersion, Hashes, methodsFromCategories, formatCategories } from './utils';
+import { Reporter } from './reporter';
+import { Categories, cdnHashes, computeMinMax, getVersion, Hashes, methodsFromCategories, formatCategories } from './utils';
 
 // tslint:disable:member-ordering
 

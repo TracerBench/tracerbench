@@ -2,7 +2,7 @@
 
 import { expect } from 'chai';
 import 'mocha';
-import { aggregate, Aggregations, toCategories } from '../src/cli/aggregator';
+import { aggregate, Aggregations, categorizeAggregations } from '../src/cli/aggregator';
 import { CpuProfile } from '../src/index';
 import { ProfileGenerator } from './profile-generator';
 
@@ -22,12 +22,25 @@ describe('aggregate', () => {
     let json = generator.end();
 
     let profile = new CpuProfile(json, -1, -1);
-    let result = aggregate(profile.hierarchy, ['a', 'c', 'd', 'f']);
+    let aggregations = aggregate(profile.hierarchy, ['a', 'c', 'd', 'f']);
 
-    expect(result.c.total).to.equal(0); // contained by a
-    expect(result.a.total).to.equal(225);
-    expect(result.d.total).to.equal(100);
-    expect(result.f.total).to.equal(15);
+    expect(aggregations.c.total).to.equal(0); // contained by a
+    expect(aggregations.c.containers.a.message).to.equal(`Contained by "a"`);
+    expect(aggregations.c.containers.a.time).to.equal(75);
+    expect(Object.keys(aggregations.c.containees).length).to.equal(0);
+
+    expect(aggregations.a.total).to.equal(225);
+    expect(aggregations.a.containees.c.message).to.equal(`Contains "c"`);
+    expect(aggregations.a.containees.c.time).to.equal(75);
+    expect(Object.keys(aggregations.a.containers).length).to.equal(0);
+
+    expect(aggregations.d.total).to.equal(100);
+    expect(Object.keys(aggregations.d.containers).length).to.equal(0);
+    expect(Object.keys(aggregations.d.containees).length).to.equal(0);
+
+    expect(aggregations.f.total).to.equal(15);
+    expect(Object.keys(aggregations.f.containers).length).to.equal(0);
+    expect(Object.keys(aggregations.f.containees).length).to.equal(0);
   });
 
   it('aggregates subset of the hierarchy with multiple call sites', () => {
@@ -50,6 +63,8 @@ describe('aggregate', () => {
     let aggregations = aggregate(profile.hierarchy, ['a', 'c', 'd', 'f']);
 
     expect(aggregations.c.total).to.equal(10);
+    expect(aggregations.a.containees.c.message).to.equal(`Contains "c"`);
+    expect(aggregations.a.containees.c.time).to.equal(75);
     expect(aggregations.a.total).to.equal(225);
     expect(aggregations.d.total).to.equal(100);
     expect(aggregations.f.total).to.equal(15);
@@ -79,7 +94,7 @@ describe('toCategories', () => {
   });
 
   it('creates a categorized map', () => {
-    let categorized = toCategories(aggregations, { cat1: ['a', 'c'], cat2: ['d'], cat3: ['f'] });
+    let categorized = categorizeAggregations(aggregations, { cat1: ['a', 'c'], cat2: ['d'], cat3: ['f'] });
 
     expect(categorized.cat1.length).to.equal(2);
     expect(categorized.cat2.length).to.equal(1);
