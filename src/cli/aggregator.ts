@@ -227,11 +227,11 @@ export interface CallSite {
   loc: Loc;
 }
 
-interface Categorized {
+export interface Categorized {
   [key: string]: AggregationResult[];
 }
 
-export function toCategories(aggregations: Aggregations, categories: Categories) {
+export function categorizeAggregations(aggregations: Aggregations, categories: Categories) {
   let categorized: Categorized = {};
 
   Object.keys(categories).forEach(category => {
@@ -249,8 +249,33 @@ export function toCategories(aggregations: Aggregations, categories: Categories)
   return categorized;
 }
 
+export function collapseCallSites(aggregations: Aggregations) {
+  Object.keys(aggregations).forEach(methodName => {
+    let collapsed: CallSite[] = [];
+    aggregations[methodName].callsites.forEach(callsite => {
+
+      let match = collapsed.find(c => {
+        return c.moduleName === callsite.moduleName &&
+               c.url === callsite.url &&
+               c.loc.line === callsite.loc.line &&
+               c.loc.col === callsite.loc.col;
+      });
+
+      if (match) {
+        match.time += callsite.time;
+      } else {
+        collapsed.push(callsite);
+      }
+    });
+    aggregations[methodName].callsites = collapsed;
+  });
+
+  return aggregations;
+}
+
 export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, methods: string[]) {
   let aggregations: Aggregations = {};
+  let containments: string[] = [];
   hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {
     let functionName = node.data.callFrame.functionName;
 
@@ -267,7 +292,13 @@ export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, methods: st
 
       let parent = node.parent;
       while (parent) {
-        if (methods.includes(parent.data.callFrame.functionName)) {
+        let parentFnName = parent.data.callFrame.functionName;
+        if (
+          parentFnName !== functionName &&
+          methods.includes(parent.data.callFrame.functionName)
+        ) {
+          let message = `${parentFnName} > ${functionName}`;
+          if (!containments.includes(message)) containments.push(message);
           isContained = true;
         }
         parent = parent.parent;
@@ -287,5 +318,6 @@ export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, methods: st
     }
   });
 
+  console.log(containments.join('\n'));
   return aggregations;
 }

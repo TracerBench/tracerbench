@@ -1,12 +1,8 @@
 import chalk from 'chalk';
-import { Aggregator, CategorizedResults, CategoryResult, FullReport } from './aggregator';
+import { Aggregator, CategorizedResults, CategoryResult, FullReport, Aggregations, Categorized } from './aggregator';
 import { Heuristics, IHeuristicJSON, IValidation } from './heuristics';
 
 // tslint:disable:no-console
-
-export interface Categories {
-  [key: string]: string[];
-}
 
 export interface Row {
   category: string;
@@ -16,79 +12,133 @@ export interface Row {
 }
 
 export class Reporter {
-  aggregator: Aggregator;
-  validations: IValidation;
   private cols: number[] = [0, 6];
   private width: number = 0;
 
-  constructor(aggregator: Aggregator, validations: IValidation) {
-    this.aggregator = aggregator;
-    this.validations = validations;
-  }
+  constructor(public categorized: Categorized) {}
 
-  categoryReport(heuristics: Heuristics) {
-    let result = this.aggregator.sumsPerHeuristicCategory(heuristics);
-    this.print(`Aggregated Sum:`, result);
-  }
+  // categoryReport(heuristics: Heuristics) {
+  //   let result = this.aggregator.sumsPerHeuristicCategory(heuristics);
+  //   this.print(`Aggregated Sum:`, result);
+  // }
 
-  fullReport(heuristics: Heuristics, verbose: boolean) {
-    let report = this.aggregator.sumsAllHeuristicCategories(heuristics);
-    let rows = this.generateRows(report, verbose);
-    this.printReport(rows, heuristics.categories);
-  }
+  // fullReport(heuristics: Heuristics, verbose: boolean) {
+  //   let report = this.aggregator.sumsAllHeuristicCategories(heuristics);
+  //   let rows = this.generateRows(report, verbose);
+  //   this.printReport(rows, heuristics.categories);
+  // }
 
-  private generateRows(report: FullReport, verbose: boolean) {
-    let { categorized } = report;
+  report(verbose: boolean) {
+    let { categorized } = this;
     let rows: string[][] = [];
     let aggregateTotal = 0;
+    let categories: string[] = [];
 
     Object.keys(categorized).forEach(category => {
-      let [col1] = this.cols;
+      let [c1] = this.cols;
+      categories.push(category);
 
       rows.push([category, 'Timing']);
 
-      if (category.length > col1) {
+      if (category.length > c1) {
         this.cols[0] = category.length;
       }
 
-      aggregateTotal += categorized[category].total;
-      Object.keys(categorized[category].sums).forEach(methodName => {
-        // tslint:disable-next-line:no-shadowed-variable
+      let categoryTotal = 0;
+      categorized[category].forEach((result) => {
+        let { name, total, callsites } = result;
+
+        aggregateTotal += total;
+        categoryTotal += total;
+
         let [col1, col2] = this.cols;
-        let phaseTiming = `${round(categorized[category].sums[methodName].total)}ms`;
-        rows.push([methodName, phaseTiming]);
+
+        let timing = `${round(total)}ms`;
+
+        rows.push([name, timing]);
+
+        if (timing.length > col2) {
+          this.cols[1] = timing.length;
+        }
 
         if (verbose) {
-          categorized[category].sums[methodName].heuristics.forEach(heuristic => {
-            let h = `  ${heuristic}`;
-            rows.push([h, '']);
+          callsites.sort((a, b) => b.time - a.time);
+          callsites.forEach((callsite) => {
+            let { url, moduleName, loc: { line, col }, time } = callsite;
+            let info = `  ${url}@${moduleName}-L${line}:C${col} ${round(time)}ms`;
+            rows.push([info, '']);
 
-            if (h.length > col1) {
-              this.cols[0] = h.length;
+            if (info.length > col1) {
+              this.cols[0] = info.length;
             }
           });
         } else {
-          if (methodName.length > col1) {
-            this.cols[0] = methodName.length;
+          if (name.length > col1) {
+            this.cols[0] = name.length;
           }
-        }
-
-        if (phaseTiming.length > col2) {
-          this.cols[1] = phaseTiming.length;
         }
       });
 
-      rows.push(['SubTotal', `${round(categorized[category].total)}ms`]);
+      rows.push(['SubTotal', `${round(categoryTotal)}ms`]);
     });
-
-    rows.push([chalk.bold.yellow('\nDropped'), '']);
-
-    rows.push(...this.validations.warnings.map(w => [w, '']));
 
     rows.push(['Total', `${round(aggregateTotal)}ms`]);
 
-    return rows;
+    this.printReport(rows, categories);
   }
+
+  // private generateRows(report: FullReport, verbose: boolean) {
+  //   let { categorized } = report;
+  //   let rows: string[][] = [];
+  //   let aggregateTotal = 0;
+
+  //   Object.keys(categorized).forEach(category => {
+  //     let [col1] = this.cols;
+
+  //     rows.push([category, 'Timing']);
+
+  //     if (category.length > col1) {
+  //       this.cols[0] = category.length;
+  //     }
+
+  //     aggregateTotal += categorized[category].total;
+  //     Object.keys(categorized[category].sums).forEach(methodName => {
+  //       // tslint:disable-next-line:no-shadowed-variable
+  //       let [col1, col2] = this.cols;
+  //       let phaseTiming = `${round(categorized[category].sums[methodName].total)}ms`;
+  //       rows.push([methodName, phaseTiming]);
+
+  //       if (verbose) {
+  //         categorized[category].sums[methodName].heuristics.forEach(heuristic => {
+  //           let h = `  ${heuristic}`;
+  //           rows.push([h, '']);
+
+  //           if (h.length > col1) {
+  //             this.cols[0] = h.length;
+  //           }
+  //         });
+  //       } else {
+  //         if (methodName.length > col1) {
+  //           this.cols[0] = methodName.length;
+  //         }
+  //       }
+
+  //       if (phaseTiming.length > col2) {
+  //         this.cols[1] = phaseTiming.length;
+  //       }
+  //     });
+
+  //     rows.push(['SubTotal', `${round(categorized[category].total)}ms`]);
+  //   });
+
+  //   rows.push([chalk.bold.yellow('\nDropped'), '']);
+
+  //   // rows.push(...this.validations.warnings.map(w => [w, '']));
+
+  //   rows.push(['Total', `${round(aggregateTotal)}ms`]);
+
+  //   return rows;
+  // }
 
   private spaceCols(num: number) {
     if (num > 0) {

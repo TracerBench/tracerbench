@@ -5,8 +5,8 @@ import * as path from 'path';
 import { CpuProfile, ICallFrame, ICpuProfileNode, Trace } from '../trace';
 import { Archive } from './archive_trace';
 import { Diff, DiffResult } from './diff';
-import { Categories } from './reporter';
 import {
+  Categories,
   cdnHashes,
   createCallSiteWindow,
   findMangledDefine,

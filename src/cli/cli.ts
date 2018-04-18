@@ -1,22 +1,21 @@
 import { UnaryExpression } from 'estree';
 import * as fs from 'fs';
 import { HAR } from 'har-remix';
-import * as path from 'path';
 import { CpuProfile, Trace } from '../trace';
-import { Aggregator, aggregate, toCategories } from './aggregator';
+import { aggregate, categorizeAggregations, Aggregations, CallSite, collapseCallSites } from './aggregator';
 import { Archive } from './archive_trace';
 import { HeuristicsValidator } from './heuristics';
 import { MetaData } from './metadata';
 import { Reporter, Categories } from './reporter';
-import { cdnHashes, computeMinMax, getVersion, Hashes } from './utils';
+import { cdnHashes, computeMinMax, getVersion, Hashes, methodsFromCategories, formatCategories } from './utils';
 
 // tslint:disable:member-ordering
 
 export interface UI {
   file: string;
   archive: string;
+  methods: string[];
   time?: string;
-  methods?: string[];
   report?: string;
   verbose?: boolean;
 }
@@ -60,18 +59,20 @@ export default class CommandLine {
 
   run() {
     let { archive } = this;
-    let { report, verbose } = this.ui;
+    let { report, verbose, methods } = this.ui;
     let trace = this.loadTrace();
     let profile = this.cpuProfile(trace)!;
-    let categories = getCategories(this.ui);
-    let methods = getMethods(categories);
-    let aggregations = aggregate(profile.hierarchy, methods);
     let metadata = new MetaData(archive);
-    let associatedAggregations = metadata.associate(aggregations);
-    let categorized = toCategories(associatedAggregations, categories);
 
-    console.log(JSON.stringify(categorized, null, 2));
+    let categories = formatCategories(report, methods);
+    let allMethods = methodsFromCategories(categories);
+    let aggregations = aggregate(profile.hierarchy, allMethods);
+    let associatedAggregations = metadata.for(aggregations);
+    let collapsedAggregations = collapseCallSites(associatedAggregations);
+    let categorized = categorizeAggregations(associatedAggregations, categories);
+    let reporter = new Reporter(categorized);
 
+    reporter.report(verbose!!);
     // let validator = this.validator(trace, profile);
     // let { validations, heuristics } = validator.validate(profile, archive);
     // let aggregator = new Aggregator(trace, profile, heuristics);
@@ -82,36 +83,5 @@ export default class CommandLine {
     // } else {
     //   reporter.categoryReport(heuristics);
     // }
-  }
-}
-
-function getMethods(categories: Categories) {
-  return Object.keys(categories).reduce((accum: string[], category: string) => {
-    accum.push(...categories[category]);
-    return accum;
-  }, []);
-}
-
-function getCategories(ui: UI) {
-  let { report, methods } = ui;
-  if (report) {
-    let files = fs.readdirSync(report);
-    let _categories: Categories = {};
-
-    files.map(file => {
-      let name = path.basename(file).replace('.json', '');
-      // tslint:disable-next-line:no-shadowed-variable
-      let methods = JSON.parse(fs.readFileSync(`${report}/${file}`, 'utf8'));
-      _categories[name] = methods;
-    });
-
-    return _categories;
-
-  } else {
-    if (methods === undefined) {
-      throw new Error(`Error: Must pass a list of method names.`);
-    }
-
-    return { adhoc: methods };
   }
 }

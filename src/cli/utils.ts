@@ -3,9 +3,14 @@ import { SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION } from 'constants';
 import { Hash } from 'crypto';
 import * as fs from 'fs';
 import * as os from 'os';
+import * as path from 'path';
 import { Trace } from '../trace';
 
 // tslint:disable:no-console
+
+export interface Categories {
+  [key: string]: string[];
+}
 
 export interface Hashes {
   [key: string]: string;
@@ -125,7 +130,7 @@ function getModuleIndex(str: string, ident: string) {
 }
 
 export function findModule(lines: string[], line: number, col: number, tokens: string[]): string {
-  if (line === -1) {
+  if (line === -1 || line === undefined) {
     return 'unkown';
   }
 
@@ -191,6 +196,43 @@ function extractModuleName(line: string, token: string, index: number) {
     char = line[start];
   }
   return moduleName;
+}
+
+export function methodsFromCategories(categories: Categories) {
+  return Object.keys(categories).reduce((accum: string[], category: string) => {
+    accum.push(...categories[category]);
+    return accum;
+  }, []);
+}
+
+export function formatCategories(report: string | undefined, methods: string[]) {
+  if (report) {
+    let stats =  fs.statSync(report);
+    let _categories: Categories = {};
+    if (stats.isDirectory()) {
+      let files = fs.readdirSync(report);
+
+      files.map(file => {
+        let name = path.basename(file).replace('.json', '');
+        // tslint:disable-next-line:no-shadowed-variable
+        let methods = JSON.parse(fs.readFileSync(`${report}/${file}`, 'utf8'));
+        _categories[name] = methods;
+      });
+
+    } else {
+      let category = path.basename(report).replace('.json', '');
+      _categories[category] = JSON.parse(fs.readFileSync(report, 'utf8'));
+    }
+
+    return _categories;
+
+  } else {
+    if (methods === undefined) {
+      throw new Error(`Error: Must pass a list of method names.`);
+    }
+
+    return { adhoc: methods };
+  }
 }
 
 export function createCallSiteWindow(

@@ -4,7 +4,7 @@ import { findMangledDefine, findModule } from './utils';
 
 class ParsedFile {
   private lines: string[] = [];
-  private mangledDefine: string;
+  private mangledDefine?: string;
   constructor(private content: string) {}
 
   parse() {
@@ -27,16 +27,16 @@ export class MetaData {
   parsedFiles: Map<string, ParsedFile> = new Map();
   constructor(private archive: Archive) {}
 
-  associate(aggregations: Aggregations): Aggregations {
+  for(aggregations: Aggregations): Aggregations {
     Object.keys(aggregations).forEach((name: string) => {
       aggregations[name].callsites.forEach(callsite => {
-        this.associateCallsite(callsite);
+        this.associateCallsite(callsite, name);
       });
     });
     return aggregations;
   }
 
-  private associateCallsite(callsite: CallSite) {
+  private associateCallsite(callsite: CallSite, n: string) {
     let entry = this.archive.log.entries.find((e) => {
       return e.request.url === callsite.url;
     });
@@ -44,7 +44,7 @@ export class MetaData {
     if (!entry) {
       callsite.moduleName = 'unknown';
     } else {
-      let { url, loc: {line, col } } = callsite;
+      let { url, loc: { line, col } } = callsite;
       let file = this.getFileParser(callsite.url, entry.response.content.text);
       let { lines, mangledDefine } = file.parse();
       let moduleName = findModule(lines, line, col, ['define', mangledDefine]);
