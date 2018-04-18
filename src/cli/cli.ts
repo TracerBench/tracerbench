@@ -2,12 +2,11 @@ import { UnaryExpression } from 'estree';
 import * as fs from 'fs';
 import { HAR } from 'har-remix';
 import { CpuProfile, Trace } from '../trace';
-import { aggregate, categorizeAggregations, Aggregations, CallSite, collapseCallSites } from './aggregator';
+import { aggregate, categorizeAggregations, collapseCallSites, verifyMethods } from './aggregator';
 import { Archive } from './archive_trace';
-import { HeuristicsValidator } from './heuristics';
 import { MetaData } from './metadata';
 import { Reporter } from './reporter';
-import { Categories, cdnHashes, computeMinMax, getVersion, Hashes, methodsFromCategories, formatCategories } from './utils';
+import { computeMinMax, formatCategories, getVersion, methodsFromCategories } from './utils';
 
 // tslint:disable:member-ordering
 
@@ -22,7 +21,6 @@ export interface UI {
 
 export default class CommandLine {
   archive: Archive;
-  _validator: HeuristicsValidator | undefined;
   filePath: string;
 
   constructor(private ui: UI) {
@@ -66,6 +64,7 @@ export default class CommandLine {
 
     let categories = formatCategories(report, methods);
     let allMethods = methodsFromCategories(categories);
+    verifyMethods(allMethods);
     let aggregations = aggregate(profile.hierarchy, allMethods);
     let associatedAggregations = metadata.for(aggregations);
     let collapsedAggregations = collapseCallSites(associatedAggregations);
@@ -73,15 +72,5 @@ export default class CommandLine {
     let reporter = new Reporter(categorized);
 
     reporter.report(verbose!!);
-    // let validator = this.validator(trace, profile);
-    // let { validations, heuristics } = validator.validate(profile, archive);
-    // let aggregator = new Aggregator(trace, profile, heuristics);
-    // let reporter = new Reporter(aggregator, validations);
-
-    // if (report) {
-    //   reporter.fullReport(heuristics, verbose!!);
-    // } else {
-    //   reporter.categoryReport(heuristics);
-    // }
   }
 }

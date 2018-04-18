@@ -1,7 +1,6 @@
 import chalk from 'chalk';
-import { Aggregator, CategorizedResults, CategoryResult, FullReport, Aggregations, Categorized, Containment, Containers } from './aggregator';
-import { Heuristics, IHeuristicJSON, IValidation } from './heuristics';
-
+import * as path from 'path';
+import { Aggregations, Categorized, Containers } from './aggregator';
 // tslint:disable:no-console
 
 // category               Container  Containee  Aggregate
@@ -33,17 +32,6 @@ export class Reporter {
 
   constructor(public categorized: Categorized) {}
 
-  // categoryReport(heuristics: Heuristics) {
-  //   let result = this.aggregator.sumsPerHeuristicCategory(heuristics);
-  //   this.print(`Aggregated Sum:`, result);
-  // }
-
-  // fullReport(heuristics: Heuristics, verbose: boolean) {
-  //   let report = this.aggregator.sumsAllHeuristicCategories(heuristics);
-  //   let rows = this.generateRows(report, verbose);
-  //   this.printReport(rows, heuristics.categories);
-  // }
-
   report(verbose: boolean) {
     let { categorized } = this;
     let rows: string[][] = [];
@@ -64,8 +52,6 @@ export class Reporter {
       categorized[category].forEach((result) => {
         let { name, total, callsites, containees, containers } = result;
 
-        // name = verbose ? white(name) : name;
-
         aggregateTotal += total;
         categoryTotal += total;
 
@@ -75,6 +61,7 @@ export class Reporter {
         let containeeTime = `${round(toMS(this.containmentTime(containees)))}ms`;
         let containerTime = `${round(toMS(this.containmentTime(containers)))}ms`;
 
+        name = verbose ? magenta(name) : name;
         rows.push([name, containerTime, containeeTime, timing]);
 
         this.fitRow(name, containerTime, containeeTime, timing);
@@ -82,13 +69,23 @@ export class Reporter {
         if (verbose) {
           if (containerTime !== '0ms') {
             rows = this.formatContainers(containers, 'Containers', rows);
-            rows.push([' subtotal', `${white(containerTime)}`, '', '']);
+            rows.push(['', `${white(containerTime)}`, '', '']);
           }
 
           if (containeeTime !== '0ms') {
             rows = this.formatContainers(containees, 'Containees', rows);
             rows.push(['', '', `${white(containeeTime)}`, '']);
           }
+
+          callsites.sort((a, b) => b.time - a.time);
+
+          rows.push(['  Callsites', '', '', '']);
+          callsites.forEach(c => {
+            let basename = c.url ? path.basename(c.url) : 'unknown';
+            let csTime = white(`${round(toMS(c.time))}ms`);
+            let cs = `  ${basename} - ${c.moduleName} L:${c.loc.line}-C:${c.loc.col} ${csTime}`;
+            rows.push([cs, '', '', '']);
+          });
 
           rows.push(['', '', '', '']);
         } else {
@@ -228,7 +225,8 @@ export class Reporter {
       category === 'Total' ||
       category === 'Dropped' ||
       category === '  Containers' ||
-      category === '  Containees'
+      category === '  Containees' ||
+      category === '  Callsites'
     ) {
       let header = `${space1}${heading1}${space2}${heading2}${space3}${heading3}\n`;
 
@@ -236,7 +234,7 @@ export class Reporter {
         header = `\n${yellow(category)}${header}`;
         buffer += `${new Array(width).join('-')}`;
         buffer += header;
-      } else if (category === '  Containers' || category === '  Containees') {
+      } else if (category === '  Containers' || category === '  Containees' || category === '  Callsites') {
         header = `${white(category)}${header}`;
         buffer += header;
       } else {
@@ -252,26 +250,6 @@ export class Reporter {
 
     return buffer;
   }
-
-  private print(title: string, body: CategoryResult) {
-    let buffer = white(`\n${title}\n================\n`);
-    Object.keys(body.sums).forEach(methodName => {
-      let normalizedName = normalizeMethodName(methodName);
-      buffer += `${magenta(normalizedName)}: ${round(body.sums[methodName].total)}ms`;
-      buffer += `\n  From ->`;
-      buffer += `\n    ${body.sums[methodName].heuristics.join('\n    ')}\n`;
-    });
-    buffer += white(`================\nTotal: ${round(body.total)}ms`);
-    console.log(buffer);
-  }
-}
-
-function normalizeMethodName(name: string) {
-  if (name === '') {
-    name = '(anonymous function)';
-  }
-
-  return name;
 }
 
 function isHeader(categories: string[], category: string) {
