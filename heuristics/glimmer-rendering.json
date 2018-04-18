@@ -1,8 +1,11 @@
 [
   "e.insertHTMLBefore",
+  "e._revalidate",
+  "e.commit",
   "JsonParse",
   "install",
   "e.addDynamicAttribute",
+  "e.flush",
   "e.goto",
   "e.insertBefore",
   "t.value",
