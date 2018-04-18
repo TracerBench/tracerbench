@@ -1,6 +1,9 @@
 [
+  "Ember.RouterDSL.route",
   "A.map",
-  "handleURL",
+  "_setupLocation",
+  "_internalGetHandler",
+  "o.willTransition",
   "generateURL",
   "normalizeQueryParams",
   "_getQPMeta",
