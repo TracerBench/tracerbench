@@ -6,7 +6,7 @@ import { aggregate, categorizeAggregations, collapseCallSites, verifyMethods } f
 import { Archive } from './archive_trace';
 import { MetaData } from './metadata';
 import { Reporter } from './reporter';
-import { computeMinMax, formatCategories, getVersion, methodsFromCategories } from './utils';
+import { computeMinMax, formatCategories, methodsFromCategories } from './utils';
 
 // tslint:disable:member-ordering
 

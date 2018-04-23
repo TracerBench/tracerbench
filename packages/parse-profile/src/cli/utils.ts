@@ -12,20 +12,6 @@ export interface Categories {
   [key: string]: string[];
 }
 
-export function getVersion(content: string) {
-  let metaTag = '<meta name="serviceVersion" content="';
-  let metaTagStart = content.indexOf(metaTag);
-  let start = metaTagStart + metaTag.length;
-  let char;
-  let version = '';
-  while (char !== '"') {
-    version += content[start];
-    char = content[++start];
-  }
-
-  return version;
-}
-
 export function computeMinMax(trace: Trace, start: string = 'navigationStart', end: string) {
   let min;
   let max;
