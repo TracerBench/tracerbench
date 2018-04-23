@@ -6,17 +6,19 @@ const fs = require('fs');
 const ui = require('commander');
 
 let networkConditions = Object.keys(Profile.networkConditions).join(', ');
-ui.option('-n, --network <value>', `Simulated network conditions for ${networkConditions}`)
-  .option('-c, --cpu <value>', 'cpu throttle multiplier')
+ui
   .option('-u, --url <url>', 'Url to visit')
+  .option('-o, --output <output>', 'The file to save the trace to')
+  .option('-n, --network <value>', `Simulated network conditions for ${networkConditions}`)
+  .option('-c, --cpu <value>', 'cpu throttle multiplier')
   .parse(process.argv);
 
 const cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf8'));
 
 let conditions = {
   network: undefined,
-  cpu: 1
-}
+  cpu: 1,
+};
 
 if (ui.network) {
   conditions.network = ui.network;
@@ -26,8 +28,13 @@ if (ui.cpu) {
   conditions.cpu = parseInt(ui.cpu, 10);
 }
 
-if (!ui.url) {
-  throw new Error('Must pass a url');
+if (!ui.output) {
+  ui.output = 'trace.json'
 }
 
-Profile.liveTrace(ui.url, 'trace.json', cookies, conditions);
+if (!ui.url) {
+  Profile.showError('You must pass a URL using the --url option');
+  process.exit(1);
+}
+
+Profile.liveTrace(ui.url, ui.output, cookies, conditions);

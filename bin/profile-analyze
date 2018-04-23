@@ -17,5 +17,10 @@ function methodNames(val) {
   return val.split(',');
 }
 
+if (!ui.file) {
+  Profile.showError('You must pass a file using the --file option');
+  process.exit(1);
+}
+
 let cli = new Profile.CLI(ui);
 cli.run();

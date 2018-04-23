@@ -21,3 +21,5 @@ export function loadTrace(events: ITraceEvent[] | ITrace) {
   trace.buildModel();
   return trace;
 }
+
+export { showError } from './cli/error';
