@@ -1,4 +1,5 @@
 import { ICallFrame, ICpuProfile, ICpuProfileNode } from '../src';
+import { AggregationResult, Aggregations, Loc } from '../src/cli/aggregator';
 
 interface INode {
   child(functionName: string): CPUProfileNode;
@@ -105,6 +106,53 @@ export class ProfileGenerator {
       timeDeltas,
       nodes: nodes.map(node => node.toJSON()),
       samples,
+    };
+  }
+}
+
+export class AggregationGenerator {
+  private currentAggregation: Aggregations = {};
+  aggregation(name: string) {
+    let result = this.result(name);
+    this.currentAggregation[name] = result;
+    return result;
+  }
+
+  callsites(result: AggregationResult, multipler: number, locCB: (i: number) => Loc) {
+    for (let i = 0; i < multipler; i++) {
+      result.callsites.push(this.callsite(i, locCB(i)));
+    }
+  }
+
+  commit() {
+    let aggregation = this.currentAggregation;
+    this.currentAggregation = {};
+
+    Object.keys(aggregation).forEach(a => {
+      aggregation[a].total = aggregation[a].callsites.reduce((acc, cur) => {
+        return acc += cur.time;
+      }, 0);
+    });
+
+    return aggregation;
+  }
+
+  private callsite(time: number, loc: Loc) {
+    return {
+      time,
+      moduleName: 'example',
+      url: 'example.com',
+      loc,
+    };
+  }
+
+  private result(name: string): AggregationResult {
+    return {
+      name,
+      total: 0,
+      callsites: [],
+      containees: {},
+      containers: {},
     };
   }
 }

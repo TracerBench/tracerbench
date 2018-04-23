@@ -2,9 +2,15 @@
 
 import { expect } from 'chai';
 import 'mocha';
-import { aggregate, Aggregations, categorizeAggregations } from '../src/cli/aggregator';
+import {
+  aggregate,
+  Aggregations,
+  categorizeAggregations,
+  collapseCallSites,
+  verifyMethods,
+} from '../src/cli/aggregator';
 import { CpuProfile } from '../src/index';
-import { ProfileGenerator } from './profile-generator';
+import { AggregationGenerator, ProfileGenerator } from './generators';
 
 describe('aggregate', () => {
   it('aggregates subset of the hierarchy', () => {
@@ -71,7 +77,7 @@ describe('aggregate', () => {
   });
 });
 
-describe('toCategories', () => {
+describe('categorizeAggregations', () => {
   let aggregations: Aggregations;
   beforeEach(() => {
     let generator = new ProfileGenerator();
@@ -103,5 +109,56 @@ describe('toCategories', () => {
     expect(categorized.cat1.map(a => a.name).sort()).to.deep.equal(['a', 'c']);
     expect(categorized.cat2[0].name).to.deep.equal('d');
     expect(categorized.cat3[0].name).to.deep.equal('f');
+  });
+});
+
+describe('verifyMethods', () => {
+  it('should throw if there are duplicates', () => {
+    // tslint:disable:no-unused-expression
+    expect(() => verifyMethods(['a', 'b', 'c', 'c'])).to.throw;
+  });
+
+  it('should not throw if there are no duplicates', () => {
+    // tslint:disable:no-unused-expression
+    expect(() => verifyMethods(['a', 'b', 'c', 'd'])).to.not.throw;
+  });
+});
+
+describe('collapseCallSites', () => {
+  it('removes duplicate callsites and aggregates time', () => {
+    let generator = new AggregationGenerator();
+    let agg1 = generator.aggregation('a');
+    let agg2 = generator.aggregation('b');
+
+    generator.callsites(agg1, 10, (i) => {
+      let line = i % 2 ? 100 : 200;
+      let col = i % 2 ? 1 : 2;
+      return { line, col };
+    });
+
+    generator.callsites(agg2, 20, (i) => {
+      let line = i > 10 ? 2 : 1;
+      return { line, col: 2 };
+    });
+
+    let aggregation = generator.commit();
+
+    expect(aggregation.a.callsites.length).to.eql(10);
+    expect(aggregation.a.total).to.eql(45);
+    expect(aggregation.b.callsites.length).to.eql(20);
+    expect(aggregation.b.total).to.eql(190);
+
+    let collapsed = collapseCallSites(aggregation);
+    expect(collapsed.a.callsites.length).to.eql(2);
+    let t1 = collapsed.a.callsites.reduce((acc, cur) => {
+      return acc += cur.time;
+    }, 0);
+    expect(t1).to.equal(collapsed.a.total);
+
+    expect(collapsed.b.callsites.length).to.eql(2);
+    let t2 = collapsed.b.callsites.reduce((acc, cur) => {
+      return acc += cur.time;
+    }, 0);
+    expect(t2).to.equal(collapsed.b.total);
   });
 });
