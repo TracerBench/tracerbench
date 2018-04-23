@@ -12,7 +12,7 @@
     "test": "mocha -r ts-node/register tests/**.ts"
   },
   "bin": {
-    "parse-profile": "./bin/parse-profile"
+    "profile": "./bin/profile"
   },
   "devDependencies": {
     "@types/chai": "^4.1.2",
