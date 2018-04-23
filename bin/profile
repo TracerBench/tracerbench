@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+'use strict';
+
+const Profile = require('../dist/index.cjs');
+const fs = require('fs');
+const ui = require('commander');
+const packageJson = require('../package.json');
+
+ui
+  .version(packageJson.version, '-v, --version')
+  .command('trace', "Creates an automated trace that's saved to JSON.")
+  .command('create-archive', 'Creates an automated HAR file from a URL.')
+  .command('parse', 'Parses a supplied trace and allows the results to be aggregated')
+  .command('timeline', 'Parses a supplied trace and displays a timeline')
+  .parse(process.argv);
