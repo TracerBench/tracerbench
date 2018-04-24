@@ -6,7 +6,6 @@ import {
   aggregate,
   Aggregations,
   categorizeAggregations,
-  collapseCallSites,
   verifyMethods,
 } from '../src/cli/aggregator';
 import { CpuProfile } from '../src/index';
@@ -30,23 +29,20 @@ describe('aggregate', () => {
     let profile = new CpuProfile(json, -1, -1);
     let aggregations = aggregate(profile.hierarchy, ['a', 'c', 'd', 'f']);
 
-    expect(aggregations.c.total).to.equal(0); // contained by a
-    expect(aggregations.c.containers.a.message).to.equal(`Contained by "a"`);
-    expect(aggregations.c.containers.a.time).to.equal(75);
-    expect(Object.keys(aggregations.c.containees).length).to.equal(0);
-
     expect(aggregations.a.total).to.equal(225);
-    expect(aggregations.a.containees.c.message).to.equal(`Contains "c"`);
-    expect(aggregations.a.containees.c.time).to.equal(75);
-    expect(Object.keys(aggregations.a.containers).length).to.equal(0);
+    expect(aggregations.a.attributed).to.equal(150);
+
+    expect(aggregations.c.total).to.equal(75);
+    expect(aggregations.c.attributed).to.equal(75);
 
     expect(aggregations.d.total).to.equal(100);
-    expect(Object.keys(aggregations.d.containers).length).to.equal(0);
-    expect(Object.keys(aggregations.d.containees).length).to.equal(0);
+    expect(aggregations.d.attributed).to.equal(100);
 
     expect(aggregations.f.total).to.equal(15);
-    expect(Object.keys(aggregations.f.containers).length).to.equal(0);
-    expect(Object.keys(aggregations.f.containees).length).to.equal(0);
+    expect(aggregations.f.attributed).to.equal(15);
+
+    expect(aggregations.unknown.total).to.equal(25); // e
+    expect(aggregations.unknown.attributed).to.equal(25); // e
   });
 
   it('aggregates subset of the hierarchy with multiple call sites', () => {
@@ -68,12 +64,20 @@ describe('aggregate', () => {
     let profile = new CpuProfile(json, -1, -1);
     let aggregations = aggregate(profile.hierarchy, ['a', 'c', 'd', 'f']);
 
-    expect(aggregations.c.total).to.equal(10);
-    expect(aggregations.a.containees.c.message).to.equal(`Contains "c"`);
-    expect(aggregations.a.containees.c.time).to.equal(75);
     expect(aggregations.a.total).to.equal(225);
+    expect(aggregations.a.attributed).to.equal(150);
+
+    expect(aggregations.c.total).to.equal(85);
+    expect(aggregations.c.attributed).to.equal(85);
+
     expect(aggregations.d.total).to.equal(100);
+    expect(aggregations.d.attributed).to.equal(100);
+
     expect(aggregations.f.total).to.equal(15);
+    expect(aggregations.f.attributed).to.equal(15);
+
+    expect(aggregations.unknown.total).to.equal(25); // e
+    expect(aggregations.unknown.attributed).to.equal(25); // e
   });
 });
 
@@ -121,44 +125,5 @@ describe('verifyMethods', () => {
   it('should not throw if there are no duplicates', () => {
     // tslint:disable:no-unused-expression
     expect(() => verifyMethods(['a', 'b', 'c', 'd'])).to.not.throw;
-  });
-});
-
-describe('collapseCallSites', () => {
-  it('removes duplicate callsites and aggregates time', () => {
-    let generator = new AggregationGenerator();
-    let agg1 = generator.aggregation('a');
-    let agg2 = generator.aggregation('b');
-
-    generator.callsites(agg1, 10, (i) => {
-      let line = i % 2 ? 100 : 200;
-      let col = i % 2 ? 1 : 2;
-      return { line, col };
-    });
-
-    generator.callsites(agg2, 20, (i) => {
-      let line = i > 10 ? 2 : 1;
-      return { line, col: 2 };
-    });
-
-    let aggregation = generator.commit();
-
-    expect(aggregation.a.callsites.length).to.eql(10);
-    expect(aggregation.a.total).to.eql(45);
-    expect(aggregation.b.callsites.length).to.eql(20);
-    expect(aggregation.b.total).to.eql(190);
-
-    let collapsed = collapseCallSites(aggregation);
-    expect(collapsed.a.callsites.length).to.eql(2);
-    let t1 = collapsed.a.callsites.reduce((acc, cur) => {
-      return acc += cur.time;
-    }, 0);
-    expect(t1).to.equal(collapsed.a.total);
-
-    expect(collapsed.b.callsites.length).to.eql(2);
-    let t2 = collapsed.b.callsites.reduce((acc, cur) => {
-      return acc += cur.time;
-    }, 0);
-    expect(t2).to.equal(collapsed.b.total);
   });
 });

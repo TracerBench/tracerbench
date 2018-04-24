@@ -1,7 +1,7 @@
 import { ITraceEvent, Trace } from './trace';
 
 export * from './trace/index';
-export { Reporter } from './cli/reporter';
+export { report } from './cli/reporter';
 export { default as CLI } from './cli/cli';
 export { liveTrace } from './cli/live_trace';
 export { networkConditions } from './cli/conditions';

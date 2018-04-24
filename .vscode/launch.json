@@ -7,9 +7,18 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
-      "program": "${workspaceFolder}/dist/index.js",
-      "preLaunchTask": "tsc: build - tsconfig.json",
+      "name": "Debug",
+      "program": "${workspaceFolder}/bin/profile-analyze",
+      "args": [
+        "-f",
+        "./trace.json",
+        "-r",
+        "./heuristics/",
+        "-e",
+        "mark_meaningful_paint_end"
+      ],
+      "cwd": "${workspaceFolder}",
+      "preLaunchTask": "build",
       "sourceMaps": true,
       "outFiles": ["${workspaceFolder}/dist/**/*.js"]
     }
