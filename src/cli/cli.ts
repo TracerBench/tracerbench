@@ -2,7 +2,7 @@ import { UnaryExpression } from 'estree';
 import * as fs from 'fs';
 import { HAR } from 'har-remix';
 import { CpuProfile, Trace } from '../trace';
-import { aggregate, categorizeAggregations, verifyMethods } from './aggregator';
+import { aggregate, categorizeAggregations, collapseCallFrames, verifyMethods } from './aggregator';
 import { Archive } from './archive_trace';
 // import { MetaData } from './metadata';
 import { report as reporter } from './reporter';
@@ -67,8 +67,8 @@ export default class CommandLine {
     verifyMethods(allMethods);
     let aggregations = aggregate(profile.hierarchy, allMethods);
     // let associatedAggregations = metadata.for(aggregations);
-    // let collapsedAggregations = collapseCallSites(associatedAggregations);
-    let categorized = categorizeAggregations(aggregations, categories);
+    let collapsed = collapseCallFrames(aggregations);
+    let categorized = categorizeAggregations(collapsed, categories);
     reporter(categorized, verbose!!);
   }
 }

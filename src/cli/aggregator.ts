@@ -46,29 +46,26 @@ export function categorizeAggregations(aggregations: Aggregations, categories: C
   return categorized;
 }
 
-// export function collapseCallSites(aggregations: Aggregations) {
-//   Object.keys(aggregations).forEach(methodName => {
-//     let collapsed: CallSite[] = [];
-//     aggregations[methodName].callsites.forEach(callsite => {
+export function collapseCallFrames(aggregations: Aggregations) {
+  Object.keys(aggregations).forEach(methodName => {
+    let collapsed: CallFrameInfo[] = [];
+    let keys: string[] = [];
 
-//       let match = collapsed.find(c => {
-//         return c.moduleName === callsite.moduleName &&
-//                c.url === callsite.url &&
-//                c.loc.line === callsite.loc.line &&
-//                c.loc.col === callsite.loc.col;
-//       });
+    aggregations[methodName].callframes.forEach(callframeInfo => {
+      let collapedStack: ICallFrame[] = [];
+      let key = callframeInfo.stack.reduce((acc, cur) => acc += cur.functionName, '');
 
-//       if (match) {
-//         match.time += callsite.time;
-//       } else {
-//         collapsed.push(callsite);
-//       }
-//     });
-//     aggregations[methodName].callsites = collapsed;
-//   });
+      if (!keys.includes(key)) {
+        keys.push(key);
+        collapsed.push(callframeInfo);
+      }
+    });
 
-//   return aggregations;
-// }
+    aggregations[methodName].callframes = collapsed;
+  });
+
+  return aggregations;
+}
 
 export interface Aggregations {
   [key: string]: AggregationResult;
