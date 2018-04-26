@@ -16,6 +16,7 @@ export function computeMinMax(trace: Trace, start: string = 'navigationStart', e
   let min;
   let max;
   if (end) {
+    // TODO harden this to find the correct frame
     let startEvent = trace.events.find(e => e.name === start)!;
     let endEvent = trace.events.find(e => e.name === end);
 

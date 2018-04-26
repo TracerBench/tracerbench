@@ -2,10 +2,10 @@ import { UnaryExpression } from 'estree';
 import * as fs from 'fs';
 import { HAR } from 'har-remix';
 import { CpuProfile, Trace } from '../trace';
-import { aggregate, categorizeAggregations, collapseCallSites, verifyMethods } from './aggregator';
+import { aggregate, categorizeAggregations, collapseCallFrames, verifyMethods } from './aggregator';
 import { Archive } from './archive_trace';
-import { MetaData } from './metadata';
-import { Reporter } from './reporter';
+// import { MetaData } from './metadata';
+import { report as reporter } from './reporter';
 import { computeMinMax, formatCategories, methodsFromCategories } from './utils';
 
 // tslint:disable:member-ordering
@@ -60,17 +60,15 @@ export default class CommandLine {
     let { report, verbose, methods } = this.ui;
     let trace = this.loadTrace();
     let profile = this.cpuProfile(trace)!;
-    let metadata = new MetaData(archive);
+    // let metadata = new MetaData(archive);
 
     let categories = formatCategories(report, methods);
     let allMethods = methodsFromCategories(categories);
     verifyMethods(allMethods);
     let aggregations = aggregate(profile.hierarchy, allMethods);
-    let associatedAggregations = metadata.for(aggregations);
-    let collapsedAggregations = collapseCallSites(associatedAggregations);
-    let categorized = categorizeAggregations(associatedAggregations, categories);
-    let reporter = new Reporter(categorized);
-
-    reporter.report(verbose!!);
+    // let associatedAggregations = metadata.for(aggregations);
+    let collapsed = collapseCallFrames(aggregations);
+    let categorized = categorizeAggregations(collapsed, categories);
+    reporter(categorized, verbose!!);
   }
 }
