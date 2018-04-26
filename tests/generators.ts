@@ -1,5 +1,5 @@
 import { ICallFrame, ICpuProfile, ICpuProfileNode } from '../src';
-import { AggregationResult, Aggregations, Loc } from '../src/cli/aggregator';
+import { AggregationResult, Aggregations } from '../src/cli/aggregator';
 
 interface INode {
   child(functionName: string): CPUProfileNode;
@@ -118,9 +118,9 @@ export class AggregationGenerator {
     return result;
   }
 
-  callsites(result: AggregationResult, multipler: number, locCB: (i: number) => Loc) {
+  callsites(result: AggregationResult, multipler: number) {
     for (let i = 0; i < multipler; i++) {
-      result.callsites.push(this.callsite(i, locCB(i)));
+      result.callframes.push(this.callframe(i));
     }
   }
 
@@ -129,20 +129,18 @@ export class AggregationGenerator {
     this.currentAggregation = {};
 
     Object.keys(aggregation).forEach(a => {
-      aggregation[a].total = aggregation[a].callsites.reduce((acc, cur) => {
-        return acc += cur.time;
+      aggregation[a].total = aggregation[a].callframes.reduce((acc, cur) => {
+        return acc += cur.self;
       }, 0);
     });
 
     return aggregation;
   }
 
-  private callsite(time: number, loc: Loc) {
+  private callframe(time: number) {
     return {
-      time,
-      moduleName: 'example',
-      url: 'example.com',
-      loc,
+      self: time,
+      stack: [],
     };
   }
 
@@ -150,9 +148,9 @@ export class AggregationGenerator {
     return {
       name,
       total: 0,
-      callsites: [],
-      containees: {},
-      containers: {},
+      self: 0,
+      attributed: 0,
+      callframes: [],
     };
   }
 }
