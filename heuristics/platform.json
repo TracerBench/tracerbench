@@ -1,4 +1,14 @@
 [
-  "(garbage collector)",
-  "(program)"
+  {
+    "functionName": "(garbage collector)",
+    "moduleName": "v8"
+  },
+  {
+    "functionName": "(program)",
+    "moduleName": "v8"
+  },
+  {
+    "functionName": "JsonParse",
+    "moduleName": "v8"
+  }
 ]

@@ -1,5 +1,14 @@
 [
-  "r.getCompiledBlock",
-  "e.compileLayout",
-  "t.compile"
+  {
+    "functionName": "r.getCompiledBlock",
+    "moduleName": "ember-glimmer/environment"
+  },
+  {
+    "functionName": "e.compileLayout",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "e.compile",
+    "moduleName": "@glimmer/runtime"
+  }
 ]
