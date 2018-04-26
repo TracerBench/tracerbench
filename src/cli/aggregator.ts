@@ -3,7 +3,6 @@ import { prototype } from 'events';
 import { ICallFrame, ICpuProfileNode, ITraceEvent, Trace } from '../trace';
 import CpuProfile from '../trace/cpuprofile';
 import { Categories } from './utils';
-
 // tslint:disable:member-ordering
 
 export interface CallFrameInfo {
@@ -82,10 +81,26 @@ export interface AggregationResult {
   callframes: CallFrameInfo[];
 }
 
+function toRegex(methods: string[]) {
+  return methods.map(method => {
+    let parts = method.split('.'); // Path expression
+    if (parts.length > 1) {
+      parts.shift();
+      return new RegExp(`^([A-z]+\\.${parts.join('\\.')})$`);
+    }
+    return new RegExp(`^${method}$`);
+  });
+}
+
 class AggregrationCollector {
   private _aggregations: Aggregations = {};
+  private regexMethods: RegExp[];
+  private methods: string[];
+  private matcher: RegExp | undefined;
 
   constructor(methods: string[]) {
+    this.regexMethods = toRegex(methods);
+    this.methods = methods;
     methods.forEach(method => {
       this._aggregations[method] = {
         total: 0,
@@ -95,6 +110,28 @@ class AggregrationCollector {
         callframes: [],
       };
     });
+  }
+
+  matchCanonicalName(name: string) {
+    if (this.methods.includes(name)) {
+      return name;
+    }
+
+    let matcher: RegExp | undefined;
+
+    for (let i = 0; i < this.regexMethods.length; i++) {
+      let regex = this.regexMethods[i];
+      let match = regex.test(name);
+
+      if (match) {
+        return this.methods[i];
+      }
+    }
+  }
+
+  canonicalizeName() {
+    let matcherIndex = this.regexMethods.indexOf(this.matcher!);
+    return this.methods[matcherIndex];
   }
 
   pushCallFrames(name: string, callFrame: CallFrameInfo) {
@@ -132,13 +169,14 @@ export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, methods: st
 
       while (currentNode) {
         let { functionName } = currentNode.data.callFrame;
-        if (methods.includes(functionName)) {
+        let canonicalName = aggregations.matchCanonicalName(functionName);
+        if (canonicalName) {
           if (!containerNode) {
-            aggregations.addToAttributed(functionName, self);
-            aggregations.pushCallFrames(functionName, { self, stack });
+            aggregations.addToAttributed(canonicalName, self);
+            aggregations.pushCallFrames(canonicalName, { self, stack });
             containerNode = currentNode;
           }
-          aggregations.addToTotal(functionName, self);
+          aggregations.addToTotal(canonicalName, self);
         }
         stack.push(currentNode.data.callFrame);
         currentNode = currentNode.parent;
