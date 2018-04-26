@@ -53,7 +53,10 @@ export function collapseCallFrames(aggregations: Aggregations) {
 
     aggregations[methodName].callframes.forEach(callframeInfo => {
       let collapedStack: ICallFrame[] = [];
-      let key = callframeInfo.stack.reduce((acc, cur) => acc += cur.functionName, '');
+      let key = callframeInfo.stack.reduce((acc, cur) => {
+        let { functionName, columnNumber, lineNumber } = cur;
+        return acc += `${functionName}${columnNumber}${lineNumber}`;
+      }, '');
 
       if (!keys.includes(key)) {
         keys.push(key);
