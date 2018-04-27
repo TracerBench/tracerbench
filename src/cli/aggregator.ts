@@ -14,38 +14,12 @@ export interface Aggregations {
   [key: string]: AggregationResult;
 }
 
-export interface CallFrameInfo {
-  self: number;
-  stack: ICallFrame[];
-}
-
 export interface AggregationResult {
   total: number;
   self: number;
   attributed: number;
   name: string;
   callframes: CallFrameInfo[];
-}
-
-export interface Containers {
-  [key: string]: Containment;
-}
-
-export interface Containment {
-  time: number;
-  message: string;
-}
-
-export interface CallSite {
-  time: number;
-  moduleName: string;
-  url: string;
-  loc: Loc;
-}
-
-export interface Loc {
-  col: number;
-  line: number;
 }
 
 export interface Categorized {
@@ -211,7 +185,6 @@ export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, locators: L
       let containerNode: HierarchyNode<ICpuProfileNode> | null = null;
 
       while (currentNode) {
-        let { functionName } = currentNode.data.callFrame;
         let canonicalLocator = aggregations.match(currentNode.data.callFrame);
         if (canonicalLocator) {
           let { functionName: canonicalizeName } = canonicalLocator;
