@@ -150,13 +150,28 @@ class AggregrationCollector {
     return this._aggregations;
   }
 
+  private isBuiltIn(callFrame: ICallFrame) {
+    let { url, lineNumber } = callFrame;
+    if (url === undefined) return true;
+    if (url === 'extensions::SafeBuiltins') return true;
+    if (url === 'v8/LoadTimes') return true;
+    if (url === 'native array.js') return true;
+    if (url === 'native intl.js') return true;
+    if (lineNumber === -1 || lineNumber === undefined) return true;
+
+    return false;
+  }
+
   private matchHeuristic(callFrame: ICallFrame) {
-    return this.locators.find((locator) => {
+    return this.locators.find(locator => {
+
       let sameFN = locator.functionName === callFrame.functionName;
 
       if (locator.moduleName === '*' && sameFN) {
         return true;
       }
+
+      if (this.isBuiltIn(callFrame)) return false;
 
       let sameMN = locator.moduleName === this.findModuleName(locator, callFrame);
 
@@ -182,7 +197,7 @@ class AggregrationCollector {
       return file.moduleNameFor(callFrame);
     }
 
-    file = this.parsedFiles.url = new ParsedFile(this.contentFor(url));
+    file = this.parsedFiles[url] = new ParsedFile(this.contentFor(url));
     return file.moduleNameFor(callFrame);
   }
 }
