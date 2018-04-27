@@ -1,7 +1,7 @@
 [
   {
     "functionName": "ajax",
-    "moduleName": "uknown"
+    "moduleName": "*"
   },
   {
     "functionName": "adapterFor",

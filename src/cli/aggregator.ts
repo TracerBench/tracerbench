@@ -1,8 +1,9 @@
 import { HierarchyNode } from 'd3-hierarchy';
 import { ICallFrame, ICpuProfileNode, ITraceEvent, Trace } from '../trace';
 import CpuProfile from '../trace/cpuprofile';
+import { Archive } from './archive_trace';
+import { ParsedFile } from './metadata';
 import { Categories, Locator } from './utils';
-
 // tslint:disable:member-ordering
 
 export interface CallFrameInfo {
@@ -69,13 +70,20 @@ export function categorizeAggregations(aggregations: Aggregations, categories: C
   return categorized;
 }
 
+export interface ParsedFiles {
+  [key: string]: ParsedFile;
+}
+
 class AggregrationCollector {
   private _aggregations: Aggregations = {};
   private regexMethods: RegExp[];
   private locators: Locator[];
   private matcher: RegExp | undefined;
+  private parsedFiles: ParsedFiles = {};
+  private archive: Archive;
 
-  constructor(locators: Locator[]) {
+  constructor(locators: Locator[], archive: Archive) {
+    this.archive = archive;
     this.regexMethods = toRegex(locators);
     this.locators = locators;
     locators.forEach(({ functionName }) => {
@@ -98,7 +106,7 @@ class AggregrationCollector {
   }
 
   match(callFrame: ICallFrame) {
-    let matched = matchHeuristic(this.locators, callFrame);
+    let matched = this.matchHeuristic(callFrame);
     if (matched) {
       return matched;
     }
@@ -141,12 +149,42 @@ class AggregrationCollector {
 
     return this._aggregations;
   }
-}
 
-function matchHeuristic(locators: Locator[], callFrame: ICallFrame) {
-  return locators.find(locator => {
-    return locator.functionName === callFrame.functionName;
-  });
+  private matchHeuristic(callFrame: ICallFrame) {
+    return this.locators.find((locator) => {
+      let sameFN = locator.functionName === callFrame.functionName;
+
+      if (locator.moduleName === '*' && sameFN) {
+        return true;
+      }
+
+      let sameMN = locator.moduleName === this.findModuleName(locator, callFrame);
+
+      return sameMN && sameFN;
+    });
+  }
+
+  private contentFor(url: string) {
+    let entry = this.archive.log.entries.find(e => e.request.url === url);
+
+    if (!entry) {
+      throw new Error(`Could not find "${url}" in the archive file.`);
+    }
+
+    return entry.response.content.text;
+  }
+
+  private findModuleName(locator: Locator, callFrame: ICallFrame) {
+    let { url } = callFrame;
+    let { parsedFiles } = this;
+    let file = parsedFiles[url];
+    if (file) {
+      return file.moduleNameFor(callFrame);
+    }
+
+    file = this.parsedFiles.url = new ParsedFile(this.contentFor(url));
+    return file.moduleNameFor(callFrame);
+  }
 }
 
 export function collapseCallFrames(aggregations: Aggregations) {
@@ -173,8 +211,8 @@ export function collapseCallFrames(aggregations: Aggregations) {
   return aggregations;
 }
 
-export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, locators: Locator[]) {
-  let aggregations = new AggregrationCollector(locators);
+export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, locators: Locator[], archive: Archive) {
+  let aggregations = new AggregrationCollector(locators, archive);
   let containments: string[] = [];
   hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {
     let { self } = node.data;
