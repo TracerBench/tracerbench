@@ -1,5 +1,10 @@
 [
-  "_setLixes",
-  "_setLix",
-  "appendLixValueForTracking"
+  {
+    "functionName": "getTreatment",
+    "moduleName": "ember-cli-pemberly-lix/services/lix"
+  },
+  {
+    "functionName": "appendLixValueForTracking",
+    "moduleName": "ember-cli-pemberly-lix/services/lix"
+  }
 ]

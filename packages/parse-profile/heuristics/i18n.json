@@ -1,5 +1,14 @@
 [
-  "t.format",
-  "e.fromString",
-  "canonicalizeLanguageTag"
+  {
+    "functionName": "t.format",
+    "moduleName": "unknown"
+  },
+  {
+    "functionName": "e.fromString",
+    "moduleName": "unknown"
+  },
+  {
+    "functionName": "canonicalizeLanguageTag",
+    "moduleName": "native intl"
+  }
 ]

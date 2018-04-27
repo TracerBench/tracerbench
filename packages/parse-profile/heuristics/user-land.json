@@ -1,11 +1,38 @@
 [
-  "didInsertElement",
-  "didRender",
-  "didReceiveAttrs",
-  "didUpdateAttrs",
-  "willInsertElement",
-  "init",
-  "_fetchBadgeSuccess",
-  "getImageUrl",
-  "decorateImg"
+  {
+    "functionName": "didInsertElement",
+    "moduleName": "*"
+  },
+  {
+    "functionName": "didRender",
+    "moduleName": "*"
+  },
+  {
+    "functionName": "didReceiveAttrs",
+    "moduleName": "*"
+  },
+  {
+    "functionName": "didUpdateAttrs",
+    "moduleName": "*"
+  },
+  {
+    "functionName": "willInsertElement",
+    "moduleName": "*"
+  },
+  {
+    "functionName": "init",
+    "moduleName": "*"
+  },
+  {
+    "functionName": "_fetchBadgeSuccess",
+    "moduleName": "*"
+  },
+  {
+    "functionName": "getImageUrl",
+    "moduleName": "*"
+  },
+  {
+    "functionName": "decorateImg",
+    "moduleName": "*"
+  }
 ]

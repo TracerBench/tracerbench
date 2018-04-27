@@ -1,9 +1,26 @@
 [
-  "normalizeFullName",
-  "findModuleName",
-  "resolveOther",
-  "parseName",
-  "isValidFullName",
-  "u.factoryFor",
-  "podBasedLookupWithPrefix"
+  {
+    "functionName": "normalizeFullName",
+    "moduleName": "container"
+  },
+  {
+    "functionName": "findModuleName",
+    "moduleName": "ember-resolver/resolvers/classic/index"
+  },
+  {
+    "functionName": "parseName",
+    "moduleName": "ember-resolver/resolvers/classic/index"
+  },
+  {
+    "functionName": "e.isValidFullName",
+    "moduleName": "container"
+  },
+  {
+    "functionName": "e.factoryFor",
+    "moduleName": "container"
+  },
+  {
+    "functionName": "podBasedLookupWithPrefix",
+    "moduleName": "ember-resolver/resolvers/classic/index"
+  }
 ]

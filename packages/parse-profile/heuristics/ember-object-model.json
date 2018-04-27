@@ -1,8 +1,26 @@
 [
-  "e.create",
-  "a.extend",
-  "O.applyPartial",
-  "t.compute",
-  "trigger",
-  "pushObject"
+  {
+    "functionName": "e.create",
+    "moduleName": "container"
+  },
+  {
+    "functionName": "a.extend",
+    "moduleName": "ember-runtime/system/core_object"
+  },
+  {
+    "functionName": "t.applyPartial",
+    "moduleName": "ember-metal"
+  },
+  {
+    "functionName": "t.compute",
+    "moduleName": "@glimmer/reference"
+  },
+  {
+    "functionName": "trigger",
+    "moduleName": "ember-views/views/core_view"
+  },
+  {
+    "functionName": "pushObject",
+    "moduleName": "ember-runtime/mixins/mutable_array"
+  }
 ]

@@ -1,4 +1,10 @@
 [
-  "addMarker",
-  "measureTime"
+  {
+    "functionName": "addMarker",
+    "moduleName": "ember-cli-pemberly-rum-tracking/utils/user-timing"
+  },
+  {
+    "functionName": "measureTime",
+    "moduleName": "ember-cli-pemberly-rum-tracking/utils/user-timing"
+  }
 ]

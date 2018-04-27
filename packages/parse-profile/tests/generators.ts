@@ -1,5 +1,7 @@
 import { ICallFrame, ICpuProfile, ICpuProfileNode } from '../src';
 import { AggregationResult, Aggregations } from '../src/cli/aggregator';
+import { Archive } from '../src/cli/archive_trace';
+import { Locator } from '../src/cli/utils';
 
 interface INode {
   child(functionName: string): CPUProfileNode;
@@ -151,6 +153,36 @@ export class AggregationGenerator {
       self: 0,
       attributed: 0,
       callframes: [],
+    };
+  }
+}
+
+export class LocatorGenerator {
+  generate(methods: string[]) {
+    return methods.map(m => {
+      return {
+        functionName: m,
+        moduleName: '*',
+      };
+    });
+  }
+}
+
+export class ArchiveGenerator {
+  generate(): Archive {
+    return {
+      log: {
+        entries: [
+          {
+            request: { url: 'script' },
+            response: {
+              content: {
+                text: '',
+              },
+            },
+          },
+        ],
+      },
     };
   }
 }

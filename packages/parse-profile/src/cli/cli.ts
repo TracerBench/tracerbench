@@ -60,13 +60,11 @@ export default class CommandLine {
     let { report, verbose, methods } = this.ui;
     let trace = this.loadTrace();
     let profile = this.cpuProfile(trace)!;
-    // let metadata = new MetaData(archive);
 
     let categories = formatCategories(report, methods);
     let allMethods = methodsFromCategories(categories);
     verifyMethods(allMethods);
-    let aggregations = aggregate(profile.hierarchy, allMethods);
-    // let associatedAggregations = metadata.for(aggregations);
+    let aggregations = aggregate(profile.hierarchy, allMethods, archive);
     let collapsed = collapseCallFrames(aggregations);
     let categorized = categorizeAggregations(collapsed, categories);
     reporter(categorized, verbose!!);

@@ -1,3 +1,6 @@
 [
-  "Ember.Mixin.create.a.scroll"
+  {
+    "functionName": "Ember.Mixin.create.a.scroll",
+    "moduleName": "shared/mixins/infinite-scroll"
+  }
 ]
