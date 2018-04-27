@@ -26,8 +26,8 @@ if (file === undefined && fs.existsSync(defaultProfilePath) === false) {
 
 const filePath = file || defaultProfilePath;
 const traceEvents = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-const trace = Profile.loadTrace(traceEvents);
-const profile = trace.cpuProfile;
+const trace = Profile.loadTrace(traceEvents.traceEvents);
+const profile = trace.cpuProfile(-1, -1);
 
 const methods = new Set();
 
