@@ -16,10 +16,6 @@
     "moduleName": "ember-cli-deco-projections/deco/adapter-mixin"
   },
   {
-    "functionName": "decoExpressionForUnionField",
-    "moduleName": "ember-cli-deco-projections/deco/adapter-mixin"
-  },
-  {
     "functionName": "buildUrlForElementModel",
     "moduleName": "extended/adapters/common/deco-generic-collection"
   },

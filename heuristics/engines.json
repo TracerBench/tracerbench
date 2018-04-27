@@ -12,10 +12,6 @@
     "moduleName": "ember-engines/-private/router-ext"
   },
   {
-    "functionName": "_getHandlerForEngine",
-    "moduleName": "ember-engines/-private/router-ext"
-  },
-  {
     "functionName": "buildChildEngineInstance",
     "moduleName": "ember-engines/-private/engine-instance-ext"
   }

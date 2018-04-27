@@ -1,11 +1,38 @@
 [
-  "Ember.RouterDSL.route",
-  "A.map",
-  "_setupLocation",
-  "_internalGetHandler",
-  "o.willTransition",
-  "generateURL",
-  "normalizeQueryParams",
-  "_getQPMeta",
-  "applyIntent"
+  {
+    "functionName": "Ember.RouterDSL.route",
+    "moduleName": "ember-route-alias/initializers/route-alias"
+  },
+  {
+    "functionName": "A.map",
+    "moduleName": "route-recognizer"
+  },
+  {
+    "functionName": "_setupLocation",
+    "moduleName": "ember-routing/system/router"
+  },
+  {
+    "functionName": "_internalGetHandler",
+    "moduleName": "ember-engines/-private/router-ext"
+  },
+  {
+    "functionName": "o.willTransition",
+    "moduleName": "ember-routing/system/router"
+  },
+  {
+    "functionName": "generateURL",
+    "moduleName": "ember-routing/services/routing"
+  },
+  {
+    "functionName": "normalizeQueryParams",
+    "moduleName": "ember-routing/services/routing"
+  },
+  {
+    "functionName": "_getQPMeta",
+    "moduleName": "ember-routing/system/router"
+  },
+  {
+    "functionName": "applyIntent",
+    "moduleName": "router"
+  }
 ]

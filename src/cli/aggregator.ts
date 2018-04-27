@@ -2,7 +2,8 @@ import { HierarchyNode } from 'd3-hierarchy';
 import { prototype } from 'events';
 import { ICallFrame, ICpuProfileNode, ITraceEvent, Trace } from '../trace';
 import CpuProfile from '../trace/cpuprofile';
-import { Categories } from './utils';
+import { Categories, Locator } from './utils';
+
 // tslint:disable:member-ordering
 
 export interface CallFrameInfo {
@@ -14,14 +15,15 @@ export interface Categorized {
   [key: string]: AggregationResult[];
 }
 
-export function verifyMethods(array: string[]) {
-  let valuesSoFar = Object.create(null);
+export function verifyMethods(array: Locator[]) {
+  let valuesSoFar: string[] = [];
   for (let i = 0; i < array.length; ++i) {
-    let value = array[i];
-    if (value in valuesSoFar) {
-      throw new Error(`Duplicate heuristic detected ${value}`);
+    let { functionName, moduleName } = array[i];
+    let key = `${functionName}${moduleName}`;
+    if (valuesSoFar.includes(key)) {
+      throw new Error(`Duplicate heuristic detected ${moduleName}@${functionName}`);
     }
-    valuesSoFar[value] = true;
+    valuesSoFar.push(key);
   }
 }
 
@@ -36,13 +38,17 @@ export function categorizeAggregations(aggregations: Aggregations, categories: C
     }
 
     Object.keys(aggregations).forEach(methodName => {
-      if (categories[category].includes(methodName)) {
+      if (categories[category].find(locator => locator.functionName === methodName)) {
         categorized[category].push(aggregations[methodName]);
       }
     });
   });
 
   return categorized;
+}
+
+function isHit(locators: Locator[], name: string) {
+  return locators.find(locator => locator.functionName === name);
 }
 
 export function collapseCallFrames(aggregations: Aggregations) {

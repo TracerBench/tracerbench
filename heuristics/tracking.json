@@ -1,7 +1,18 @@
 [
-  "setTreeId",
-  "fireWith",
-  "_fireBatch",
-  "_createEvent",
-  "registerImpressionTracking"
+  {
+    "functionName": "setTreeId",
+    "moduleName": "ember-cli-pemberly-rum-tracking/mixins/rum-tree"
+  },
+  {
+    "functionName": "_fireBatch",
+    "moduleName": "ember-cli-pemberly-lix/services/lix"
+  },
+  {
+    "functionName": "_createEvent",
+    "moduleName": "ember-cli-pemberly-lix/services/lix"
+  },
+  {
+    "functionName": "registerImpressionTracking",
+    "moduleName": "ember-cli-pemberly-tracking/mixins/trackable-component"
+  }
 ]

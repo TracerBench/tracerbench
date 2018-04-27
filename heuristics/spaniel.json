@@ -1,5 +1,16 @@
 [
-  "e.tick",
-  "t.applyQueue",
-  "e.handleObserverEntry"
+  {
+    "functionName": "e.tick",
+    "moduleName": "spaniel"
+  },
+  {
+    "functionName": "t.applyQueue",
+    "moduleName": "spaniel"
+  },
+  {
+    "functionName": "e.handleObserverEntry",
+    "moduleName": "spaniel"
+  }
+
+
 ]

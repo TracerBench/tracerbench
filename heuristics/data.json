@@ -16,10 +16,6 @@
     "moduleName": "ember-data/-private"
   },
   {
-    "functionName": "_modelFor",
-    "moduleName": "ember-data/-private"
-  },
-  {
     "functionName": "_findByInternalModel",
     "moduleName": "ember-data/-private"
   },
@@ -38,10 +34,6 @@
   {
     "functionName": "normalizeResponse",
     "moduleName": "ember-data/serializers/json"
-  },
-  {
-    "functionName": "_pushInternalModel",
-    "moduleName": "ember-data/-private"
   },
   {
     "functionName": "_pushInternalModel",
