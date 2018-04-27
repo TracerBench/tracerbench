@@ -9,7 +9,12 @@ import { Trace } from '../trace';
 // tslint:disable:no-console
 
 export interface Categories {
-  [key: string]: string[];
+  [key: string]: Locator[];
+}
+
+export interface Locator {
+  functionName: string;
+  moduleName: string;
 }
 
 export function computeMinMax(trace: Trace, start: string = 'navigationStart', end: string) {
@@ -35,7 +40,7 @@ export function computeMinMax(trace: Trace, start: string = 'navigationStart', e
 }
 
 export function methodsFromCategories(categories: Categories) {
-  return Object.keys(categories).reduce((accum: string[], category: string) => {
+  return Object.keys(categories).reduce((accum: Locator[], category: string) => {
     accum.push(...categories[category]);
     return accum;
   }, []);
@@ -67,6 +72,10 @@ export function formatCategories(report: string | undefined, methods: string[]) 
       throw new Error(`Error: Must pass a list of method names.`);
     }
 
-    return { adhoc: methods };
+    let addHocLocators = methods.map(method => {
+      return { functionName: method, moduleName: '*' };
+    });
+
+    return { adhoc: addHocLocators };
   }
 }

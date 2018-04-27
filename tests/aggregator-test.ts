@@ -8,10 +8,15 @@ import {
   categorizeAggregations,
   verifyMethods,
 } from '../src/cli/aggregator';
+import { Archive } from '../src/cli/archive_trace';
 import { CpuProfile } from '../src/index';
-import { AggregationGenerator, ProfileGenerator } from './generators';
+import { AggregationGenerator, ArchiveGenerator, LocatorGenerator, ProfileGenerator } from './generators';
 
 describe('aggregate', () => {
+  let archive: Archive;
+  beforeEach(() => {
+    archive = new ArchiveGenerator().generate();
+  });
   it('aggregates subset of the hierarchy', () => {
     let generator = new ProfileGenerator();
     let root = generator.start();
@@ -27,7 +32,8 @@ describe('aggregate', () => {
     let json = generator.end();
 
     let profile = new CpuProfile(json, -1, -1);
-    let aggregations = aggregate(profile.hierarchy, ['a', 'c', 'd', 'f']);
+    let locators = new LocatorGenerator().generate(['a', 'c', 'd', 'f']);
+    let aggregations = aggregate(profile.hierarchy, locators, archive);
 
     expect(aggregations.a.total).to.equal(225);
     expect(aggregations.a.attributed).to.equal(150);
@@ -62,7 +68,8 @@ describe('aggregate', () => {
     let json = generator.end();
 
     let profile = new CpuProfile(json, -1, -1);
-    let aggregations = aggregate(profile.hierarchy, ['a', 'c', 'd', 'f']);
+    let locators = new LocatorGenerator().generate(['a', 'c', 'd', 'f']);
+    let aggregations = aggregate(profile.hierarchy, locators, archive);
 
     expect(aggregations.a.total).to.equal(225);
     expect(aggregations.a.attributed).to.equal(150);
@@ -83,6 +90,10 @@ describe('aggregate', () => {
 
 describe('categorizeAggregations', () => {
   let aggregations: Aggregations;
+  let archive: Archive;
+  beforeEach(() => {
+    archive = new ArchiveGenerator().generate();
+  });
   beforeEach(() => {
     let generator = new ProfileGenerator();
     let root = generator.start();
@@ -100,11 +111,20 @@ describe('categorizeAggregations', () => {
     let json = generator.end();
 
     let profile = new CpuProfile(json, -1, -1);
-    aggregations = aggregate(profile.hierarchy, ['a', 'c', 'd', 'f']);
+    let locators = new LocatorGenerator().generate(['a', 'c', 'd', 'f']);
+    aggregations = aggregate(profile.hierarchy, locators, archive);
   });
 
   it('creates a categorized map', () => {
-    let categorized = categorizeAggregations(aggregations, { cat1: ['a', 'c'], cat2: ['d'], cat3: ['f'] });
+    let generator = new LocatorGenerator();
+    let cat1Locators = generator.generate(['a', 'c']);
+    let cat2Locators = generator.generate(['d']);
+    let cat3Locators = generator.generate(['f']);
+    let categorized = categorizeAggregations(aggregations, {
+      cat1: cat1Locators,
+      cat2: cat2Locators,
+      cat3: cat3Locators,
+    });
 
     expect(categorized.cat1.length).to.equal(2);
     expect(categorized.cat2.length).to.equal(1);
@@ -117,13 +137,16 @@ describe('categorizeAggregations', () => {
 });
 
 describe('verifyMethods', () => {
+
   it('should throw if there are duplicates', () => {
     // tslint:disable:no-unused-expression
-    expect(() => verifyMethods(['a', 'b', 'c', 'c'])).to.throw;
+    let locators = new LocatorGenerator().generate(['a', 'c', 'c']);
+    expect(() => verifyMethods(locators)).to.throw;
   });
 
   it('should not throw if there are no duplicates', () => {
     // tslint:disable:no-unused-expression
-    expect(() => verifyMethods(['a', 'b', 'c', 'd'])).to.not.throw;
+    let locators = new LocatorGenerator().generate(['a', 'b', 'c', 'd']);
+    expect(() => verifyMethods(locators)).to.not.throw;
   });
 });

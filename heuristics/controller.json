@@ -1,3 +1,6 @@
 [
-  "generateController"
+  {
+    "functionName": "generateController",
+    "moduleName": "ember-routing/system/route"
+  }
 ]

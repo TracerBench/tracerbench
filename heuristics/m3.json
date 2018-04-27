@@ -1,0 +1,10 @@
+[
+  {
+  "functionName": "_pushInternalModel",
+  "moduleName": "ember-m3/initializers/m3-store"
+  },
+  {
+    "functionName": "modelFactoryFor",
+    "moduleName": "ember-m3/initializers/m3-store"
+  }
+]

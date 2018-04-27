@@ -1,30 +1,90 @@
 [
-  "e.insertHTMLBefore",
-  "e._revalidate",
-  "e.commit",
-  "JsonParse",
-  "install",
-  "e.addDynamicAttribute",
-  "e.flush",
-  "e.goto",
-  "e.insertBefore",
-  "t.value",
-  "n.didCreateElement",
-  "e.flushElement",
-  "e.evaluateArgs",
-  "r.toConditionalReference",
-  "e.capture",
-  "e.didEnter",
-  "e.peek",
-  "e.setStaticAttribute",
-  "e.exit",
-  "e.appendText",
-  "e.openElement",
-  "e.referenceFromParts",
-  "e.inlineUnless",
-  "e.combinedTag",
-  "e.invokeBlock",
-  "n.prepareArgs",
-  "e.tagForProperty",
-  "e.addAttribute"
+  {
+    "functionName": "e.insertHTMLBefore",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "e._revalidate",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "e.commit",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "install",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "e.addDynamicAttribute",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "e.flush",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "e.goto",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "e.insertBefore",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "n.didCreateElement",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "e.flushElement",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "e.evaluateArgs",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "r.toConditionalReference",
+    "moduleName": "ember-glimmer/environment"
+  },
+  {
+    "functionName": "e.capture",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "e.didEnter",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "e.peek",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "e.setStaticAttribute",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "e.exit",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "e.appendText",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "e.openElement",
+    "moduleName": "@glimmer/runtime"
+  },
+  {
+    "functionName": "e.inlineUnless",
+    "moduleName": "ember-glimmer/helpers/if-unless"
+  },
+  {
+    "functionName": "n.prepareArgs",
+    "moduleName": "ember-glimmer/component-managers/curly"
+  },
+  {
+    "functionName": "e.addAttribute",
+    "moduleName": "@glimmer/runtime"
+  }
 ]

@@ -1,3 +1,6 @@
 [
-  "requireModule"
+  {
+    "functionName": "requireModule",
+    "moduleName": "unknown"
+  }
 ]

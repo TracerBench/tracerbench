@@ -1,3 +1,6 @@
 [
-  "HTMLElement.setAttribute"
+  {
+    "functionName": "HTMLElement.setAttribute",
+    "moduleName": "unknown"
+  }
 ]

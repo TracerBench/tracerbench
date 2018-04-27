@@ -1,3 +1,6 @@
 [
-  "loadBundle"
+  {
+    "functionName": "loadBundle",
+    "moduleName": "ember-asset-loader/services/asset-loader"
+  }
 ]
