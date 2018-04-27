@@ -1,5 +1,4 @@
 import { HierarchyNode } from 'd3-hierarchy';
-import { prototype } from 'events';
 import { ICallFrame, ICpuProfileNode, ITraceEvent, Trace } from '../trace';
 import CpuProfile from '../trace/cpuprofile';
 import { Categories, Locator } from './utils';
@@ -11,8 +10,57 @@ export interface CallFrameInfo {
   stack: ICallFrame[];
 }
 
+export interface Aggregations {
+  [key: string]: AggregationResult;
+}
+
+export interface CallFrameInfo {
+  self: number;
+  stack: ICallFrame[];
+}
+
+export interface AggregationResult {
+  total: number;
+  self: number;
+  attributed: number;
+  name: string;
+  callframes: CallFrameInfo[];
+}
+
+export interface Containers {
+  [key: string]: Containment;
+}
+
+export interface Containment {
+  time: number;
+  message: string;
+}
+
+export interface CallSite {
+  time: number;
+  moduleName: string;
+  url: string;
+  loc: Loc;
+}
+
+export interface Loc {
+  col: number;
+  line: number;
+}
+
 export interface Categorized {
   [key: string]: AggregationResult[];
+}
+
+function toRegex(locators: Locator[]) {
+  return locators.map(({ functionName }) => {
+    let parts = functionName.split('.'); // Path expression
+    if (parts.length > 1) {
+      parts.shift();
+      return new RegExp(`^([A-z]+\\.${parts.join('\\.')})$`);
+    }
+    return new RegExp(`^${functionName}$`);
+  });
 }
 
 export function verifyMethods(array: Locator[]) {
@@ -47,8 +95,84 @@ export function categorizeAggregations(aggregations: Aggregations, categories: C
   return categorized;
 }
 
-function isHit(locators: Locator[], name: string) {
-  return locators.find(locator => locator.functionName === name);
+class AggregrationCollector {
+  private _aggregations: Aggregations = {};
+  private regexMethods: RegExp[];
+  private locators: Locator[];
+  private matcher: RegExp | undefined;
+
+  constructor(locators: Locator[]) {
+    this.regexMethods = toRegex(locators);
+    this.locators = locators;
+    locators.forEach(({ functionName }) => {
+      this._aggregations[functionName] = {
+        total: 0,
+        self: 0,
+        attributed: 0,
+        name: functionName,
+        callframes: [],
+      };
+    });
+
+    this._aggregations.unknown = {
+      total: 0,
+      self: 0,
+      attributed: 0,
+      name: 'unknown',
+      callframes: [],
+    };
+  }
+
+  match(callFrame: ICallFrame) {
+    let matched = matchHeuristic(this.locators, callFrame);
+    if (matched) {
+      return matched;
+    }
+
+    let matcher: RegExp | undefined;
+    let { functionName } = callFrame;
+
+    for (let i = 0; i < this.regexMethods.length; i++) {
+      let regex = this.regexMethods[i];
+      let match = regex.test(functionName);
+
+      if (match) {
+        return this.locators[i];
+      }
+    }
+  }
+
+  canonicalizeName() {
+    let matcherIndex = this.regexMethods.indexOf(this.matcher!);
+    return this.locators[matcherIndex];
+  }
+
+  pushCallFrames(name: string, callFrame: CallFrameInfo) {
+    this._aggregations[name].callframes.push(callFrame);
+  }
+
+  addToAttributed(name: string, time: number) {
+    this._aggregations[name].attributed += time;
+  }
+
+  addToTotal(name: string, time: number) {
+    this._aggregations[name].total += time;
+  }
+
+  collect() {
+    Object.keys(this._aggregations).forEach(method => {
+      let { total, attributed, callframes } = this._aggregations[method];
+      this._aggregations[method].self = callframes.reduce((a, c) => a + c.self, 0);
+    });
+
+    return this._aggregations;
+  }
+}
+
+function matchHeuristic(locators: Locator[], callFrame: ICallFrame) {
+  return locators.find(locator => {
+    return locator.functionName === callFrame.functionName;
+  });
 }
 
 export function collapseCallFrames(aggregations: Aggregations) {
@@ -75,95 +199,8 @@ export function collapseCallFrames(aggregations: Aggregations) {
   return aggregations;
 }
 
-export interface Aggregations {
-  [key: string]: AggregationResult;
-}
-
-export interface AggregationResult {
-  total: number;
-  self: number;
-  attributed: number;
-  name: string;
-  callframes: CallFrameInfo[];
-}
-
-function toRegex(methods: string[]) {
-  return methods.map(method => {
-    let parts = method.split('.'); // Path expression
-    if (parts.length > 1) {
-      parts.shift();
-      return new RegExp(`^([A-z]+\\.${parts.join('\\.')})$`);
-    }
-    return new RegExp(`^${method}$`);
-  });
-}
-
-class AggregrationCollector {
-  private _aggregations: Aggregations = {};
-  private regexMethods: RegExp[];
-  private methods: string[];
-  private matcher: RegExp | undefined;
-
-  constructor(methods: string[]) {
-    this.regexMethods = toRegex(methods);
-    this.methods = methods;
-    methods.forEach(method => {
-      this._aggregations[method] = {
-        total: 0,
-        self: 0,
-        attributed: 0,
-        name: method,
-        callframes: [],
-      };
-    });
-  }
-
-  matchCanonicalName(name: string) {
-    if (this.methods.includes(name)) {
-      return name;
-    }
-
-    let matcher: RegExp | undefined;
-
-    for (let i = 0; i < this.regexMethods.length; i++) {
-      let regex = this.regexMethods[i];
-      let match = regex.test(name);
-
-      if (match) {
-        return this.methods[i];
-      }
-    }
-  }
-
-  canonicalizeName() {
-    let matcherIndex = this.regexMethods.indexOf(this.matcher!);
-    return this.methods[matcherIndex];
-  }
-
-  pushCallFrames(name: string, callFrame: CallFrameInfo) {
-    this._aggregations[name].callframes.push(callFrame);
-  }
-
-  addToAttributed(name: string, time: number) {
-    this._aggregations[name].attributed += time;
-  }
-
-  addToTotal(name: string, time: number) {
-    this._aggregations[name].total += time;
-  }
-
-  collect() {
-    Object.keys(this._aggregations).forEach(method => {
-      let { total, attributed, callframes } = this._aggregations[method];
-      this._aggregations[method].self = callframes.reduce((a, c) => a + c.self, 0);
-    });
-
-    return this._aggregations;
-  }
-}
-
-export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, methods: string[]) {
-  let aggregations = new AggregrationCollector([...methods, 'unknown']);
+export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, locators: Locator[]) {
+  let aggregations = new AggregrationCollector(locators);
   let containments: string[] = [];
   hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {
     let { self } = node.data;
@@ -175,14 +212,15 @@ export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, methods: st
 
       while (currentNode) {
         let { functionName } = currentNode.data.callFrame;
-        let canonicalName = aggregations.matchCanonicalName(functionName);
-        if (canonicalName) {
+        let canonicalLocator = aggregations.match(currentNode.data.callFrame);
+        if (canonicalLocator) {
+          let { functionName: canonicalizeName } = canonicalLocator;
           if (!containerNode) {
-            aggregations.addToAttributed(canonicalName, self);
-            aggregations.pushCallFrames(canonicalName, { self, stack });
+            aggregations.addToAttributed(canonicalizeName, self);
+            aggregations.pushCallFrames(canonicalizeName, { self, stack });
             containerNode = currentNode;
           }
-          aggregations.addToTotal(canonicalName, self);
+          aggregations.addToTotal(canonicalizeName, self);
         }
         stack.push(currentNode.data.callFrame);
         currentNode = currentNode.parent;
