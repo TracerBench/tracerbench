@@ -186,6 +186,7 @@ class Tab implements ITab {
   }
 
   public async emulateNetworkConditions(conditions: Network.EmulateNetworkConditionsParameters) {
+    await this.network.enable({maxTotalBufferSize: 0, maxResourceBufferSize: 0});
     await this.network.emulateNetworkConditions(conditions);
   }
 
@@ -196,6 +197,7 @@ class Tab implements ITab {
       offline: false,
       uploadThroughput: 0,
     });
+    await this.network.disable();
   }
 
   public async collectGarbage(): Promise<void> {
