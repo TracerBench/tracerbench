@@ -4,10 +4,9 @@ import {
   HeapProfiler,
   Network,
   Page,
-  Tracing,
+  Tracing
 } from "chrome-debugging-client/dist/protocol/tot";
 import Trace from "./trace/trace";
-import Process from "./trace/process";
 
 export interface ITab {
   isTracing: boolean;
@@ -18,7 +17,9 @@ export interface ITab {
   /** Add a script to execute on load */
   addScriptToEvaluateOnLoad(source: string): Promise<Page.ScriptIdentifier>;
   /** Remove a previously added script */
-  removeScriptToEvaluateOnLoad(identifier: Page.ScriptIdentifier): Promise<void>;
+  removeScriptToEvaluateOnLoad(
+    identifier: Page.ScriptIdentifier
+  ): Promise<void>;
   /** Navigates to the specified url */
   navigate(url: string, waitForLoad?: boolean): Promise<void>;
   /** Start tracing */
@@ -30,11 +31,18 @@ export interface ITab {
   collectGarbage(): Promise<void>;
 
   setCPUThrottlingRate(rate: number): Promise<void>;
-  emulateNetworkConditions(conditions: Network.EmulateNetworkConditionsParameters): Promise<void>;
+  emulateNetworkConditions(
+    conditions: Network.EmulateNetworkConditionsParameters
+  ): Promise<void>;
   disableNetworkEmulation(): Promise<void>;
 }
 
-export default function createTab(id: string, client: IDebuggingProtocolClient, page: Page, frame: Page.Frame): ITab {
+export default function createTab(
+  id: string,
+  client: IDebuggingProtocolClient,
+  page: Page,
+  frame: Page.Frame
+): ITab {
   return new Tab(id, client, page, frame);
 }
 
@@ -66,7 +74,12 @@ class Tab implements ITab {
   private network: Network;
   private heapProfiler: HeapProfiler;
 
-  constructor(id: string, client: IDebuggingProtocolClient, page: Page, frame: Page.Frame) {
+  constructor(
+    id: string,
+    client: IDebuggingProtocolClient,
+    page: Page,
+    frame: Page.Frame
+  ) {
     this.id = id;
     this.client = client;
     this.page = page;
@@ -75,7 +88,7 @@ class Tab implements ITab {
     this.network = new Network(client);
     this.emulation = new Emulation(client);
     this.heapProfiler = new HeapProfiler(client);
-    page.frameNavigated = (params) => {
+    page.frameNavigated = params => {
       const newFrame = params.frame;
       if (!newFrame.parentId) {
         this.frame = newFrame;
@@ -92,29 +105,38 @@ class Tab implements ITab {
   public async navigate(url: string, waitForLoad?: boolean): Promise<void> {
     const { frame, page } = this;
     await Promise.all<any>([
-      waitForLoad ? new Promise((resolve) => {
-        page.frameStoppedLoading = (params) => {
-          if (params.frameId === frame.id) {
-            page.frameStoppedLoading = null;
-            resolve();
-          }
-        };
-      }) : undefined,
-      frame.url === url ? page.reload({}) : page.navigate({ url }),
+      waitForLoad
+        ? new Promise(resolve => {
+            page.frameStoppedLoading = params => {
+              if (params.frameId === frame.id) {
+                page.frameStoppedLoading = null;
+                resolve();
+              }
+            };
+          })
+        : undefined,
+      frame.url === url ? page.reload({}) : page.navigate({ url })
     ]);
   }
 
-  public async addScriptToEvaluateOnLoad(scriptSource: string): Promise<Page.ScriptIdentifier> {
+  public async addScriptToEvaluateOnLoad(
+    scriptSource: string
+  ): Promise<Page.ScriptIdentifier> {
     const result = await this.page.addScriptToEvaluateOnLoad({ scriptSource });
     return result.identifier;
   }
 
-  public async removeScriptToEvaluateOnLoad(identifier: Page.ScriptIdentifier): Promise<void> {
+  public async removeScriptToEvaluateOnLoad(
+    identifier: Page.ScriptIdentifier
+  ): Promise<void> {
     await this.page.removeScriptToEvaluateOnLoad({ identifier });
   }
 
   /** Start tracing */
-  public async startTracing(categories: string, options?: string): Promise<ITracing> {
+  public async startTracing(
+    categories: string,
+    options?: string
+  ): Promise<ITracing> {
     if (this.isTracing) {
       throw new Error("already tracing");
     }
@@ -126,11 +148,11 @@ class Tab implements ITab {
     const traceComplete = (async () => {
       const trace = new Trace();
 
-      tracing.dataCollected = (evt) => {
+      tracing.dataCollected = evt => {
         trace.addEvents(evt.value);
       };
 
-      await new Promise((resolve) => {
+      await new Promise(resolve => {
         tracing.tracingComplete = () => {
           resolve();
         };
@@ -150,8 +172,8 @@ class Tab implements ITab {
         Renderer process.
       */
       trace.mainProcess = trace.processes
-        .filter((p) => p.name === "Renderer")
-        .reduce((c, v) => v.events.length > c.events.length ? v : c);
+        .filter(p => p.name === "Renderer")
+        .reduce((c, v) => (v.events.length > c.events.length ? v : c));
 
       return trace;
     })();
@@ -170,14 +192,14 @@ class Tab implements ITab {
   /** Clear browser cache and memory cache */
   public async clearBrowserCache(): Promise<void> {
     const { network } = this;
-    await network.enable({maxTotalBufferSize: 0});
+    await network.enable({ maxTotalBufferSize: 0 });
     const res = await network.canClearBrowserCache();
     if (!res.result) {
       throw new Error("Cannot clear browser cache");
     }
     await network.clearBrowserCache();
     // causes MemoryCache entries to be evicted
-    await network.setCacheDisabled({cacheDisabled: true});
+    await network.setCacheDisabled({ cacheDisabled: true });
     await network.disable();
   }
 
@@ -185,8 +207,13 @@ class Tab implements ITab {
     await this.emulation.setCPUThrottlingRate({ rate });
   }
 
-  public async emulateNetworkConditions(conditions: Network.EmulateNetworkConditionsParameters) {
-    await this.network.enable({maxTotalBufferSize: 0, maxResourceBufferSize: 0});
+  public async emulateNetworkConditions(
+    conditions: Network.EmulateNetworkConditionsParameters
+  ) {
+    await this.network.enable({
+      maxResourceBufferSize: 0,
+      maxTotalBufferSize: 0
+    });
     await this.network.emulateNetworkConditions(conditions);
   }
 
@@ -195,7 +222,7 @@ class Tab implements ITab {
       downloadThroughput: 0,
       latency: 0,
       offline: false,
-      uploadThroughput: 0,
+      uploadThroughput: 0
     });
     await this.network.disable();
   }

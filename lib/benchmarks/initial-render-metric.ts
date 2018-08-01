@@ -1,15 +1,11 @@
-import binsearch from "array-binsearch";
-import {
-  IBenchmarkMeta,
-} from "../benchmark";
+import { IBenchmarkMeta } from "../benchmark";
 import Trace from "../trace/trace";
 import {
   ITraceEvent,
   TRACE_EVENT_PHASE_COMPLETE,
   TRACE_EVENT_PHASE_INSTANT,
-  TRACE_EVENT_PHASE_MARK,
+  TRACE_EVENT_PHASE_MARK
 } from "../trace/trace_event";
-import traceEventComparator from "../trace/trace_event_comparator";
 import { runtimeCallStatGroup } from "../util";
 
 // going to count blink_gc time as js time since it is wrappers
@@ -34,7 +30,11 @@ export interface IMarker {
 
 export type V8GCKind = "MinorGC" | "MajorGC";
 
-export type V8GCType = "scavenge" | "incremental marking" | "atomic pause" | "weak processing";
+export type V8GCType =
+  | "scavenge"
+  | "incremental marking"
+  | "atomic pause"
+  | "weak processing";
 
 export interface IV8GCSample {
   kind: V8GCKind;
@@ -155,9 +155,12 @@ export default class InitialRenderMetric {
   protected blinkGC: IBlinkGCSample[] = [];
   protected runtimeCallStats: IRuntimeCallStats | undefined = undefined;
 
-  constructor(private markers: IMarker[], private params: {
-    runtimeStats?: boolean;
-  }) {
+  constructor(
+    private markers: IMarker[],
+    private params: {
+      runtimeStats?: boolean;
+    }
+  ) {
     if (params.runtimeStats) {
       this.runtimeCallStats = {};
     }
@@ -181,7 +184,7 @@ export default class InitialRenderMetric {
       phases: this.phases,
       gc: this.gc,
       blinkGC: this.blinkGC,
-      runtimeCallStats: this.runtimeCallStats,
+      runtimeCallStats: this.runtimeCallStats
     };
   }
 
@@ -193,7 +196,10 @@ export default class InitialRenderMetric {
       let markEvent: ITraceEvent | undefined;
       for (; eventIdx < events.length; eventIdx++) {
         const event = events[eventIdx];
-        if (event.ph === TRACE_EVENT_PHASE_MARK && event.name === marker.start) {
+        if (
+          event.ph === TRACE_EVENT_PHASE_MARK &&
+          event.name === marker.start
+        ) {
           markEvent = event;
           break;
         }
@@ -234,7 +240,7 @@ export default class InitialRenderMetric {
       this.phases.push({
         phase: marker.label,
         start: beginEvent.ts - start,
-        duration: endEvent.ts - beginEvent.ts,
+        duration: endEvent.ts - beginEvent.ts
       });
     }
   }
@@ -302,7 +308,7 @@ export default class InitialRenderMetric {
     }
     const runtimeCallStatsArg = args["runtime-call-stats"];
     for (const name of Object.keys(runtimeCallStatsArg)) {
-      const [ count, time ] = runtimeCallStatsArg[name];
+      const [count, time] = runtimeCallStatsArg[name];
       const group = runtimeCallStatGroup(name);
       let statGroup = runtimeCallStats[group];
       if (statGroup === undefined) {
@@ -320,19 +326,22 @@ export default class InitialRenderMetric {
 
   protected addGCSample(event: IV8Event) {
     const { start } = this;
-    if (event.ph !== TRACE_EVENT_PHASE_INSTANT &&
+    if (
+      (event.ph !== TRACE_EVENT_PHASE_INSTANT &&
         event.name !== "MinorGC" &&
-        event.name !== "MajorGC" ||
-        event.args === "__stripped__") {
+        event.name !== "MajorGC") ||
+      event.args === "__stripped__"
+    ) {
       return;
     }
     this.gc.push({
       kind: event.name as V8GCKind,
-      type: event.name === "MinorGC" ? "scavenge" : event.args.type as V8GCType,
+      type:
+        event.name === "MinorGC" ? "scavenge" : (event.args.type as V8GCType),
       start: event.ts - start,
       duration: event.dur as number,
       usedHeapSizeAfter: event.args.usedHeapSizeAfter as number,
-      usedHeapSizeBefore: event.args.usedHeapSizeBefore as number,
+      usedHeapSizeBefore: event.args.usedHeapSizeBefore as number
     });
   }
 
@@ -341,13 +350,15 @@ export default class InitialRenderMetric {
     if (isCompleteEvent(event)) {
       this.blinkGC.push({
         start: event.ts - this.start,
-        duration: event.dur,
+        duration: event.dur
       });
     }
   }
 }
 
-function isRuntimeCallStatsArgs(args: ITraceEvent["args"]): args is IRuntimeCallStatsArgs {
+function isRuntimeCallStatsArgs(
+  args: ITraceEvent["args"]
+): args is IRuntimeCallStatsArgs {
   if (args === "__stripped__") {
     return false;
   }
@@ -363,8 +374,12 @@ interface IRuntimeCallStatsArgs {
 
 function isCompleteEvent(event: IBlinkGCEvent): event is IBlinkGCCompleteEvent;
 function isCompleteEvent(event: IV8Event): event is IV8CompleteEvent;
-function isCompleteEvent(event: IV8Event | IBlinkGCEvent): event is (IBlinkGCCompleteEvent | IV8CompleteEvent);
-function isCompleteEvent(event: IV8Event | IBlinkGCEvent): event is (IBlinkGCCompleteEvent | IV8CompleteEvent) {
+function isCompleteEvent(
+  event: IV8Event | IBlinkGCEvent
+): event is IBlinkGCCompleteEvent | IV8CompleteEvent;
+function isCompleteEvent(
+  event: IV8Event | IBlinkGCEvent
+): event is IBlinkGCCompleteEvent | IV8CompleteEvent {
   return event.ph === TRACE_EVENT_PHASE_COMPLETE;
 }
 

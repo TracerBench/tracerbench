@@ -15,10 +15,9 @@ export default class Process {
   public isTimeTicksHighResolution?: boolean;
   public traceConfig: any;
 
-  private threadMap: { [tid: number]: Thread; } = {};
+  private threadMap: { [tid: number]: Thread } = {};
 
-  constructor(public id: number) {
-  }
+  constructor(public id: number) {}
 
   public thread(tid: number) {
     let thread = this.threadMap[tid];

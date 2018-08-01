@@ -1,24 +1,17 @@
 {
-	"compilerOptions": {
-		"declaration": true,
-		"module": "commonjs",
-		"target": "es2015",
-		"outDir": "dist",
-		"strictNullChecks": true,
-		"noUnusedParameters": true,
-		"noImplicitReturns": true,
-		"noImplicitThis": true,
-		"noImplicitAny": true,
-		"sourceMap": true,
-		"strict": true,
+  "compilerOptions": {
+    "declaration": true,
+    "module": "commonjs",
+    "target": "es2015",
+    "outDir": "dist",
+    "strictNullChecks": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "strict": true,
     "moduleResolution": "node"
-	},
-  "exclude": [
-		"node_modules", "bower_components", "dist"
-	],
-	"files": [
-		"index.ts",
-		"test.ts",
-		"test/build.ts"
-	]
+  },
+  "includes": ["index.ts", "test.ts", "test/**/*.ts"]
 }

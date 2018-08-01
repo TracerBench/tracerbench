@@ -1,5 +1,3 @@
-sudo: required
-dist: trusty
 language: node_js
 node_js:
   - "stable"
@@ -16,10 +14,9 @@ addons:
       - r-cran-jsonlite
       - r-cran-r6
 env:
-  - CHROME_BIN=/usr/bin/google-chrome-beta R_LIBS_USER=~/R/Library
+  - CHROME_PATH=/usr/bin/google-chrome-beta R_LIBS_USER=~/R/Library
 install:
   - npm install
-  - bower install
   - mkdir -p ~/R/Library
   - Rscript --version
 after_script:

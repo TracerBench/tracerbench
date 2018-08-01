@@ -8,7 +8,7 @@ import {
   TRACE_EVENT_PHASE_BEGIN,
   TRACE_EVENT_PHASE_COMPLETE,
   TRACE_EVENT_PHASE_END,
-  TRACE_EVENT_PHASE_METADATA,
+  TRACE_EVENT_PHASE_METADATA
 } from "./trace_event";
 
 import traceEventComparator from "./trace_event_comparator";
@@ -121,10 +121,12 @@ export default class Trace {
     const { stack } = this;
     for (let i = stack.length - 1; i >= 0; i--) {
       const begin = stack[i];
-      if (begin.name === end.name &&
-          begin.cat === end.cat &&
-          begin.tid === end.tid &&
-          begin.pid === end.pid) {
+      if (
+        begin.name === end.name &&
+        begin.cat === end.cat &&
+        begin.tid === end.tid &&
+        begin.pid === end.pid
+      ) {
         stack.splice(i, 1);
         return this.completeEvent(begin, end);
       }
@@ -133,7 +135,7 @@ export default class Trace {
   }
 
   private completeEvent(begin: ITraceEvent, end: ITraceEvent) {
-    let args: { [key: string]: any; } | "__stripped__" = "__stripped__";
+    let args: { [key: string]: any } | "__stripped__" = "__stripped__";
     if (typeof begin.args === "object" && begin.args !== null) {
       args = Object.assign({}, begin.args);
     }
@@ -151,7 +153,7 @@ export default class Trace {
       tdur: end.tts! - begin.tts!,
       tid: begin.tid,
       ts: begin.ts,
-      tts: begin.tts,
+      tts: begin.tts
     };
     const { events } = this;
     const index = binsearch(events, begin, traceEventComparator);
