@@ -17,7 +17,10 @@
     "dist/index.d.ts",
     "dist/index.js",
     "dist/index.js.map",
-    "dist/lib",
+    "dist/lib/*.d.ts",
+    "dist/lib/*.js",
+    "dist/lib/*.js.map",
+    "lib/**/*.ts",
     "bin"
   ],
   "main": "dist/index.js",
@@ -29,12 +32,12 @@
   },
   "scripts": {
     "build": "tsc",
-    "watch": "tsc --watch",
     "lint": "tslint -p tsconfig.json",
     "prepare": "tsc",
     "test": "tslint -p tsconfig.json && tsc && node dist/test/build.js && node dist/test.js",
     "test:build": "node dist/test/build.js",
-    "test:only": "node dist/test.js"
+    "test:only": "node dist/test.js",
+    "watch": "tsc --watch"
   },
   "dependencies": {
     "@types/node": "*",
