@@ -25,10 +25,7 @@ export interface IBenchmarkState<R> {
   results: R;
 }
 
-export type BrowserOptions = {
-  type: string;
-} & IResolveOptions &
-  ISpawnOptions;
+export type BrowserOptions = IResolveOptions & ISpawnOptions;
 
 export interface IBenchmarkParams {
   name: string;
