@@ -1,8 +1,4 @@
-import {
-  createSession,
-  IAPIClient,
-  ISession,
-} from "chrome-debugging-client";
+import { createSession, ISession } from "chrome-debugging-client";
 
 export interface IBenchmark<State, Result> {
   name: string;
@@ -23,23 +19,28 @@ export interface IBenchmark<State, Result> {
 }
 
 export class Runner<R, S> {
-  constructor(private benchmarks: Array<IBenchmark<S, R>>) {
-  }
+  constructor(private benchmarks: Array<IBenchmark<S, R>>) {}
 
   public async run(iterations: number): Promise<R[]> {
     const benchmarks = this.benchmarks;
     return await createSession<R[]>(async (session: ISession) => {
-      let states = await this.inSequence((benchmark) => benchmark.setup(session));
+      let states = await this.inSequence(benchmark => benchmark.setup(session));
 
       for (let iteration = 0; iteration < iterations; iteration++) {
-        states = await this.shuffled((benchmark, i) => benchmark.perform(session, states[i], iteration));
+        states = await this.shuffled((benchmark, i) =>
+          benchmark.perform(session, states[i], iteration)
+        );
       }
 
-      return this.inSequence((benchmark, i) => benchmark.finalize(session, states[i]));
+      return this.inSequence((benchmark, i) =>
+        benchmark.finalize(session, states[i])
+      );
     });
   }
 
-  private async inSequence<T>(callback: (benchmark: IBenchmark<S, R>, i: number) => Promise<T>): Promise<T[]> {
+  private async inSequence<T>(
+    callback: (benchmark: IBenchmark<S, R>, i: number) => Promise<T>
+  ): Promise<T[]> {
     const benchmarks = this.benchmarks;
     const results: T[] = [];
 
@@ -50,7 +51,9 @@ export class Runner<R, S> {
     return results;
   }
 
-  private async shuffled<T>(callback: (benchmark: IBenchmark<S, R>, i: number) => Promise<T>): Promise<T[]> {
+  private async shuffled<T>(
+    callback: (benchmark: IBenchmark<S, R>, i: number) => Promise<T>
+  ): Promise<T[]> {
     const benchmarks = this.benchmarks;
     const results: T[] = new Array(benchmarks.length);
     const indices = benchmarks.map((_, i) => i);

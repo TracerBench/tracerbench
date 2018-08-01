@@ -1,8 +1,7 @@
 import {
   ITraceEvent,
   TRACE_EVENT_PHASE_COMPLETE,
-  TRACE_EVENT_PHASE_INSTANT,
-  TRACE_EVENT_PHASE_METADATA,
+  TRACE_EVENT_PHASE_METADATA
 } from "./trace_event";
 
 export default class Bounds {

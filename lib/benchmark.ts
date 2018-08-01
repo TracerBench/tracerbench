@@ -1,26 +1,14 @@
 import {
   IAPIClient,
-  IBrowserProcess,
-  IDebuggingProtocolClient,
   IResolveOptions,
   ISession,
   ISpawnOptions,
-  ITabResponse,
+  ITabResponse
 } from "chrome-debugging-client";
-import {
-  Emulation,
-  HeapProfiler,
-  Network,
-  Page,
-  Tracing,
-} from "chrome-debugging-client/dist/protocol/tot";
+import { Page } from "chrome-debugging-client/dist/protocol/tot";
 import * as os from "os";
-import {
-  IBenchmark,
-  Runner,
-} from "./runner";
+import { IBenchmark, Runner } from "./runner";
 import createTab, { ITab } from "./tab";
-import { Trace } from "./trace";
 
 export interface IBenchmarkMeta {
   browserVersion: string;
@@ -28,7 +16,7 @@ export interface IBenchmarkMeta {
 }
 
 function delay(ms: number): Promise<void> {
-  return new Promise<void>((resolve) => setTimeout(resolve, ms));
+  return new Promise<void>(resolve => setTimeout(resolve, ms));
 }
 
 export interface IBenchmarkState<R> {
@@ -39,7 +27,8 @@ export interface IBenchmarkState<R> {
 
 export type BrowserOptions = {
   type: string;
-} & IResolveOptions & ISpawnOptions;
+} & IResolveOptions &
+  ISpawnOptions;
 
 export interface IBenchmarkParams {
   name: string;
@@ -50,7 +39,8 @@ export interface IBenchmarkParams {
   delay?: number;
 }
 
-export abstract class Benchmark<R> implements IBenchmark<IBenchmarkState<R>, R> {
+export abstract class Benchmark<R>
+  implements IBenchmark<IBenchmarkState<R>, R> {
   public name: string;
   private browserOptions: BrowserOptions;
   private delay: number;
@@ -71,8 +61,11 @@ export abstract class Benchmark<R> implements IBenchmark<IBenchmarkState<R>, R> 
   // create session, spawn browser, get port connect to API to get version
   public async setup(session: ISession): Promise<IBenchmarkState<R>> {
     const browserOptions = this.browserOptions;
-    const browser = await session.spawnBrowser(browserOptions.type, browserOptions);
-    const apiClient = await session.createAPIClient("127.0.0.1", browser.remoteDebuggingPort);
+    const browser = await session.spawnBrowser(browserOptions);
+    const apiClient = await session.createAPIClient(
+      "127.0.0.1",
+      browser.remoteDebuggingPort
+    );
     const version = await apiClient.version();
     const existingTabs = await apiClient.listTabs();
     // open a blank tab
@@ -84,17 +77,23 @@ export abstract class Benchmark<R> implements IBenchmark<IBenchmarkState<R>, R> 
     await delay(1500);
 
     const browserVersion = version.Browser;
-    const cpus = os.cpus().map((cpu) => cpu.model);
-    const results = this.createResults({browserVersion, cpus});
+    const cpus = os.cpus().map(cpu => cpu.model);
+    const results = this.createResults({ browserVersion, cpus });
     const state = { apiClient, tab, results };
 
-    await this.withTab(session, state, (t) => this.warm(t));
+    await this.withTab(session, state, t => this.warm(t));
 
     return state;
   }
 
-  public async perform(session: ISession, state: IBenchmarkState<R>, iteration: number): Promise<IBenchmarkState<R>> {
-    await this.withTab(session, state, (tab) => this.performIteration(tab, state.results, iteration));
+  public async perform(
+    session: ISession,
+    state: IBenchmarkState<R>,
+    iteration: number
+  ): Promise<IBenchmarkState<R>> {
+    await this.withTab(session, state, tab =>
+      this.performIteration(tab, state.results, iteration)
+    );
     return state;
   }
 
@@ -108,10 +107,17 @@ export abstract class Benchmark<R> implements IBenchmark<IBenchmarkState<R>, R> 
     // noop
   }
 
-  protected abstract async performIteration(t: ITab, results: R, index: number): Promise<void>;
+  protected abstract async performIteration(
+    t: ITab,
+    results: R,
+    index: number
+  ): Promise<void>;
 
-  private async withTab<T>(session: ISession, state: IBenchmarkState<R>,
-                           callback: (tab: ITab) => Promise<T>): Promise<T> {
+  private async withTab<T>(
+    session: ISession,
+    state: IBenchmarkState<R>,
+    callback: (tab: ITab) => Promise<T>
+  ): Promise<T> {
     const apiClient = state.apiClient;
     const tab = state.tab;
 
@@ -119,7 +125,9 @@ export abstract class Benchmark<R> implements IBenchmark<IBenchmarkState<R>, R> 
       throw new Error("tab is missing a web socket url");
     }
 
-    const client = await session.openDebuggingProtocol(tab.webSocketDebuggerUrl);
+    const client = await session.openDebuggingProtocol(
+      tab.webSocketDebuggerUrl
+    );
     const page = new Page(client);
     await page.enable();
     const res = await page.getResourceTree();
@@ -140,7 +148,7 @@ export abstract class Benchmark<R> implements IBenchmark<IBenchmarkState<R>, R> 
 
     state.tab = await apiClient.newTab("about:blank");
 
-    await client.socket.dispose();
+    await client.dispose();
 
     await apiClient.closeTab(tab.id);
 

@@ -1,15 +1,10 @@
 import { Network } from "chrome-debugging-client/dist/protocol/tot";
 import * as fs from "fs";
-import {
-  Benchmark,
-  IBenchmarkMeta,
-  IBenchmarkParams,
-} from "../benchmark";
+import { Benchmark, IBenchmarkMeta, IBenchmarkParams } from "../benchmark";
 import { ITab } from "../tab";
-import { Trace } from "../trace";
 import InitialRenderMetric, {
   IInitialRenderSamples,
-  IMarker,
+  IMarker
 } from "./initial-render-metric";
 
 /* tslint:disable:no-console */
@@ -76,16 +71,21 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
     return {
       meta,
       samples: [],
-      set: this.name,
+      set: this.name
     };
   }
 
-  protected async performIteration(t: ITab, results: IInitialRenderSamples, i: number): Promise<void> {
+  protected async performIteration(
+    t: ITab,
+    results: IInitialRenderSamples,
+    i: number
+  ): Promise<void> {
     const url = this.params.url;
     const markers = this.params.markers;
 
     // in Canary, devtools.timeline can be removed for rail category
-    let categories = "blink.user_timing,blink_gc,devtools.timeline,rail,v8,v8.execute";
+    let categories =
+      "blink.user_timing,blink_gc,devtools.timeline,rail,v8,v8.execute";
 
     if (this.params.runtimeStats) {
       categories += ",disabled-by-default-v8.runtime_stats";
@@ -102,7 +102,7 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
     const tracing = await t.startTracing(categories);
     const { traceComplete } = tracing;
 
-    const navigateToBlank = new Promise<void>((resolve) => {
+    const navigateToBlank = new Promise<void>(resolve => {
       t.onNavigate = () => {
         if (t.frame.url === "about:blank") {
           resolve(tracing.end());
@@ -114,7 +114,7 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
 
     const trace = await Promise.race([
       traceComplete,
-      navigateToBlank.then(() => traceComplete),
+      navigateToBlank.then(() => traceComplete)
     ]);
 
     t.onNavigate = undefined;
@@ -128,11 +128,17 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
     }
 
     if (i === 0 && this.params.saveFirstTrace) {
-      fs.writeFileSync(this.params.saveFirstTrace, JSON.stringify(trace.events, null, 2));
+      fs.writeFileSync(
+        this.params.saveFirstTrace,
+        JSON.stringify(trace.events, null, 2)
+      );
     }
 
     if (this.params.saveTraces) {
-      fs.writeFileSync(this.params.saveTraces(i), JSON.stringify(trace.events, null, 2));
+      fs.writeFileSync(
+        this.params.saveTraces(i),
+        JSON.stringify(trace.events, null, 2)
+      );
     }
 
     if (!trace.mainProcess || !trace.mainProcess.mainThread) {
@@ -153,10 +159,12 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
 
 function validateParams(params: IInitialRenderBenchmarkParams) {
   if (!params.markers || params.markers.length === 0) {
-    params.markers = [{
-      label: "render",
-      start: "fetchStart",
-    }];
+    params.markers = [
+      {
+        label: "render",
+        start: "fetchStart"
+      }
+    ];
   }
   if (!params.url) {
     throw new Error("url is required");
