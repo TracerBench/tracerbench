@@ -13,5 +13,5 @@
     "strict": true,
     "moduleResolution": "node"
   },
-  "files": ["index.ts", "test.ts", "test/build.ts"]
+  "includes": ["index.ts", "test.ts", "test/**/*.ts"]
 }

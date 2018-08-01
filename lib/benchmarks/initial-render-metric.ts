@@ -1,4 +1,3 @@
-import binsearch from "array-binsearch";
 import { IBenchmarkMeta } from "../benchmark";
 import Trace from "../trace/trace";
 import {

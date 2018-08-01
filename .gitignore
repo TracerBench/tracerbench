@@ -1,10 +1,12 @@
 .Rapp.history
 /dist/
 /node_modules/
-/bower_components/
+/embers/
 /trace*.json
 /results*.json
 /*scratch.R
 /bench*.R
 /*.pdf
 /*workspace
+*.log
+*.tgz
