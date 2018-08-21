@@ -31,13 +31,13 @@
     "runtime-stats": "./bin/runtime-stats.R"
   },
   "scripts": {
-    "build": "tsc",
-    "lint": "tslint -p tsconfig.json",
-    "prepare": "tsc",
-    "test": "tslint -p tsconfig.json && tsc && node dist/test/build.js && node dist/test.js",
+    "build": "tsc -b",
+    "lint": "node scripts/lint",
+    "prepare": "tsc -b",
+    "test": "yarn lint && node dist/test/build.js && node dist/test/test.js",
     "test:build": "node dist/test/build.js",
-    "test:only": "node dist/test.js",
-    "watch": "tsc --watch"
+    "test:only": "node dist/test/test.js",
+    "watch": "tsc -b -w"
   },
   "dependencies": {
     "@types/node": "*",

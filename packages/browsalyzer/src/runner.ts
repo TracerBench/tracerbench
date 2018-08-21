@@ -22,7 +22,6 @@ export class Runner<R, S> {
   constructor(private benchmarks: Array<IBenchmark<S, R>>) {}
 
   public async run(iterations: number): Promise<R[]> {
-    const benchmarks = this.benchmarks;
     return await createSession<R[]>(async (session: ISession) => {
       let states = await this.inSequence(benchmark => benchmark.setup(session));
 

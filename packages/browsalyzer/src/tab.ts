@@ -65,8 +65,8 @@ class Tab implements ITab {
    */
   public onNavigate: (() => void) | undefined = undefined;
 
-  private id: string;
-  private client: IDebuggingProtocolClient;
+  public id: string;
+  public client: IDebuggingProtocolClient;
 
   private page: Page;
   private tracing: Tracing;

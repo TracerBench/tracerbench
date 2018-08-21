@@ -157,7 +157,7 @@ export default class InitialRenderMetric {
 
   constructor(
     private markers: IMarker[],
-    private params: {
+    params: {
       runtimeStats?: boolean;
     }
   ) {
@@ -232,7 +232,7 @@ export default class InitialRenderMetric {
   }
 
   public addPhaseSamples() {
-    const { markers, phaseEvents, paintEvent, start } = this;
+    const { markers, phaseEvents, start } = this;
     for (let i = 0; i < phaseEvents.length - 1; i++) {
       const marker = markers[i];
       const beginEvent = phaseEvents[i];

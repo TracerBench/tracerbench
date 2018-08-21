@@ -1,6 +1,6 @@
+import { InitialRenderBenchmark, Runner } from "browsalyzer";
 import * as fs from "fs";
 import { resolve } from "path";
-import { InitialRenderBenchmark, Runner } from "./index";
 
 /* tslint:disable:no-var-requires */
 const globSync: (glob: string) => string[] = require("glob").sync;
