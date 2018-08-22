@@ -1,5 +1,6 @@
 import { InitialRenderBenchmark, Runner } from "browsalyzer";
 import * as fs from "fs";
+import * as mkdirp from "mkdirp";
 import { resolve } from "path";
 
 /* tslint:disable:no-var-requires */
@@ -11,11 +12,16 @@ const browserOpts = {
     "--headless",
     "--disable-gpu",
     "--hide-scrollbars",
-    "--mute-audio"
+    "--mute-audio",
+    "--v8-cache-options=none",
+    "--disable-cache",
+    "--disable-v8-idle-tasks"
   ]
 };
 
 const tests = globSync("dist/test/*/index.html");
+
+mkdirp.sync("test/results");
 
 const benchmarks: InitialRenderBenchmark[] = [];
 
@@ -42,7 +48,7 @@ tests.forEach((indexFile: string) => {
       ],
       name: version,
       runtimeStats: true,
-      saveTraces: i => `trace-${version}-${i}.json`,
+      saveTraces: i => `test/results/trace-${version}-${i}.json`,
       url
     })
   );
@@ -54,7 +60,10 @@ const runner = new Runner(benchmarks);
 runner
   .run(20)
   .then(results => {
-    fs.writeFileSync("results.json", JSON.stringify(results, null, 2));
+    fs.writeFileSync(
+      "test/results/results.json",
+      JSON.stringify(results, null, 2)
+    );
   })
   .catch(err => {
     console.error(err.stack);

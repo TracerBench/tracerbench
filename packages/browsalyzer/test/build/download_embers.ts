@@ -6,7 +6,7 @@ import { getJSON, getResponse, waitForFinish } from "./util";
 // tslint:disable:no-console
 export default async function downloadEmbers(channels: string[]) {
   for (const channel of channels) {
-    await downloadEmber(channel, `embers/${channel}`);
+    await downloadEmber(channel, `test/vendor/ember-${channel}`);
   }
 }
 

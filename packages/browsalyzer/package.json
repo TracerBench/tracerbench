@@ -14,13 +14,9 @@
   "license": "BSD-2-Clause",
   "author": "Kris Selden <kris.selden@gmail.com>",
   "files": [
-    "dist/index.d.ts",
-    "dist/index.js",
-    "dist/index.js.map",
-    "dist/lib/*.d.ts",
-    "dist/lib/*.js",
-    "dist/lib/*.js.map",
-    "lib/**/*.ts",
+    "dist",
+    "!dist/test",
+    "src",
     "bin"
   ],
   "main": "dist/index.js",
@@ -37,7 +33,8 @@
     "test": "yarn lint && node dist/test/build.js && node dist/test/test.js",
     "test:build": "node dist/test/build.js",
     "test:only": "node dist/test/test.js",
-    "watch": "tsc -b -w"
+    "watch": "tsc -b -w",
+    "report": "Rscript bin/report.R test/results/results.json"
   },
   "dependencies": {
     "@types/node": "*",

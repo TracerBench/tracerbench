@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "../dist/test"
   },
-  "exclude": ["fixtures"],
+  "exclude": ["fixtures", "vendor", "results"],
   "includes": ["*.ts", "build/*.ts"],
   "references": [
     {

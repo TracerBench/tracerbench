@@ -7,15 +7,10 @@
       "request": "launch",
       "protocol": "inspector",
       "preLaunchTask": "build",
-      "program": "${workspaceRoot}/dist/test.js",
+      "cwd": "${workspaceFolder}/packages/browsalyzer",
+      "program": "${workspaceRoot}/packages/browsalyzer/test/test.ts",
       "sourceMaps": true,
-      "outFiles": [
-        "${workspaceRoot}/dist/lib/*.js",
-        "${workspaceRoot}/dist/lib/benchmarks/*.js",
-        "${workspaceRoot}/dist/lib/trace/*.js",
-        "${workspaceRoot}/dist/*.js",
-        "${workspaceRoot}/dist/test/build.js"
-      ]
+      "outFiles": ["${workspaceRoot}/packages/browsalyzer/dist/**/*.js"]
     }
   ]
 }

@@ -20,4 +20,4 @@ install:
   - mkdir -p ~/R/Library
   - Rscript --version
 after_script:
-  - bin/report.R
+  - yarn lerna run report
