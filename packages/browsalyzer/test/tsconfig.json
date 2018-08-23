@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig_base.json",
+  "compilerOptions": {
+    "outDir": "../dist/test"
+  },
+  "exclude": ["fixtures", "vendor", "results"],
+  "includes": ["*.ts", "build/*.ts"],
+  "references": [
+    {
+      "path": "../src"
+    }
+  ]
+}

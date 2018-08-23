@@ -1,0 +1,11 @@
+{
+  "files": [], // container only
+  "references": [
+    {
+      "path": "src"
+    },
+    {
+      "path": "test"
+    }
+  ]
+}

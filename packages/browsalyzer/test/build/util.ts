@@ -1,4 +1,3 @@
-import * as fs from "fs";
 import { IncomingMessage } from "http";
 import * as https from "https";
 

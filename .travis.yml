@@ -6,8 +6,8 @@ addons:
     sources:
       - google-chrome
       - r-packages-trusty
-      - sourceline: 'ppa:marutter/rrutter'
-      - sourceline: 'ppa:marutter/c2d4u'
+      - sourceline: "ppa:marutter/rrutter"
+      - sourceline: "ppa:marutter/c2d4u"
     packages:
       - google-chrome-beta
       - r-recommended
@@ -16,8 +16,8 @@ addons:
 env:
   - CHROME_PATH=/usr/bin/google-chrome-beta R_LIBS_USER=~/R/Library
 install:
-  - npm install
+  - yarn install
   - mkdir -p ~/R/Library
   - Rscript --version
 after_script:
-  - bin/report.R
+  - yarn lerna run report

@@ -1,0 +1,55 @@
+{
+  "name": "browsalyzer",
+  "version": "0.14.0",
+  "description": "Benchmark runner for trace metrics",
+  "keywords": [
+    "chrome",
+    "metrics",
+    "tracing"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/devtrace/browsalyzer.git"
+  },
+  "license": "BSD-2-Clause",
+  "author": "Kris Selden <kris.selden@gmail.com>",
+  "files": [
+    "dist",
+    "!dist/test",
+    "src",
+    "bin"
+  ],
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "plot": "./bin/plot.R",
+    "report": "./bin/report.R",
+    "runtime-stats": "./bin/runtime-stats.R"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "lint": "node scripts/lint",
+    "prepare": "tsc -b",
+    "test": "yarn lint && node dist/test/build.js && node dist/test/test.js",
+    "test:build": "node dist/test/build.js",
+    "test:only": "node dist/test/test.js",
+    "watch": "tsc -b -w",
+    "report": "Rscript bin/report.R test/results/results.json"
+  },
+  "dependencies": {
+    "@types/node": "*",
+    "array-binsearch": "^1.0.1",
+    "chrome-debugging-client": "^0.6.3"
+  },
+  "devDependencies": {
+    "@types/tar": "^4.0.0",
+    "@types/uglify-js": "^2.6.31",
+    "jquery": "^3.3.1",
+    "mkdirp": "^0.5.1",
+    "tar": "^4.4.4",
+    "tslint": "^5.11.0",
+    "typescript": "^3.0.1",
+    "uglify-js": "^2.8.29"
+  },
+  "engine": "node >= 8"
+}

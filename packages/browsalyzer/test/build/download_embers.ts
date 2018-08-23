@@ -1,12 +1,14 @@
 import { readFileSync } from "fs";
+import { IncomingMessage } from "http";
 import * as mkdirp from "mkdirp";
 import { join } from "path";
 import * as tar from "tar";
 import { getJSON, getResponse, waitForFinish } from "./util";
+
 // tslint:disable:no-console
 export default async function downloadEmbers(channels: string[]) {
   for (const channel of channels) {
-    await downloadEmber(channel, `embers/${channel}`);
+    await downloadEmber(channel, `test/vendor/ember-${channel}`);
   }
 }
 
@@ -41,7 +43,7 @@ export function alreadyDownloaded(version: string, packagePath: string) {
   return false;
 }
 
-export function getTarBar(assetPath: string) {
+export function getTarBar(assetPath: string): Promise<IncomingMessage> {
   const url = `https://s3.amazonaws.com/builds.emberjs.com${assetPath}`;
   console.debug(`downloading ${url}`);
   return getResponse(url);

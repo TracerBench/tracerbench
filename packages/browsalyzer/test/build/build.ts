@@ -9,11 +9,11 @@ export default function build(channels: string[]) {
   channels.forEach(channel => {
     console.debug(`building fixture app for "${channel}"...`);
     const emberjs = readFileSync(
-      `embers/${channel}/dist/ember.prod.js`,
+      `test/vendor/ember-${channel}/dist/ember.prod.js`,
       "utf8"
     );
     const precompile = makePrecompile(
-      `embers/${channel}/dist/ember-template-compiler.js`
+      `test/vendor/ember-${channel}/dist/ember-template-compiler.js`
     );
     const templates = compileTemplates(precompile);
     const appjs =
