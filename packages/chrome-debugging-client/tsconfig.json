@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "declaration": true,
+    "module": "commonjs",
+    "target": "es2015",
+    "outDir": "dist",
+    "sourceMap": true,
+    "strictNullChecks": true,
+    "noImplicitReturns": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "moduleResolution": "node"
+  },
+  "files": [
+    "codegen/index.ts",
+    "lib/index.ts",
+    "protocol/1-2.ts",
+    "protocol/tot.ts",
+    "protocol/v8.ts",
+    "test/index.ts"
+  ]
+}

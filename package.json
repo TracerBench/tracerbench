@@ -2,7 +2,7 @@
   "name": "browsalyzer",
   "private": true,
   "workspaces": [
-    "packages/browsalyzer"
+    "packages/*"
   ],
   "scripts": {
     "prepare": "lerna run prepare --stream",

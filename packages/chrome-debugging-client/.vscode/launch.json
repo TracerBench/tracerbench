@@ -1,0 +1,35 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Codegen",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceRoot}/dist/scripts/generate-protocol.js",
+      "stopOnEntry": false,
+      "args": [],
+      "cwd": "${workspaceRoot}",
+      "runtimeArgs": ["--nolazy"],
+      "preLaunchTask": "compile-protocol-gen",
+      "sourceMaps": true,
+      "outFiles": ["${workspaceRoot}/dist/**/*.js"]
+    },
+    {
+      "name": "Test",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceRoot}/test/index.ts",
+      "stopOnEntry": false,
+      "args": [],
+      "cwd": "${workspaceRoot}",
+      "runtimeExecutable": null,
+      "runtimeArgs": ["--nolazy"],
+      "env": {
+        "NODE_ENV": "development"
+      },
+      "preLaunchTask": "compile",
+      "outFiles": ["${workspaceRoot}/dist/**/*.js"],
+      "sourceMaps": true
+    }
+  ]
+}
