@@ -22,12 +22,14 @@ export default async function spawnBrowser(
   try {
     let port: number = 0;
     let wsPath: string | undefined;
-    let tries = 0;
+    let retries = 0;
     while (true) {
-      if (++tries > 10) {
-        throw new Error("failed waiting for port file");
+      if (retries === 0) {
+        await delay(800);
+      } else {
+        await delay(Math.pow(2, retries) * 100);
       }
-      await delay(200);
+
       [port, wsPath] = await tryReadPort(portFile);
       process.validate();
       if (port > 0) {
@@ -35,6 +37,10 @@ export default async function spawnBrowser(
         process.remoteDebuggingPath = wsPath;
         process.dataDir = dataDir;
         break;
+      }
+
+      if (++retries > 8) {
+        throw new Error("failed waiting for port file");
       }
     }
     return process;
