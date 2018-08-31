@@ -24,7 +24,8 @@
   "bin": {
     "plot": "./bin/plot.R",
     "report": "./bin/report.R",
-    "runtime-stats": "./bin/runtime-stats.R"
+    "runtime-stats": "./bin/runtime-stats.R",
+    "ResultSets": "./bin/ResultSets.R"
   },
   "scripts": {
     "build": "tsc -b",

@@ -60,3 +60,39 @@ endTrace();
 ```
 
 In the example above we would mark right after we render the app and then call an `endTrace` function that ensures that we schedule a micro-task after paint that transitions to a blank page. Internally browsalyzer will see this as the cue to start a new sample.
+
+## Using Bin Scripts
+
+### Prerequisites
+
+These instructions assume Mac and using homebrew.
+
+Install R
+```sh
+brew tap homebrew/science
+brew install r
+```
+
+Run R
+```sh
+R
+```
+
+Then install R packages:
+```R
+install.packages("jsonlite")
+install.packages("R6")
+install.packages("ggplot2")
+install.packages("tidyr")
+install.packages("forcats")
+install.packages("dplyr")
+q()
+```
+
+Now you can use the linked commands to plot stats:
+
+```sh
+plot
+report
+runtime-stats
+```
