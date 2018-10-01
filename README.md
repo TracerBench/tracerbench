@@ -1,4 +1,5 @@
-# parse-profile
+# parse-profile [![Build Status](https://travis-ci.org/heimdalljs/parse-profile.svg?branch=master)](https://travis-ci.org/heimdalljs/parse-profile)
+
 A suite of CLI tools for generating and parsing CPUProfile's.
 
 ## Usage
