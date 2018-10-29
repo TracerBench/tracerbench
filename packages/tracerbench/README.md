@@ -1,8 +1,14 @@
 # TracerBench
 
-[![Build Status](https://travis-ci.org/TracerBench/tracerbench.svg?branch=master)](https://travis-ci.org/tracerbench/tracerbench)
+[![Build Status](https://travis-ci.org/TracerBench/tracerbench.svg?branch=master)](https://travis-ci.org/TracerBench/tracerbench)
 
-Chrome tracing allows you to automate Chrome benchmarking. It's goal is to provide a JavaScript variant of [Telemetry](https://www.chromium.org/developers/telemetry/run_locally).
+TracerBench is a benchmarking tool for benchmarking web applications by automating chrome traces then extracting a metric from them, while controlling that each sample is independent.
+
+Motivation, one trace varies to much to detect regressions in small changes to an app unless the effect size is very large. Additionally, most statistical tests I know of assume sample independence which given caching like Chrome's v8 caching is quite difficult to meet.
+
+It is similar to [Telemetry](https://github.com/catapult-project/catapult/blob/master/telemetry/docs/run_benchmarks_locally.md) which is used to benchmark chromium.
+
+It is similar to [Lighthouse](https://github.com/GoogleChrome/lighthouse) which also automates tracing then extracting metrics. TracerBench is focused on getting a low variance for a metric across many samples versus getting a hard to replicate performance report. Lighthouse enables many disabled-by-default tracing categories and tracerbench can be run without any disabled-by-default and minimal impact on the application.
 
 ## Basic Usage
 
@@ -41,7 +47,7 @@ runner
   });
 ```
 
-In the app you must place a marker to let Chrome Tracing know that you are done rendering. This is done by using a `performance.mark` function call.
+In the app you must place a marker to let TracerBench know that you are done rendering to DOM, it searches forward from this to find the next paint event. This is done by using a `performance.mark` function call.
 
 ```
 function endTrace() {
@@ -59,40 +65,4 @@ performance.mark("renderEnd");
 endTrace();
 ```
 
-In the example above we would mark right after we render the app and then call an `endTrace` function that ensures that we schedule a micro-task after paint that transitions to a blank page. Internally tracerbench will see this as the cue to start a new sample.
-
-## Using Bin Scripts
-
-### Prerequisites
-
-These instructions assume Mac and using homebrew.
-
-Install R
-```sh
-brew tap homebrew/science
-brew install r
-```
-
-Run R
-```sh
-R
-```
-
-Then install R packages:
-```R
-install.packages("jsonlite")
-install.packages("R6")
-install.packages("ggplot2")
-install.packages("tidyr")
-install.packages("forcats")
-install.packages("dplyr")
-q()
-```
-
-Now you can use the linked commands to plot stats:
-
-```sh
-plot
-report
-runtime-stats
-```
+In the example above we would mark right after we render the app and then call an `endTrace` function that ensures that we schedule after paint that transitions to a blank page. Internally tracerbench will see this as the cue to start a new sample.
