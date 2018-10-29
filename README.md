@@ -1,6 +1,6 @@
 # browsalyzer
 
-[![Build Status](https://travis-ci.org/devtrace/browsalyzer.svg?branch=master)](https://travis-ci.org/devtrace/browsalyzer)
+[![Build Status](https://travis-ci.org/TracerBench/tracerbench.svg?branch=master)](https://travis-ci.org/TracerBench/tracerbench)
 
 Chrome tracing allows you to automate Chrome benchmarking. It's goal is to provide a JavaScript variant of [Telemetry](https://www.chromium.org/developers/telemetry/run_locally).
 
@@ -9,7 +9,7 @@ Chrome tracing allows you to automate Chrome benchmarking. It's goal is to provi
 The most basic benchmark is the `InitialRenderBenchmark`.
 
 ```js
-import { InitialRenderBenchmark, Runner } from "browsalyzer";
+import { InitialRenderBenchmark, Runner } from "tracerbench";
 
 let control = new InitialRenderBenchmark({
   name: "control",

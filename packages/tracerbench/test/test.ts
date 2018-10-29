@@ -1,7 +1,7 @@
-import { InitialRenderBenchmark, Runner } from "browsalyzer";
 import * as fs from "fs";
 import * as mkdirp from "mkdirp";
 import { resolve } from "path";
+import { InitialRenderBenchmark, Runner } from "tracerbench";
 
 /* tslint:disable:no-var-requires */
 const globSync: (glob: string) => string[] = require("glob").sync;

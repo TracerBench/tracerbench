@@ -1,5 +1,5 @@
 {
-  "name": "browsalyzer",
+  "name": "tracerbench",
   "version": "0.14.0",
   "description": "Benchmark runner for trace metrics",
   "keywords": [
@@ -9,7 +9,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/devtrace/browsalyzer.git"
+    "url": "https://github.com/TracerBench/tracerbench.git"
   },
   "license": "BSD-2-Clause",
   "author": "Kris Selden <kris.selden@gmail.com>",
