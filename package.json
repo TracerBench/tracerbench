@@ -1,8 +1,8 @@
 {
-  "name": "browsalyzer",
+  "name": "tracerbench",
   "private": true,
   "workspaces": [
-    "packages/browsalyzer"
+    "packages/tracerbench"
   ],
   "scripts": {
     "prepare": "lerna run prepare --stream",

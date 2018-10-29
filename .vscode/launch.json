@@ -7,10 +7,10 @@
       "request": "launch",
       "protocol": "inspector",
       "preLaunchTask": "build",
-      "cwd": "${workspaceFolder}/packages/browsalyzer",
-      "program": "${workspaceRoot}/packages/browsalyzer/test/test.ts",
+      "cwd": "${workspaceFolder}/packages/tracerbench",
+      "program": "${workspaceRoot}/packages/tracerbench/test/test.ts",
       "sourceMaps": true,
-      "outFiles": ["${workspaceRoot}/packages/browsalyzer/dist/**/*.js"]
+      "outFiles": ["${workspaceRoot}/packages/tracerbench/dist/**/*.js"]
     }
   ]
 }
