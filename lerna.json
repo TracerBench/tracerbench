@@ -2,5 +2,9 @@
   "packages": [
     "packages/*"
   ],
-  "version": "0.0.0"
+  "ignoreChanges": [
+    "**/test/**",
+    "**/*.md"
+  ],
+  "version": "0.13.1"
 }
