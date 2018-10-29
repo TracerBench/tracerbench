@@ -9,6 +9,6 @@
     "test": "lerna run test --stream"
   },
   "devDependencies": {
-    "lerna": "^3.1.4"
+    "lerna": "^3.4.3"
   }
 }
