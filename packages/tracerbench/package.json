@@ -40,9 +40,10 @@
   "dependencies": {
     "@types/node": "*",
     "array-binsearch": "^1.0.1",
-    "chrome-debugging-client": "^0.6.3"
+    "chrome-debugging-client": "^0.6.8"
   },
   "devDependencies": {
+    "@types/glob": "^7.1.1",
     "@types/tar": "^4.0.0",
     "@types/uglify-js": "^2.6.31",
     "jquery": "^3.3.1",
