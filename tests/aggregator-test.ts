@@ -5,148 +5,73 @@ import 'mocha';
 import {
   aggregate,
   Aggregations,
-  categorizeAggregations,
-  verifyMethods,
 } from '../src/cli/aggregator';
 import { Archive } from '../src/cli/archive_trace';
 import { CpuProfile } from '../src/index';
-import { AggregationGenerator, ArchiveGenerator, LocatorGenerator, ProfileGenerator } from './generators';
+import { AggregationGenerator, ArchiveGenerator, ProfileGenerator } from './generators';
 
 describe('aggregate', () => {
   let archive: Archive;
   beforeEach(() => {
-    archive = new ArchiveGenerator().generate();
+    let content = `
+      define("module/1",["exports"],function(e) {
+        function barbar() {return 'bar';}
+      });
+      define("module/2",["exports"],function(e) {
+        function barbar1() {return 'bar';}
+      });
+    `;
+    archive = new ArchiveGenerator().generate(content);
   });
-  it('aggregates subset of the hierarchy', () => {
+  it('aggregates by module names correctly', () => {
+    let aggregations: Aggregations;
     let generator = new ProfileGenerator();
     let root = generator.start();
-
-    let a = generator.append(root, 'a', 100);
-    generator.append(a, 'b', 50);
-    generator.append(a, 'c', 75);
-
-    let d = generator.append(root, 'd', 100);
-    let e = generator.append(root, 'e', 25);
-    generator.append(e, 'f', 15);
-
-    let json = generator.end();
-
-    let profile = new CpuProfile(json, -1, -1);
-    let locators = new LocatorGenerator().generate(['a', 'c', 'd', 'f']);
-    let aggregations = aggregate(profile.hierarchy, locators, archive);
-
-    expect(aggregations.a.total).to.equal(225);
-    expect(aggregations.a.attributed).to.equal(150);
-
-    expect(aggregations.c.total).to.equal(75);
-    expect(aggregations.c.attributed).to.equal(75);
-
-    expect(aggregations.d.total).to.equal(100);
-    expect(aggregations.d.attributed).to.equal(100);
-
-    expect(aggregations.f.total).to.equal(15);
-    expect(aggregations.f.attributed).to.equal(15);
-
-    expect(aggregations.unknown.total).to.equal(25); // e
-    expect(aggregations.unknown.attributed).to.equal(25); // e
-  });
-
-  it('aggregates subset of the hierarchy with multiple call sites', () => {
-    let generator = new ProfileGenerator();
-    let root = generator.start();
-
-    let a = generator.append(root, 'a', 100);
-    generator.append(a, 'b', 50);
-    generator.append(a, 'c', 75);
-
-    let d = generator.append(root, 'd', 100);
-    let e = generator.append(root, 'e', 25);
-    generator.append(e, 'f', 15);
-
-    generator.append(root, 'c', 10);
-
-    let json = generator.end();
-
-    let profile = new CpuProfile(json, -1, -1);
-    let locators = new LocatorGenerator().generate(['a', 'c', 'd', 'f']);
-    let aggregations = aggregate(profile.hierarchy, locators, archive);
-
-    expect(aggregations.a.total).to.equal(225);
-    expect(aggregations.a.attributed).to.equal(150);
-
-    expect(aggregations.c.total).to.equal(85);
-    expect(aggregations.c.attributed).to.equal(85);
-
-    expect(aggregations.d.total).to.equal(100);
-    expect(aggregations.d.attributed).to.equal(100);
-
-    expect(aggregations.f.total).to.equal(15);
-    expect(aggregations.f.attributed).to.equal(15);
-
-    expect(aggregations.unknown.total).to.equal(25); // e
-    expect(aggregations.unknown.attributed).to.equal(25); // e
-  });
-});
-
-describe('categorizeAggregations', () => {
-  let aggregations: Aggregations;
-  let archive: Archive;
-  beforeEach(() => {
-    archive = new ArchiveGenerator().generate();
-  });
-  beforeEach(() => {
-    let generator = new ProfileGenerator();
-    let root = generator.start();
-
-    let a = generator.append(root, 'a', 100);
-    generator.append(a, 'b', 50);
-    generator.append(a, 'c', 75);
-
-    let d = generator.append(root, 'd', 100);
-    let e = generator.append(root, 'e', 25);
-    generator.append(e, 'f', 15);
-
-    generator.append(root, 'c', 10);
-
-    let json = generator.end();
-
-    let profile = new CpuProfile(json, -1, -1);
-    let locators = new LocatorGenerator().generate(['a', 'c', 'd', 'f']);
-    aggregations = aggregate(profile.hierarchy, locators, archive);
-  });
-
-  it('creates a categorized map', () => {
-    let generator = new LocatorGenerator();
-    let cat1Locators = generator.generate(['a', 'c']);
-    let cat2Locators = generator.generate(['d']);
-    let cat3Locators = generator.generate(['f']);
-    let categorized = categorizeAggregations(aggregations, {
-      cat1: cat1Locators,
-      cat2: cat2Locators,
-      cat3: cat3Locators,
+    let a = generator.append(root, 100, {
+      functionName: 'a',
+      lineNumber: 1,
+      columnNumber: 2,
+      scriptId: 1,
+      url: 'https://www.example.com/a.js',
+    });
+    generator.append(a, 50, {
+      functionName: 'b',
+      lineNumber: 1,
+      columnNumber: 6,
+      scriptId: 1,
+      url: 'https://www.example.com/a.js',
+    });
+    generator.append(a, 75, {
+      functionName: 'c',
+      lineNumber: 4,
+      columnNumber: 2,
+      scriptId: 1,
+      url: 'https://www.example.com/a.js',
     });
 
-    expect(categorized.cat1.length).to.equal(2);
-    expect(categorized.cat2.length).to.equal(1);
-    expect(categorized.cat3.length).to.equal(1);
+    let e = generator.append(root, 25, {functionName: 'd'});
+    generator.append(e, 15, {functionName: 'e'});
 
-    expect(categorized.cat1.map(a => a.name).sort()).to.deep.equal(['a', 'c']);
-    expect(categorized.cat2[0].name).to.deep.equal('d');
-    expect(categorized.cat3[0].name).to.deep.equal('f');
-  });
-});
+    generator.append(root, 10, {
+      functionName: 'c',
+      lineNumber: 4,
+      columnNumber: 2,
+      scriptId: 1,
+      url: 'https://www.example.com/a.js',
+    });
 
-describe('verifyMethods', () => {
+    let json = generator.end();
 
-  it('should throw if there are duplicates', () => {
-    // tslint:disable:no-unused-expression
-    let locators = new LocatorGenerator().generate(['a', 'c', 'c']);
-    expect(() => verifyMethods(locators)).to.throw;
-  });
+    let profile = new CpuProfile(json, -1, -1);
+    aggregations = aggregate(profile.hierarchy, archive);
 
-  it('should not throw if there are no duplicates', () => {
-    // tslint:disable:no-unused-expression
-    let locators = new LocatorGenerator().generate(['a', 'b', 'c', 'd']);
-    expect(() => verifyMethods(locators)).to.not.throw;
+    expect(aggregations['module/1'].attributed).to.equal(150); // a's self 100 + b's self 50
+    expect(aggregations['module/1'].total).to.equal(275); // a's total 225 + b's total 50
+
+    expect(aggregations['module/2'].attributed).to.equal(85); // c1's 75 + c2's 10
+    expect(aggregations['module/2'].total).to.equal(85);
+
+    expect(aggregations.unknown.total).to.equal(40); // d's 25 + e's 15
+    expect(aggregations.unknown.attributed).to.equal(40);
   });
 });
