@@ -8,15 +8,6 @@ import { Trace } from '../trace';
 
 // tslint:disable:no-console
 
-export interface Categories {
-  [key: string]: Locator[];
-}
-
-export interface Locator {
-  functionName: string;
-  moduleName: string;
-}
-
 export function computeMinMax(trace: Trace, start: string = 'navigationStart', end: string) {
   let min;
   let max;
@@ -37,45 +28,4 @@ export function computeMinMax(trace: Trace, start: string = 'navigationStart', e
   }
 
   return { min, max };
-}
-
-export function methodsFromCategories(categories: Categories) {
-  return Object.keys(categories).reduce((accum: Locator[], category: string) => {
-    accum.push(...categories[category]);
-    return accum;
-  }, []);
-}
-
-export function formatCategories(report: string | undefined, methods: string[]) {
-  if (report) {
-    let stats =  fs.statSync(report);
-    let _categories: Categories = {};
-    if (stats.isDirectory()) {
-      let files = fs.readdirSync(report);
-
-      files.map(file => {
-        let name = path.basename(file).replace('.json', '');
-        // tslint:disable-next-line:no-shadowed-variable
-        let methods = JSON.parse(fs.readFileSync(`${report}/${file}`, 'utf8'));
-        _categories[name] = methods;
-      });
-
-    } else {
-      let category = path.basename(report).replace('.json', '');
-      _categories[category] = JSON.parse(fs.readFileSync(report, 'utf8'));
-    }
-
-    return _categories;
-
-  } else {
-    if (methods === undefined) {
-      throw new Error(`Error: Must pass a list of method names.`);
-    }
-
-    let addHocLocators = methods.map(method => {
-      return { functionName: method, moduleName: '*' };
-    });
-
-    return { adhoc: addHocLocators };
-  }
 }

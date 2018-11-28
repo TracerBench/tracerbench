@@ -1,11 +1,18 @@
 import { ICallFrame, ICpuProfile, ICpuProfileNode } from '../src';
 import { AggregationResult, Aggregations } from '../src/cli/aggregator';
 import { Archive } from '../src/cli/archive_trace';
-import { Locator } from '../src/cli/utils';
 
 interface INode {
-  child(functionName: string): CPUProfileNode;
+  child(options: OptionalCallFrame): CPUProfileNode;
   toJSON(): ICpuProfileNode;
+}
+
+interface OptionalCallFrame {
+  functionName?: string;
+  scriptId?: string | number;
+  url?: string;
+  lineNumber?: number;
+  columnNumber?: number;
 }
 
 let nodeId = 0;
@@ -19,23 +26,27 @@ class RootCPUProfileNode implements INode {
   total: number = 0;
   self: number = 0;
 
-  constructor(functionName: string = '(root)', scriptId = 0) {
+  constructor(options?: OptionalCallFrame) {
     this.callFrame = {
-      functionName,
+      functionName: '(root)',
       lineNumber: -1,
       columnNumber: -1,
       scriptId: 0,
       url: 'script',
     };
+    Object.assign(this.callFrame, options);
   }
 
-  child(functionName: string) {
-    let child = new CPUProfileNode(functionName);
-    if (!this.children) {
-      this.children = [];
+  child(options: OptionalCallFrame) {
+    if (options.functionName !== undefined) {
+      let child = new CPUProfileNode(options);
+      if (!this.children) {
+        this.children = [];
+      }
+      this.children.push(child.id);
+      return child;
     }
-    this.children.push(child.id);
-    return child;
+    throw Error('Must provide function name for new child node');
   }
 
   toJSON(): ICpuProfileNode {
@@ -63,8 +74,8 @@ class RootCPUProfileNode implements INode {
 }
 
 class CPUProfileNode extends RootCPUProfileNode {
-  constructor(functionName: string) {
-    super(functionName, 10);
+  constructor(options?: OptionalCallFrame) {
+    super(options);
     this.id = ++nodeId;
   }
 }
@@ -86,8 +97,8 @@ export class ProfileGenerator {
     return this.root;
   }
 
-  append(node: INode, functionName: string, delta: number) {
-    let child = node.child(functionName);
+  append(node: INode, delta: number, options: OptionalCallFrame) {
+    let child = node.child(options);
     this.samples.push(child.id);
     this.nodes.push(child);
     this.timeDeltas.push(delta);
@@ -157,27 +168,16 @@ export class AggregationGenerator {
   }
 }
 
-export class LocatorGenerator {
-  generate(methods: string[]) {
-    return methods.map(m => {
-      return {
-        functionName: m,
-        moduleName: '*',
-      };
-    });
-  }
-}
-
 export class ArchiveGenerator {
-  generate(): Archive {
+  generate(content: string = ''): Archive {
     return {
       log: {
         entries: [
           {
-            request: { url: 'script' },
+            request: { url: 'https://www.example.com/a.js' },
             response: {
               content: {
-                text: '',
+                text: content,
               },
             },
           },

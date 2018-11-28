@@ -110,8 +110,7 @@ export default class Trace {
               timeDeltas: [] as number[],
             },
           });
-        }
-        if (event.name === 'ProfileChunk') {
+        } else if (event.name === 'ProfileChunk') {
           const profileChunk = event as IProfileChunkEvent;
           const profileEntry = this.profileMap.get(profileChunk.id)!;
           if (profileChunk.args.data.cpuProfile.nodes) {
