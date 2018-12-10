@@ -53,9 +53,10 @@ export function addRemainingModules(hierarchy: HierarchyNode<ICpuProfileNode>, l
   const allModules = modMatcher.getModuleList();
   categories['Auto Added Module Paths'] = [];
   allModules.forEach(moduleName => {
+    // If the locator is going to match an entire module anyway, don't add that module to the auto
+    // generated list of module aggergations.
     const found = locators.find(locator => {
-      if (locator.moduleName === '.*') { return false; }
-      return locator.moduleNameRegex.test(moduleName);
+      return locator.functionName === '.*' ? locator.moduleNameRegex.test(moduleName) : false;
     });
     if (!found) {
       const newLocator = {
