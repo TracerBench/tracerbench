@@ -49,7 +49,7 @@ runner
 
 In the app you must place a marker to let TracerBench know that you are done rendering to DOM, it searches forward from this to find the next paint event. This is done by using a `performance.mark` function call.
 
-```
+```js
 function endTrace() {
   // just before paint
   requestAnimationFrame(function () {
