@@ -1,33 +1,52 @@
-import { Aggregations } from './aggregator';
+import { Categorized } from './aggregator';
 import { Table } from './table';
 // tslint:disable:no-console
 
-export function report(aggregations: Aggregations, verbose: boolean) {
+export function report(categorized: Categorized, verbose: boolean) {
   let rows: string[][] = [];
   let aggregateTotal = 0;
+  let categories: string[] = [];
 
   let table = new Table();
   let totalAggregatedTime = 0;
 
-  let row = table.addRow();
-
-  row.addCell('').pad(2, 'left');
-  row.addCell('Total').pad(2, 'left');
-  row.addCell('Attributed').pad(2, 'left');
-  table.addRow('=');
-
-  const sorted = Object.entries(aggregations).sort((a, b) => b[1].attributed - a[1].attributed);
-  sorted.forEach( item => {
-    const [ methodName, result ] = item;
-    totalAggregatedTime += result.attributed;
-
-    let stats = table.addRow();
-    let methodCell = stats.addCell(result.name).pad(2, 'left');
-    stats.addCell(`${toMS(result.total)}ms`).pad(2, 'left');
-    stats.addCell(`${toMS(result.attributed)}ms`).pad(2, 'left');
+  Object.keys(categorized).forEach(category => {
+    categorized[category].forEach(result => {
+      totalAggregatedTime += result.attributed;
+    });
   });
 
-  table.addRow('-');
+  Object.keys(categorized).forEach(category => {
+    let row = table.addRow();
+
+    row.addCell(category);
+    row.addCell('Total').pad(2, 'left');
+    row.addCell('Attributed').pad(2, 'left');
+    row.addCell('% Attributed').pad(2, 'left');
+    table.addRow('=');
+
+    let categoryTime = 0;
+
+    const entries = categorized[category];
+    const sorted = entries.sort((a, b) => b.attributed - a.attributed);
+    sorted.forEach(result => {
+      let stats = table.addRow();
+      let methodCell = stats.addCell(`${result.moduleName} - ${result.functionName}`).pad(2, 'left');
+      stats.addCell(`${toMS(result.total)}ms`).pad(2, 'left');
+      stats.addCell(`${toMS(result.attributed)}ms`).pad(2, 'left');
+      stats.addCell(`${(result.attributed / totalAggregatedTime * 100).toFixed(2)}%`).pad(2, 'left');
+      categoryTime += result.attributed;
+    });
+
+    table.addRow('-');
+
+    let subtotal = table.addRow();
+    subtotal.addCell('Subtotal');
+    subtotal.empty();
+    subtotal.addCell(`${toMS(categoryTime)}ms`).pad(2, 'left');
+    table.addRow('=');
+    table.addRow().empty();
+  });
 
   let totalRow = table.addRow();
   totalRow.addCell('Total');
