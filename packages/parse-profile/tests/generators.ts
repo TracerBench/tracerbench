@@ -1,6 +1,7 @@
 import { ICallFrame, ICpuProfile, ICpuProfileNode } from '../src';
 import { AggregationResult, Aggregations } from '../src/cli/aggregator';
 import { Archive } from '../src/cli/archive_trace';
+import { Locator } from '../src/cli/utils';
 
 interface INode {
   child(options: OptionalCallFrame): CPUProfileNode;
@@ -123,48 +124,16 @@ export class ProfileGenerator {
   }
 }
 
-export class AggregationGenerator {
-  private currentAggregation: Aggregations = {};
-  aggregation(name: string) {
-    let result = this.result(name);
-    this.currentAggregation[name] = result;
-    return result;
-  }
-
-  callsites(result: AggregationResult, multipler: number) {
-    for (let i = 0; i < multipler; i++) {
-      result.callframes.push(this.callframe(i));
-    }
-  }
-
-  commit() {
-    let aggregation = this.currentAggregation;
-    this.currentAggregation = {};
-
-    Object.keys(aggregation).forEach(a => {
-      aggregation[a].total = aggregation[a].callframes.reduce((acc, cur) => {
-        return acc += cur.self;
-      }, 0);
+export class LocatorGenerator {
+  generate(methods: string[][]) {
+    return methods.map(m => {
+      return {
+        functionName: m[0],
+        functionNameRegex: new RegExp(`^${m[0]}$`),
+        moduleName: m[1],
+        moduleNameRegex: new RegExp(`^${m[1]}$`),
+      };
     });
-
-    return aggregation;
-  }
-
-  private callframe(time: number) {
-    return {
-      self: time,
-      stack: [],
-    };
-  }
-
-  private result(name: string): AggregationResult {
-    return {
-      name,
-      total: 0,
-      self: 0,
-      attributed: 0,
-      callframes: [],
-    };
   }
 }
 

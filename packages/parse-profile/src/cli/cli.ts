@@ -2,10 +2,11 @@ import { UnaryExpression } from 'estree';
 import * as fs from 'fs';
 import { HAR } from 'har-remix';
 import { CpuProfile, Trace } from '../trace';
-import { aggregate, collapseCallFrames } from './aggregator';
+import { aggregate, categorizeAggregations, collapseCallFrames, verifyMethods } from './aggregator';
 import { Archive } from './archive_trace';
+import { ModuleMatcher } from './module_matcher';
 import { report as reporter } from './reporter';
-import { computeMinMax } from './utils';
+import { addRemainingModules, computeMinMax, formatCategories, methodsFromCategories } from './utils';
 
 // tslint:disable:member-ordering
 
@@ -60,8 +61,16 @@ export default class CommandLine {
     let trace = this.loadTrace();
     let profile = this.cpuProfile(trace)!;
 
-    let aggregations = aggregate(profile.hierarchy, archive);
-    collapseCallFrames(aggregations);
-    reporter(aggregations, verbose!!);
+    let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
+
+    let categories = formatCategories(report, methods);
+    let allMethods = methodsFromCategories(categories);
+    addRemainingModules(profile.hierarchy, allMethods, categories, modMatcher);
+    verifyMethods(allMethods);
+
+    let aggregations = aggregate(profile.hierarchy, allMethods, archive, modMatcher);
+    let collapsed = collapseCallFrames(aggregations);
+    let categorized = categorizeAggregations(collapsed, categories);
+    reporter(categorized, verbose!!);
   }
 }

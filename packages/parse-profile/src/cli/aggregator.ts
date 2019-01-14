@@ -3,6 +3,9 @@ import { ICallFrame, ICpuProfileNode, ITraceEvent, Trace } from '../trace';
 import CpuProfile from '../trace/cpuprofile';
 import { Archive } from './archive_trace';
 import { ParsedFile } from './metadata';
+import { ModuleMatcher } from './module_matcher';
+import { Categories, Locator } from './utils';
+
 // tslint:disable:member-ordering
 
 export interface CallFrameInfo {
@@ -18,8 +21,61 @@ export interface AggregationResult {
   total: number;
   self: number;
   attributed: number;
-  name: string;
+  functionName: string;
+  moduleName: string;
   callframes: CallFrameInfo[];
+}
+
+export interface Categorized {
+  [key: string]: AggregationResult[];
+}
+
+function toRegex(locators: Locator[]) {
+  return locators.map(({ functionName }) => {
+    if (functionName === '*') {
+      return /.*/;
+    }
+    let parts = functionName.split('.'); // Path expression
+    if (parts.length > 1) {
+      parts.shift();
+      return new RegExp(`^([A-z]+\\.${parts.join('\\.')})$`);
+    }
+    return new RegExp(`^${functionName}$`);
+  });
+}
+
+export function verifyMethods(array: Locator[]) {
+  let valuesSoFar: string[] = [];
+  for (let i = 0; i < array.length; ++i) {
+    let { functionName, moduleName } = array[i];
+    let key = `${functionName}${moduleName}`;
+    if (valuesSoFar.includes(key)) {
+      throw new Error(`Duplicate heuristic detected ${moduleName}@${functionName}`);
+    }
+    valuesSoFar.push(key);
+  }
+}
+
+export function categorizeAggregations(aggregations: Aggregations, categories: Categories) {
+  let categorized: Categorized = {
+    unknown: [aggregations.unknown],
+  };
+
+  Object.keys(categories).forEach(category => {
+    if (!categorized[category]) {
+      categorized[category] = [];
+    }
+
+    Object.values(aggregations).forEach(aggergation => {
+      if (categories[category].find(locator =>
+          locator.functionName === aggergation.functionName &&
+          locator.moduleName === aggergation.moduleName)) {
+        categorized[category].push(aggergation);
+      }
+    });
+  });
+
+  return categorized;
 }
 
 export interface ParsedFiles {
@@ -28,19 +84,25 @@ export interface ParsedFiles {
 
 class AggregrationCollector {
   private _aggregations: Aggregations = {};
+  private locators: Locator[];
+  private matcher: RegExp | undefined;
   private parsedFiles: ParsedFiles = {};
   private archive: Archive;
+  private modMatcher: ModuleMatcher;
 
-  constructor(hierarchy: HierarchyNode<ICpuProfileNode>, archive: Archive) {
+  constructor(locators: Locator[], archive: Archive, hierarchy: HierarchyNode<ICpuProfileNode>,
+              modMatcher: ModuleMatcher) {
     this.archive = archive;
-    hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {
-      const functionName = this.findModuleName(node.data.callFrame);
-      if (functionName === undefined) { return; }
-      this._aggregations[functionName] = {
+    this.locators = locators;
+    this.modMatcher = modMatcher;
+
+    locators.forEach(({ functionName, moduleName }) => {
+      this._aggregations[functionName + moduleName] = {
         total: 0,
         self: 0,
         attributed: 0,
-        name: functionName,
+        functionName,
+        moduleName,
         callframes: [],
       };
     });
@@ -49,7 +111,8 @@ class AggregrationCollector {
       total: 0,
       self: 0,
       attributed: 0,
-      name: 'unknown',
+      functionName: 'unknown',
+      moduleName: 'unknown',
       callframes: [],
     };
   }
@@ -75,6 +138,42 @@ class AggregrationCollector {
     return this._aggregations;
   }
 
+  private isBuiltIn(callFrame: ICallFrame) {
+    let { url, lineNumber } = callFrame;
+    if (url === undefined) return true;
+    if (url === 'extensions::SafeBuiltins') return true;
+    if (url === 'v8/LoadTimes') return true;
+    if (url === 'native array.js') return true;
+    if (url === 'native intl.js') return true;
+    if (lineNumber === -1 || lineNumber === undefined) return true;
+
+    return false;
+  }
+
+  match(callFrame: ICallFrame) {
+    return this.locators.find(locator => {
+      // try to avoid having to regex match is there are .* entries
+      let sameFN = locator.functionName === callFrame.functionName;
+      if (locator.moduleName === '.*' && sameFN) return true;
+
+      if (this.isBuiltIn(callFrame)) return false;
+
+      let callFrameModuleName = this.modMatcher.findModuleName(callFrame);
+      if (callFrameModuleName === undefined) return false;
+
+      // try to avoid having to regex match is there are .* entries
+      let sameMN = locator.moduleName === callFrameModuleName;
+      if (sameMN && locator.functionName === '.*') return true;
+
+      if (sameFN && sameMN) return true;
+
+      // if nothing else matches, do full regex check
+      let sameFNRegex = locator.functionNameRegex.test(callFrame.functionName);
+      let sameMNRegex = locator.moduleNameRegex.test(callFrameModuleName);
+      return sameFNRegex && sameMNRegex;
+    });
+  }
+
   private contentFor(url: string) {
     let entry = this.archive.log.entries.find(e => e.request.url === url);
 
@@ -84,30 +183,8 @@ class AggregrationCollector {
 
     return entry.response.content.text;
   }
-
-  findModuleName(callFrame: ICallFrame) {
-    let { url } = callFrame;
-    // guards against things like undefined url or urls like "extensions::SafeBuiltins"
-    if (url === undefined ||
-       (url.substr(0, 7) !== 'https:/' && url.substr(0, 7) !== 'http://') ||
-       callFrame.lineNumber === undefined ||
-       callFrame.columnNumber === undefined ||
-       callFrame.functionName === undefined ||
-       callFrame.scriptId === undefined) {
-      return undefined;
-    }
-    let { parsedFiles } = this;
-    let file = parsedFiles[url];
-    if (file) {
-      return file.moduleNameFor(callFrame);
-    }
-
-    file = this.parsedFiles[url] = new ParsedFile(this.contentFor(url));
-    return file.moduleNameFor(callFrame);
-  }
 }
 
-// Dedup identical (function name, column number, line number) callFrame stacks for each method
 export function collapseCallFrames(aggregations: Aggregations) {
   Object.keys(aggregations).forEach(methodName => {
     let collapsed: CallFrameInfo[] = [];
@@ -132,8 +209,9 @@ export function collapseCallFrames(aggregations: Aggregations) {
   return aggregations;
 }
 
-export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, archive: Archive) {
-  let aggregations = new AggregrationCollector(hierarchy, archive);
+export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, locators: Locator[],
+                          archive: Archive, modMatcher: ModuleMatcher) {
+  let aggregations = new AggregrationCollector(locators, archive, hierarchy, modMatcher);
   let containments: string[] = [];
   hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {
     let { self } = node.data;
@@ -143,14 +221,18 @@ export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, archive: Ar
       let containerNode: HierarchyNode<ICpuProfileNode> | null = null;
 
       while (currentNode) {
-        const moduleName = aggregations.findModuleName(currentNode.data.callFrame);
-        if (moduleName !== undefined && moduleName !== 'unknown') {
+        let canonicalLocator = aggregations.match(currentNode.data.callFrame);
+        if (canonicalLocator) {
+          let {
+            functionName: canonicalizeName,
+            moduleName: canonicalizeModName,
+          } = canonicalLocator;
           if (!containerNode) {
-            aggregations.addToAttributed(moduleName, self);
-            aggregations.pushCallFrames(moduleName, { self, stack });
+            aggregations.addToAttributed(canonicalizeName + canonicalizeModName, self);
+            aggregations.pushCallFrames(canonicalizeName + canonicalizeModName, { self, stack });
             containerNode = currentNode;
           }
-          aggregations.addToTotal(moduleName, self);
+          aggregations.addToTotal(canonicalizeName + canonicalizeModName, self);
         }
         stack.push(currentNode.data.callFrame);
         currentNode = currentNode.parent;
