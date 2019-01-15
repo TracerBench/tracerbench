@@ -1,8 +1,7 @@
 import { HierarchyNode } from 'd3-hierarchy';
-import { ICallFrame, ICpuProfileNode} from '../trace';
+import { ICallFrame, ICpuProfileNode } from '../trace';
 import { Archive } from './archive_trace';
 import { ParsedFile } from './metadata';
-import { Locator } from './utils';
 
 export interface ParsedFiles {
   [key: string]: ParsedFile;
@@ -17,7 +16,9 @@ export class ModuleMatcher {
     this.archive = archive;
     hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {
       const moduleName = this.findModuleName(node.data.callFrame);
-      if (moduleName === undefined || moduleName === 'unknown') { return; }
+      if (moduleName === undefined || moduleName === 'unknown') {
+        return;
+      }
       this.moduleSet.add(moduleName);
     });
   }
@@ -29,12 +30,14 @@ export class ModuleMatcher {
   findModuleName(callFrame: ICallFrame) {
     let { url } = callFrame;
     // guards against things like undefined url or urls like "extensions::SafeBuiltins"
-    if (url === undefined ||
-       (url.substr(0, 7) !== 'https:/' && url.substr(0, 7) !== 'http://') ||
-       callFrame.lineNumber === undefined ||
-       callFrame.columnNumber === undefined ||
-       callFrame.functionName === undefined ||
-       callFrame.scriptId === undefined) {
+    if (
+      url === undefined ||
+      (url.substr(0, 7) !== 'https:/' && url.substr(0, 7) !== 'http://') ||
+      callFrame.lineNumber === undefined ||
+      callFrame.columnNumber === undefined ||
+      callFrame.functionName === undefined ||
+      callFrame.scriptId === undefined
+    ) {
       return undefined;
     }
     let { parsedFiles } = this;

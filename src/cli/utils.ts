@@ -1,15 +1,11 @@
-import * as childProcess from 'child_process';
-import { SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION } from 'constants';
-import { Hash } from 'crypto';
+// tslint:disable:no-console
+
 import { HierarchyNode } from 'd3-hierarchy';
 import * as fs from 'fs';
-import * as os from 'os';
 import * as path from 'path';
 import { ICpuProfileNode, Trace } from '../trace';
 import { ModuleMatcher } from './module_matcher';
 import { Categories, Locator } from './utils';
-
-// tslint:disable:no-console
 
 export interface Categories {
   [key: string]: Locator[];
@@ -48,8 +44,12 @@ export function computeMinMax(trace: Trace, start: string = 'navigationStart', e
  * This will add all module paths to locators/categories, except for those already matched by
  * user provided heuristic config entries which specify a non-".*" module name regex.
  */
-export function addRemainingModules(hierarchy: HierarchyNode<ICpuProfileNode>, locators: Locator[],
-                                    categories: Categories, modMatcher: ModuleMatcher) {
+export function addRemainingModules(
+  hierarchy: HierarchyNode<ICpuProfileNode>,
+  locators: Locator[],
+  categories: Categories,
+  modMatcher: ModuleMatcher,
+) {
   const allModules = modMatcher.getModuleList();
   categories['Auto Added Module Paths'] = [];
   allModules.forEach(moduleName => {
@@ -80,7 +80,7 @@ export function methodsFromCategories(categories: Categories) {
 
 export function formatCategories(report: string | undefined, methods: string[]) {
   if (report) {
-    let stats =  fs.statSync(report);
+    let stats = fs.statSync(report);
     let _categories: Categories = {};
 
     if (stats.isDirectory()) {
@@ -103,7 +103,6 @@ export function formatCategories(report: string | undefined, methods: string[]) 
 
         _categories[name] = methods;
       });
-
     } else {
       let category = path.basename(report).replace('.json', '');
       let methods2 = JSON.parse(fs.readFileSync(report, 'utf8'));
@@ -119,7 +118,6 @@ export function formatCategories(report: string | undefined, methods: string[]) 
     }
 
     return _categories;
-
   } else {
     if (methods === undefined) {
       throw new Error(`Error: Must pass a list of method names.`);

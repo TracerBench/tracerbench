@@ -1,22 +1,21 @@
 #!/usr/bin/env node
-'use strict';
 
-const Profile = require('../dist/index.cjs');
+// tslint:disable:no-console
+// tslint:disable:variable-name
+
 const ui = require('commander');
 const fs = require('fs');
-const SilentError = require('silent-error');
-const d3 = require('d3');
-
-function methodNames(val) {
-  return val.split(',');
-}
+const Profile = require('../dist/index.cjs');
 
 ui
   .option('-f, --file <file>', 'Path to trace json file')
   .option('-l, --locations', 'include locations in names')
   .parse(process.argv);
 
-const { file, locations } = ui;
+const {
+  file,
+  locations
+} = ui;
 const defaultProfilePath = `${process.cwd()}/profile.json`;
 
 if (file === undefined && fs.existsSync(defaultProfilePath) === false) {
@@ -28,9 +27,7 @@ const filePath = file || defaultProfilePath;
 const traceEvents = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 const trace = Profile.loadTrace(traceEvents.traceEvents);
 const profile = trace.cpuProfile(-1, -1);
-
 const methods = new Set();
-
 
 if (locations) {
   profile.nodes.forEach(node => {
@@ -52,7 +49,7 @@ methods.forEach(method => console.log(method));
 
 function normalizeFnName(name) {
   if (name === '') {
-    name = '(anonymous)'
+    name = '(anonymous)';
   }
   return name;
 }

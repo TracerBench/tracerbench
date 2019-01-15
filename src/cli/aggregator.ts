@@ -1,12 +1,11 @@
+// tslint:disable:member-ordering
+
 import { HierarchyNode } from 'd3-hierarchy';
-import { ICallFrame, ICpuProfileNode, ITraceEvent, Trace } from '../trace';
-import CpuProfile from '../trace/cpuprofile';
+import { ICallFrame, ICpuProfileNode } from '../trace';
 import { Archive } from './archive_trace';
 import { ParsedFile } from './metadata';
 import { ModuleMatcher } from './module_matcher';
 import { Categories, Locator } from './utils';
-
-// tslint:disable:member-ordering
 
 export interface CallFrameInfo {
   self: number;
@@ -67,9 +66,13 @@ export function categorizeAggregations(aggregations: Aggregations, categories: C
     }
 
     Object.values(aggregations).forEach(aggergation => {
-      if (categories[category].find(locator =>
-          locator.functionName === aggergation.functionName &&
-          locator.moduleName === aggergation.moduleName)) {
+      if (
+        categories[category].find(
+          locator =>
+            locator.functionName === aggergation.functionName &&
+            locator.moduleName === aggergation.moduleName,
+        )
+      ) {
         categorized[category].push(aggergation);
       }
     });
@@ -90,8 +93,12 @@ class AggregrationCollector {
   private archive: Archive;
   private modMatcher: ModuleMatcher;
 
-  constructor(locators: Locator[], archive: Archive, hierarchy: HierarchyNode<ICpuProfileNode>,
-              modMatcher: ModuleMatcher) {
+  constructor(
+    locators: Locator[],
+    archive: Archive,
+    hierarchy: HierarchyNode<ICpuProfileNode>,
+    modMatcher: ModuleMatcher,
+  ) {
     this.archive = archive;
     this.locators = locators;
     this.modMatcher = modMatcher;
@@ -194,7 +201,7 @@ export function collapseCallFrames(aggregations: Aggregations) {
       let collapedStack: ICallFrame[] = [];
       let key = callframeInfo.stack.reduce((acc, cur) => {
         let { functionName, columnNumber, lineNumber } = cur;
-        return acc += `${functionName}${columnNumber}${lineNumber}`;
+        return (acc += `${functionName}${columnNumber}${lineNumber}`);
       }, '');
 
       if (!keys.includes(key)) {
@@ -209,8 +216,12 @@ export function collapseCallFrames(aggregations: Aggregations) {
   return aggregations;
 }
 
-export function aggregate(hierarchy: HierarchyNode<ICpuProfileNode>, locators: Locator[],
-                          archive: Archive, modMatcher: ModuleMatcher) {
+export function aggregate(
+  hierarchy: HierarchyNode<ICpuProfileNode>,
+  locators: Locator[],
+  archive: Archive,
+  modMatcher: ModuleMatcher,
+) {
   let aggregations = new AggregrationCollector(locators, archive, hierarchy, modMatcher);
   let containments: string[] = [];
   hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {

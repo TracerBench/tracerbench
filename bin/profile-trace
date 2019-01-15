@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-'use strict';
 
-const Profile = require('../dist/index.cjs');
-const fs = require('fs');
+// tslint:disable:variable-name
+
 const ui = require('commander');
+const fs = require('fs');
+const Profile = require('../dist/index.cjs');
 
 let networkConditions = Object.keys(Profile.networkConditions).join(', ');
 ui
@@ -29,7 +30,7 @@ if (ui.cpu) {
 }
 
 if (!ui.output) {
-  ui.output = 'trace.json'
+  ui.output = 'trace.json';
 }
 
 if (!ui.url) {

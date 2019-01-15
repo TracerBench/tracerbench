@@ -1,7 +1,9 @@
-import { createSession, IAPIClient, IHTTPClient } from 'chrome-debugging-client';
-import { Emulation, IO, Network, Page, Tracing } from 'chrome-debugging-client/dist/protocol/tot';
+// tslint:disable:no-console
+
+import { createSession } from 'chrome-debugging-client';
+import { IO, Network, Page, Tracing } from 'chrome-debugging-client/dist/protocol/tot';
 import * as fs from 'fs';
-import { IConditions, INetworkConditions, networkConditions } from './conditions';
+import { IConditions } from './conditions';
 import { createClient, emulate, ICookie, setCookies } from './trace-utils';
 
 const DEVTOOLS_CATEGORIES = [
@@ -20,9 +22,12 @@ const DEVTOOLS_CATEGORIES = [
   'disabled-by-default-v8.cpu_profiler.hires',
 ];
 
-// tslint:disable:no-console
-
-export async function liveTrace(url: string, out: string, cookies: ICookie[], conditions: IConditions) {
+export async function liveTrace(
+  url: string,
+  out: string,
+  cookies: ICookie[],
+  conditions: IConditions,
+) {
   return await createSession(async session => {
     const client = await createClient(session);
     const page = new Page(client);

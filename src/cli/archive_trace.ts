@@ -1,8 +1,9 @@
-import { createSession, IAPIClient, IHTTPClient } from 'chrome-debugging-client';
+// tslint:disable:no-console
+
+import { createSession } from 'chrome-debugging-client';
 import { Network, Page } from 'chrome-debugging-client/dist/protocol/tot';
 import * as fs from 'fs';
 import { createClient, ICookie, setCookies } from './trace-utils';
-// tslint:disable:no-console
 
 // Represents a subset of a HAR
 export interface Archive {
@@ -40,9 +41,11 @@ export async function harTrace(url: string, cookies: ICookie[]) {
     let responses: Network.Response[] = [];
 
     network.responseReceived = ({ requestId, response }) => {
-      if (response.mimeType === 'text/html' ||
-          response.mimeType === 'text/javascript' ||
-          response.mimeType === 'application/javascript') {
+      if (
+        response.mimeType === 'text/html' ||
+        response.mimeType === 'text/javascript' ||
+        response.mimeType === 'application/javascript'
+      ) {
         requestIds.push(requestId);
         responses.push(response);
       }
@@ -76,7 +79,7 @@ export async function harTrace(url: string, cookies: ICookie[]) {
     for (let i = 0; i < requestIds.length; i++) {
       let requestId = requestIds[i];
       let _response = responses[i];
-      let responseBody  = await network.getResponseBody({ requestId });
+      let responseBody = await network.getResponseBody({ requestId });
       let entry: Entry = {
         request: { url: _response.url },
         response: { content: { text: responseBody.body } },

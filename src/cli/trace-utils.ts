@@ -1,4 +1,9 @@
-import { IAPIClient, IDebuggingProtocolClient, ISession } from 'chrome-debugging-client';
+import {
+  IAPIClient,
+  IDebuggingProtocolClient,
+  IResolveOptions,
+  ISession,
+} from 'chrome-debugging-client';
 import { Emulation, Network } from 'chrome-debugging-client/dist/protocol/tot';
 import { IConditions, networkConditions } from './conditions';
 
@@ -19,10 +24,7 @@ export async function createClient(session: ISession) {
     browserType = 'system';
   }
 
-  const browser = await session.spawnBrowser(browserType, {
-    executablePath,
-  });
-
+  const browser = await session.spawnBrowser({ browserType, executablePath } as IResolveOptions);
   const tab = await getTab(session.createAPIClient('127.0.0.1', browser.remoteDebuggingPort));
 
   return await session.openDebuggingProtocol(tab.webSocketDebuggerUrl!);
@@ -41,7 +43,11 @@ async function getTab(apiClient: IAPIClient) {
   return tab;
 }
 
-export async function emulate(client: IDebuggingProtocolClient, network: Network, conditions: IConditions) {
+export async function emulate(
+  client: IDebuggingProtocolClient,
+  network: Network,
+  conditions: IConditions,
+) {
   const emulation = new Emulation(client);
   if (emulation.canEmulate()) {
     await emulation.setCPUThrottlingRate({ rate: conditions.cpu });

@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-'use strict';
 
-const Profile = require('../dist/index.cjs');
-const fs = require('fs');
+// tslint:disable:variable-name
+
 const ui = require('commander');
+const fs = require('fs');
+const Profile = require('../dist/index.cjs');
 
 ui.option('-u, --url <url>', 'Url to visit').parse(process.argv);
 

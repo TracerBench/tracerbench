@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-'use strict';
 
-const Profile = require('../dist/index.cjs');
+// tslint:disable:variable-name
+
 const ui = require('commander');
+const Profile = require('../dist/index.cjs');
 
 ui
   .option('-f, --file <file>', 'Path to trace json file')
