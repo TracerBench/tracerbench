@@ -3,7 +3,7 @@
 import { Categorized } from './aggregator';
 import { Table } from './table';
 
-export function report(categorized: Categorized, verbose: boolean) {
+export function report(categorized: Categorized) {
   let table = new Table();
   let totalAggregatedTime = 0;
 
@@ -28,9 +28,9 @@ export function report(categorized: Categorized, verbose: boolean) {
     const sorted = entries.sort((a, b) => b.attributed - a.attributed);
     sorted.forEach(result => {
       let stats = table.addRow();
-      let methodCell = stats
-        .addCell(`${result.moduleName} - ${result.functionName}`)
-        .pad(2, 'left');
+      // let methodCell = stats
+      //   .addCell(`${result.moduleName} - ${result.functionName}`)
+      //   .pad(2, 'left');
       stats.addCell(`${toMS(result.total)}ms`).pad(2, 'left');
       stats.addCell(`${toMS(result.attributed)}ms`).pad(2, 'left');
       stats

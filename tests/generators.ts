@@ -1,7 +1,5 @@
 import { ICallFrame, ICpuProfile, ICpuProfileNode } from '../src';
-import { AggregationResult, Aggregations } from '../src/cli/aggregator';
 import { Archive } from '../src/cli/archive_trace';
-import { Locator } from '../src/cli/utils';
 
 interface INode {
   child(options: OptionalCallFrame): CPUProfileNode;
@@ -51,16 +49,7 @@ class RootCPUProfileNode implements INode {
   }
 
   toJSON(): ICpuProfileNode {
-    let {
-      id,
-      callFrame,
-      self,
-      max,
-      min,
-      children,
-      sampleCount,
-      total,
-    } = this;
+    let { id, callFrame, self, max, min, children, sampleCount, total } = this;
     return {
       id,
       callFrame,
@@ -107,12 +96,8 @@ export class ProfileGenerator {
   }
 
   end(): ICpuProfile {
-    let {
-      nodes,
-      samples,
-      timeDeltas,
-    } = this;
-    let duration = timeDeltas.reduce((accum, cur) =>  accum += cur, 0);
+    let { nodes, samples, timeDeltas } = this;
+    let duration = timeDeltas.reduce((accum, cur) => (accum += cur), 0);
     return {
       startTime: 0,
       endTime: duration,

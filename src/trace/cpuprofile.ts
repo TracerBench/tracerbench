@@ -1,12 +1,5 @@
 import { hierarchy, HierarchyNode } from 'd3-hierarchy';
-import {
-  FUNCTION_NAME,
-  ICpuProfile,
-  ICpuProfileEvent,
-  ICpuProfileNode,
-  ISample,
-  ITraceEvent,
-} from './trace_event';
+import { FUNCTION_NAME, ICpuProfile, ICpuProfileNode, ISample } from './trace_event';
 
 export default class CpuProfile {
   profile: ICpuProfile;
@@ -115,10 +108,6 @@ export default class CpuProfile {
     if (n === undefined) throw new Error(`invalid node id: ${id}`);
     return n;
   }
-}
-
-function isCpuProfile(traceEvent: ITraceEvent | undefined): traceEvent is ICpuProfileEvent {
-  return traceEvent !== undefined && traceEvent.ph === 'I' && traceEvent.name === 'CpuProfile';
 }
 
 function mapAndLinkNodes(

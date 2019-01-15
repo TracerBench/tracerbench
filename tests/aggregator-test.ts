@@ -31,16 +31,21 @@ describe('aggregate', () => {
     let generator = new ProfileGenerator();
     let root = generator.start();
 
-    let a = generator.append(root, 100, {functionName: 'a'});
-    generator.append(a, 50, {functionName: 'b'});
-    generator.append(a, 75, {functionName: 'c'});
-    generator.append(root, 100, {functionName: 'd'});
-    let e = generator.append(root, 25, {functionName: 'e'});
-    generator.append(e, 15, {functionName: 'f'});
+    let a = generator.append(root, 100, { functionName: 'a' });
+    generator.append(a, 50, { functionName: 'b' });
+    generator.append(a, 75, { functionName: 'c' });
+    generator.append(root, 100, { functionName: 'd' });
+    let e = generator.append(root, 25, { functionName: 'e' });
+    generator.append(e, 15, { functionName: 'f' });
     let json = generator.end();
 
     let profile = new CpuProfile(json, -1, -1);
-    let locators = new LocatorGenerator().generate([['a', '.*'], ['c', '.*'], ['d', '.*'], ['f', '.*']]);
+    let locators = new LocatorGenerator().generate([
+      ['a', '.*'],
+      ['c', '.*'],
+      ['d', '.*'],
+      ['f', '.*'],
+    ]);
     let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
     let aggregations = aggregate(profile.hierarchy, locators, archive, modMatcher);
 
@@ -64,17 +69,22 @@ describe('aggregate', () => {
     let generator = new ProfileGenerator();
     let root = generator.start();
 
-    let a = generator.append(root, 100, {functionName: 'a'});
-    generator.append(a, 50, {functionName: 'b'});
-    generator.append(a, 75, {functionName: 'c'});
-    generator.append(root, 100, {functionName: 'd'});
-    let e = generator.append(root, 25, {functionName: 'e'});
-    generator.append(e, 15, {functionName: 'f'});
-    generator.append(root, 10, {functionName: 'c'});
+    let a = generator.append(root, 100, { functionName: 'a' });
+    generator.append(a, 50, { functionName: 'b' });
+    generator.append(a, 75, { functionName: 'c' });
+    generator.append(root, 100, { functionName: 'd' });
+    let e = generator.append(root, 25, { functionName: 'e' });
+    generator.append(e, 15, { functionName: 'f' });
+    generator.append(root, 10, { functionName: 'c' });
     let json = generator.end();
 
     let profile = new CpuProfile(json, -1, -1);
-    let locators = new LocatorGenerator().generate([['a', '.*'], ['c', '.*'], ['d', '.*'], ['f', '.*']]);
+    let locators = new LocatorGenerator().generate([
+      ['a', '.*'],
+      ['c', '.*'],
+      ['d', '.*'],
+      ['f', '.*'],
+    ]);
     let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
     let aggregations = aggregate(profile.hierarchy, locators, archive, modMatcher);
 
@@ -118,8 +128,8 @@ describe('aggregate', () => {
       scriptId: 1,
       url: 'https://www.example.com/a.js',
     });
-    let d = generator.append(root, 25, {functionName: 'd'});
-    generator.append(d, 15, {functionName: 'e'});
+    let d = generator.append(root, 25, { functionName: 'd' });
+    generator.append(d, 15, { functionName: 'e' });
     let json = generator.end();
 
     let locators = new LocatorGenerator().generate([['.*', 'module/1'], ['.*', 'module/2']]);
@@ -162,8 +172,8 @@ describe('aggregate', () => {
       scriptId: 1,
       url: 'https://www.example.com/a.js',
     });
-    let d = generator.append(root, 25, {functionName: 'd'});
-    generator.append(d, 15, {functionName: 'e'});
+    let d = generator.append(root, 25, { functionName: 'd' });
+    generator.append(d, 15, { functionName: 'e' });
     let json = generator.end();
 
     let locators = new LocatorGenerator().generate([['.*', 'module/1']]); // module/2 is implicit
@@ -171,7 +181,7 @@ describe('aggregate', () => {
     let profile = new CpuProfile(json, -1, -1);
 
     let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
-    addRemainingModules(profile.hierarchy, locators, {}, modMatcher); // this should add module/2
+    addRemainingModules(locators, {}, modMatcher); // this should add module/2
     let aggregations = aggregate(profile.hierarchy, locators, archive, modMatcher);
 
     expect(aggregations['.*module/1'].attributed).to.equal(150); // a(100) + b(50)
@@ -208,8 +218,8 @@ describe('aggregate', () => {
       scriptId: 1,
       url: 'https://www.example.com/a.js',
     });
-    let d = generator.append(root, 25, {functionName: 'd'});
-    generator.append(d, 15, {functionName: 'e'});
+    let d = generator.append(root, 25, { functionName: 'd' });
+    generator.append(d, 15, { functionName: 'e' });
     let json = generator.end();
 
     let locators = new LocatorGenerator().generate([['a', '.*']]); // this will steal time from module/1
@@ -217,7 +227,7 @@ describe('aggregate', () => {
     let profile = new CpuProfile(json, -1, -1);
 
     let modMatcher = new ModuleMatcher(profile.hierarchy, archive); // this should add module/1 & 2
-    addRemainingModules(profile.hierarchy, locators, {}, modMatcher);
+    addRemainingModules(locators, {}, modMatcher);
     let aggregations = aggregate(profile.hierarchy, locators, archive, modMatcher);
 
     expect(aggregations['a.*'].attributed).to.equal(100); // a(100)
@@ -244,20 +254,24 @@ describe('categorizeAggregations', () => {
     let generator = new ProfileGenerator();
     let root = generator.start();
 
-    let a = generator.append(root, 100, {functionName: 'a'});
-    generator.append(a, 50, {functionName: 'b'});
-    generator.append(a, 75, {functionName: 'c'});
+    let a = generator.append(root, 100, { functionName: 'a' });
+    generator.append(a, 50, { functionName: 'b' });
+    generator.append(a, 75, { functionName: 'c' });
 
-    let d = generator.append(root, 100, {functionName: 'd'});
-    let e = generator.append(root, 25, {functionName: 'e'});
-    generator.append(e, 15, {functionName: 'f'});
+    let e = generator.append(root, 25, { functionName: 'e' });
+    generator.append(e, 15, { functionName: 'f' });
 
-    generator.append(root, 10, {functionName: 'c'});
+    generator.append(root, 10, { functionName: 'c' });
 
     let json = generator.end();
 
     let profile = new CpuProfile(json, -1, -1);
-    let locators = new LocatorGenerator().generate([['a', '.*'], ['c', '.*'], ['d', '.*'], ['f', '.*']]);
+    let locators = new LocatorGenerator().generate([
+      ['a', '.*'],
+      ['c', '.*'],
+      ['d', '.*'],
+      ['f', '.*'],
+    ]);
     let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
     aggregations = aggregate(profile.hierarchy, locators, archive, modMatcher);
   });
