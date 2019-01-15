@@ -10,7 +10,7 @@
     "start": "node serve.js",
     "lint": "tslint -p tsconfig.json",
     "prepare": "rollup -c",
-    "test": "mocha -r ts-node/register tests/**.ts"
+    "test": "yarn lint && mocha -r ts-node/register tests/**.ts"
   },
   "bin": {
     "profile": "./bin/profile"

@@ -1,9 +1,8 @@
 // tslint:disable:no-console
 
-import { HierarchyNode } from 'd3-hierarchy';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ICpuProfileNode, Trace } from '../trace';
+import { Trace } from '../trace';
 import { ModuleMatcher } from './module_matcher';
 import { Categories, Locator } from './utils';
 
@@ -45,7 +44,6 @@ export function computeMinMax(trace: Trace, start: string = 'navigationStart', e
  * user provided heuristic config entries which specify a non-".*" module name regex.
  */
 export function addRemainingModules(
-  hierarchy: HierarchyNode<ICpuProfileNode>,
   locators: Locator[],
   categories: Categories,
   modMatcher: ModuleMatcher,
@@ -76,6 +74,20 @@ export function methodsFromCategories(categories: Categories) {
     accum.push(...categories[category]);
     return accum;
   }, []);
+}
+
+export function toRegex(locators: Locator[]) {
+  return locators.map(({ functionName }) => {
+    if (functionName === '*') {
+      return /.*/;
+    }
+    let parts = functionName.split('.'); // Path expression
+    if (parts.length > 1) {
+      parts.shift();
+      return new RegExp(`^([A-z]+\\.${parts.join('\\.')})$`);
+    }
+    return new RegExp(`^${functionName}$`);
+  });
 }
 
 export function formatCategories(report: string | undefined, methods: string[]) {

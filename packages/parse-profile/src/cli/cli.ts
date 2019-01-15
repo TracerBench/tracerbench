@@ -60,7 +60,7 @@ export default class CommandLine {
 
   run() {
     let { archive } = this;
-    let { report, verbose, methods } = this.ui;
+    let { report, methods } = this.ui;
     let trace = this.loadTrace();
     let profile = this.cpuProfile(trace)!;
 
@@ -68,12 +68,12 @@ export default class CommandLine {
 
     let categories = formatCategories(report, methods);
     let allMethods = methodsFromCategories(categories);
-    addRemainingModules(profile.hierarchy, allMethods, categories, modMatcher);
+    addRemainingModules(allMethods, categories, modMatcher);
     verifyMethods(allMethods);
 
     let aggregations = aggregate(profile.hierarchy, allMethods, archive, modMatcher);
     let collapsed = collapseCallFrames(aggregations);
     let categorized = categorizeAggregations(collapsed, categories);
-    reporter(categorized, verbose!!);
+    reporter(categorized);
   }
 }

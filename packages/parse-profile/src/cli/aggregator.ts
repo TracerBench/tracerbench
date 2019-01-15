@@ -29,20 +29,6 @@ export interface Categorized {
   [key: string]: AggregationResult[];
 }
 
-function toRegex(locators: Locator[]) {
-  return locators.map(({ functionName }) => {
-    if (functionName === '*') {
-      return /.*/;
-    }
-    let parts = functionName.split('.'); // Path expression
-    if (parts.length > 1) {
-      parts.shift();
-      return new RegExp(`^([A-z]+\\.${parts.join('\\.')})$`);
-    }
-    return new RegExp(`^${functionName}$`);
-  });
-}
-
 export function verifyMethods(array: Locator[]) {
   let valuesSoFar: string[] = [];
   for (let i = 0; i < array.length; ++i) {
@@ -88,10 +74,11 @@ export interface ParsedFiles {
 class AggregrationCollector {
   private _aggregations: Aggregations = {};
   private locators: Locator[];
-  private matcher: RegExp | undefined;
-  private parsedFiles: ParsedFiles = {};
-  private archive: Archive;
   private modMatcher: ModuleMatcher;
+  matcher: RegExp | undefined;
+  parsedFiles: ParsedFiles = {};
+  archive: Archive;
+  hierarchy: HierarchyNode<ICpuProfileNode>;
 
   constructor(
     locators: Locator[],
@@ -99,8 +86,9 @@ class AggregrationCollector {
     hierarchy: HierarchyNode<ICpuProfileNode>,
     modMatcher: ModuleMatcher,
   ) {
-    this.archive = archive;
     this.locators = locators;
+    this.archive = archive;
+    this.hierarchy = hierarchy;
     this.modMatcher = modMatcher;
 
     locators.forEach(({ functionName, moduleName }) => {
@@ -138,7 +126,7 @@ class AggregrationCollector {
 
   collect() {
     Object.keys(this._aggregations).forEach(method => {
-      let { total, attributed, callframes } = this._aggregations[method];
+      let { callframes } = this._aggregations[method];
       this._aggregations[method].self = callframes.reduce((a, c) => a + c.self, 0);
     });
 
@@ -180,16 +168,6 @@ class AggregrationCollector {
       return sameFNRegex && sameMNRegex;
     });
   }
-
-  private contentFor(url: string) {
-    let entry = this.archive.log.entries.find(e => e.request.url === url);
-
-    if (!entry) {
-      throw new Error(`Could not find "${url}" in the archive file.`);
-    }
-
-    return entry.response.content.text;
-  }
 }
 
 export function collapseCallFrames(aggregations: Aggregations) {
@@ -198,7 +176,6 @@ export function collapseCallFrames(aggregations: Aggregations) {
     let keys: string[] = [];
 
     aggregations[methodName].callframes.forEach(callframeInfo => {
-      let collapedStack: ICallFrame[] = [];
       let key = callframeInfo.stack.reduce((acc, cur) => {
         let { functionName, columnNumber, lineNumber } = cur;
         return (acc += `${functionName}${columnNumber}${lineNumber}`);
@@ -223,7 +200,6 @@ export function aggregate(
   modMatcher: ModuleMatcher,
 ) {
   let aggregations = new AggregrationCollector(locators, archive, hierarchy, modMatcher);
-  let containments: string[] = [];
   hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {
     let { self } = node.data;
     if (self !== 0) {
