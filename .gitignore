@@ -6,3 +6,4 @@ results/
 /*workspace
 *.log
 *.tgz
+*.tmp

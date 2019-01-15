@@ -1,5 +1,4 @@
 import { mkdirSync, readFileSync, writeFileSync } from "fs";
-import { minify } from "uglify-js";
 import compileTemplates from "./compile_templates";
 import makePrecompile from "./make_precompile";
 
@@ -7,7 +6,7 @@ import makePrecompile from "./make_precompile";
 
 export default function build(channels: string[]) {
   channels.forEach(channel => {
-    console.debug(`building fixture app for "${channel}"...`);
+    console.log(`building fixture app for "${channel}"...`);
     const emberjs = readFileSync(
       `test/vendor/ember-${channel}/dist/ember.prod.js`,
       "utf8"
@@ -34,31 +33,28 @@ export default function build(channels: string[]) {
       writeFileSync("app.js", appjs);
       writeFileSync("index.html", index);
 
-      let result = minify("ember.prod.js", {
-        compress: {
-          negate_iife: false,
-          sequences: 0
-        },
-        outSourceMap: "ember.min.map",
-        output: {
-          semicolons: false
-        } as any
-      });
-      writeFileSync("ember.min.js", result.code);
-      writeFileSync("ember.min.map", result.map);
+      // todo: need to address uglify-js non gt es5 support
+      // either transpile before down to es5 or leverage
+      // a different library than uglify-js
+      // kicking the can on minification ATM as non-critical
 
-      result = minify("app.js", {
-        compress: {
-          negate_iife: false,
-          sequences: 0
-        },
-        outSourceMap: "app.min.map",
-        output: {
-          semicolons: false
-        } as any
-      });
-      writeFileSync("app.min.js", result.code);
-      writeFileSync("app.min.map", result.map);
+      // let result = minify("ember.prod.js", {
+      //   output: {
+      //     semicolons: false
+      //   } as any,
+      //   sourceMap: true
+      // });
+      // writeFileSync("ember.min.js", result.code);
+      // writeFileSync("ember.min.map", result.map);
+
+      // result = minify("app.js", {
+      //   output: {
+      //     semicolons: false
+      //   } as any,
+      //   sourceMap: true
+      // });
+      // writeFileSync("app.min.js", result.code);
+      // writeFileSync("app.min.map", result.map);
     } finally {
       process.chdir(pwd);
     }

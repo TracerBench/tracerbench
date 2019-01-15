@@ -15,7 +15,8 @@ const browserOpts = {
     "--mute-audio",
     "--v8-cache-options=none",
     "--disable-cache",
-    "--disable-v8-idle-tasks"
+    "--disable-v8-idle-tasks",
+    "--crash-dumps-dir=./tmp"
   ]
 };
 
