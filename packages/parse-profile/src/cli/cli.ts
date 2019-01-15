@@ -1,14 +1,17 @@
-import { UnaryExpression } from 'estree';
+// tslint:disable:member-ordering
+
 import * as fs from 'fs';
-import { HAR } from 'har-remix';
-import { CpuProfile, Trace } from '../trace';
+import { Trace } from '../trace';
 import { aggregate, categorizeAggregations, collapseCallFrames, verifyMethods } from './aggregator';
 import { Archive } from './archive_trace';
 import { ModuleMatcher } from './module_matcher';
 import { report as reporter } from './reporter';
-import { addRemainingModules, computeMinMax, formatCategories, methodsFromCategories } from './utils';
-
-// tslint:disable:member-ordering
+import {
+  addRemainingModules,
+  computeMinMax,
+  formatCategories,
+  methodsFromCategories,
+} from './utils';
 
 export interface UI {
   file: string;

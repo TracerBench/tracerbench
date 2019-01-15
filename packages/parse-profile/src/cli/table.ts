@@ -40,7 +40,6 @@ class Row {
   }
 
   fit(maxCellSizes: number[]) {
-    let { cells } = this;
     let cellSizes = this.cellSizes();
 
     if (!this.divider) {

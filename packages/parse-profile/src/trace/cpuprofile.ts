@@ -6,8 +6,6 @@ import {
   ICpuProfileNode,
   ISample,
   ITraceEvent,
-  TRACE_EVENT_NAME,
-  TRACE_EVENT_PHASE,
 } from './trace_event';
 
 export default class CpuProfile {
