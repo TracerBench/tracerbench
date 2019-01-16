@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
+'use strict';
 // tslint:disable:variable-name
+// tslint:disable:no-console
 
 const ui = require('commander');
 const fs = require('fs');
@@ -11,11 +13,11 @@ ui
   .option('-u, --url <url>', 'Url to visit')
   .option('-o, --output <output>', 'The file to save the trace to')
   .option('-n, --network <value>', `Simulated network conditions for ${networkConditions}`)
-  .option('-c, --cpu <value>', 'cpu throttle multiplier')
+  .option('-c, --cpu <value>', 'CPU throttle multiplier')
+  .option('-h, --har <filepath>', 'Filepath to the HAR file')
   .parse(process.argv);
 
-const cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf8'));
-
+let cookies;
 let conditions = {
   network: undefined,
   cpu: 1,
@@ -36,6 +38,28 @@ if (!ui.output) {
 if (!ui.url) {
   Profile.showError('You must pass a URL using the --url option');
   process.exit(1);
+}
+
+if (!ui.har) {
+  Profile.showError('You must pass a filepath to the HAR file with the --har option');
+  process.exit(1);
+}
+
+try {
+  cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf8'));
+} catch (error) {
+  try {
+    const har = JSON.parse(fs.readFileSync(ui.har, 'utf8'));
+    cookies = [];
+    har.log.entries.forEach((entry) => {
+      if (entry.response.cookies.length > 0) {
+        cookies.push(entry.response.cookies);
+      }
+    });
+  } catch (error) {
+    Profile.showError(`Error extracting cookies from HAR file at path ${ui.har}`);
+    process.exit(1);
+  }
 }
 
 Profile.liveTrace(ui.url, ui.output, cookies, conditions);

@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
+'use strict';
 // tslint:disable:no-console
 
-const program = require('commander');
+const ui = require('commander');
 const fs = require('fs');
 
-program
+ui
   .command('find <tracefile> <url>')
   .description('search for frame id by url')
   .action((tracefile, url) => {
@@ -14,7 +15,7 @@ program
     else console.log('not found');
   });
 
-program
+ui
   .command('list <tracefile>')
   .description('list main frame loads')
   .action((tracefile) => {
@@ -32,7 +33,7 @@ program
       });
   });
 
-program
+ui
   .command('show <tracefile> <frameOrURL>')
   .option('-m, --marks', 'show user timing marks')
   .option('-f, --filter [filter]', 'user timing marks start with', collect, [])
@@ -80,10 +81,10 @@ program
   });
 
 if (process.argv.length === 2) {
-  program.help();
+  ui.help();
 }
 
-program.parse(process.argv);
+ui.parse(process.argv);
 
 function collect(val, memo) {
   memo.push(val);

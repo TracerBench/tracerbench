@@ -3,7 +3,7 @@
 import { createSession } from 'chrome-debugging-client';
 import { Network, Page } from 'chrome-debugging-client/dist/protocol/tot';
 import * as fs from 'fs';
-import { createClient, ICookie, setCookies } from './trace-utils';
+import { createClient, setCookies } from './trace-utils';
 
 // Represents a subset of a HAR
 export interface Archive {
@@ -31,7 +31,7 @@ export interface Entry {
   response: Response;
 }
 
-export async function harTrace(url: string, cookies: ICookie[]) {
+export async function harTrace(url: string, cookies: Network.SetCookieParameters[]) {
   return await createSession(async session => {
     const client = await createClient(session);
     const page = new Page(client);

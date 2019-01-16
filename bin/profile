@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 
+'use strict';
+
 const ui = require('commander');
 const packageJson = require('../package.json');
 
