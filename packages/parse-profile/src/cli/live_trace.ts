@@ -4,7 +4,7 @@ import { createSession } from 'chrome-debugging-client';
 import { IO, Network, Page, Tracing } from 'chrome-debugging-client/dist/protocol/tot';
 import * as fs from 'fs';
 import { IConditions } from './conditions';
-import { createClient, emulate, ICookie, setCookies } from './trace-utils';
+import { createClient, emulate, setCookies } from './trace-utils';
 
 const DEVTOOLS_CATEGORIES = [
   '-*',
@@ -25,7 +25,7 @@ const DEVTOOLS_CATEGORIES = [
 export async function liveTrace(
   url: string,
   out: string,
-  cookies: ICookie[],
+  cookies: Network.SetCookieParameters[],
   conditions: IConditions,
 ) {
   return await createSession(async session => {

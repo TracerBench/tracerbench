@@ -1,17 +1,24 @@
 #!/usr/bin/env node
 
+'use strict';
 // tslint:disable:variable-name
 
 const ui = require('commander');
 const fs = require('fs');
 const Profile = require('../dist/index.cjs');
 
-ui.option('-u, --url <url>', 'Url to visit').parse(process.argv);
+ui.option('-u, --url <url>', 'Url to visit').parse(process.argv)
+  .option('-h, --har <filepath>', 'Filepath to the HAR file');
 
 const cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf8'));
 
 if (!ui.url) {
   Profile.showError('You must pass a URL using the --url option');
+  process.exit(1);
+}
+
+if (!ui.har) {
+  Profile.showError('You must pass a filepath to the HAR file with the --har option');
   process.exit(1);
 }
 

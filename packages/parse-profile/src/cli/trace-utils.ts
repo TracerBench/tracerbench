@@ -7,13 +7,6 @@ import {
 import { Emulation, Network } from 'chrome-debugging-client/dist/protocol/tot';
 import { IConditions, networkConditions } from './conditions';
 
-export interface ICookie {
-  url: string;
-  name: string;
-  value: string;
-  domain: string;
-}
-
 export async function createClient(session: ISession) {
   let browserType;
   let executablePath;
@@ -63,9 +56,11 @@ export async function emulate(
     }
   }
 }
+// tslint:disable:no-console
 
-export async function setCookies(network: Network, cookies: ICookie[]) {
+export async function setCookies(network: Network, cookies: Network.SetCookieParameters[]) {
   for (let i = 0; i < cookies.length; i++) {
+    console.log(cookies[i]);
     await network.setCookie(cookies[i]);
   }
 }
