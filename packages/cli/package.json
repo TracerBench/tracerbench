@@ -1,0 +1,19 @@
+{
+  "name": "tracerbench-cli",
+  "version": "0.0.1",
+  "description": "tracerbench cli",
+  "repository": "https://github.com/TracerBench/tracerbench.git",
+  "author": "Kris Selden",
+  "license": "BSD-2-Clause",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "profile": "./bin/profile"
+  },
+  "scripts": {
+    "build": "tsc -b",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "yarn build",
+    "test": "yarn lint && mocha -r ts-node/register tests/**.ts"
+  }
+}
