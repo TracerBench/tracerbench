@@ -17,6 +17,18 @@ export interface Locator {
   moduleNameRegex: RegExp;
 }
 
+export function filterObjectByKeys(obj: any, keyArray: string[]) {
+  let _obj = Object.assign({}, obj);
+  let k = Object.keys(_obj);
+  k.forEach(c => {
+    if (!keyArray.includes(c)) {
+      delete _obj[c];
+    }
+  });
+
+  return _obj;
+}
+
 export function computeMinMax(trace: Trace, start: string = 'navigationStart', end: string) {
   let min;
   let max;
