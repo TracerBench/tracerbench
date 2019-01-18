@@ -17,6 +17,8 @@ export interface Locator {
   moduleNameRegex: RegExp;
 }
 
+export const AUTO_ADD_CAT = 'Auto Added Module Paths';
+
 export function filterObjectByKeys(obj: any, keyArray: string[]) {
   let _obj = Object.assign({}, obj);
   let k = Object.keys(_obj);
@@ -61,7 +63,7 @@ export function addRemainingModules(
   modMatcher: ModuleMatcher,
 ) {
   const allModules = modMatcher.getModuleList();
-  categories['Auto Added Module Paths'] = [];
+  categories[AUTO_ADD_CAT] = [];
   allModules.forEach(moduleName => {
     // If the locator is going to match an entire module anyway, don't add that module to the auto
     // generated list of module aggergations.
@@ -76,7 +78,7 @@ export function addRemainingModules(
         moduleNameRegex: new RegExp(`^${moduleName}$`),
       };
       locators.push(newLocator);
-      categories['Auto Added Module Paths'].push(newLocator);
+      categories[AUTO_ADD_CAT].push(newLocator);
     }
   });
 }

@@ -2,6 +2,7 @@
 
 import { Categorized } from './aggregator';
 import { Table } from './table';
+import { AUTO_ADD_CAT } from './utils';
 
 export function report(categorized: Categorized) {
   let table = new Table();
@@ -28,9 +29,11 @@ export function report(categorized: Categorized) {
     const sorted = entries.sort((a, b) => b.attributed - a.attributed);
     sorted.forEach(result => {
       let stats = table.addRow();
-      // let methodCell = stats
-      //   .addCell(`${result.moduleName} - ${result.functionName}`)
-      //   .pad(2, 'left');
+      if (category === AUTO_ADD_CAT) {
+        stats.addCell(`${result.moduleName}`).pad(2, 'left');
+      } else {
+        stats.addCell(`${result.moduleName} - ${result.functionName}`).pad(2, 'left');
+      }
       stats.addCell(`${toMS(result.total)}ms`).pad(2, 'left');
       stats.addCell(`${toMS(result.attributed)}ms`).pad(2, 'left');
       stats

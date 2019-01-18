@@ -1,5 +1,14 @@
 import { hierarchy, HierarchyNode } from 'd3-hierarchy';
-import { FUNCTION_NAME, ICpuProfile, ICpuProfileNode, ISample } from './trace_event';
+import {
+  FUNCTION_NAME,
+  ICpuProfile,
+  ICpuProfileNode,
+  IProfileNode,
+  ISample,
+  ITraceEvent,
+  TRACE_EVENT_NAME,
+  TRACE_EVENT_PHASE,
+} from './trace_event';
 
 export default class CpuProfile {
   profile: ICpuProfile;
@@ -7,7 +16,7 @@ export default class CpuProfile {
   /**
    * Node by node id.
    */
-  nodes: Map<number, ICpuProfileNode>;
+  nodeMap: Map<number, ICpuProfileNode>;
 
   samples: ISample[];
 
@@ -15,21 +24,6 @@ export default class CpuProfile {
    * Root parent
    */
   root?: ICpuProfileNode;
-
-  /**
-   * Program node
-   */
-  program?: ICpuProfileNode;
-
-  /**
-   * Idle node
-   */
-  idle?: ICpuProfileNode;
-
-  /**
-   * GC node
-   */
-  gc?: ICpuProfileNode;
 
   start: number;
   end: number;
@@ -40,59 +34,42 @@ export default class CpuProfile {
   private parentLinks: Map<ICpuProfileNode, ICpuProfileNode>;
   private childrenLinks: Map<ICpuProfileNode, ICpuProfileNode[]>;
 
-  constructor(profile: ICpuProfile, min: number, max: number) {
+  constructor(profile: ICpuProfile, events: ITraceEvent[], min: number, max: number) {
     this.profile = profile;
 
     const parentLinks = (this.parentLinks = new Map<ICpuProfileNode, ICpuProfileNode>());
     const childrenLinks = (this.childrenLinks = new Map<ICpuProfileNode, ICpuProfileNode[]>());
 
     const nodes = profile.nodes;
+    initNodes(nodes);
+    const nodeMap = mapAndLinkNodes(nodes, parentLinks, childrenLinks);
 
-    const nodeMap = (this.nodes = mapAndLinkNodes(nodes, parentLinks, childrenLinks));
+    const originalRoot: ICpuProfileNode | undefined = nodes.find(node => {
+      return node.callFrame.scriptId === 0 || node.callFrame.scriptId === '0' &&
+             node.callFrame.functionName === FUNCTION_NAME.ROOT;
+    });
+    if (originalRoot === undefined) throw new Error('Missing root node in original profile');
 
-    let root: ICpuProfileNode | undefined;
-    for (let i = 0; i < nodes.length; i++) {
-      const node = nodes[i];
-
-      if (node.callFrame.scriptId === 0 || node.callFrame.scriptId === '0') {
-        switch (node.callFrame.functionName) {
-          case FUNCTION_NAME.ROOT:
-            root = node;
-            break;
-          case FUNCTION_NAME.PROGRAM:
-            this.program = node;
-            break;
-          case FUNCTION_NAME.IDLE:
-            this.idle = node;
-            break;
-          case FUNCTION_NAME.GC:
-            this.gc = node;
-            break;
-        }
-      }
-    }
-
-    this.samples = mapSamples(profile, nodeMap, min, max);
-
-    if (root === undefined) {
-      throw new Error('missing root node in profile');
-    }
-
-    this.root = root;
-
-    computeTimes(root, childrenLinks);
+    this.samples = absoluteSamples(profile, nodeMap);
+    const {expandedRoot, expandedNodeMap} = expandAndFix(this.samples, profile, events,
+                                               min, max, parentLinks, childrenLinks, originalRoot);
+    this.root = expandedRoot;
+    this.nodeMap = expandedNodeMap;
 
     const start = (this.start = profile.startTime);
-    const end = (this.end = root.max);
+    const end = (this.end = expandedRoot.max);
     this.duration = end - start;
 
-    this.hierarchy = hierarchy(root, node => {
+    this.hierarchy = hierarchy(expandedRoot, node => {
       const children = childrenLinks.get(node);
       if (children) {
-        return root === node ? children.filter(n => !isMetaNode(n)) : children;
+        return expandedRoot === node ? children.filter(n => !isMetaNode(n)) : children;
       }
       return null;
     });
+
+    // Make child iteration easier
+    this.hierarchy.each(node => { if (node.children === undefined) node.children = []; });
   }
 
   parent(node: ICpuProfileNode) {
@@ -104,9 +81,43 @@ export default class CpuProfile {
   }
 
   node(id: number) {
-    const n = this.nodes.get(id);
+    const n = this.nodeMap.get(id);
     if (n === undefined) throw new Error(`invalid node id: ${id}`);
     return n;
+  }
+}
+
+function expandAndFix(
+  samples: ISample[],
+  profile: ICpuProfile,
+  events: ITraceEvent[],
+  min: number,
+  max: number,
+  parentLinks: Map<ICpuProfileNode, ICpuProfileNode>,
+  childrenLinks: Map<ICpuProfileNode, ICpuProfileNode[]>,
+  root: ICpuProfileNode,
+) {
+  const {expandedNodes, orig2ExpNodes} = expandNodes(samples, events, min, max, parentLinks);
+  profile.nodes = expandedNodes;
+  parentLinks.clear();
+  childrenLinks.clear();
+
+  const expandedNodeMap = mapAndLinkNodes(expandedNodes, parentLinks, childrenLinks);
+
+  if (! orig2ExpNodes.has(root.id)) throw new Error('Missing root node in expanded profile');
+  return {expandedRoot: orig2ExpNodes.get(root.id)![0], expandedNodeMap};
+}
+
+function initNodes(
+  nodes: ICpuProfileNode[],
+) {
+  for (let i = 0; i < nodes.length; i++) {
+    const node = nodes[i];
+    // initialize our extensions
+    node.min = -1;
+    node.max = -1;
+    node.sampleCount = 0;
+    node.self = 0;
   }
 }
 
@@ -117,13 +128,7 @@ function mapAndLinkNodes(
 ) {
   const nodeMap = new Map<number, ICpuProfileNode>();
   for (let i = 0; i < nodes.length; i++) {
-    const node = nodes[i];
-    // initialize our extensions
-    node.min = -1;
-    node.max = -1;
-    node.sampleCount = 0;
-    node.self = 0;
-    nodeMap.set(node.id, node);
+    nodeMap.set(nodes[i].id, nodes[i]);
   }
 
   linkNodes(nodes, nodeMap, parentLinks, childrenLinks);
@@ -160,11 +165,9 @@ function linkChildren(
   childrenLinks.set(parent, children);
 }
 
-function mapSamples(
+function absoluteSamples(
   profile: ICpuProfile,
   nodeMap: Map<number, ICpuProfileNode>,
-  min: number,
-  max: number,
 ) {
   const sampleIds = profile.samples;
   const samples: ISample[] = new Array(sampleIds.length);
@@ -201,42 +204,199 @@ function mapSamples(
       sample.delta = timestamp - prev.timestamp;
       sample.prev = prev;
     }
-
-    if (min < timestamp && (max > timestamp || max === -1)) {
-      const node = sample.node;
-      if (node.min === -1) {
-        node.min = timestamp;
-      }
-
-      node.self += sample.delta;
-      node.max = timestamp;
-    }
-
     prev = sample;
   }
 
   return samples;
 }
 
-function computeTimes(node: ICpuProfileNode, childrenMap: Map<ICpuProfileNode, ICpuProfileNode[]>) {
-  const children = childrenMap.get(node);
-  let childTotal = 0;
-  let min = node.min;
-  let max = node.max;
-  if (children !== undefined) {
-    for (let i = 0; i < children.length; i++) {
-      const child = children[i];
-      computeTimes(child, childrenMap);
-      childTotal += child.total;
+function expandNodes(
+  samples: ISample[],
+  events: ITraceEvent[],
+  min: number,
+  max: number,
+  parentLinks: Map<ICpuProfileNode, ICpuProfileNode>,
+) {
+  const expandedNodes: ICpuProfileNode[] = [];
+  const orig2ExpNodes = new Map<number, ICpuProfileNode[]>();
+  const state: ExpState = {
+    isExecuting: false,
+    lastSampleTS: -1,
+    stack: [],
+    origId2activeIndex: new Map<number, number>(),
+    expId2origId: new Map<number, number>(),
+  };
 
-      min = min === -1 ? child.min : Math.min(min, child.min);
-      max = max === -1 ? child.max : Math.max(max, child.max);
+  let i = 0;
+  let j = 0;
+
+  for (; i < samples.length && j < events.length;) {
+    if (samples[i].timestamp <= events[j].ts) {
+      if (!isOutOfBounds(samples[i].timestamp, min, max) && state.isExecuting) {
+        processSample(samples[i], orig2ExpNodes, parentLinks, expandedNodes, state);
+      }
+      i++;
+    } else {
+      if (!isOutOfBounds(events[j].ts, min, max)) {
+        processEvent(events[j], state);
+      }
+      j++;
     }
-    children.sort((a, b) => a.min - b.min);
   }
-  node.min = min;
-  node.max = max;
-  node.total = node.self + childTotal;
+
+  for (; i < samples.length; i++) {
+    if (!isOutOfBounds(samples[i].timestamp, min, max) && state.isExecuting) {
+      processSample(samples[i], orig2ExpNodes, parentLinks, expandedNodes, state);
+    }
+  }
+
+  for (; j < events.length; j++) {
+    if (!isOutOfBounds(events[j].ts, min, max)) {
+      processEvent(events[j], state);
+    }
+  }
+
+  return {expandedNodes, orig2ExpNodes};
+}
+
+function isOutOfBounds(ts: number, min: number, max: number) {
+  return ts < min || (max !== -1 && ts > max);
+}
+
+function terminateNodes(
+  toTerminate: ICpuProfileNode[],
+  ts: number,
+  state: ExpState,
+) {
+  toTerminate.forEach(node => {
+    state.origId2activeIndex.delete(state.expId2origId.get(node.id)!);
+    state.expId2origId.delete(node.id);
+    node.max = ts;
+  });
+}
+
+function activateNodes(
+  toActivate: ICpuProfileNode[],
+  state: ExpState,
+  ts: number,
+  newNodes: ICpuProfileNode[],
+  orig2ExpNodes: Map<number, ICpuProfileNode[]>,
+) {
+  const { stack, origId2activeIndex, expId2origId } = state;
+  let parent = stack[stack.length - 1];
+
+  for (let i = toActivate.length - 1; i >= 0; i--) {
+    const oldNode = toActivate[i];
+    // IProfileNode type gives access to the .parent attribute
+    const newNode: ICpuProfileNode & IProfileNode = JSON.parse(JSON.stringify(oldNode));
+    newNode.id = newNodes.length;
+
+    if (parent) {
+      newNode.parent = parent.id;
+
+      const children = parent.children;
+      if (children !== undefined) {
+        children.push(newNode.id);
+      } else {
+        parent.children = [newNode.id];
+      }
+    }
+
+    // clear out node-->children links
+    newNode.children = undefined;
+
+    newNode.min = ts;
+    newNode.max = -1;
+    newNode.self = 0;
+    newNode.total = 0;
+
+    newNodes.push(newNode);
+    stack.push(newNode);
+    origId2activeIndex.set(oldNode.id, stack.length - 1);
+    expId2origId.set(newNode.id, oldNode.id);
+    if (orig2ExpNodes.has(oldNode.id)) {
+      orig2ExpNodes.get(oldNode.id)!.push(newNode);
+    } else {
+      orig2ExpNodes.set(oldNode.id, [newNode]);
+    }
+
+    parent = newNode;
+  }
+}
+
+function addDurationToNodes(
+  stack: ICpuProfileNode[],
+  delta: number,
+) {
+  for (let i = 0; i < stack.length; i++) {
+    stack[i].total += delta;
+  }
+  if (stack.length > 0) stack[stack.length - 1].self += delta;
+}
+
+interface ExpState {
+  isExecuting: boolean;
+  lastSampleTS: number;
+  stack: ICpuProfileNode[];
+  origId2activeIndex: Map<number, number>;
+  expId2origId: Map<number, number>;
+}
+
+function processEvent(
+  event: ITraceEvent,
+  state: ExpState,
+) {
+  const { stack, lastSampleTS } = state;
+  if (event.ph === TRACE_EVENT_PHASE.BEGIN) state.isExecuting = true;
+
+  if (event.ph === TRACE_EVENT_PHASE.END) {
+    if (event.name === TRACE_EVENT_NAME.V8_EXECUTE) {
+      addDurationToNodes(stack, event.ts - lastSampleTS);
+      const toTerminate = stack.splice(1); // don't slice (root)
+      terminateNodes(toTerminate, event.ts, state);
+      state.isExecuting = false;
+    }
+  }
+}
+
+function processSample(
+  sample: ISample,
+  orig2ExpNodes: Map<number, ICpuProfileNode[]>,
+  parentLinks: Map<ICpuProfileNode, ICpuProfileNode>,
+  newNodes: ICpuProfileNode[],
+  state: ExpState,
+) {
+  const { stack, origId2activeIndex } = state;
+  let curNode: ICpuProfileNode | undefined;
+  const toActivate: ICpuProfileNode[] = [];
+
+  state.lastSampleTS = sample.timestamp;
+
+  for (curNode = sample.node; curNode; curNode = parentLinks.get(curNode)) {
+    if (origId2activeIndex.has(curNode.id)) break;
+    toActivate.push(curNode);
+  }
+
+  addDurationToNodes(stack, sample.delta);
+
+  let spliceStart;
+  if (curNode === undefined) {
+    // No ongoing nodes, remove everything from the stack
+    spliceStart = 0;
+  } else {
+    // Don't let GC or Program samples terminate the current stack
+    if (sample.node.callFrame.functionName === FUNCTION_NAME.GC ||
+        sample.node.callFrame.functionName === FUNCTION_NAME.PROGRAM) {
+          spliceStart = stack.length; // no-op for slice
+    } else {
+      // Leave only ongoing nodes on the stack
+      spliceStart = origId2activeIndex.get(curNode.id)! + 1;
+    }
+  }
+  const toTerminate = stack.splice(spliceStart);
+
+  terminateNodes(toTerminate, sample.timestamp, state);
+  activateNodes(toActivate, state, sample.timestamp, newNodes, orig2ExpNodes);
 }
 
 export function isMetaNode(node: ICpuProfileNode) {

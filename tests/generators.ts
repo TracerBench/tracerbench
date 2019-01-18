@@ -1,4 +1,4 @@
-import { ICallFrame, ICpuProfile, ICpuProfileNode } from '../src';
+import { ICallFrame, ICpuProfile, ICpuProfileNode, ITraceEvent, TRACE_EVENT_NAME, TRACE_EVENT_PHASE } from '../src';
 import { Archive } from '../src/cli/archive_trace';
 
 interface INode {
@@ -75,24 +75,57 @@ export class ProfileGenerator {
   samples: number[] = [];
   timeDeltas: number[] = [];
   root: INode;
+  events: ITraceEvent[] = [];
+  curTime: number = 0;
+  lastAppend: number = 0;
 
   constructor() {
+    nodeId = 0;
     let root = new RootCPUProfileNode();
     this.nodes.push(root);
     this.root = root;
-    nodeId = 0;
   }
 
   start() {
     return this.root;
   }
 
-  append(node: INode, delta: number, options: OptionalCallFrame) {
-    let child = node.child(options);
+  tick(delta: number) {
+    this.curTime += delta;
+  }
+
+  appendNode(node: INode, options: OptionalCallFrame) {
+    const child = node.child(options);
     this.samples.push(child.id);
     this.nodes.push(child);
-    this.timeDeltas.push(delta);
+
+    this.timeDeltas.push(this.curTime - this.lastAppend);
+    this.lastAppend = this.curTime;
+
     return child;
+  }
+
+  appendSample(node: CPUProfileNode) {
+    this.samples.push(node.id);
+
+    this.timeDeltas.push(this.curTime - this.lastAppend);
+    this.lastAppend = this.curTime;
+  }
+
+  appendEvent(name: TRACE_EVENT_NAME, isStart: boolean) {
+    let event: ITraceEvent;
+    if (name === TRACE_EVENT_NAME.V8_EXECUTE) {
+      event = {
+        pid: -1,
+        tid: -1,
+        ts: this.curTime,
+        ph: isStart ? TRACE_EVENT_PHASE.BEGIN : TRACE_EVENT_PHASE.END,
+        cat: '',
+        name,
+        args: {},
+      };
+    } else throw Error('Trying to create an unknown event in test');
+    this.events.push(event);
   }
 
   end(): ICpuProfile {

@@ -51,7 +51,7 @@ export default class Trace {
     if (_cpuProfile === undefined) {
       throw new Error('trace is missing CpuProfile');
     }
-    return new CpuProfile(_cpuProfile, min, max);
+    return new CpuProfile(_cpuProfile, this.events, min, max);
   }
 
   process(pid: number): Process {
@@ -167,7 +167,7 @@ export default class Trace {
   }
 
   getParent(event: ITraceEvent) {
-    this.parents.get(event);
+    return this.parents.get(event);
   }
 
   private associateParent(event: ITraceEvent) {
@@ -264,7 +264,7 @@ export default class Trace {
     };
     const { events } = this;
     const index = binsearch(events, begin, traceEventComparator);
-    events[index] = complete;
+    events.splice(index, 0, complete);
   }
 
   private addMetadata(event: ITraceEvent) {
