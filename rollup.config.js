@@ -17,14 +17,13 @@ module.exports = {
   ],
   plugins: [
     resolve({
-      moduleOnly: true,
+      moduleOnly: true
     }),
     typescript({
       typescript: require('typescript'),
     }),
   ],
-  output: [
-    {
+  output: [{
       file: 'dist/index.cjs.js',
       format: 'cjs',
       sourcemap: true,
@@ -45,6 +44,6 @@ module.exports = {
         'chrome-debugging-client/dist/protocol/tot': 'self',
       },
       sourcemap: true,
-    },
+    }
   ],
 };
