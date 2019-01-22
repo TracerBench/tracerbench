@@ -8,7 +8,9 @@
     "no-floating-promises": true,
     "no-shadowed-variable": false,
     "no-var-requires": false,
-    "quotemark": false
+    "quotemark": false,
+    "max-line-length": [true, 160],
+    "member-ordering": false
   },
   "rulesDirectory": []
 }

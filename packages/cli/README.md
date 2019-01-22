@@ -9,7 +9,56 @@ tracerbench-cli
 [![License](https://img.shields.io/npm/l/tracerbench-cli.svg)](https://github.com/TracerBench/tracerbench/blob/master/package.json)
 
 <!-- toc -->
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
 # Usage
 <!-- usage -->
+```sh-session
+$ npm install -g tracerbench-cli
+$ tracerbench COMMAND
+running command...
+$ tracerbench (-v|--version|version)
+tracerbench-cli/0.0.0 darwin-x64 node-v8.14.0
+$ tracerbench --help [COMMAND]
+USAGE
+  $ tracerbench COMMAND
+...
+```
+<!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`tracerbench hello [FILE]`](#tracerbench-hello-file)
+* [`tracerbench help [COMMAND]`](#tracerbench-help-command)
+
+## `tracerbench hello [FILE]`
+
+describe the command here
+
+```
+USAGE
+  $ tracerbench hello [FILE]
+
+OPTIONS
+  -f, --force
+  -h, --help       show CLI help
+  -n, --name=name  name to print
+```
+
+## `tracerbench help [COMMAND]`
+
+display help for tracerbench
+
+```
+USAGE
+  $ tracerbench help [COMMAND]
+
+ARGUMENTS
+  COMMAND  command to show help for
+
+OPTIONS
+  --all  see all commands in CLI
+```
+
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.4/src/commands/help.ts)_
+<!-- commandsstop -->
