@@ -342,20 +342,28 @@ interface ExpState {
   expId2origId: Map<number, number>;
 }
 
-function processEvent(
+function processExecute(
   event: ITraceEvent,
   state: ExpState,
 ) {
   const { stack, lastSampleTS } = state;
-  if (event.ph === TRACE_EVENT_PHASE.BEGIN) state.isExecuting = true;
 
-  if (event.ph === TRACE_EVENT_PHASE.END) {
-    if (event.name === TRACE_EVENT_NAME.V8_EXECUTE) {
-      addDurationToNodes(stack, event.ts - lastSampleTS);
-      const toTerminate = stack.splice(1); // don't slice (root)
-      terminateNodes(toTerminate, event.ts, state);
-      state.isExecuting = false;
-    }
+  if (event.ph === TRACE_EVENT_PHASE.BEGIN) {
+    state.isExecuting = true;
+  } else if (event.ph === TRACE_EVENT_PHASE.END) {
+    addDurationToNodes(stack, event.ts - lastSampleTS);
+    const toTerminate = stack.splice(1); // don't slice (root)
+    terminateNodes(toTerminate, event.ts, state);
+    state.isExecuting = false;
+  }
+}
+
+function processEvent(
+  event: ITraceEvent,
+  state: ExpState,
+) {
+  if (event.name === TRACE_EVENT_NAME.V8_EXECUTE) {
+    processExecute(event, state);
   }
 }
 
