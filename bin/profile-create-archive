@@ -7,10 +7,9 @@ const ui = require('commander');
 const fs = require('fs');
 const Profile = require('../dist/index.cjs');
 
-ui.option('-u, --url <url>', 'Url to visit').parse(process.argv)
-  .option('-h, --har <filepath>', 'Filepath to the HAR file');
-
-const cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf8'));
+ui.option('-u, --url <url>', 'Url to visit')
+  .option('-h, --har <filepath>', 'Filepath to the HAR file')
+  .parse(process.argv);
 
 if (!ui.url) {
   Profile.showError('You must pass a URL using the --url option');
@@ -20,6 +19,29 @@ if (!ui.url) {
 if (!ui.har) {
   Profile.showError('You must pass a filepath to the HAR file with the --har option');
   process.exit(1);
+}
+
+let cookies;
+try {
+  cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf8'));
+} catch (error) {
+  try {
+    cookies = getCookiesFromHAR(JSON.parse(fs.readFileSync(ui.har, 'utf8')));
+  } catch (error) {
+    debugger;
+    Profile.showError(`Error extracting cookies from HAR file at path ${ui.har}`);
+    process.exit(1);
+  }
+}
+
+function getCookiesFromHAR(har) {
+  let cookies = [];
+  har.log.entries.forEach(entry => {
+    if (entry.response.cookies.length > 0) {
+      cookies.push(entry.response.cookies);
+    }
+  });
+  return (cookies = [].concat.apply([], cookies));
 }
 
 Profile.harTrace(ui.url, cookies);
