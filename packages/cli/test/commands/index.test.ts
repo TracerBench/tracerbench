@@ -14,4 +14,17 @@ describe("hello", () => {
     .it("runs hello --name marc", ctx => {
       expect(ctx.stdout).to.contain("hello marc");
     });
+
+  test
+    .stdout()
+    .command([
+      "trace",
+      "-u",
+      "https://www.google.com",
+      "-h",
+      "../www.google.com.har"
+    ])
+    .it("runs trace -u https://www.google.com -h www.google.com.har", ctx => {
+      expect(ctx.stdout).to.contain("google.com");
+    });
 });

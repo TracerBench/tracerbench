@@ -16,15 +16,13 @@
   },
   "devDependencies": {
     "@oclif/test": "^1.2.2",
-    "@oclif/dev-cli": "^1",
-
+    "@oclif/dev-cli": "^1.21.0",
     "@oclif/tslint": "^3.1.1",
     "@types/chai": "^4.1.7",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.12.18",
     "chai": "^4.2.0",
-    "globby": "^8",
-
+    "globby": "^9.0.0",
     "mocha": "^5.2.0",
     "nyc": "^13.1.0",
     "ts-node": "^8.0.1",
@@ -36,7 +34,7 @@
   },
   "files": [
     "/bin",
-    "/lib",
+    "/dist",
     "/oclif.manifest.json"
   ],
   "homepage": "https://github.com/TracerBench/tracerbench",
@@ -44,9 +42,9 @@
     "oclif"
   ],
   "license": "BSD-2-Clause",
-  "main": "lib/index.js",
+  "main": "dist/index.js",
   "oclif": {
-    "commands": "./lib/commands",
+    "commands": "./dist/commands",
     "bin": "tracerbench",
     "plugins": [
       "@oclif/plugin-help"
@@ -55,9 +53,9 @@
   "scripts": {
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "tslint -p test -t stylish",
-    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "prepack": "rm -rf dist && tsc -b && oclif-dev manifest && oclif-dev readme",
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md"
   },
-  "types": "lib/index.d.ts"
+  "types": "dist/index.d.ts"
 }

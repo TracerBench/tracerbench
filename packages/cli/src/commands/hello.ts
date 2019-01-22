@@ -3,10 +3,6 @@ import { Command, flags } from "@oclif/command";
 export default class Hello extends Command {
   public static description = "describe the command here";
 
-  public static examples = [
-    `$ cli-test hello hello world from ./src/hello.ts!`
-  ];
-
   public static flags = {
     force: flags.boolean({ char: "f" }),
     help: flags.help({ char: "h" }),
