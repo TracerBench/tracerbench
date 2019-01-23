@@ -30,6 +30,7 @@ USAGE
 <!-- commands -->
 * [`tracerbench hello [FILE]`](#tracerbench-hello-file)
 * [`tracerbench help [COMMAND]`](#tracerbench-help-command)
+* [`tracerbench trace [FILE]`](#tracerbench-trace-file)
 
 ## `tracerbench hello [FILE]`
 
@@ -61,4 +62,24 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.4/src/commands/help.ts)_
+
+## `tracerbench trace [FILE]`
+
+Does an automated trace of a webpage. Also takes network conditioner and CPU throttling options.
+
+```
+USAGE
+  $ tracerbench trace [FILE]
+
+OPTIONS
+  -c, --cpu=cpu          (required) [default: 1] cpu throttle multiplier
+  -h, --har=har          (required) filepath to the HAR file
+
+  -n, --network=network  simulated network conditions for none, offline, dialup, 2g, edge, slow-3g, em-3g, dsl, 3g,
+                         fast-3g, 4g, cable, LTE, FIOS
+
+  -o, --output=output    (required) [default: trace.json] the filename to save the trace to
+
+  -u, --url=url          (required) url to visit
+```
 <!-- commandsstop -->
