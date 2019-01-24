@@ -9,4 +9,3 @@ tmp/
 *.tgz
 *.tmp
 .nyc_output
-*trace.json

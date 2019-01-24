@@ -1,7 +1,6 @@
 {
   "files": [], // container only
-  "references": [
-    {
+  "references": [{
       "path": "src"
     },
     {

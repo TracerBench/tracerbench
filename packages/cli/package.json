@@ -1,6 +1,6 @@
 {
   "name": "tracerbench-cli",
-  "description": "tracerbench-cli",
+  "description": "CLI for Tracerbench",
   "version": "0.0.0",
   "author": "Kris Selden @krisselden",
   "bin": {
@@ -13,7 +13,7 @@
     "@oclif/plugin-help": "^2.1.4",
     "fs-extra": "^7.0.1",
     "tslib": "^1.9.3",
-    "parse-profile": "tracerbench/parse-profile"
+    "parse-profile": "tracerbench/parse-profile#44/head"
   },
   "devDependencies": {
     "@oclif/test": "^1.2.2",
@@ -38,9 +38,10 @@
     "node": ">=8.0.0"
   },
   "files": [
-    "/bin",
-    "/dist",
-    "/oclif.manifest.json"
+    "bin",
+    "dist",
+    "src",
+    "oclif.manifest.json"
   ],
   "homepage": "https://github.com/TracerBench/tracerbench",
   "keywords": [
