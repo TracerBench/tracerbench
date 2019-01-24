@@ -61,5 +61,8 @@ export default class Trace extends Command {
     }
 
     const trace = await liveTrace(url, output, cookies, { cpu, network });
+    this.log(
+      `Trace successfully generated: ${trace} and available here: ${output}`
+    );
   }
 }
