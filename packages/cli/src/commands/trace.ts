@@ -20,7 +20,7 @@ export default class Trace extends Command {
     }),
     network: flags.string({
       char: "n",
-      description: `simulated network conditions for ${Object.keys(
+      description: `simulated network conditions for: ${Object.keys(
         networkConditions
       ).join(", ")}`
     }),
@@ -60,6 +60,6 @@ export default class Trace extends Command {
       }
     }
 
-    liveTrace(url, output, cookies, { cpu, network });
+    const trace = await liveTrace(url, output, cookies, { cpu, network });
   }
 }
