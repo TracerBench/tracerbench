@@ -4697,9 +4697,9 @@ parse-json@^4.0.0:
     error-ex "^1.3.1"
     json-parse-better-errors "^1.0.1"
 
-parse-profile@tracerbench/parse-profile:
+parse-profile@tracerbench/parse-profile#44/head:
   version "0.0.1"
-  resolved "https://codeload.github.com/tracerbench/parse-profile/tar.gz/31a3c26e11dd961016711614f7c7a2af3e90e11a"
+  resolved "https://codeload.github.com/tracerbench/parse-profile/tar.gz/17ba55c29cb395d4ffd204920b050deb60e7f07b"
   dependencies:
     "@types/d3" "^5.7.0"
     "@types/node" "^10.12.18"

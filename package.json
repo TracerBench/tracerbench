@@ -2,8 +2,7 @@
   "name": "tracerbench",
   "private": true,
   "workspaces": [
-    "packages/tracerbench",
-    "packages/cli"
+    "packages/*"
   ],
   "scripts": {
     "prepare": "lerna run prepare --stream",
