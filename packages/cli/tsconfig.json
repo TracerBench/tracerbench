@@ -9,16 +9,9 @@
     "strict": true,
     "target": "es2017",
     "composite": true,
-    "moduleResolution": "node",
-    "baseUrl": "../../"
+    "moduleResolution": "node"
   },
   "include": [
     "src/**/*"
-  ],
-  "files": [],
-  "references": [{
-    "path": "src"
-  }, {
-    "path": "test"
-  }]
+  ]
 }

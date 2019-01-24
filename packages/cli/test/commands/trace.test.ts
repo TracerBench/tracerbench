@@ -14,8 +14,8 @@ describe("trace", () => {
     .stdout()
     .it(
       `runs trace --url ${url} --har ${harFile} --output ${traceFile}`,
-      async () => {
-        await Trace.run([
+      async ctx => {
+        const result = await Trace.run([
           "--url",
           url,
           "--har",
@@ -23,7 +23,8 @@ describe("trace", () => {
           "--output",
           traceFile
         ]);
-        await chai.expect(traceFile).to.be.a.file();
+        chai.expect(ctx.stdout).to.contain(`Trace`);
+        chai.expect(traceFile).to.be.a.file();
       }
     );
 });
