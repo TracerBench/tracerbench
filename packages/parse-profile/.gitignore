@@ -6,3 +6,4 @@ cookies.json
 feed-trace.json
 trace.json
 *.archive
+.*_cache
