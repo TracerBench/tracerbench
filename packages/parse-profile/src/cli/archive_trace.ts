@@ -31,7 +31,11 @@ export interface Entry {
   response: Response;
 }
 
-export async function harTrace(url: string, cookies: Network.SetCookieParameters[]) {
+export async function harTrace(
+  url: string,
+  outputPath: string = './trace.archive',
+  cookies?: Network.SetCookieParameters[],
+) {
   return await createSession(async session => {
     const client = await createClient(session);
     const page = new Page(client);
@@ -59,7 +63,9 @@ export async function harTrace(url: string, cookies: Network.SetCookieParameters
 
     await network.enable({});
 
-    await setCookies(network, cookies);
+    if (cookies) {
+      await setCookies(network, cookies);
+    }
 
     await page.enable();
 
@@ -87,6 +93,6 @@ export async function harTrace(url: string, cookies: Network.SetCookieParameters
       archive.log.entries.push(entry);
     }
 
-    fs.writeFileSync(`./trace.archive`, JSON.stringify(archive));
+    fs.writeFileSync(outputPath, JSON.stringify(archive));
   });
 }
