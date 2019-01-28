@@ -1,3 +1,5 @@
+/* tslint:disable:no-console */
+
 import { test } from "@oclif/test";
 import * as chai from "chai";
 import * as path from "path";
