@@ -5,7 +5,7 @@ import { getCookiesFromHAR } from "../utils";
 
 export default class Trace extends Command {
   public static description =
-    "Does an automated trace of a webpage. Also takes network conditioner and CPU throttling options.";
+    "Creates an automated trace that's saved to JSON. Also takes network conditioner and CPU throttling options.";
   public static flags = {
     cpu: flags.integer({
       char: "c",
@@ -61,7 +61,7 @@ export default class Trace extends Command {
     }
 
     const trace = await liveTrace(url, output, cookies, { cpu, network });
-    this.log(
+    return this.log(
       `Trace successfully generated: ${trace} and available here: ${output}`
     );
   }
