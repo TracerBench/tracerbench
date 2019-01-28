@@ -28,8 +28,22 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`tracerbench create-archive`](#tracerbench-create-archive)
 * [`tracerbench help [COMMAND]`](#tracerbench-help-command)
 * [`tracerbench trace`](#tracerbench-trace)
+
+## `tracerbench create-archive`
+
+Creates an automated archive file from a URL.
+
+```
+USAGE
+  $ tracerbench create-archive
+
+OPTIONS
+  -o, --output=output  (required) [default: ./trace.archive] the filename and path for the archive file
+  -u, --url=url        (required) url to visit to produce the archive file
+```
 
 ## `tracerbench help [COMMAND]`
 
@@ -50,7 +64,7 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.4
 
 ## `tracerbench trace`
 
-Does an automated trace of a webpage. Also takes network conditioner and CPU throttling options.
+Creates an automated trace that's saved to JSON. Also takes network conditioner and CPU throttling options.
 
 ```
 USAGE
