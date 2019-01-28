@@ -38,6 +38,7 @@ export const enum TRACE_EVENT_NAME {
   PROFILE = 'Profile',
   PROFILE_CHUNK = 'ProfileChunk',
   CPU_PROFILE = 'CpuProfile',
+  V8_EXECUTE = 'V8.Execute',
 }
 
 export const enum PROCESS_NAME {

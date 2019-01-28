@@ -2,6 +2,7 @@
 
 import { expect } from 'chai';
 import 'mocha';
+import {TRACE_EVENT_NAME } from '../src';
 import {
   aggregate,
   Aggregations,
@@ -31,21 +32,31 @@ describe('aggregate', () => {
     let generator = new ProfileGenerator();
     let root = generator.start();
 
-    let a = generator.append(root, 100, { functionName: 'a' });
-    generator.append(a, 50, { functionName: 'b' });
-    generator.append(a, 75, { functionName: 'c' });
-    generator.append(root, 100, { functionName: 'd' });
-    let e = generator.append(root, 25, { functionName: 'e' });
-    generator.append(e, 15, { functionName: 'f' });
+    generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, true);
+    generator.tick(1);
+    let a = generator.appendNode(root, {functionName: 'a'});
+    generator.tick(100);
+    generator.appendNode(a, {functionName: 'b'});
+    generator.tick(50);
+    generator.appendNode(a, {functionName: 'c'});
+    generator.tick(75);
+    generator.appendNode(root, {functionName: 'd'});
+    generator.tick(25);
+    let e = generator.appendNode(root, {functionName: 'e'});
+    generator.tick(25);
+    generator.appendNode(e, {functionName: 'f'});
+    generator.tick(15);
+    generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, false);
     let json = generator.end();
 
-    let profile = new CpuProfile(json, -1, -1);
-    let locators = new LocatorGenerator().generate([
-      ['a', '.*'],
-      ['c', '.*'],
-      ['d', '.*'],
-      ['f', '.*'],
-    ]);
+    // What the call stack looks like
+    // 0    100  200  250  325  350  375  390
+    // v8-s r    r    r    r    r    r    v8-e
+    // v8-s a    a    a    d    e    e    v8-e
+    // v8-s      b    c              f    v8-e
+
+    let profile = new CpuProfile(json, generator.events, -1, -1);
+    let locators = new LocatorGenerator().generate([['a', '.*'], ['c', '.*'], ['d', '.*'], ['f', '.*']]);
     let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
     let aggregations = aggregate(profile.hierarchy, locators, archive, modMatcher);
 
@@ -55,8 +66,8 @@ describe('aggregate', () => {
     expect(aggregations['c.*'].total).to.equal(75);
     expect(aggregations['c.*'].attributed).to.equal(75);
 
-    expect(aggregations['d.*'].total).to.equal(100);
-    expect(aggregations['d.*'].attributed).to.equal(100);
+    expect(aggregations['d.*'].total).to.equal(25);
+    expect(aggregations['d.*'].attributed).to.equal(25);
 
     expect(aggregations['f.*'].total).to.equal(15);
     expect(aggregations['f.*'].attributed).to.equal(15);
@@ -69,22 +80,27 @@ describe('aggregate', () => {
     let generator = new ProfileGenerator();
     let root = generator.start();
 
-    let a = generator.append(root, 100, { functionName: 'a' });
-    generator.append(a, 50, { functionName: 'b' });
-    generator.append(a, 75, { functionName: 'c' });
-    generator.append(root, 100, { functionName: 'd' });
-    let e = generator.append(root, 25, { functionName: 'e' });
-    generator.append(e, 15, { functionName: 'f' });
-    generator.append(root, 10, { functionName: 'c' });
+    generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, true);
+    generator.tick(1);
+    let a = generator.appendNode(root, {functionName: 'a'});
+    generator.tick(100);
+    generator.appendNode(a, {functionName: 'b'});
+    generator.tick(50);
+    generator.appendNode(a, {functionName: 'c'});
+    generator.tick(75);
+    generator.appendNode(root, {functionName: 'd'});
+    generator.tick(25);
+    let e = generator.appendNode(root, {functionName: 'e'});
+    generator.tick(25);
+    generator.appendNode(e, {functionName: 'f'});
+    generator.tick(15);
+    generator.appendNode(root, {functionName: 'c'});
+    generator.tick(10);
+    generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, false);
     let json = generator.end();
 
-    let profile = new CpuProfile(json, -1, -1);
-    let locators = new LocatorGenerator().generate([
-      ['a', '.*'],
-      ['c', '.*'],
-      ['d', '.*'],
-      ['f', '.*'],
-    ]);
+    let profile = new CpuProfile(json, generator.events, -1, -1);
+    let locators = new LocatorGenerator().generate([['a', '.*'], ['c', '.*'], ['d', '.*'], ['f', '.*']]);
     let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
     let aggregations = aggregate(profile.hierarchy, locators, archive, modMatcher);
 
@@ -94,8 +110,8 @@ describe('aggregate', () => {
     expect(aggregations['c.*'].total).to.equal(85);
     expect(aggregations['c.*'].attributed).to.equal(85);
 
-    expect(aggregations['d.*'].total).to.equal(100);
-    expect(aggregations['d.*'].attributed).to.equal(100);
+    expect(aggregations['d.*'].total).to.equal(25);
+    expect(aggregations['d.*'].attributed).to.equal(25);
 
     expect(aggregations['f.*'].total).to.equal(15);
     expect(aggregations['f.*'].attributed).to.equal(15);
@@ -107,34 +123,43 @@ describe('aggregate', () => {
   it('aggregates at a module level with module heuristics', () => {
     let generator = new ProfileGenerator();
     let root = generator.start();
-    let a = generator.append(root, 100, {
+
+    generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, true);
+    generator.tick(1);
+    let a = generator.appendNode(root, {
       functionName: 'a',
       lineNumber: 1,
       columnNumber: 2,
       scriptId: 1,
       url: 'https://www.example.com/a.js',
     });
-    generator.append(a, 50, {
+    generator.tick(100);
+    generator.appendNode(a, {
       functionName: 'b',
       lineNumber: 1,
       columnNumber: 6,
       scriptId: 1,
       url: 'https://www.example.com/a.js',
     });
-    generator.append(a, 75, {
+    generator.tick(50);
+    generator.appendNode(a, {
       functionName: 'c',
       lineNumber: 4,
       columnNumber: 2,
       scriptId: 1,
       url: 'https://www.example.com/a.js',
     });
-    let d = generator.append(root, 25, { functionName: 'd' });
-    generator.append(d, 15, { functionName: 'e' });
+    generator.tick(75);
+    generator.appendNode(root, {functionName: 'd'});
+    generator.tick(25);
+    generator.appendNode(root, {functionName: 'e'});
+    generator.tick(25);
+    generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, false);
     let json = generator.end();
 
     let locators = new LocatorGenerator().generate([['.*', 'module/1'], ['.*', 'module/2']]);
 
-    let profile = new CpuProfile(json, -1, -1);
+    let profile = new CpuProfile(json, generator.events, -1, -1);
     let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
     let aggregations = aggregate(profile.hierarchy, locators, archive, modMatcher);
 
@@ -144,41 +169,50 @@ describe('aggregate', () => {
     expect(aggregations['.*module/2'].attributed).to.equal(75); // c(75)
     expect(aggregations['.*module/2'].total).to.equal(75); // c(75)
 
-    expect(aggregations.unknown.total).to.equal(40); // d(25) + e(15)
-    expect(aggregations.unknown.attributed).to.equal(40); // d(25) + e(15)
+    expect(aggregations.unknown.total).to.equal(50); // d(25) + e(25)
+    expect(aggregations.unknown.attributed).to.equal(50); // d(25) + e(25)
   });
 
   it('aggregates at a module level with explicit and implicit locators', () => {
     let generator = new ProfileGenerator();
     let root = generator.start();
-    let a = generator.append(root, 100, {
+
+    generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, true);
+    generator.tick(1);
+    let a = generator.appendNode(root, {
       functionName: 'a',
       lineNumber: 1,
       columnNumber: 2,
       scriptId: 1,
       url: 'https://www.example.com/a.js',
     });
-    generator.append(a, 50, {
+    generator.tick(100);
+    generator.appendNode(a, {
       functionName: 'b',
       lineNumber: 1,
       columnNumber: 6,
       scriptId: 1,
       url: 'https://www.example.com/a.js',
     });
-    generator.append(a, 75, {
+    generator.tick(50);
+    generator.appendNode(a, {
       functionName: 'c',
       lineNumber: 4,
       columnNumber: 2,
       scriptId: 1,
       url: 'https://www.example.com/a.js',
     });
-    let d = generator.append(root, 25, { functionName: 'd' });
-    generator.append(d, 15, { functionName: 'e' });
+    generator.tick(75);
+    generator.appendNode(root, {functionName: 'd'});
+    generator.tick(25);
+    generator.appendNode(root, {functionName: 'e'});
+    generator.tick(25);
+    generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, false);
     let json = generator.end();
 
     let locators = new LocatorGenerator().generate([['.*', 'module/1']]); // module/2 is implicit
 
-    let profile = new CpuProfile(json, -1, -1);
+    let profile = new CpuProfile(json, generator.events, -1, -1);
 
     let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
     addRemainingModules(locators, {}, modMatcher); // this should add module/2
@@ -190,41 +224,50 @@ describe('aggregate', () => {
     expect(aggregations['.*module/2'].attributed).to.equal(75); // c(75)
     expect(aggregations['.*module/2'].total).to.equal(75); // c(75)
 
-    expect(aggregations.unknown.total).to.equal(40); // d(25) + e(15)
-    expect(aggregations.unknown.attributed).to.equal(40); // d(25) + e(15)
+    expect(aggregations.unknown.total).to.equal(50); // d(25) + e(25)
+    expect(aggregations.unknown.attributed).to.equal(50); // d(25) + e(25)
   });
 
   it('aggregates with method name heuristics trumping automatic module heuristics', () => {
     let generator = new ProfileGenerator();
     let root = generator.start();
-    let a = generator.append(root, 100, {
+
+    generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, true);
+    generator.tick(1);
+    let a = generator.appendNode(root, {
       functionName: 'a',
       lineNumber: 1,
       columnNumber: 2,
       scriptId: 1,
       url: 'https://www.example.com/a.js',
     });
-    generator.append(a, 50, {
+    generator.tick(100);
+    generator.appendNode(a, {
       functionName: 'b',
       lineNumber: 1,
       columnNumber: 6,
       scriptId: 1,
       url: 'https://www.example.com/a.js',
     });
-    generator.append(a, 75, {
+    generator.tick(50);
+    generator.appendNode(a, {
       functionName: 'c',
       lineNumber: 4,
       columnNumber: 2,
       scriptId: 1,
       url: 'https://www.example.com/a.js',
     });
-    let d = generator.append(root, 25, { functionName: 'd' });
-    generator.append(d, 15, { functionName: 'e' });
+    generator.tick(75);
+    generator.appendNode(root, {functionName: 'd'});
+    generator.tick(25);
+    generator.appendNode(root, {functionName: 'e'});
+    generator.tick(25);
+    generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, false);
     let json = generator.end();
 
     let locators = new LocatorGenerator().generate([['a', '.*']]); // this will steal time from module/1
 
-    let profile = new CpuProfile(json, -1, -1);
+    let profile = new CpuProfile(json, generator.events, -1, -1);
 
     let modMatcher = new ModuleMatcher(profile.hierarchy, archive); // this should add module/1 & 2
     addRemainingModules(locators, {}, modMatcher);
@@ -239,8 +282,8 @@ describe('aggregate', () => {
     expect(aggregations['.*module/2'].attributed).to.equal(75); // c(75)
     expect(aggregations['.*module/2'].total).to.equal(75); // c(75)
 
-    expect(aggregations.unknown.total).to.equal(40); // d(25) + e(15)
-    expect(aggregations.unknown.attributed).to.equal(40); // d(25) + e(15)
+    expect(aggregations.unknown.total).to.equal(50); // d(25) + e(25)
+    expect(aggregations.unknown.attributed).to.equal(50); // d(25) + e(25)
   });
 });
 
@@ -254,24 +297,28 @@ describe('categorizeAggregations', () => {
     let generator = new ProfileGenerator();
     let root = generator.start();
 
-    let a = generator.append(root, 100, { functionName: 'a' });
-    generator.append(a, 50, { functionName: 'b' });
-    generator.append(a, 75, { functionName: 'c' });
-
-    let e = generator.append(root, 25, { functionName: 'e' });
-    generator.append(e, 15, { functionName: 'f' });
-
-    generator.append(root, 10, { functionName: 'c' });
+    generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, true);
+    generator.tick(1);
+    let a = generator.appendNode(root, {functionName: 'a'});
+    generator.tick(100);
+    generator.appendNode(a, {functionName: 'b'});
+    generator.tick(50);
+    generator.appendNode(a, {functionName: 'c'});
+    generator.tick(75);
+    generator.appendNode(root, {functionName: 'd'});
+    generator.tick(25);
+    let e = generator.appendNode(root, {functionName: 'e'});
+    generator.tick(25);
+    generator.appendNode(e, {functionName: 'f'});
+    generator.tick(15);
+    generator.appendNode(root, {functionName: 'c'});
+    generator.tick(10);
+    generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, false);
 
     let json = generator.end();
 
-    let profile = new CpuProfile(json, -1, -1);
-    let locators = new LocatorGenerator().generate([
-      ['a', '.*'],
-      ['c', '.*'],
-      ['d', '.*'],
-      ['f', '.*'],
-    ]);
+    let profile = new CpuProfile(json, generator.events, -1, -1);
+    let locators = new LocatorGenerator().generate([['a', '.*'], ['c', '.*'], ['d', '.*'], ['f', '.*']]);
     let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
     aggregations = aggregate(profile.hierarchy, locators, archive, modMatcher);
   });

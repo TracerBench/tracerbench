@@ -1,7 +1,7 @@
-// tslint:disable:member-ordering
-
+import { HierarchyNode } from 'd3-hierarchy';
 import * as fs from 'fs';
-import { Trace } from '../trace';
+import { ICpuProfileNode, Trace } from '../trace';
+import { exportHierarchy } from '../trace/export';
 import { aggregate, categorizeAggregations, collapseCallFrames, verifyMethods } from './aggregator';
 import { Archive } from './archive_trace';
 import { ModuleMatcher } from './module_matcher';
@@ -43,6 +43,27 @@ export default class CommandLine {
     this.filePath = file || defaultProfilePath;
   }
 
+  run() {
+    let { archive } = this;
+    let { report, methods } = this.ui;
+    let trace = this.loadTrace();
+    let profile = this.cpuProfile(trace)!;
+
+    this.export(profile.hierarchy, trace);
+
+    let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
+
+    let categories = formatCategories(report, methods);
+    let allMethods = methodsFromCategories(categories);
+    addRemainingModules(allMethods, categories, modMatcher);
+    verifyMethods(allMethods);
+
+    let aggregations = aggregate(profile.hierarchy, allMethods, archive, modMatcher);
+    let collapsed = collapseCallFrames(aggregations);
+    let categorized = categorizeAggregations(collapsed, categories);
+    reporter(categorized);
+  }
+
   private loadTrace() {
     let { filePath } = this;
     let traceEvents = JSON.parse(fs.readFileSync(filePath, 'utf8'));
@@ -58,22 +79,9 @@ export default class CommandLine {
     return trace.cpuProfile(min, max);
   }
 
-  run() {
-    let { archive } = this;
-    let { report, methods } = this.ui;
-    let trace = this.loadTrace();
-    let profile = this.cpuProfile(trace)!;
-
-    let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
-
-    let categories = formatCategories(report, methods);
-    let allMethods = methodsFromCategories(categories);
-    addRemainingModules(allMethods, categories, modMatcher);
-    verifyMethods(allMethods);
-
-    let aggregations = aggregate(profile.hierarchy, allMethods, archive, modMatcher);
-    let collapsed = collapseCallFrames(aggregations);
-    let categorized = categorizeAggregations(collapsed, categories);
-    reporter(categorized);
+  private export(hierarchy: HierarchyNode<ICpuProfileNode>, trace: Trace) {
+    const { filePath } = this;
+    const rawTraceData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+    exportHierarchy(rawTraceData, hierarchy, trace, filePath);
   }
 }
