@@ -1,0 +1,14 @@
+[
+  {
+    "functionName": "(garbage collector)",
+    "moduleName": "*"
+  },
+  {
+    "functionName": "(program)",
+    "moduleName": "*"
+  },
+  {
+    "functionName": "JsonParse",
+    "moduleName": "*"
+  }
+]

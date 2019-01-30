@@ -1,0 +1,4 @@
+trace.json
+trace.archive
+*.har
+oclif.manifest.json

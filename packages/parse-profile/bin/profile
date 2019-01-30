@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+
+'use strict';
+
+const ui = require('commander');
+const packageJson = require('../package.json');
+
+ui
+  .version(packageJson.version, '-v, --version')
+  .command('trace', `Creates an automated trace that's saved to JSON.`)
+  .command('create-archive', 'Creates an automated HAR file from a URL.')
+  .command('analyze', 'Analyzes a supplied trace and allows the results to be aggregated')
+  .command('timeline', 'Analyzes a supplied trace and displays a timeline')
+  .command('list-functions', 'Parses a supplied trace and displays a list of functions found in that trace')
+  .parse(process.argv);

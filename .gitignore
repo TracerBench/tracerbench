@@ -3,7 +3,9 @@ dist/
 node_modules/
 vendor/
 results/
+tmp/
 /*workspace
 *.log
 *.tgz
 *.tmp
+.nyc_output

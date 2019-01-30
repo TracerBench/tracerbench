@@ -1,0 +1,67 @@
+{
+  "name": "tracerbench-cli",
+  "description": "CLI for Tracerbench",
+  "version": "0.0.0",
+  "author": "Kris Selden @krisselden",
+  "bin": {
+    "tracerbench": "./bin/run"
+  },
+  "bugs": "https://github.com/TracerBench/tracerbench/issues",
+  "dependencies": {
+    "@oclif/command": "^1.5.8",
+    "@oclif/config": "^1.12.0",
+    "@oclif/plugin-help": "^2.1.4",
+    "fs-extra": "^7.0.1",
+    "parse-profile": "^0.0.1",
+    "tslib": "^1.9.3"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1.21.0",
+    "@oclif/test": "^1.2.2",
+    "@oclif/tslint": "^3.1.1",
+    "@types/chai": "^4.1.7",
+    "@types/chai-fs": "^2.0.1",
+    "@types/fs-extra": "^5.0.4",
+    "@types/mocha": "^5.2.5",
+    "@types/node": "^10.12.18",
+    "chai": "^4.2.0",
+    "chai-fs": "^2.0.0",
+    "globby": "^9.0.0",
+    "mocha": "^5.2.0",
+    "nyc": "^13.1.0",
+    "path": "0.12.7",
+    "ts-node": "^8.0.1",
+    "tslint": "^5.12.1",
+    "typescript": "^3.2.4"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "src",
+    "oclif.manifest.json"
+  ],
+  "homepage": "https://github.com/TracerBench/tracerbench",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "BSD-2-Clause",
+  "main": "dist/index.js",
+  "oclif": {
+    "commands": "./dist/commands",
+    "bin": "tracerbench",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "scripts": {
+    "postpack": "rm -f oclif.manifest.json",
+    "posttest": "tslint -p test -t stylish",
+    "prepack": "rm -rf dist && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "version": "oclif-dev readme && git add README.md"
+  },
+  "types": "dist/index.d.ts"
+}
