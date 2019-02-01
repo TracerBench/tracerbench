@@ -12,12 +12,12 @@ addons:
       - sourceline: 'ppa:marutter/rrutter'
       - sourceline: 'ppa:marutter/c2d4u'
     packages:
-      - google-chrome-unstable
+      - google-chrome-stable
       - r-recommended
       - r-cran-jsonlite
       - r-cran-r6
 env:
-  - CHROME_PATH=/usr/bin/google-chrome-unstable R_LIBS_USER=~/R/Library
+  - CHROME_PATH=/usr/bin/google-chrome-stable R_LIBS_USER=~/R/Library
 install:
   - yarn install
   - mkdir -p ~/R/Library
@@ -27,8 +27,7 @@ script:
 after_script:
   - yarn lerna run report
 before_install:
-  - export CHROME_BIN=/usr/bin/google-chrome-unstable
-  - export DISPLAY=:99.0
+  - export CHROME_BIN=/usr/bin/google-chrome-stable
   - sh -e /etc/init.d/xvfb start
   - sudo apt-get update
   - sudo apt-get install -y libappindicator1 fonts-liberation
