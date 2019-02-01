@@ -4,8 +4,7 @@ import { liveTrace, networkConditions } from 'parse-profile';
 import { getCookiesFromHAR } from '../utils';
 
 export default class Trace extends Command {
-  public static description =
-    "Creates an automated trace that's saved to JSON. Also takes network conditioner and CPU throttling options.";
+  public static description = `Creates an automated trace that's saved to JSON. Also takes network conditioner and CPU throttling options.`;
   public static flags = {
     cpu: flags.integer({
       char: 'c',
@@ -27,7 +26,7 @@ export default class Trace extends Command {
     output: flags.string({
       char: 'o',
       default: 'trace.json',
-      description: 'the filename to save the trace to',
+      description: 'the output filepath/name to save the trace to',
       required: true
     }),
     url: flags.string({
@@ -53,10 +52,10 @@ export default class Trace extends Command {
       try {
         cookies = getCookiesFromHAR(JSON.parse(fs.readFileSync(har, 'utf8')));
       } catch (error) {
-        this.error(
-          `Error extracting cookies from HAR file at path ${har}, ${error}`
+        this.log(
+          `Could not extract cookies from HAR file at path ${har}, ${error}`
         );
-        this.exit(1);
+        cookies = null;
       }
     }
 

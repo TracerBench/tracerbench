@@ -1,18 +1,18 @@
-import { Command, flags } from "@oclif/command";
-import { harTrace } from "parse-profile";
+import { Command, flags } from '@oclif/command';
+import { harTrace } from 'parse-profile';
 
 export default class CreateArchive extends Command {
-  public static description = "Creates an automated archive file from a URL.";
+  public static description = 'Creates an automated archive file from a URL.';
   public static flags = {
     output: flags.string({
-      char: "o",
-      default: "./trace.archive",
-      description: "the filename and path for the archive file",
+      char: 'o',
+      default: './trace.archive',
+      description: 'the output filepath/name to save the archive to',
       required: true
     }),
     url: flags.string({
-      char: "u",
-      description: "url to visit to produce the archive file",
+      char: 'u',
+      description: 'url to visit to produce the archive file',
       required: true
     })
   };
