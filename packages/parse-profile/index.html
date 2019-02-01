@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Test</title>
+  <style>
+    body {
+      box-sizing: border-box;
+      background: #000;
+      margin: 0;
+      padding: 20px;
+    }
+
+    svg {
+      display: block;
+    }
+
+    .toolTip {
+      pointer-events: none;
+      position: absolute;
+      display: none;
+      min-width: 50px;
+      height: auto;
+      background: none repeat scroll 0 0 #ffffff;
+      padding: 9px 14px 6px 14px;
+      border-radius: 2px;
+      text-align: center;
+      line-height: 1.3;
+      color: #5B6770;
+      box-shadow: 0px 3px 9px rgba(0, 0, 0, .15);
+    }
+
+    .toolTip span {
+      font-weight: 500;
+      color: #081F2C;
+    }
+  </style>
+  <script src="node_modules/d3/dist/d3.js"></script>
+  <script src="dist/index.browser.js"></script>
+</head>
+
+<body>
+  <svg></svg>
+  <script>
+    d3.json("feed-trace.json").then((traceEvents) => {
+      let trace = new Profile.loadTrace(traceEvents);
+      let profile = trace.cpuProfile(-1, -1);
+
+      let root = profile.hierarchy.sum(d => d.self);
+
+      let descendants = profile.hierarchy.descendants();
+      let maxSelf = d3.max(descendants.map(n => n.data.self));
+      let maxDepth = d3.max(descendants.map(n => n.depth));
+      let sampleCount = d3.sum(descendants.map(n => n.data.sampleCount));
+
+      // 5ms == 1 pixel
+      let width = Math.ceil(root.value / 5000);
+      let height = 20 * maxDepth;
+
+      document.body.style = `width:${width + 40}px; height:${height + 40}px;`
+      // Variables
+
+      var tooltip = d3.select("body").append("div").attr("class", "toolTip");
+
+      // Create primary <g> element
+      var g = d3.select('svg')
+        .attr('width', width)
+        .attr('height', height)
+        .append('g');
+
+      // Data strucure
+      var partition = d3.partition()
+        .size([width, height]).padding(0);
+
+      // Size arcs
+      partition(root);
+
+      // Put it all together
+      g.selectAll('rect')
+        .data(root.descendants())
+        .enter().append('rect')
+        .attr("x", (d) => d.x0)
+        .attr("y", (d) => d.y0)
+        .attr("width", (d) => d.x1 - d.x0)
+        .attr("height", (d) => d.y1 - d.y0)
+        .attr("display", function (d) { return d.depth ? null : "none"; })
+        .style("fill", function (d) {
+          return d3.interpolateRdYlGn(Math.max(Math.min(1 - Math.log10(d.data.self) / Math.log10(maxSelf), 1), 0));
+        })
+        .on("mousemove", function (d) {
+          const {
+            functionName,
+            url,
+            lineNumber,
+            columnNumber
+          } = d.data.callFrame;
+          let {
+            pageX,
+            pageY
+          } = d3.event;
+          tooltip
+            .style("display", "inline-block")
+            .html(`${url}:${lineNumber}:${columnNumber} ${functionName} (self: ${(d.data.self / 1000).toFixed(2)}ms total: ${(d.data.total / 1000).toFixed(2)}ms)`);
+          ;
+          let { pageXOffset, pageYOffset, innerWidth, innerHeight } = window;
+          let { offsetWidth, offsetHeight } = tooltip.node();
+          let x = Math.min(Math.max(Math.round(pageX - offsetWidth / 2), 0), innerWidth + pageXOffset - offsetWidth);
+          let y = Math.min(pageY + offsetHeight, innerHeight + pageYOffset - offsetHeight);
+          tooltip
+            .style("left", x + "px")
+            .style("top", y + "px");
+        })
+        .on("mouseout", function (d) { tooltip.style("display", "none"); });;
+    });
+
+  </script>
+</body>
+
+</html>

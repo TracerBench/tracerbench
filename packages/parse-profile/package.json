@@ -1,0 +1,50 @@
+{
+  "name": "parse-profile",
+  "version": "0.0.1",
+  "main": "dist/index.cjs.js",
+  "private": true,
+  "license": "BSD-2-Clause",
+  "scripts": {
+    "build": "yarn nuke && rollup -c && yarn ts:d",
+    "watch": "rollup -cw",
+    "start": "node serve.js",
+    "nuke": "rimraf dist",
+    "lint": "tslint -p tsconfig.json",
+    "prepare": "yarn build",
+    "ts:d": "tsc -p d.tsconfig.json",
+    "test": "yarn lint && nyc --extension .ts mocha -r ts-node/register \"tests/*-test.ts\""
+  },
+  "bin": {
+    "profile": "./bin/profile"
+  },
+  "typings": "dist/src/index.d.ts",
+  "devDependencies": {
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.5",
+    "chai": "^4.2.0",
+    "finalhandler": "^1.1.1",
+    "fixturify": "^0.3.4",
+    "mocha": "^5.2.0",
+    "rollup": "^1.1.0",
+    "rollup-plugin-node-resolve": "^4.0.0",
+    "rollup-plugin-typescript": "^1.0.0",
+    "serve-static": "^1.13.2",
+    "ts-node": "^7.0.1",
+    "tslint": "^5.12.1",
+    "typescript": "^3.2.2",
+    "nyc": "^13.1.0",
+    "rimraf": "^2.6.3"
+  },
+  "dependencies": {
+    "@types/d3": "^5.7.0",
+    "@types/node": "^10.12.18",
+    "array-binsearch": "^1.0.1",
+    "chalk": "^2.4.2",
+    "chrome-debugging-client": "^0.6.8",
+    "commander": "^2.19.0",
+    "d3": "^5.7.0",
+    "har-remix": "^1.3.0",
+    "ora": "^3.0.0",
+    "silent-error": "^1.1.1"
+  }
+}
