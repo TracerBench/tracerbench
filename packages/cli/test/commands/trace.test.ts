@@ -2,7 +2,6 @@
 
 import { test } from '@oclif/test';
 import * as chai from 'chai';
-import * as fs from 'fs-extra';
 import * as path from 'path';
 import Trace from '../../src/commands/trace';
 
@@ -13,12 +12,6 @@ const url = 'https://www.tracerbench.com';
 const traceFile = path.join(process.cwd() + '/test/trace.json');
 
 describe('trace', () => {
-  before(() => {
-    fs.unlink(traceFile, e => {
-      // console.log(e);
-    });
-  });
-
   test
     .stdout()
     .it(

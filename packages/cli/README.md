@@ -28,9 +28,28 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`tracerbench analyze`](#tracerbench-analyze)
 * [`tracerbench create-archive`](#tracerbench-create-archive)
 * [`tracerbench help [COMMAND]`](#tracerbench-help-command)
 * [`tracerbench trace`](#tracerbench-trace)
+
+## `tracerbench analyze`
+
+Parses a CPU profile and aggregates time across heuristics. Can be vertically sliced with event names.
+
+```
+USAGE
+  $ tracerbench analyze
+
+OPTIONS
+  -a, --archive=archive  (required) Path to archive file
+  -e, --event=event      Slice time and see the events before and after the time slice
+  -f, --file=file        (required) Path to trace json file
+  -m, --methods=methods  (required) [default: ""] List of methods to aggregate
+
+  -r, --report=report    Directory path to generate a report with aggregated sums for each heuristic category and
+                         aggregated sum across all heuristics
+```
 
 ## `tracerbench create-archive`
 
@@ -41,7 +60,7 @@ USAGE
   $ tracerbench create-archive
 
 OPTIONS
-  -o, --output=output  (required) [default: ./trace.archive] the filename and path for the archive file
+  -o, --output=output  (required) [default: ./trace.archive] the output filepath/name to save the archive to
   -u, --url=url        (required) url to visit to produce the archive file
 ```
 
@@ -77,7 +96,7 @@ OPTIONS
   -n, --network=network  simulated network conditions for: none, offline, dialup, 2g, edge, slow-3g, em-3g, dsl, 3g,
                          fast-3g, 4g, cable, LTE, FIOS
 
-  -o, --output=output    (required) [default: trace.json] the filename to save the trace to
+  -o, --output=output    (required) [default: trace.json] the output filepath/name to save the trace to
 
   -u, --url=url          (required) url to visit
 ```
