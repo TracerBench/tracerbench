@@ -2,6 +2,10 @@ import binsearch from 'array-binsearch';
 import Bounds from './bounds';
 import CpuProfile from './cpuprofile';
 import Process from './process';
+import {
+  isRenderEnd,
+  isRenderStart
+} from './renderEvents';
 import Thread from './thread';
 import {
   ARGS,
@@ -191,7 +195,7 @@ export default class Trace {
   }
 
   private addEvent(event: ITraceEvent) {
-    if (event.ph === TRACE_EVENT_PHASE.END) {
+    if (event.ph === TRACE_EVENT_PHASE.END || isRenderEnd(event)) {
       this.endEvent(event);
       return;
     }
@@ -209,7 +213,7 @@ export default class Trace {
       this.addMetadata(event);
       return;
     }
-    if (event.ph === TRACE_EVENT_PHASE.BEGIN) {
+    if (event.ph === TRACE_EVENT_PHASE.BEGIN || isRenderStart(event)) {
       this.stack.push(event);
     }
     this.bounds.addEvent(event);
