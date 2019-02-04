@@ -31,6 +31,7 @@ USAGE
 * [`tracerbench analyze`](#tracerbench-analyze)
 * [`tracerbench create-archive`](#tracerbench-create-archive)
 * [`tracerbench help [COMMAND]`](#tracerbench-help-command)
+* [`tracerbench list-functions`](#tracerbench-list-functions)
 * [`tracerbench trace`](#tracerbench-trace)
 
 ## `tracerbench analyze`
@@ -80,6 +81,19 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.4/src/commands/help.ts)_
+
+## `tracerbench list-functions`
+
+Lists all the functions and source locations from a trace.
+
+```
+USAGE
+  $ tracerbench list-functions
+
+OPTIONS
+  -f, --file=file            (required) [default: ./trace.json] Path to trace json file
+  -l, --locations=locations  include locations in names
+```
 
 ## `tracerbench trace`
 

@@ -7,3 +7,10 @@ export function getCookiesFromHAR(har: any) {
   });
   return (cookies = [].concat.apply([], cookies));
 }
+
+export function normalizeFnName(name: string) {
+  if (name === '') {
+    name = '(anonymous)';
+  }
+  return name;
+}
