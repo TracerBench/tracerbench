@@ -32,6 +32,9 @@ USAGE
 * [`tracerbench create-archive`](#tracerbench-create-archive)
 * [`tracerbench help [COMMAND]`](#tracerbench-help-command)
 * [`tracerbench list-functions`](#tracerbench-list-functions)
+* [`tracerbench timeline:find`](#tracerbench-timelinefind)
+* [`tracerbench timeline:list`](#tracerbench-timelinelist)
+* [`tracerbench timeline:show`](#tracerbench-timelineshow)
 * [`tracerbench trace`](#tracerbench-trace)
 
 ## `tracerbench analyze`
@@ -93,6 +96,46 @@ USAGE
 OPTIONS
   -f, --file=file            (required) [default: ./trace.json] Path to trace json file
   -l, --locations=locations  include locations in names
+```
+
+## `tracerbench timeline:find`
+
+Get frame id from trace file and url.
+
+```
+USAGE
+  $ tracerbench timeline:find
+
+OPTIONS
+  -f, --file=file  (required) [default: ./trace.json] Path to trace json file
+  -u, --url=url    (required) url
+```
+
+## `tracerbench timeline:list`
+
+list main frame loads
+
+```
+USAGE
+  $ tracerbench timeline:list
+
+OPTIONS
+  -f, --file=file  (required) [default: ./trace.json] Path to trace json file
+```
+
+## `tracerbench timeline:show`
+
+show tracefile with user timings
+
+```
+USAGE
+  $ tracerbench timeline:show
+
+OPTIONS
+  -f, --file=file              (required) [default: ./trace.json] Path to trace json file
+  -m, --marks=marks            show user timing marks
+  -r, --filter=filter          user timing marks start with
+  -u, --urlOrFrame=urlOrFrame  (required) URL or Frame
 ```
 
 ## `tracerbench trace`
