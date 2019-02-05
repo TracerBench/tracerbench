@@ -32,6 +32,7 @@ USAGE
 * [`tracerbench create-archive`](#tracerbench-create-archive)
 * [`tracerbench css-parse`](#tracerbench-css-parse)
 * [`tracerbench help [COMMAND]`](#tracerbench-help-command)
+* [`tracerbench js-eval-time`](#tracerbench-js-eval-time)
 * [`tracerbench list-functions`](#tracerbench-list-functions)
 * [`tracerbench timeline:find`](#tracerbench-timelinefind)
 * [`tracerbench timeline:list`](#tracerbench-timelinelist)
@@ -97,6 +98,18 @@ OPTIONS
 ```
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.4/src/commands/help.ts)_
+
+## `tracerbench js-eval-time`
+
+Aggregates JS Eval time from a trace.
+
+```
+USAGE
+  $ tracerbench js-eval-time
+
+OPTIONS
+  -f, --file=file  (required) [default: ./trace.json] the path to the trace json file
+```
 
 ## `tracerbench list-functions`
 

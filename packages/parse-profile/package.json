@@ -14,9 +14,6 @@
     "ts:d": "tsc -p d.tsconfig.json",
     "test": "yarn lint && nyc --extension .ts mocha -r ts-node/register \"tests/*-test.ts\""
   },
-  "bin": {
-    "profile": "./bin/profile"
-  },
   "typings": "dist/src/index.d.ts",
   "devDependencies": {
     "@types/chai": "^4.1.7",
