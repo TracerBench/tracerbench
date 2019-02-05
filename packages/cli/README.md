@@ -30,6 +30,7 @@ USAGE
 <!-- commands -->
 * [`tracerbench analyze`](#tracerbench-analyze)
 * [`tracerbench create-archive`](#tracerbench-create-archive)
+* [`tracerbench css-parse`](#tracerbench-css-parse)
 * [`tracerbench help [COMMAND]`](#tracerbench-help-command)
 * [`tracerbench list-functions`](#tracerbench-list-functions)
 * [`tracerbench timeline:find`](#tracerbench-timelinefind)
@@ -66,6 +67,18 @@ USAGE
 OPTIONS
   -o, --output=output  (required) [default: ./trace.archive] the output filepath/name to save the archive to
   -u, --url=url        (required) url to visit to produce the archive file
+```
+
+## `tracerbench css-parse`
+
+Aggregates CSS parsing time from a trace.
+
+```
+USAGE
+  $ tracerbench css-parse
+
+OPTIONS
+  -f, --file=file  (required) [default: ./trace.json] the path to the trace json file
 ```
 
 ## `tracerbench help [COMMAND]`
