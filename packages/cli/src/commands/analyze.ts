@@ -51,7 +51,6 @@ export default class Analyze extends Command {
     // TODO: lynchbomb 01.30.2019 - porting this 1:1 from pp for now for parity
     // all of the cli/cli.run methods should be unraveled from `CommandLine` class
 
-    // await cli.run();
-    return this.log(`Analyze successful: ${cli}`);
+    await cli.run();
   }
 }

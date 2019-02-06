@@ -7,7 +7,7 @@ export default class CreateArchive extends Command {
     output: flags.string({
       char: 'o',
       default: './trace.archive',
-      description: 'the output filepath/name to save the archive to',
+      description: 'the archive output file name',
       required: true
     }),
     url: flags.string({

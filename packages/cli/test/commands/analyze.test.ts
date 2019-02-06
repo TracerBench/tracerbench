@@ -13,6 +13,6 @@ describe('analyze', () => {
     .stdout()
     .it(`runs analyze -a ${archiveFile} -f ${traceFile}`, async ctx => {
       await Analyze.run(['-a', archiveFile, '-f', traceFile]);
-      chai.expect(ctx.stdout).to.contain(`Analyze`);
+      chai.expect(ctx.stdout).to.contain(`Subtotal`);
     });
 });

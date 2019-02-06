@@ -66,7 +66,7 @@ USAGE
   $ tracerbench create-archive
 
 OPTIONS
-  -o, --output=output  (required) [default: ./trace.archive] the output filepath/name to save the archive to
+  -o, --output=output  (required) [default: ./trace.archive] the archive output file name
   -u, --url=url        (required) url to visit to produce the archive file
 ```
 
