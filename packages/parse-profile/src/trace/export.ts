@@ -1,12 +1,14 @@
 import { HierarchyNode } from 'd3-hierarchy';
 import * as fs from 'fs';
+import { ModuleMatcher } from '../cli/module_matcher';
 import { ICpuProfileNode, ITraceEvent, Trace, TRACE_EVENT_PHASE } from '../trace';
 
 export function exportHierarchy(
     rawTraceData: any,
     hierarchy: HierarchyNode<ICpuProfileNode>,
     trace: Trace,
-    filePath: string) {
+    filePath: string,
+    modMatcher: ModuleMatcher) {
 
     const newTraceData = JSON.parse(JSON.stringify(rawTraceData));
     hierarchy.each(node => {
@@ -18,7 +20,10 @@ export function exportHierarchy(
             ph: TRACE_EVENT_PHASE.COMPLETE,
             cat: 'blink.user_timing',
             name: node.data.callFrame.functionName,
-            args: {data: {functionName: node.data.callFrame.functionName}},
+            args: {data: {
+                    functionName: node.data.callFrame.functionName,
+                    moduleName: modMatcher.findModuleName(node.data.callFrame)
+                  }},
             dur: node.data.max - node.data.min,
         };
 

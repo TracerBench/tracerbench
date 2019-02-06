@@ -33,9 +33,8 @@ export async function analyze(options: IAnalyze) {
   let profile = getCPUProfile(trace, event)!;
   const { hierarchy } = profile;
 
-  exportHierarchy(rawTraceData, hierarchy, trace, file);
-
   let modMatcher = new ModuleMatcher(hierarchy, archiveFile);
+  exportHierarchy(rawTraceData, hierarchy, trace, file, modMatcher);
   let categories = formatCategories(report, methods);
   let allMethods = methodsFromCategories(categories);
 
