@@ -24,7 +24,7 @@ export default class List extends Command {
 
   public async run() {
     const { flags } = this.parse(List);
-    const file = flags.file;
+    const { file } = flags;
     let traceFile: any = null;
     let trace: any = null;
     try {

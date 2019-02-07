@@ -19,9 +19,8 @@ export default class Trace extends Command {
     }),
     network: flags.string({
       char: 'n',
-      description: `simulated network conditions for: ${Object.keys(
-        networkConditions
-      ).join(', ')}`
+      description: `simulated network conditions.`,
+      options: [`${Object.keys(networkConditions).join(', ')}`]
     }),
     output: flags.string({
       char: 'o',
@@ -38,10 +37,7 @@ export default class Trace extends Command {
 
   public async run() {
     const { flags } = this.parse(Trace);
-    const url = flags.url;
-    const har = flags.har;
-    const output = flags.output;
-    const cpu = flags.cpu;
+    const { url, har, output, cpu } = flags;
     const network = 'none';
 
     let cookies: any = '';

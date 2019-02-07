@@ -19,7 +19,7 @@ export default class CSSParse extends Command {
     let totalDuration: number = 0;
 
     const { flags } = this.parse(CSSParse);
-    const file = flags.file;
+    const { file } = flags;
 
     try {
       events = JSON.parse(fs.readFileSync(file, 'utf8'));

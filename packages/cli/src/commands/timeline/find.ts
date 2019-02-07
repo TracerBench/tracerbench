@@ -20,8 +20,7 @@ export default class Find extends Command {
 
   public async run() {
     const { flags } = this.parse(Find);
-    const file = flags.file;
-    const url = flags.url;
+    const { file, url } = flags;
     let frame: any = null;
     let trace: any = null;
     let traceFile: any = null;

@@ -25,8 +25,7 @@ export default class ListFunctions extends Command {
     let profile: any = null;
 
     const { flags } = this.parse(ListFunctions);
-    const file = flags.file;
-    const locations = flags.locations;
+    const { file, locations } = flags;
     const methods = new Set();
 
     try {

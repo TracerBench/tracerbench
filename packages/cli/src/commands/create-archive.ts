@@ -19,8 +19,7 @@ export default class CreateArchive extends Command {
 
   public async run() {
     const { flags } = this.parse(CreateArchive);
-    const url = flags.url;
-    const output = flags.output;
+    const { url, output } = flags;
 
     await harTrace(url, output);
     return this.log(

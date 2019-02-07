@@ -39,11 +39,8 @@ export default class Show extends Command {
 
   public async run() {
     const { flags } = this.parse(Show);
+    const { marks, file, urlOrFrame } = flags;
     const filter = collect(flags.filter, []);
-    const marks = flags.marks;
-    const file = flags.file;
-    const urlOrFrame = flags.urlOrFrame;
-    const events: any = null;
     let frame: any = null;
     let startTime = -1;
     let traceFile: any = null;

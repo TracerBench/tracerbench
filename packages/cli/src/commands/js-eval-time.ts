@@ -19,7 +19,7 @@ export default class JSEvalTime extends Command {
     let totalDuration: number = 0;
 
     const { flags } = this.parse(JSEvalTime);
-    const file = flags.file;
+    const { file } = flags;
 
     try {
       events = JSON.parse(fs.readFileSync(file, 'utf8'));

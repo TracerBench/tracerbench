@@ -35,11 +35,8 @@ export default class Analyze extends Command {
 
   public async run() {
     const { flags } = this.parse(Analyze);
-    const archive = flags.archive;
-    const event = flags.event;
-    const file = flags.file;
+    const { archive, event, file, report } = flags;
     const methods = flags.methods.split(',');
-    const report = flags.report;
     const cli = new CLI({
       archive,
       event,
