@@ -261,6 +261,7 @@ function expandNodes(
     }
   }
 
+  terminateNodes(state.stack, state.lastSampleTS, state);
   return {expandedNodes, orig2ExpNodes};
 }
 
