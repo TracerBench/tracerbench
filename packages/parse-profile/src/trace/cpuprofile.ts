@@ -1,5 +1,8 @@
 import { hierarchy, HierarchyNode } from 'd3-hierarchy';
 import {
+  addRenderNodes
+} from './renderEvents';
+import {
   FUNCTION_NAME,
   ICpuProfile,
   ICpuProfileNode,
@@ -70,6 +73,8 @@ export default class CpuProfile {
 
     // Make child iteration easier
     this.hierarchy.each(node => { if (node.children === undefined) node.children = []; });
+
+    addRenderNodes(this.hierarchy, events);
   }
 
   parent(node: ICpuProfileNode) {
@@ -328,9 +333,6 @@ function addDurationToNodes(
   stack: ICpuProfileNode[],
   delta: number,
 ) {
-  for (let i = 0; i < stack.length; i++) {
-    stack[i].total += delta;
-  }
   if (stack.length > 0) stack[stack.length - 1].self += delta;
 }
 

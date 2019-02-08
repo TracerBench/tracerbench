@@ -285,6 +285,54 @@ describe('aggregate', () => {
     expect(aggregations.unknown.total).to.equal(50); // d(25) + e(25)
     expect(aggregations.unknown.attributed).to.equal(50); // d(25) + e(25)
   });
+
+  it('aggregates correctly with render-event-split function slices', () => {
+    let generator = new ProfileGenerator();
+    let root = generator.start();
+
+    generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, true);
+    generator.tick(1);
+    let a = generator.appendNode(root, {
+      functionName: 'a',
+      lineNumber: 1,
+      columnNumber: 2,
+      scriptId: 1,
+      url: 'https://www.example.com/a.js',
+    });
+    generator.tick(100);
+    generator.appendNode(a, {
+      functionName: 'b',
+      lineNumber: 1,
+      columnNumber: 6,
+      scriptId: 1,
+      url: 'https://www.example.com/a.js',
+    });
+    generator.tick(25);
+    generator.appendRenderEvent('<pillar@component:addond@addon::ember1> (Rendering: update)', 50);
+    generator.tick(25);
+    generator.appendNode(a, {
+      functionName: 'c',
+      lineNumber: 4,
+      columnNumber: 2,
+      scriptId: 1,
+      url: 'https://www.example.com/a.js',
+    });
+    generator.tick(75);
+    generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, false);
+    let json = generator.end();
+
+    let locators = new LocatorGenerator().generate([['.*', 'module/1'], ['.*', 'module/2']]);
+
+    let profile = new CpuProfile(json, generator.events, -1, -1);
+    let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
+    let aggregations = aggregate(profile.hierarchy, locators, archive, modMatcher);
+
+    expect(aggregations['.*module/1'].attributed).to.equal(150); // a(100) + b(25) + b'(25)
+    expect(aggregations['.*module/1'].total).to.equal(275); // a(100) + b(25) + b(25) + b'(25) + b'(25) + c(50) + c'(25)
+
+    expect(aggregations['.*module/2'].attributed).to.equal(75); // c(50) + c'(25)
+    expect(aggregations['.*module/2'].total).to.equal(75); // c(50) + c'(25)
+  });
 });
 
 describe('categorizeAggregations', () => {

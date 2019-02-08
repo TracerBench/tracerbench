@@ -112,6 +112,21 @@ export class ProfileGenerator {
     this.lastAppend = this.curTime;
   }
 
+  appendRenderEvent(name: string, duration: number) {
+    let event: ITraceEvent;
+    event = {
+      pid: -1,
+      tid: -1,
+      ts: this.curTime,
+      ph: TRACE_EVENT_PHASE.COMPLETE,
+      dur: duration,
+      cat: '',
+      name,
+      args: {},
+    };
+    this.events.push(event);
+  }
+
   appendEvent(name: TRACE_EVENT_NAME, isStart: boolean) {
     let event: ITraceEvent;
     if (name === TRACE_EVENT_NAME.V8_EXECUTE) {
