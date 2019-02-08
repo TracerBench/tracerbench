@@ -4,15 +4,30 @@ import { Categorized } from './aggregator';
 import { Table } from './table';
 import { AUTO_ADD_CAT } from './utils';
 
-export function report(categorized: Categorized) {
-  let table = new Table();
+function findTotalAttrTime(categorized: Categorized) {
   let totalAggregatedTime = 0;
-
   Object.keys(categorized).forEach(category => {
     categorized[category].forEach(result => {
       totalAggregatedTime += result.attributed;
     });
   });
+  return totalAggregatedTime;
+}
+
+function filterZeroTotalCats(categorized: Categorized) {
+  return Object.keys(categorized).reduce((map, category) => {
+    const filtered = categorized[category].filter(result => {
+      return result.total > 0;
+    });
+    if (filtered.length > 0) map[category] = filtered;
+    return map;
+  }, {} as Categorized);
+}
+
+export function report(categorized: Categorized) {
+  let table = new Table();
+  let totalAggregatedTime = findTotalAttrTime(categorized);
+  categorized = filterZeroTotalCats(categorized);
 
   Object.keys(categorized).forEach(category => {
     let row = table.addRow();
