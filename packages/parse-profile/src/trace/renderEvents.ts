@@ -1,5 +1,6 @@
 import binsearch from 'array-binsearch';
 import { HierarchyNode } from 'd3-hierarchy';
+import { getChildren } from './cpuprofile';
 import {
   ICpuProfileNode,
   ITraceEvent,
@@ -46,14 +47,14 @@ function insertRenderEvent(enclosingNode: HierarchyNode<ICpuProfileNode>, event:
   };
 
   // Children who are fully to the left or right of the render event
-  const childrenForOriginal = enclosingNode.children!.filter(child => child.data.max < eventStart ||
+  const childrenForOriginal = getChildren(enclosingNode).filter(child => child.data.max < eventStart ||
                                                              child.data.min > eventEnd);
   // Children who are fully within the render event
-  const childrenForRenderNode = enclosingNode.children!.filter(child => child.data.min > eventStart &&
+  const childrenForRenderNode = getChildren(enclosingNode).filter(child => child.data.min > eventStart &&
                                                                child.data.max < eventEnd);
   // Children who are split by the render event
-  const leftSplitChild = enclosingNode.children!.find(n => n.data.min < eventStart && n.data.max > eventStart);
-  const rightSplitChild = enclosingNode.children!.find(n => n.data.min < eventEnd && n.data.max > eventEnd);
+  const leftSplitChild = getChildren(enclosingNode).find(n => n.data.min < eventStart && n.data.max > eventStart);
+  const rightSplitChild = getChildren(enclosingNode).find(n => n.data.min < eventEnd && n.data.max > eventEnd);
 
   // Fix parent/child links for all children other then split children
   enclosingNode.children = childrenForOriginal;
@@ -62,7 +63,7 @@ function insertRenderEvent(enclosingNode: HierarchyNode<ICpuProfileNode>, event:
 
   // fix node/render node parent/child link
   renderNode.parent = enclosingNode;
-  insertChildInOrder(enclosingNode.children!, renderNode);
+  insertChildInOrder(getChildren(enclosingNode), renderNode);
 
   splitChild(enclosingNode, renderNode, leftSplitChild, eventStart);
   splitChild(renderNode, enclosingNode, rightSplitChild, eventEnd);
@@ -98,20 +99,20 @@ function splitChild(leftParent: HierarchyNode<ICpuProfileNode>,
   // Add back in the child/parent links for the split node
   left.parent = leftParent;
   right.parent = rightParent;
-  insertChildInOrder(leftParent.children!, left);
-  insertChildInOrder(rightParent.children!, right);
+  insertChildInOrder(getChildren(leftParent), left);
+  insertChildInOrder(getChildren(rightParent), right);
 
   // If no further decendents, you are done
-  if (node.children!.length === 0) {
+  if (getChildren(node).length === 0) {
     left.data.self = left.data.max - left.data.min;
     right.data.self = right.data.max - right.data.min;
     return {middleLeftTime: left.data.self, middleRightTime: right.data.self};
   }
 
   // Reasign children correctly
-  const middleChild = node.children!.find(n => n.data.min < splitTS && n.data.max > splitTS);
-  const leftChildren = node.children!.filter(child => child.data.max < left.data.max);
-  const rightChildren = node.children!.filter(child => child.data.min > right.data.min);
+  const middleChild = getChildren(node)!.find(n => n.data.min < splitTS && n.data.max > splitTS);
+  const leftChildren = getChildren(node)!.filter(child => child.data.max < left.data.max);
+  const rightChildren = getChildren(node)!.filter(child => child.data.min > right.data.min);
 
   left.children = leftChildren;
   right.children = rightChildren;
