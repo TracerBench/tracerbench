@@ -29,6 +29,7 @@ USAGE
 # Commands
 <!-- commands -->
 * [`tracerbench analyze`](#tracerbench-analyze)
+* [`tracerbench compare`](#tracerbench-compare)
 * [`tracerbench create-archive`](#tracerbench-create-archive)
 * [`tracerbench css-parse`](#tracerbench-css-parse)
 * [`tracerbench help [COMMAND]`](#tracerbench-help-command)
@@ -48,13 +49,47 @@ USAGE
   $ tracerbench analyze
 
 OPTIONS
-  -a, --archive=archive  (required) Path to archive file
+  -a, --archive=archive  (required) [default: ./test/trace.archive] Path to archive file
   -e, --event=event      Slice time and see the events before and after the time slice
-  -f, --file=file        (required) Path to trace json file
-  -m, --methods=methods  (required) [default: ""] List of methods to aggregate
+  -f, --file=file        (required) [default: ./test/trace.json] Path to trace json file
+  -m, --methods=methods  (required) [default: ''] List of methods to aggregate
 
   -r, --report=report    Directory path to generate a report with aggregated sums for each heuristic category and
                          aggregated sum across all heuristics
+```
+
+## `tracerbench compare`
+
+Creates an automated archive file from a URL.
+
+```
+USAGE
+  $ tracerbench compare
+
+OPTIONS
+  -c, --control=control
+      (required) the path to the control sha
+
+  -e, --experiment=experiment
+      (required) the path to the experiment sha
+
+  -f, --fidelity=low|high
+      [default: low] directly correlates to the number of samples per trace. high means a longer trace time.
+
+  -m, --marker=marker
+      [default: renderEnd] DOM render complete marker
+
+  -n, --network=none, offline, dialup, 2g, edge, slow-3g, em-3g, dsl, 3g, fast-3g, 4g, cable, LTE, FIOS
+      simulated network conditions.
+
+  -o, --output=output
+      (required) [default: ./tracerbench-results.json] the output json file
+
+  -u, --url=url
+      url to visit
+
+  --cpu=cpu
+      (required) [default: 1] cpu throttle multiplier
 ```
 
 ## `tracerbench create-archive`
@@ -173,14 +208,19 @@ USAGE
   $ tracerbench trace
 
 OPTIONS
-  -c, --cpu=cpu          (required) [default: 1] cpu throttle multiplier
-  -h, --har=har          (required) filepath to the HAR file
+  -c, --cpu=cpu
+      (required) [default: 1] cpu throttle multiplier
 
-  -n, --network=network  simulated network conditions for: none, offline, dialup, 2g, edge, slow-3g, em-3g, dsl, 3g,
-                         fast-3g, 4g, cable, LTE, FIOS
+  -h, --har=har
+      (required) filepath to the HAR file
 
-  -o, --output=output    (required) [default: trace.json] the output filepath/name to save the trace to
+  -n, --network=none, offline, dialup, 2g, edge, slow-3g, em-3g, dsl, 3g, fast-3g, 4g, cable, LTE, FIOS
+      simulated network conditions.
 
-  -u, --url=url          (required) url to visit
+  -o, --output=output
+      (required) [default: trace.json] the output filepath/name to save the trace to
+
+  -u, --url=url
+      (required) url to visit
 ```
 <!-- commandsstop -->

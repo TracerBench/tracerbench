@@ -1,42 +1,23 @@
-import { Command, flags } from '@oclif/command';
+import { Command } from '@oclif/command';
 import { CLI } from 'parse-profile';
+import { archive, event, file, methods, report } from '../flags';
 
 export default class Analyze extends Command {
   public static description =
     'Parses a CPU profile and aggregates time across heuristics. Can be vertically sliced with event names.';
   public static flags = {
-    archive: flags.string({
-      char: 'a',
-      description: 'Path to archive file',
-      required: true
-    }),
-    event: flags.string({
-      char: 'e',
-      description:
-        'Slice time and see the events before and after the time slice'
-    }),
-    file: flags.string({
-      char: 'f',
-      description: 'Path to trace json file',
-      required: true
-    }),
-    methods: flags.string({
-      char: 'm',
-      default: '""',
-      description: 'List of methods to aggregate',
-      required: true
-    }),
-    report: flags.string({
-      char: 'r',
-      description:
-        'Directory path to generate a report with aggregated sums for each heuristic category and aggregated sum across all heuristics'
-    })
+    archive: archive({ required: true }),
+    event: event(),
+    file: file({ required: true }),
+    methods: methods({ required: true }),
+    report: report()
   };
 
   public async run() {
     const { flags } = this.parse(Analyze);
     const { archive, event, file, report } = flags;
     const methods = flags.methods.split(',');
+
     const cli = new CLI({
       archive,
       event,

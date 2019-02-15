@@ -1,0 +1,5 @@
+{
+  "archive": "./test/trace.archive",
+  "file": "./test/trace.json",
+  "methods": "''"
+}
