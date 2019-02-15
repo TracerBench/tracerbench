@@ -1,3 +1,14 @@
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import { ITBConfigKeys } from './itbconfig';
+
+export function getConfigDefault(id: ITBConfigKeys) {
+  const file = path.join(process.cwd(), 'tbconfig.json');
+  const tbconfig = JSON.parse(fs.readFileSync(file, 'utf8'));
+
+  return tbconfig[id];
+}
+
 export function getCookiesFromHAR(har: any) {
   let cookies: any = [];
   har.log.entries.forEach((entry: any) => {
