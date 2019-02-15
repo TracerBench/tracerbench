@@ -1,5 +1,4 @@
 import { Command, flags } from '@oclif/command';
-import { harTrace } from 'parse-profile';
 import { networkConditions } from 'parse-profile';
 
 export default class Compare extends Command {
@@ -39,7 +38,7 @@ export default class Compare extends Command {
     output: flags.string({
       char: 'o',
       default: './tracerbench-results.json',
-      description: 'the output file',
+      description: 'the output json file',
       required: true
     }),
     url: flags.string({
@@ -50,6 +49,20 @@ export default class Compare extends Command {
 
   public async run() {
     const { flags } = this.parse(Compare);
-    const { url, output, network } = flags;
+    const {
+      url,
+      output,
+      network,
+      marker,
+      fidelity,
+      experiment,
+      cpu,
+      control
+    } = flags;
+
+    // tracerbench compare -c sha -e sha --cpu 4 --url https://www.tracerbench.com -m renderEnd -f low -o ./results.json
+    // har-remix, chrome-debugging-client dep?
+    // init initial render benchmark for control and experiment
+    // init runner
   }
 }
