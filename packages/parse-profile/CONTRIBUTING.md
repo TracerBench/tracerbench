@@ -7,29 +7,6 @@ have the right to bind your employer).  By submitting code, you (and, if
 applicable, your employer) are licensing the submitted code to LinkedIn
 and the open source community subject to the BSD 2-Clause license. 
 
-Getting Started
-===============
-
-Install required global dependencies:
-
-```
-$ npm install -g yarn
-```
-
-Check out the code:
-
-```
-$ git clone https://github.com/stefanpenner/parse-profile.git
-```
-
-Initialize the project:
-
-```
-$ cd parse-profile
-$ yarn install
-$ yarn test
-```
-
 Responsible Disclosure of Security Vulnerabilities
 ==================================================
 
