@@ -10,11 +10,8 @@ and the open source community subject to the BSD 2-Clause license.
 Responsible Disclosure of Security Vulnerabilities
 ==================================================
 
-**Do not file an issue on Github for security issues.**  Please review
-the [guidelines for disclosure][disclosure_guidelines].  Reports should
-be encrypted using PGP ([public key][pubkey]) and sent to
-[security@linkedin.com][disclosure_email] preferably with the title
-"Vulnerability in Github stefanpenner/parse-profile - &lt;short summary&gt;".
+**Do not file an issue on Github for security issues.** Please review
+the [guidelines for disclosure][disclosure_guidelines].
 
 Tips for Getting Your Pull Request Accepted
 ===========================================
@@ -23,8 +20,7 @@ Tips for Getting Your Pull Request Accepted
 2. Bug fixes must include a test case demonstrating the error that it fixes.
 3. Open an issue first and seek advice for your change before submitting
    a pull request. Large features which have never been discussed are
-   unlikely to be accepted. **You have been warned.**
+   unlikely to be accepted.
 
 [disclosure_guidelines]: https://www.linkedin.com/help/linkedin/answer/62924
-[pubkey]: https://gist.github.com/chriseppstein/3f45d3a8e6fb42f24cb7b3f77f21381e
-[disclosure_email]: mailto:security@linkedin.com?subject=Vulnerability%20in%20Github%20stefanpenner/parse-profile%20-%20%3Csummary%3E
+[disclosure_email]: mailto:security@linkedin.com?subject=Vulnerability%20in%20Github%20TracerBench%20ParseProfile-%20%3Csummary%3E
