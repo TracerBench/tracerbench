@@ -1,5 +1,4 @@
-tracerbench-cli
-===============
+# tracerbench-cli
 
 tracerbench-cli
 
@@ -9,11 +8,15 @@ tracerbench-cli
 [![License](https://img.shields.io/npm/l/tracerbench-cli.svg)](https://github.com/TracerBench/tracerbench/blob/master/package.json)
 
 <!-- toc -->
-* [Usage](#usage)
-* [Commands](#commands)
-<!-- tocstop -->
+
+- [Usage](#usage)
+- [Commands](#commands)
+  <!-- tocstop -->
+
 # Usage
+
 <!-- usage -->
+
 ```sh-session
 $ npm install -g tracerbench-cli
 $ tracerbench COMMAND
@@ -25,20 +28,23 @@ USAGE
   $ tracerbench COMMAND
 ...
 ```
+
 <!-- usagestop -->
+
 # Commands
+
 <!-- commands -->
-* [`tracerbench analyze`](#tracerbench-analyze)
-* [`tracerbench compare`](#tracerbench-compare)
-* [`tracerbench create-archive`](#tracerbench-create-archive)
-* [`tracerbench css-parse`](#tracerbench-css-parse)
-* [`tracerbench help [COMMAND]`](#tracerbench-help-command)
-* [`tracerbench js-eval-time`](#tracerbench-js-eval-time)
-* [`tracerbench list-functions`](#tracerbench-list-functions)
-* [`tracerbench timeline:find`](#tracerbench-timelinefind)
-* [`tracerbench timeline:list`](#tracerbench-timelinelist)
-* [`tracerbench timeline:show`](#tracerbench-timelineshow)
-* [`tracerbench trace`](#tracerbench-trace)
+
+- [`tracerbench analyze`](#tracerbench-analyze)
+- [`tracerbench create-archive`](#tracerbench-create-archive)
+- [`tracerbench css-parse`](#tracerbench-css-parse)
+- [`tracerbench help [COMMAND]`](#tracerbench-help-command)
+- [`tracerbench js-eval-time`](#tracerbench-js-eval-time)
+- [`tracerbench list-functions`](#tracerbench-list-functions)
+- [`tracerbench timeline:find`](#tracerbench-timelinefind)
+- [`tracerbench timeline:list`](#tracerbench-timelinelist)
+- [`tracerbench timeline:show`](#tracerbench-timelineshow)
+- [`tracerbench trace`](#tracerbench-trace)
 
 ## `tracerbench analyze`
 
@@ -57,40 +63,6 @@ OPTIONS
                          aggregated sum across all heuristics
 
   --event=event          Slice time and see the events before and after the time slice
-```
-
-## `tracerbench compare`
-
-Creates an automated archive file from a URL.
-
-```
-USAGE
-  $ tracerbench compare
-
-OPTIONS
-  -c, --control=control
-      (required) The path to the control SHA
-
-  -e, --experiment=experiment
-      (required) The path to the experiment SHA
-
-  -n, --network=none, offline, dialup, 2g, edge, slow-3g, em-3g, dsl, 3g, fast-3g, 4g, cable, LTE, FIOS
-      Simulated network conditions.
-
-  -o, --output=output
-      (required) [default: ./tracerbench-results.json] The output JSON file
-
-  -u, --url=url
-      URL to visit
-
-  --cpuThrottle=cpuThrottle
-      (required) [default: 1] CPU throttle multiplier
-
-  --fidelity=low|high
-      [default: low] Directly correlates to the number of samples per trace. High means a longer trace time.
-
-  --marker=marker
-      [default: renderEnd] DOM render complete marker
 ```
 
 ## `tracerbench create-archive`
@@ -224,4 +196,5 @@ OPTIONS
   --traceOutput=traceOutput
       (required) [default: ./trace.archive] The archive output file name
 ```
+
 <!-- commandsstop -->
