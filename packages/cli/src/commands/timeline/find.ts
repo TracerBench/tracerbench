@@ -1,4 +1,4 @@
-import { Command, flags } from '@oclif/command';
+import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
 import { file, url } from '../../flags';
 import { findFrame, loadTraceFile } from '../../utils';

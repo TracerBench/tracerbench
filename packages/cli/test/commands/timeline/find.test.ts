@@ -11,8 +11,8 @@ const url = 'https://www.tracerbench.com';
 describe('timeline:find', () => {
   test
     .stdout()
-    .it(`runs timeline:find -u ${url} -f ${traceFile}`, async ctx => {
-      await Find.run(['-u', url, '-f', traceFile]);
+    .it(`runs timeline:find --url ${url} --file ${traceFile}`, async ctx => {
+      await Find.run(['--url', url, '--file', traceFile]);
       chai.expect(ctx.stdout).to.contain(`FRAME:`);
     });
 });

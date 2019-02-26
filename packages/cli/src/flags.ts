@@ -42,16 +42,15 @@ export const report = flags.build({
     'Directory path to generate a report with aggregated sums for each heuristic category and aggregated sum across all heuristics'
 });
 
+export const cpuThrottle = flags.build({
+  default: () => getConfigDefault('cpu') || 1,
+  description: 'CPU throttle multiplier'
+});
+
 export const control = flags.build({
   char: 'c',
   default: () => getConfigDefault('control'),
   description: 'The path to the control SHA'
-});
-
-export const cpu = flags.build({
-  default: () => getConfigDefault('cpu'),
-  description: 'CPU throttle multiplier',
-  parse: c => parseInt(c, 10)
 });
 
 export const experiment = flags.build({

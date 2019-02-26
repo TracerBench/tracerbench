@@ -2,5 +2,6 @@
   "archive": "./test/trace.archive",
   "file": "./test/trace.json",
   "methods": "''",
-  "marker": "renderEnd"
+  "marker": "renderEnd",
+  "cpuThrottle": 2
 }
