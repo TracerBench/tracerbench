@@ -2,7 +2,6 @@
   "name": "parse-profile",
   "version": "0.0.1",
   "main": "dist/index.cjs.js",
-  "private": true,
   "license": "BSD-2-Clause",
   "scripts": {
     "build": "yarn nuke && rollup -c && yarn ts:d",
