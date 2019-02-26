@@ -1,21 +1,13 @@
 import { Command, flags } from '@oclif/command';
 import * as fs from 'fs-extra';
+import { file, url } from '../../flags';
 import { findFrame, loadTraceFile } from '../../utils';
 
 export default class Find extends Command {
   public static description = 'Get frame id from trace file and url.';
   public static flags = {
-    file: flags.string({
-      char: 'f',
-      default: './trace.json',
-      description: 'Path to trace json file',
-      required: true
-    }),
-    url: flags.string({
-      char: 'u',
-      description: 'url',
-      required: true
-    })
+    file: file({ required: true }),
+    url: url({ required: true })
   };
 
   public async run() {

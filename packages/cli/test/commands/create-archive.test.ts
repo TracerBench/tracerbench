@@ -13,9 +13,12 @@ const traceFile = path.join(process.cwd() + '/test/trace.archive');
 describe('create-archive', () => {
   test
     .stdout()
-    .it(`runs create-archive --url ${url} --output ${traceFile}`, async ctx => {
-      await CreateArchive.run(['--url', url, '--output', traceFile]);
-      chai.expect(ctx.stdout).to.contain(`HAR successfully generated`);
-      chai.expect(traceFile).to.be.a.file();
-    });
+    .it(
+      `runs create-archive --url ${url} --archiveOutput ${traceFile}`,
+      async ctx => {
+        await CreateArchive.run(['--url', url, '--archiveOutput', traceFile]);
+        chai.expect(ctx.stdout).to.contain(`HAR successfully generated`);
+        chai.expect(traceFile).to.be.a.file();
+      }
+    );
 });

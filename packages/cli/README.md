@@ -50,12 +50,13 @@ USAGE
 
 OPTIONS
   -a, --archive=archive  (required) [default: ./test/trace.archive] Path to archive file
-  -e, --event=event      Slice time and see the events before and after the time slice
-  -f, --file=file        (required) [default: ./test/trace.json] Path to trace json file
+  -f, --file=file        (required) [default: ./test/trace.json] Path to the trace JSON file
   -m, --methods=methods  (required) [default: ''] List of methods to aggregate
 
   -r, --report=report    Directory path to generate a report with aggregated sums for each heuristic category and
                          aggregated sum across all heuristics
+
+  --event=event          Slice time and see the events before and after the time slice
 ```
 
 ## `tracerbench compare`
@@ -68,28 +69,28 @@ USAGE
 
 OPTIONS
   -c, --control=control
-      (required) the path to the control sha
+      (required) The path to the control SHA
 
   -e, --experiment=experiment
-      (required) the path to the experiment sha
-
-  -f, --fidelity=low|high
-      [default: low] directly correlates to the number of samples per trace. high means a longer trace time.
-
-  -m, --marker=marker
-      [default: renderEnd] DOM render complete marker
+      (required) The path to the experiment SHA
 
   -n, --network=none, offline, dialup, 2g, edge, slow-3g, em-3g, dsl, 3g, fast-3g, 4g, cable, LTE, FIOS
-      simulated network conditions.
+      Simulated network conditions.
 
   -o, --output=output
-      (required) [default: ./tracerbench-results.json] the output json file
+      (required) [default: ./tracerbench-results.json] The output JSON file
 
   -u, --url=url
-      url to visit
+      URL to visit
 
   --cpu=cpu
-      (required) [default: 1] cpu throttle multiplier
+      (required) CPU throttle multiplier
+
+  --fidelity=low|high
+      [default: low] Directly correlates to the number of samples per trace. High means a longer trace time.
+
+  --marker=marker
+      [default: renderEnd] DOM render complete marker
 ```
 
 ## `tracerbench create-archive`
@@ -101,8 +102,8 @@ USAGE
   $ tracerbench create-archive
 
 OPTIONS
-  -o, --output=output  (required) [default: ./trace.archive] the archive output file name
-  -u, --url=url        (required) url to visit to produce the archive file
+  -u, --url=url                  (required) URL to visit
+  --archiveOutput=archiveOutput  (required) [default: ./trace.json] The output filepath/name to save the trace to
 ```
 
 ## `tracerbench css-parse`
@@ -114,7 +115,7 @@ USAGE
   $ tracerbench css-parse
 
 OPTIONS
-  -f, --file=file  (required) [default: ./trace.json] the path to the trace json file
+  -f, --file=file  (required) [default: ./test/trace.json] Path to the trace JSON file
 ```
 
 ## `tracerbench help [COMMAND]`
@@ -143,7 +144,7 @@ USAGE
   $ tracerbench js-eval-time
 
 OPTIONS
-  -f, --file=file  (required) [default: ./trace.json] the path to the trace json file
+  -f, --file=file  (required) [default: ./test/trace.json] Path to the trace JSON file
 ```
 
 ## `tracerbench list-functions`
@@ -155,7 +156,7 @@ USAGE
   $ tracerbench list-functions
 
 OPTIONS
-  -f, --file=file            (required) [default: ./trace.json] Path to trace json file
+  -f, --file=file            (required) [default: ./test/trace.json] Path to the trace JSON file
   -l, --locations=locations  include locations in names
 ```
 
@@ -168,8 +169,8 @@ USAGE
   $ tracerbench timeline:find
 
 OPTIONS
-  -f, --file=file  (required) [default: ./trace.json] Path to trace json file
-  -u, --url=url    (required) url
+  -f, --file=file  (required) [default: ./test/trace.json] Path to the trace JSON file
+  -u, --url=url    (required) URL to visit
 ```
 
 ## `tracerbench timeline:list`
@@ -181,7 +182,7 @@ USAGE
   $ tracerbench timeline:list
 
 OPTIONS
-  -f, --file=file  (required) [default: ./trace.json] Path to trace json file
+  -f, --file=file  (required) [default: ./test/trace.json] Path to the trace JSON file
 ```
 
 ## `tracerbench timeline:show`
@@ -193,10 +194,10 @@ USAGE
   $ tracerbench timeline:show
 
 OPTIONS
-  -f, --file=file              (required) [default: ./trace.json] Path to trace json file
-  -m, --marks=marks            show user timing marks
-  -r, --filter=filter          user timing marks start with
-  -u, --urlOrFrame=urlOrFrame  (required) URL or Frame
+  -f, --file=file          (required) [default: ./test/trace.json] Path to the trace JSON file
+  --filter=filter          User timing marks start with
+  --marks=marks            Show user timing marks
+  --urlOrFrame=urlOrFrame  (required) URL or Frame
 ```
 
 ## `tracerbench trace`
@@ -208,19 +209,19 @@ USAGE
   $ tracerbench trace
 
 OPTIONS
-  -c, --cpu=cpu
-      (required) [default: 1] cpu throttle multiplier
-
   -h, --har=har
-      (required) filepath to the HAR file
+      (required) Filepath to the HAR file
 
   -n, --network=none, offline, dialup, 2g, edge, slow-3g, em-3g, dsl, 3g, fast-3g, 4g, cable, LTE, FIOS
-      simulated network conditions.
-
-  -o, --output=output
-      (required) [default: trace.json] the output filepath/name to save the trace to
+      Simulated network conditions.
 
   -u, --url=url
-      (required) url to visit
+      (required) URL to visit
+
+  --cpu=cpu
+      (required) CPU throttle multiplier
+
+  --traceOutput=traceOutput
+      (required) [default: ./trace.archive] The archive output file name
 ```
 <!-- commandsstop -->

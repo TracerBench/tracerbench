@@ -1,43 +1,22 @@
-import { Command, flags } from '@oclif/command';
+import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
-import { liveTrace, networkConditions } from 'parse-profile';
+import { liveTrace } from 'parse-profile';
+import { cpu, har, network, traceOutput, url } from '../flags';
 import { getCookiesFromHAR } from '../utils';
 
 export default class Trace extends Command {
   public static description = `Creates an automated trace that's saved to JSON. Also takes network conditioner and CPU throttling options.`;
   public static flags = {
-    cpu: flags.integer({
-      char: 'c',
-      default: 1,
-      description: 'cpu throttle multiplier',
-      required: true
-    }),
-    har: flags.string({
-      char: 'h',
-      description: 'filepath to the HAR file',
-      required: true
-    }),
-    network: flags.string({
-      char: 'n',
-      description: `simulated network conditions.`,
-      options: [`${Object.keys(networkConditions).join(', ')}`]
-    }),
-    output: flags.string({
-      char: 'o',
-      default: 'trace.json',
-      description: 'the output filepath/name to save the trace to',
-      required: true
-    }),
-    url: flags.string({
-      char: 'u',
-      description: 'url to visit',
-      required: true
-    })
+    cpu: cpu({ required: true }),
+    har: har({ required: true }),
+    network: network(),
+    traceOutput: traceOutput({ required: true }),
+    url: url({ required: true })
   };
 
   public async run() {
     const { flags } = this.parse(Trace);
-    const { url, har, output, cpu } = flags;
+    const { url, har, traceOutput, cpu } = flags;
     const network = 'none';
 
     let cookies: any = '';
@@ -55,9 +34,9 @@ export default class Trace extends Command {
       }
     }
 
-    await liveTrace(url, output, cookies, { cpu, network });
+    await liveTrace(url, traceOutput, cookies, { cpu, network });
     return this.log(
-      `Trace successfully generated and available here: ${output}`
+      `Trace successfully generated and available here: ${traceOutput}`
     );
   }
 }

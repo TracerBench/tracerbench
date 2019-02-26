@@ -11,8 +11,11 @@ const url = 'https://www.tracerbench.com';
 describe('timeline:show', () => {
   test
     .stdout()
-    .it(`runs timeline:show -u ${url} -f ${traceFile}`, async ctx => {
-      await Show.run(['-u', url, '-f', traceFile]);
-      chai.expect(ctx.stdout).to.contain(`Timings`);
-    });
+    .it(
+      `runs timeline:show --urlOrFrame ${url} --file ${traceFile}`,
+      async ctx => {
+        await Show.run(['--urlOrFrame', url, '--file', traceFile]);
+        chai.expect(ctx.stdout).to.contain(`Timings`);
+      }
+    );
 });

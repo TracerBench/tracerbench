@@ -1,16 +1,12 @@
 import { Command, flags } from '@oclif/command';
 import * as fs from 'fs-extra';
 import { loadTrace } from 'parse-profile';
+import { file } from '../flags';
 
 export default class JSEvalTime extends Command {
   public static description = 'Aggregates JS Eval time from a trace.';
   public static flags = {
-    file: flags.string({
-      char: 'f',
-      default: './trace.json',
-      description: 'the path to the trace json file',
-      required: true
-    })
+    file: file({ required: true })
   };
 
   public async run() {
