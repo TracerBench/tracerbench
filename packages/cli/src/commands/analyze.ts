@@ -1,5 +1,7 @@
+import * as fs from 'fs-extra';
+
 import { Command } from '@oclif/command';
-import { CLI } from 'parse-profile';
+import { analyze } from 'parse-profile';
 import { archive, event, file, methods, report } from '../flags';
 
 export default class Analyze extends Command {
@@ -17,18 +19,26 @@ export default class Analyze extends Command {
     const { flags } = this.parse(Analyze);
     const { archive, event, file, report } = flags;
     const methods = flags.methods.split(',');
+    let archiveFile;
 
-    const cli = new CLI({
-      archive,
+    try {
+      fs.existsSync(file);
+    } catch (error) {
+      this.error(`Must pass a path to the trace file`);
+    }
+
+    try {
+      archiveFile = JSON.parse(fs.readFileSync(archive, 'utf8'));
+    } catch (error) {
+      this.error(`Could not find archive file: ${archive}, ${error}`);
+    }
+
+    await analyze({
+      archiveFile,
       event,
       file,
       methods,
       report
     });
-
-    // TODO: lynchbomb 01.30.2019 - porting this 1:1 from pp for now for parity
-    // all of the cli/cli.run methods should be unraveled from `CommandLine` class
-
-    await cli.run();
   }
 }
