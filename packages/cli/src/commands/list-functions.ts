@@ -1,22 +1,15 @@
 import { Command, flags } from '@oclif/command';
 import * as fs from 'fs-extra';
 import { loadTrace } from 'parse-profile';
+import { file, locations } from '../flags';
 import { normalizeFnName } from '../utils';
 
 export default class ListFunctions extends Command {
   public static description =
     'Lists all the functions and source locations from a trace.';
   public static flags = {
-    file: flags.string({
-      char: 'f',
-      default: './trace.json',
-      description: 'Path to trace json file',
-      required: true
-    }),
-    locations: flags.string({
-      char: 'l',
-      description: 'include locations in names'
-    })
+    file: file({ required: true }),
+    locations: locations()
   };
 
   public async run() {

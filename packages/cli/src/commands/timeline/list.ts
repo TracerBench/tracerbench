@@ -1,5 +1,6 @@
 import { Command, flags } from '@oclif/command';
 import * as fs from 'fs-extra';
+import { file } from '../../flags';
 import { isCommitLoad, loadTraceFile } from '../../utils';
 
 interface ITrace {
@@ -14,12 +15,7 @@ interface ITrace {
 export default class List extends Command {
   public static description = 'list main frame loads';
   public static flags = {
-    file: flags.string({
-      char: 'f',
-      default: './trace.json',
-      description: 'Path to trace json file',
-      required: true
-    })
+    file: file({ required: true })
   };
 
   public async run() {

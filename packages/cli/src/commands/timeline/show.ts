@@ -1,5 +1,6 @@
 import { Command, flags } from '@oclif/command';
 import * as fs from 'fs-extra';
+import { file, filter, marks, urlOrFrame } from '../../flags';
 import {
   byTime,
   collect,
@@ -15,26 +16,12 @@ import {
 
 export default class Show extends Command {
   public static description = 'show tracefile with user timings';
+
   public static flags = {
-    file: flags.string({
-      char: 'f',
-      default: './trace.json',
-      description: 'Path to trace json file',
-      required: true
-    }),
-    filter: flags.string({
-      char: 'r',
-      description: 'user timing marks start with'
-    }),
-    marks: flags.string({
-      char: 'm',
-      description: 'show user timing marks'
-    }),
-    urlOrFrame: flags.string({
-      char: 'u',
-      description: 'URL or Frame',
-      required: true
-    })
+    file: file({ required: true }),
+    filter: filter(),
+    marks: marks(),
+    urlOrFrame: urlOrFrame({ required: true })
   };
 
   public async run() {
