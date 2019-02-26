@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-import { Trace } from '../trace';
+import { ITrace, loadTrace } from '../index';
+import { ITraceEvent, Trace } from '../trace';
 import { exportHierarchy } from '../trace/export';
 import {
   aggregate,
@@ -17,21 +17,21 @@ import {
   methodsFromCategories
 } from './utils';
 
-export interface IAnalyze {
-  file: string;
+interface IAnalyze {
+  rawTraceData: ITraceEvent[] | ITrace;
   archiveFile: Archive;
   methods: string[];
   event?: string;
   report?: string;
   verbose?: boolean;
+  file: string;
 }
 
 export async function analyze(options: IAnalyze) {
-  let { archiveFile, event, file, report, methods } = options;
-  let trace = loadTrace(file);
-  let profile = cpuProfile(trace, event)!;
+  let { archiveFile, event, file, rawTraceData, report, methods } = options;
+  let trace = loadTrace(rawTraceData);
+  let profile = getCPUProfile(trace, event)!;
   const { hierarchy } = profile;
-  const rawTraceData = JSON.parse(fs.readFileSync(file, 'utf8'));
 
   exportHierarchy(rawTraceData, hierarchy, trace, file);
 
@@ -49,15 +49,7 @@ export async function analyze(options: IAnalyze) {
   reporter(categorized);
 }
 
-function loadTrace(file: string) {
-  let traceEvents = JSON.parse(fs.readFileSync(file, 'utf8'));
-  let trace = new Trace();
-  trace.addEvents(traceEvents.traceEvents);
-  trace.buildModel();
-  return trace;
-}
-
-function cpuProfile(trace: Trace, event?: string) {
+function getCPUProfile(trace: Trace, event?: string) {
   let { min, max } = computeMinMax(trace, 'navigationStart', event!);
   return trace.cpuProfile(min, max);
 }

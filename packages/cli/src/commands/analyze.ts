@@ -20,11 +20,12 @@ export default class Analyze extends Command {
     const { archive, event, file, report } = flags;
     const methods = flags.methods.split(',');
     let archiveFile;
+    let rawTraceData;
 
     try {
-      fs.existsSync(file);
+      rawTraceData = JSON.parse(fs.readFileSync(file, 'utf8'));
     } catch (error) {
-      this.error(`Must pass a path to the trace file`);
+      this.error(`Could not find file: ${file}, ${error}`);
     }
 
     try {
@@ -38,6 +39,7 @@ export default class Analyze extends Command {
       event,
       file,
       methods,
+      rawTraceData,
       report
     });
   }
