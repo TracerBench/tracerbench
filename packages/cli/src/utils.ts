@@ -1,6 +1,29 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { ITBConfigKeys } from './itbconfig';
+
+interface ITBConfig {
+  archive?: string;
+  file?: string;
+  methods?: string;
+  control?: string;
+  cpu?: string;
+  experiment?: string;
+  fidelity?: string;
+  report?: string;
+  event?: string;
+  marker?: string;
+  network?: string;
+  output?: string;
+  url?: string;
+  archiveOutput?: string;
+  locations?: string;
+  har?: string;
+  filter?: string;
+  marks?: string;
+  urlOrFrame?: string;
+}
+
+type ITBConfigKeys = keyof ITBConfig;
 
 export function getConfigDefault(id: ITBConfigKeys) {
   const file = path.join(process.cwd(), 'tbconfig.json');
