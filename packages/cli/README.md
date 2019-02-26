@@ -83,8 +83,8 @@ OPTIONS
   -u, --url=url
       URL to visit
 
-  --cpu=cpu
-      (required) CPU throttle multiplier
+  --cpuThrottle=cpuThrottle
+      (required) [default: 1] CPU throttle multiplier
 
   --fidelity=low|high
       [default: low] Directly correlates to the number of samples per trace. High means a longer trace time.
@@ -218,8 +218,8 @@ OPTIONS
   -u, --url=url
       (required) URL to visit
 
-  --cpu=cpu
-      (required) CPU throttle multiplier
+  --cpuThrottle=cpuThrottle
+      (required) [default: 1] CPU throttle multiplier
 
   --traceOutput=traceOutput
       (required) [default: ./trace.archive] The archive output file name

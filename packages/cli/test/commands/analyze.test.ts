@@ -11,8 +11,11 @@ const traceFile = path.join(process.cwd() + '/test/trace.json');
 describe('analyze', () => {
   test
     .stdout()
-    .it(`runs analyze -a ${archiveFile} -f ${traceFile}`, async ctx => {
-      await Analyze.run(['-a', archiveFile, '-f', traceFile]);
-      chai.expect(ctx.stdout).to.contain(`Subtotal`);
-    });
+    .it(
+      `runs analyze --archive ${archiveFile} --file ${traceFile}`,
+      async ctx => {
+        await Analyze.run(['--archive', archiveFile, '--file', traceFile]);
+        chai.expect(ctx.stdout).to.contain(`Subtotal`);
+      }
+    );
 });

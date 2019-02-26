@@ -1,7 +1,7 @@
-import { Command, flags } from '@oclif/command';
+import { Command } from '@oclif/command';
 import {
   control,
-  cpu,
+  cpuThrottle,
   experiment,
   fidelity,
   marker,
@@ -14,7 +14,7 @@ export default class Compare extends Command {
   public static description = 'Creates an automated archive file from a URL.';
   public static flags = {
     control: control({ required: true }),
-    cpu: cpu({ required: true }),
+    cpuThrottle: cpuThrottle({ required: true }),
     experiment: experiment({ required: true }),
     fidelity: fidelity(),
     marker: marker(),
@@ -26,13 +26,13 @@ export default class Compare extends Command {
   public async run() {
     const { flags } = this.parse(Compare);
     const {
+      cpuThrottle,
       url,
       output,
       network,
       marker,
       fidelity,
       experiment,
-      cpu,
       control
     } = flags;
 

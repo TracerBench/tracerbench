@@ -1,3 +1,5 @@
+import { CLIError } from '@oclif/errors';
+
 import * as fs from 'fs-extra';
 import * as path from 'path';
 
@@ -26,10 +28,15 @@ interface ITBConfig {
 type ITBConfigKeys = keyof ITBConfig;
 
 export function getConfigDefault(id: ITBConfigKeys) {
-  const file = path.join(process.cwd(), 'tbconfig.json');
-  const tbconfig = JSON.parse(fs.readFileSync(file, 'utf8'));
-
-  return tbconfig[id];
+  try {
+    const file = path.join(process.cwd(), 'tbconfig.json');
+    const tbconfig = JSON.parse(fs.readFileSync(file, 'utf8'));
+    return tbconfig[id];
+  } catch (error) {
+    throw new CLIError(
+      `TracerBench tbconfig.json default value not found for ${id}`
+    );
+  }
 }
 
 export function getCookiesFromHAR(har: any) {

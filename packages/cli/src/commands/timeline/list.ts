@@ -1,4 +1,4 @@
-import { Command, flags } from '@oclif/command';
+import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
 import { file } from '../../flags';
 import { isCommitLoad, loadTraceFile } from '../../utils';
