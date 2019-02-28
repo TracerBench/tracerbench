@@ -92,6 +92,11 @@ export default class CpuProfile {
   }
 }
 
+export function getChildren(node: HierarchyNode<ICpuProfileNode>) {
+  if (node.children === undefined) throw new Error('Node had undefined children');
+  return node.children;
+}
+
 function expandAndFix(
   samples: ISample[],
   profile: ICpuProfile,
