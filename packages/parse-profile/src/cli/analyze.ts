@@ -35,6 +35,7 @@ export async function analyze(options: IAnalyze) {
 
   let modMatcher = new ModuleMatcher(hierarchy, archiveFile);
   exportHierarchy(rawTraceData, hierarchy, trace, file, modMatcher);
+
   let categories = formatCategories(report, methods);
   let allMethods = methodsFromCategories(categories);
 
