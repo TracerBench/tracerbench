@@ -10,13 +10,13 @@ chai.use(require('chai-fs'));
 const harFile = path.join(process.cwd() + '/test/www.tracerbench.com.har');
 const url = 'https://www.tracerbench.com';
 const traceFile = path.join(process.cwd() + '/test/trace.json');
-const cpuThrottle = '1';
+const cpuThrottleRate = '1';
 
 describe('trace', () => {
   test
     .stdout()
     .it(
-      `runs trace --url ${url} --har ${harFile} --traceOutput ${traceFile} --cpuThrottle ${cpuThrottle}`,
+      `runs trace --url ${url} --har ${harFile} --traceOutput ${traceFile} --cpuThrottleRate ${cpuThrottleRate}`,
       async ctx => {
         await Trace.run([
           '--url',
@@ -25,8 +25,8 @@ describe('trace', () => {
           harFile,
           '--traceOutput',
           traceFile,
-          '--cpuThrottle',
-          cpuThrottle
+          '--cpuThrottleRate',
+          cpuThrottleRate
         ]);
         chai.expect(ctx.stdout).to.contain(`Trace`);
         chai.expect(traceFile).to.be.a.file();

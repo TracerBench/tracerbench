@@ -8,15 +8,14 @@ tracerbench-cli
 [![License](https://img.shields.io/npm/l/tracerbench-cli.svg)](https://github.com/TracerBench/tracerbench/blob/master/package.json)
 
 <!-- toc -->
-
-- [Usage](#usage)
-- [Commands](#commands)
-  <!-- tocstop -->
+* [tracerbench-cli](#tracerbench-cli)
+* [Usage](#usage)
+* [Commands](#commands)
+<!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g tracerbench-cli
 $ tracerbench COMMAND
@@ -28,23 +27,22 @@ USAGE
   $ tracerbench COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Commands
 
 <!-- commands -->
-
-- [`tracerbench analyze`](#tracerbench-analyze)
-- [`tracerbench create-archive`](#tracerbench-create-archive)
-- [`tracerbench css-parse`](#tracerbench-css-parse)
-- [`tracerbench help [COMMAND]`](#tracerbench-help-command)
-- [`tracerbench js-eval-time`](#tracerbench-js-eval-time)
-- [`tracerbench list-functions`](#tracerbench-list-functions)
-- [`tracerbench timeline:find`](#tracerbench-timelinefind)
-- [`tracerbench timeline:list`](#tracerbench-timelinelist)
-- [`tracerbench timeline:show`](#tracerbench-timelineshow)
-- [`tracerbench trace`](#tracerbench-trace)
+* [`tracerbench analyze`](#tracerbench-analyze)
+* [`tracerbench compare`](#tracerbench-compare)
+* [`tracerbench create-archive`](#tracerbench-create-archive)
+* [`tracerbench css-parse`](#tracerbench-css-parse)
+* [`tracerbench help [COMMAND]`](#tracerbench-help-command)
+* [`tracerbench js-eval-time`](#tracerbench-js-eval-time)
+* [`tracerbench list-functions`](#tracerbench-list-functions)
+* [`tracerbench timeline:find`](#tracerbench-timelinefind)
+* [`tracerbench timeline:list`](#tracerbench-timelinelist)
+* [`tracerbench timeline:show`](#tracerbench-timelineshow)
+* [`tracerbench trace`](#tracerbench-trace)
 
 ## `tracerbench analyze`
 
@@ -65,6 +63,46 @@ OPTIONS
   --event=event          Slice time and see the events before and after the time slice
 ```
 
+## `tracerbench compare`
+
+Creates an automated archive file from a URL.
+
+```
+USAGE
+  $ tracerbench compare
+
+OPTIONS
+  -c, --control=control
+      The path to the control SHA
+
+  -e, --experiment=experiment
+      The path to the experiment SHA
+
+  -n, --network=none, offline, dialup, 2g, edge, slow-3g, em-3g, dsl, 3g, fast-3g, 4g, cable, LTE, FIOS
+      Simulated network conditions.
+
+  -o, --output=output
+      (required) [default: tracerbench-results] The output filename
+
+  -u, --url=url
+      (required) [default: https://www.tracerbench.com] URL to visit
+
+  --browserArgs=browserArgs
+      (required) [default: 
+      --headless,--disable-gpu,--hide-scrollbars,--mute-audio,--v8-cache-options=none,--disable-cache,--disable-v8-idle-ta
+      sks,--crash-dumps-dir=./tmp] (Default Recommended) Browser additional options for the TracerBench render benchmark
+
+  --cpuThrottleRate=cpuThrottleRate
+      (required) [default: 2] CPU throttle multiplier
+
+  --fidelity=2, 20, 30, 40, test, low, medium, high
+      (required) [default: low] Directly correlates to the number of samples per trace. High means a longer trace time.
+
+  --markers=markers
+      (required) [default: [object Object],[object Object],[object Object],[object Object],[object Object],[object 
+      Object],[object Object]] DOM markers
+```
+
 ## `tracerbench create-archive`
 
 Creates an automated archive file from a URL.
@@ -74,7 +112,7 @@ USAGE
   $ tracerbench create-archive
 
 OPTIONS
-  -u, --url=url                  (required) URL to visit
+  -u, --url=url                  (required) [default: https://www.tracerbench.com] URL to visit
   --archiveOutput=archiveOutput  (required) [default: ./trace.json] The output filepath/name to save the trace to
 ```
 
@@ -142,7 +180,7 @@ USAGE
 
 OPTIONS
   -f, --file=file  (required) [default: ./test/trace.json] Path to the trace JSON file
-  -u, --url=url    (required) URL to visit
+  -u, --url=url    (required) [default: https://www.tracerbench.com] URL to visit
 ```
 
 ## `tracerbench timeline:list`
@@ -169,7 +207,7 @@ OPTIONS
   -f, --file=file          (required) [default: ./test/trace.json] Path to the trace JSON file
   --filter=filter          User timing marks start with
   --marks=marks            Show user timing marks
-  --urlOrFrame=urlOrFrame  (required) URL or Frame
+  --urlOrFrame=urlOrFrame  (required) [default: https://www.tracerbench.com] URL or Frame
 ```
 
 ## `tracerbench trace`
@@ -182,19 +220,18 @@ USAGE
 
 OPTIONS
   -h, --har=har
-      (required) Filepath to the HAR file
+      (required) Filepath to the existing HAR file
 
   -n, --network=none, offline, dialup, 2g, edge, slow-3g, em-3g, dsl, 3g, fast-3g, 4g, cable, LTE, FIOS
       Simulated network conditions.
 
   -u, --url=url
-      (required) URL to visit
+      (required) [default: https://www.tracerbench.com] URL to visit
 
-  --cpuThrottle=cpuThrottle
-      (required) [default: 1] CPU throttle multiplier
+  --cpuThrottleRate=cpuThrottleRate
+      (required) [default: 2] CPU throttle multiplier
 
   --traceOutput=traceOutput
       (required) [default: ./trace.archive] The archive output file name
 ```
-
 <!-- commandsstop -->

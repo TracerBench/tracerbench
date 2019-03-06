@@ -1,7 +1,52 @@
 {
   "archive": "./test/trace.archive",
   "file": "./test/trace.json",
+  "fidelity": "low",
   "methods": "''",
-  "marker": "renderEnd",
-  "cpuThrottle": 2
+  "cpuThrottleRate": 2,
+  "output": "tracerbench-results",
+  "urlOrFrame": "https://www.tracerbench.com",
+  "url": "https://www.tracerbench.com",
+  "harsPath": "./hars",
+  "routes": [],
+  "appName": "tracerbench",
+  "markers": [{
+      "start": "fetchStart",
+      "label": "jquery"
+    },
+    {
+      "start": "jqueryLoaded",
+      "label": "ember"
+    },
+    {
+      "start": "emberLoaded",
+      "label": "application"
+    },
+    {
+      "start": "startRouting",
+      "label": "routing"
+    },
+    {
+      "start": "willTransition",
+      "label": "transition"
+    },
+    {
+      "start": "didTransition",
+      "label": "render"
+    },
+    {
+      "start": "renderEnd",
+      "label": "afterRender"
+    }
+  ],
+  "browserArgs": [
+    "--headless",
+    "--disable-gpu",
+    "--hide-scrollbars",
+    "--mute-audio",
+    "--v8-cache-options=none",
+    "--disable-cache",
+    "--disable-v8-idle-tasks",
+    "--crash-dumps-dir=./tmp"
+  ]
 }

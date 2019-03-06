@@ -1,13 +1,13 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
 import { liveTrace } from 'parse-profile';
-import { cpuThrottle, har, network, traceOutput, url } from '../flags';
+import { cpuThrottleRate, har, network, traceOutput, url } from '../flags';
 import { getCookiesFromHAR } from '../utils';
 
 export default class Trace extends Command {
   public static description = `Creates an automated trace that's saved to JSON. Also takes network conditioner and CPU throttling options.`;
   public static flags = {
-    cpuThrottle: cpuThrottle({ required: true }),
+    cpuThrottleRate: cpuThrottleRate({ required: true }),
     har: har({ required: true }),
     network: network(),
     traceOutput: traceOutput({ required: true }),
@@ -16,9 +16,9 @@ export default class Trace extends Command {
 
   public async run() {
     const { flags } = this.parse(Trace);
-    const { url, har, cpuThrottle, traceOutput } = flags;
+    const { url, har, cpuThrottleRate, traceOutput } = flags;
     const network = 'none';
-    const cpu = parseInt(cpuThrottle, 10);
+    const cpu = cpuThrottleRate;
     let cookies: any = '';
 
     try {

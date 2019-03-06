@@ -2,18 +2,19 @@ import { CLIError } from '@oclif/errors';
 
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { IMarker } from 'tracerbench';
 
 interface ITBConfig {
   archive?: string;
   file?: string;
   methods?: string;
   control?: string;
-  cpu?: string;
+  cpuThrottleRate?: number | string;
   experiment?: string;
   fidelity?: string;
   report?: string;
   event?: string;
-  marker?: string;
+  markers?: IMarker[];
   network?: string;
   output?: string;
   url?: string;
@@ -23,6 +24,10 @@ interface ITBConfig {
   filter?: string;
   marks?: string;
   urlOrFrame?: string;
+  harsPath?: string;
+  routes?: string[];
+  appName?: string;
+  browserArgs?: string[];
 }
 
 type ITBConfigKeys = keyof ITBConfig;

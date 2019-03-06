@@ -1,10 +1,14 @@
+import * as fs from 'fs-extra';
+
 import { Command } from '@oclif/command';
+import { InitialRenderBenchmark, Runner } from 'tracerbench';
 import {
+  browserArgs,
   control,
-  cpuThrottle,
+  cpuThrottleRate,
   experiment,
   fidelity,
-  marker,
+  markers,
   network,
   output,
   url
@@ -13,32 +17,70 @@ import {
 export default class Compare extends Command {
   public static description = 'Creates an automated archive file from a URL.';
   public static flags = {
-    control: control({ required: true }),
-    cpuThrottle: cpuThrottle({ required: true }),
-    experiment: experiment({ required: true }),
-    fidelity: fidelity(),
-    marker: marker(),
+    browserArgs: browserArgs({ required: true }),
+    control: control(),
+    cpuThrottleRate: cpuThrottleRate({ required: true }),
+    experiment: experiment(),
+    fidelity: fidelity({ required: true }),
+    markers: markers({ required: true }),
     network: network(),
     output: output({ required: true }),
-    url: url()
+    url: url({ required: true })
   };
 
   public async run() {
     const { flags } = this.parse(Compare);
     const {
-      cpuThrottle,
+      browserArgs,
+      cpuThrottleRate,
       url,
       output,
       network,
-      marker,
       fidelity,
       experiment,
-      control
+      control,
+      markers
     } = flags;
-
-    // tracerbench compare -c sha -e sha --cpu 4 --url https://www.tracerbench.com -m renderEnd -f low -o ./results.json
+    // todo
+    // tracerbench compare --control sha -experiment sha --cpu 4 --url https://www.tracerbench.com --marker renderEnd --fidelity low --output ./results.json
     // har-remix, chrome-debugging-client dep?
     // init initial render benchmark for control and experiment
     // init runner
+    const benchmarks = {
+      control: new InitialRenderBenchmark({
+        browser: {
+          additionalArguments: browserArgs
+        },
+        cpuThrottleRate,
+        delay: 100,
+        markers,
+        name: 'control',
+        runtimeStats: true,
+        saveTraces: () => `control-${output}-trace.json`,
+        url
+      }),
+      experiment: new InitialRenderBenchmark({
+        browser: {
+          additionalArguments: browserArgs
+        },
+        delay: 100,
+        markers,
+        name: 'experiment',
+        runtimeStats: true,
+        saveTraces: () => `experiment-${output}-trace.json`,
+        url
+      })
+    };
+
+    const runner = new Runner([benchmarks.control, benchmarks.experiment]);
+    await runner
+      .run(fidelity)
+      .then(results => {
+        this.log(`Success! Results available here ${output}.json`);
+        fs.writeFileSync(`${output}.json`, JSON.stringify(results, null, 2));
+      })
+      .catch(err => {
+        this.error(err);
+      });
   }
 }
