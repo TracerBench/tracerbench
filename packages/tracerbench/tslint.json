@@ -5,7 +5,8 @@
   "rules": {
     "arrow-parens": false,
     "trailing-comma": false,
-    "no-floating-promises": true
+    "no-floating-promises": true,
+    "quotemark": false
   },
   "rulesDirectory": []
 }

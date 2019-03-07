@@ -34,15 +34,17 @@ export interface Entry {
 export async function harTrace(
   url: string,
   outputPath: string = './trace.archive',
-  cookies?: Network.SetCookieParameters[],
+  cookies: any = null
 ) {
   return await createSession(async session => {
     const client = await createClient(session);
     const page = new Page(client);
     const network = new Network(client);
+    const cookiesPath = './cookies.json';
 
     let requestIds: string[] = [];
     let responses: Network.Response[] = [];
+    let urls = [url];
 
     network.responseReceived = ({ requestId, response }) => {
       if (
@@ -57,15 +59,14 @@ export async function harTrace(
 
     let archive: Archive = {
       log: {
-        entries: [],
-      },
+        entries: []
+      }
     };
 
     await network.enable({});
 
-    if (cookies) {
-      await setCookies(network, cookies);
-    }
+    cookies = cookies ? cookies : await network.getCookies({ urls });
+    await setCookies(network, cookies);
 
     await page.enable();
 
@@ -77,7 +78,7 @@ export async function harTrace(
     });
 
     await page.navigate({
-      url,
+      url
     });
 
     await pageLoad;
@@ -88,11 +89,12 @@ export async function harTrace(
       let responseBody = await network.getResponseBody({ requestId });
       let entry: Entry = {
         request: { url: _response.url },
-        response: { content: { text: responseBody.body } },
+        response: { content: { text: responseBody.body } }
       };
       archive.log.entries.push(entry);
     }
 
+    fs.writeFileSync(cookiesPath, JSON.stringify(cookies));
     fs.writeFileSync(outputPath, JSON.stringify(archive));
   });
 }
