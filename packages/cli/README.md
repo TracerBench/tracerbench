@@ -1,3 +1,5 @@
+# This is unstable, incomplete, work-in-progress software in a constant state of change. You have been warned.
+
 # tracerbench-cli
 
 tracerbench-cli
