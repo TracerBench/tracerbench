@@ -14,6 +14,7 @@ import {
   addRemainingModules,
   computeMinMax,
   formatCategories,
+  getRenderingNodes,
   methodsFromCategories
 } from './utils';
 
@@ -47,6 +48,15 @@ export async function analyze(options: IAnalyze) {
   let categorized = categorizeAggregations(collapsed, categories);
 
   reporter(categorized);
+
+  const renderNodes = getRenderingNodes(hierarchy);
+  renderNodes.forEach(node => {
+    let renderAgg = aggregate(node, allMethods, archiveFile, modMatcher);
+    let renderCollapsed = collapseCallFrames(renderAgg);
+    let renderCategorized = categorizeAggregations(renderCollapsed, categories);
+    console.log(`Render Node:${node.data.callFrame.functionName}`); // tslint:disable-line  no-console
+    reporter(renderCategorized);
+  });
 }
 
 function getCPUProfile(trace: Trace, event?: string) {
