@@ -52,7 +52,9 @@ export default class Trace extends Command {
         ]);
         har = defaultHARLocation;
       } else {
-        this.error(`A HAR is required to run a trace.`);
+        this.error(
+          `A HAR is required to run a trace. Either pass via tracerbench trace --har flag or have TracerBench record one for you.`
+        );
       }
     }
 
