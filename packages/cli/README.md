@@ -9,6 +9,7 @@ tracerbench-cli
 [![License](https://img.shields.io/npm/l/tracerbench-cli.svg)](https://github.com/TracerBench/tracerbench/blob/master/package.json)
 
 <!-- toc -->
+* [This is unstable, incomplete, work-in-progress software in a constant state of change. You have been warned.](#this-is-unstable-incomplete-work-in-progress-software-in-a-constant-state-of-change-you-have-been-warned)
 * [tracerbench-cli](#tracerbench-cli)
 * [Usage](#usage)
 * [Commands](#commands)
@@ -22,7 +23,7 @@ $ npm install -g tracerbench-cli
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench-cli/1.0.0-alpha.0 darwin-x64 node-v8.14.0
+tracerbench-cli/1.0.0-alpha.1 darwin-x64 node-v8.14.0
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
