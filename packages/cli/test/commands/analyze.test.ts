@@ -5,8 +5,8 @@ import Analyze from '../../src/commands/analyze';
 
 chai.use(require('chai-fs'));
 
-const archiveFile = path.join(process.cwd() + '/test/trace.archive');
-const traceFile = path.join(process.cwd() + '/test/trace.json');
+const archiveFile = path.join(process.cwd() + '/trace.archive');
+const traceFile = path.join(process.cwd() + '/trace.json');
 
 describe('analyze', () => {
   test

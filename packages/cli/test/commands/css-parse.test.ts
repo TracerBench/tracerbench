@@ -5,7 +5,7 @@ import CSSParse from '../../src/commands/css-parse';
 
 chai.use(require('chai-fs'));
 
-const traceJSON = path.join(process.cwd() + '/test/trace.json');
+const traceJSON = path.join(process.cwd() + '/trace.json');
 
 describe('css-parse', () => {
   test.stdout().it(`runs css-parse --file ${traceJSON}`, async ctx => {

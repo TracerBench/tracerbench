@@ -8,7 +8,7 @@ import CreateArchive from '../../src/commands/create-archive';
 chai.use(require('chai-fs'));
 
 const url = 'https://www.tracerbench.com';
-const traceFile = path.join(process.cwd() + '/test/trace.archive');
+const traceFile = path.join(process.cwd() + '/trace.archive');
 
 describe('create-archive', () => {
   test

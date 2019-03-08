@@ -9,7 +9,7 @@ chai.use(require('chai-fs'));
 
 const harFile = path.join(process.cwd() + '/test/www.tracerbench.com.har');
 const url = 'https://www.tracerbench.com';
-const traceFile = path.join(process.cwd() + '/test/trace.json');
+const traceFile = path.join(process.cwd() + '/trace.json');
 const cpuThrottleRate = '1';
 
 describe('trace', () => {

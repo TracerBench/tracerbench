@@ -5,7 +5,7 @@ import List from '../../../src/commands/timeline/list';
 
 chai.use(require('chai-fs'));
 
-const traceFile = path.join(process.cwd() + '/test/trace.json');
+const traceFile = path.join(process.cwd() + '/trace.json');
 
 describe('timeline:list', () => {
   test.stdout().it(`runs timeline:list --file ${traceFile}`, async ctx => {

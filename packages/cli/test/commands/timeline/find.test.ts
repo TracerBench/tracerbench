@@ -5,7 +5,7 @@ import Find from '../../../src/commands/timeline/find';
 
 chai.use(require('chai-fs'));
 
-const traceFile = path.join(process.cwd() + '/test/trace.json');
+const traceFile = path.join(process.cwd() + '/trace.json');
 const url = 'https://www.tracerbench.com';
 
 describe('timeline:find', () => {

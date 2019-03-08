@@ -5,7 +5,7 @@ import ListFunctions from '../../src/commands/list-functions';
 
 chai.use(require('chai-fs'));
 
-const traceFile = path.join(process.cwd() + '/test/trace.json');
+const traceFile = path.join(process.cwd() + '/trace.json');
 
 describe('list-functions', () => {
   test.stdout().it(`runs list-functions --file ${traceFile}`, async ctx => {

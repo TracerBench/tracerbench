@@ -33,14 +33,19 @@ interface ITBConfig {
 type ITBConfigKeys = keyof ITBConfig;
 
 export function getConfigDefault(id: ITBConfigKeys, defaultValue?: any) {
+  let file;
+  let tbconfig;
+
   try {
-    const file = path.join(process.cwd(), 'tbconfig.json');
-    const tbconfig = JSON.parse(fs.readFileSync(file, 'utf8'));
-    return tbconfig[id] || defaultValue;
+    file = path.join(process.cwd(), 'tbconfig.json');
+    tbconfig = JSON.parse(fs.readFileSync(file, 'utf8'));
+    return tbconfig[id] || defaultValue || undefined;
   } catch (error) {
-    throw new CLIError.Warn(
-      `Flag ${id} expects a value. Either include one within tbconfig.json or as a passed flag argument.`
-    );
+    try {
+      return defaultValue || undefined;
+    } catch (error) {
+      // throw new CLIError(error);
+    }
   }
 }
 

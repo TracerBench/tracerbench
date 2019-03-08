@@ -1,6 +1,6 @@
 {
-  "archive": "./test/trace.archive",
-  "file": "./test/trace.json",
+  "archive": "./trace.archive",
+  "file": "./trace.json",
   "fidelity": "low",
   "methods": "''",
   "cpuThrottleRate": 2,
