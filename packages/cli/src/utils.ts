@@ -36,17 +36,11 @@ export function getConfigDefault(id: ITBConfigKeys, defaultValue?: any) {
   try {
     const file = path.join(process.cwd(), 'tbconfig.json');
     const tbconfig = JSON.parse(fs.readFileSync(file, 'utf8'));
-    return tbconfig[id];
+    return tbconfig[id] || defaultValue;
   } catch (error) {
-    if (defaultValue) {
-      throw new CLIError.Warn(
-        `Defaulting ${id} to ${defaultValue} as the flag ${id} expects a value and was not found within tbconfig.json or as a passed flag argument.`
-      );
-    } else {
-      throw new CLIError.Warn(
-        `Flag ${id} expects a value. Either include one within tbconfig.json or as a passed flag argument.`
-      );
-    }
+    throw new CLIError.Warn(
+      `Flag ${id} expects a value. Either include one within tbconfig.json or as a passed flag argument.`
+    );
   }
 }
 
