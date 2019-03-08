@@ -1,7 +1,7 @@
 {
   "name": "tracerbench-cli",
   "description": "CLI for Tracerbench",
-  "version": "1.0.0-alpha.2",
+  "version": "1.0.0-alpha.3",
   "author": "Kris Selden @krisselden",
   "bin": {
     "tracerbench": "./bin/run"
@@ -13,7 +13,7 @@
     "@oclif/plugin-help": "^2.1.4",
     "fs-extra": "^7.0.1",
     "inquirer": "^6.2.2",
-    "parse-profile": "^1.0.0-alpha.2",
+    "parse-profile": "^1.0.0-alpha.3",
     "path": "0.12.7",
     "tslib": "^1.9.3"
   },
