@@ -5,28 +5,15 @@ import Compare from '../../src/commands/compare';
 
 chai.use(require('chai-fs'));
 
-const globSync: (glob: string) => string[] = require('globby').sync;
-const releaseIndex = globSync(
-  '../../../tracerbench/dist/test/release/index.html'
-);
+const url = `../../../tracerbench/dist/test/release/index.html?tracing`;
 
-const url = `file://${path.resolve(releaseIndex[0])}?tracing`;
+describe.skip('compare', () => {
+  test.stdout().it(`runs compare --url ${url}`, async ctx => {
+    await Compare.run(['--url', url]);
 
-describe('compare', () => {
-  test.stdout().it(`runs compare --url ${releaseIndex[0]}`, async ctx => {
-    await Compare.run(['--url', releaseIndex[0]]);
+    // todo chai.expect the stdout to be something like this
+    // (`alpha 1640333 µs || ${this.name} ${sample.duration} µs`);
+
     chai.expect(ctx.stdout).to.contain(`Success`);
   });
 });
-
-// INDEX FILE: dist/test/alpha/index.html
-// URL: file:///Users/malynch/D/tracerbench/packages/tracerbench/dist/test/alpha/index.html?tracing
-// MATCH: dist/test/alpha,alpha
-
-// INDEX FILE: dist/test/beta/index.html
-// URL: file:///Users/malynch/D/tracerbench/packages/tracerbench/dist/test/beta/index.html?tracing
-// MATCH: dist/test/beta,beta
-
-// INDEX FILE: dist/test/release/index.html
-// URL: file:///Users/malynch/D/tracerbench/packages/tracerbench/dist/test/release/index.html?tracing
-// MATCH: dist/test/release,release

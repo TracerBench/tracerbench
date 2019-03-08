@@ -2,10 +2,7 @@ import binsearch from 'array-binsearch';
 import Bounds from './bounds';
 import CpuProfile from './cpuprofile';
 import Process from './process';
-import {
-  isRenderEnd,
-  isRenderStart
-} from './renderEvents';
+import { isRenderEnd, isRenderStart } from './renderEvents';
 import Thread from './thread';
 import {
   ARGS,
@@ -17,7 +14,7 @@ import {
   IProfileNode,
   ITraceEvent,
   PROCESS_NAME,
-  TRACE_EVENT_PHASE,
+  TRACE_EVENT_PHASE
 } from './trace_event';
 import traceEventComparator from './trace_event_comparator';
 
@@ -111,8 +108,8 @@ export default class Trace {
               duration: 0,
               nodes: [] as Array<ICpuProfileNode & IProfileNode>,
               samples: [] as number[],
-              timeDeltas: [] as number[],
-            },
+              timeDeltas: [] as number[]
+            }
           });
         } else if (event.name === 'ProfileChunk') {
           const profileChunk = event as IProfileChunkEvent;
@@ -125,13 +122,17 @@ export default class Trace {
                   min: 0,
                   max: 0,
                   total: 0,
-                  self: 0,
-                }),
+                  self: 0
+                })
               );
             });
           }
-          profileEntry.cpuProfile.samples.push(...profileChunk.args.data.cpuProfile.samples);
-          profileEntry.cpuProfile.timeDeltas.push(...profileChunk.args.data.timeDeltas);
+          profileEntry.cpuProfile.samples.push(
+            ...profileChunk.args.data.cpuProfile.samples
+          );
+          profileEntry.cpuProfile.timeDeltas.push(
+            ...profileChunk.args.data.timeDeltas
+          );
         }
       }
     }
@@ -264,7 +265,7 @@ export default class Trace {
       tdur: end.tts! - begin.tts!,
       tid: begin.tid,
       ts: begin.ts,
-      tts: begin.tts,
+      tts: begin.tts
     };
     const { events } = this;
     const index = binsearch(events, begin, traceEventComparator);
@@ -321,7 +322,7 @@ export default class Trace {
         this.process(pid).traceConfig = event.args.value;
         break;
       default:
-        console.warn('unrecognized metadata:', JSON.stringify(event, null, 2));
+        // console.warn('unrecognized metadata:', JSON.stringify(event, null, 2));
         break;
     }
   }
