@@ -221,7 +221,7 @@ USAGE
 
 OPTIONS
   -h, --har=har
-      (required) Filepath to the existing HAR file
+      Filepath to the existing HAR file
 
   -n, --network=none, offline, dialup, 2g, edge, slow-3g, em-3g, dsl, 3g, fast-3g, 4g, cable, LTE, FIOS
       Simulated network conditions.
