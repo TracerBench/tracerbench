@@ -15,7 +15,6 @@ export function exportHierarchy(
         const completeEvent: ITraceEvent = {
             pid: trace.mainProcess!.id,
             tid: trace.mainProcess!.mainThread!.id,
-            tdur: node.data.max - node.data.min,
             ts: node.data.min,
             ph: TRACE_EVENT_PHASE.COMPLETE,
             cat: 'blink.user_timing',

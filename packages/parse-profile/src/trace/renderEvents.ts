@@ -150,8 +150,8 @@ function isRenderPhase(event: ITraceEvent) {
          isRender(event.name);
 }
 
-export function isRenderNode(node: ICpuProfileNode) {
-  return isRender(node.callFrame.functionName);
+export function isRenderNode(node: HierarchyNode<ICpuProfileNode>) {
+  return isRender(node.data.callFrame.functionName);
 }
 
 function isRender(name: string) {

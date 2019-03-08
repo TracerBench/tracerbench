@@ -1,8 +1,10 @@
 // tslint:disable:no-console
 
+import { HierarchyNode } from 'd3-hierarchy';
 import * as fs from 'fs';
 import * as path from 'path';
-import { Trace } from '../trace';
+import { ICpuProfileNode, Trace } from '../trace';
+import { isRenderNode } from '../trace/renderEvents';
 import { ModuleMatcher } from './module_matcher';
 import { Categories, Locator } from './utils';
 
@@ -18,6 +20,14 @@ export interface Locator {
 }
 
 export const AUTO_ADD_CAT = 'Auto Added Module Paths';
+
+export function getRenderingNodes(root: HierarchyNode<ICpuProfileNode>) {
+  const renderNodes: Array<HierarchyNode<ICpuProfileNode>> = [];
+  root.each((node: HierarchyNode<ICpuProfileNode>) => {
+    if (isRenderNode(node)) renderNodes.push(node);
+  });
+  return renderNodes;
+}
 
 export function filterObjectByKeys(obj: any, keyArray: string[]) {
   let _obj = Object.assign({}, obj);
