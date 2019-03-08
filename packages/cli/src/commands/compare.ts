@@ -46,6 +46,7 @@ export default class Compare extends Command {
     // har-remix, chrome-debugging-client dep?
     // init initial render benchmark for control and experiment
     // init runner
+    // we might need to append ?trace
 
     const benchmarks = {
       control: new InitialRenderBenchmark({

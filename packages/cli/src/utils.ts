@@ -32,15 +32,21 @@ interface ITBConfig {
 
 type ITBConfigKeys = keyof ITBConfig;
 
-export function getConfigDefault(id: ITBConfigKeys) {
+export function getConfigDefault(id: ITBConfigKeys, defaultValue?: any) {
   try {
     const file = path.join(process.cwd(), 'tbconfig.json');
     const tbconfig = JSON.parse(fs.readFileSync(file, 'utf8'));
     return tbconfig[id];
   } catch (error) {
-    throw new CLIError(
-      `TracerBench tbconfig.json default value not found for ${id}`
-    );
+    if (defaultValue) {
+      throw new CLIError.Warn(
+        `Defaulting ${id} to ${defaultValue} as the flag ${id} expects a value and was not found within tbconfig.json or as a passed flag argument.`
+      );
+    } else {
+      throw new CLIError.Warn(
+        `Flag ${id} expects a value. Either include one within tbconfig.json or as a passed flag argument.`
+      );
+    }
   }
 }
 

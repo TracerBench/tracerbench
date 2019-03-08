@@ -56,7 +56,7 @@ USAGE
 
 OPTIONS
   -a, --archive=archive  (required) [default: ./test/trace.archive] Path to archive file
-  -f, --file=file        (required) [default: ./test/trace.json] Path to the trace JSON file
+  -f, --file=file        (required) [default: ./test/trace.json] Path to the existing trace JSON file
   -m, --methods=methods  (required) [default: ''] List of methods to aggregate
 
   -r, --report=report    Directory path to generate a report with aggregated sums for each heuristic category and
@@ -84,7 +84,7 @@ OPTIONS
       Simulated network conditions.
 
   -o, --output=output
-      (required) [default: tracerbench-results] The output filename
+      (required) [default: tracerbench-results] The output filename for compare results
 
   -u, --url=url
       (required) [default: https://www.tracerbench.com] URL to visit
@@ -97,7 +97,7 @@ OPTIONS
   --cpuThrottleRate=cpuThrottleRate
       (required) [default: 2] CPU throttle multiplier
 
-  --fidelity=2, 20, 30, 40, test, low, medium, high
+  --fidelity=test,low,medium,high
       (required) [default: low] Directly correlates to the number of samples per trace. High means a longer trace time.
 
   --markers=markers
@@ -127,7 +127,7 @@ USAGE
   $ tracerbench css-parse
 
 OPTIONS
-  -f, --file=file  (required) [default: ./test/trace.json] Path to the trace JSON file
+  -f, --file=file  (required) [default: ./test/trace.json] Path to the existing trace JSON file
 ```
 
 ## `tracerbench help [COMMAND]`
@@ -156,7 +156,7 @@ USAGE
   $ tracerbench js-eval-time
 
 OPTIONS
-  -f, --file=file  (required) [default: ./test/trace.json] Path to the trace JSON file
+  -f, --file=file  (required) [default: ./test/trace.json] Path to the existing trace JSON file
 ```
 
 ## `tracerbench list-functions`
@@ -168,7 +168,7 @@ USAGE
   $ tracerbench list-functions
 
 OPTIONS
-  -f, --file=file            (required) [default: ./test/trace.json] Path to the trace JSON file
+  -f, --file=file            (required) [default: ./test/trace.json] Path to the existing trace JSON file
   -l, --locations=locations  include locations in names
 ```
 
@@ -181,7 +181,7 @@ USAGE
   $ tracerbench timeline:find
 
 OPTIONS
-  -f, --file=file  (required) [default: ./test/trace.json] Path to the trace JSON file
+  -f, --file=file  (required) [default: ./test/trace.json] Path to the existing trace JSON file
   -u, --url=url    (required) [default: https://www.tracerbench.com] URL to visit
 ```
 
@@ -194,7 +194,7 @@ USAGE
   $ tracerbench timeline:list
 
 OPTIONS
-  -f, --file=file  (required) [default: ./test/trace.json] Path to the trace JSON file
+  -f, --file=file  (required) [default: ./test/trace.json] Path to the existing trace JSON file
 ```
 
 ## `tracerbench timeline:show`
@@ -206,7 +206,7 @@ USAGE
   $ tracerbench timeline:show
 
 OPTIONS
-  -f, --file=file          (required) [default: ./test/trace.json] Path to the trace JSON file
+  -f, --file=file          (required) [default: ./test/trace.json] Path to the existing trace JSON file
   --filter=filter          User timing marks start with
   --marks=marks            Show user timing marks
   --urlOrFrame=urlOrFrame  (required) [default: https://www.tracerbench.com] URL or Frame

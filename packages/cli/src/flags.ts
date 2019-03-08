@@ -1,6 +1,7 @@
 import { flags } from '@oclif/command';
 import { networkConditions } from 'parse-profile';
 import { IMarker } from 'tracerbench';
+import { defaultFlagArgs } from './defaultFlagArgs';
 import { getConfigDefault } from './utils';
 
 enum FidelityLookup {
@@ -10,29 +11,10 @@ enum FidelityLookup {
   high = 40
 }
 
-const defaultMarkers = [
-  { start: 'fetchStart', label: 'jquery' },
-  { start: 'jqueryLoaded', label: 'ember' },
-  { start: 'emberLoaded', label: 'application' },
-  { start: 'startRouting', label: 'routing' },
-  { start: 'willTransition', label: 'transition' },
-  { start: 'didTransition', label: 'render' },
-  { start: 'renderEnd', label: 'afterRender' }
-];
-
-const defaultBrowserArgs = [
-  '--headless',
-  '--disable-gpu',
-  '--hide-scrollbars',
-  '--mute-audio',
-  '--v8-cache-options=none',
-  '--disable-cache',
-  '--disable-v8-idle-tasks',
-  '--crash-dumps-dir=./tmp'
-];
-
 export const browserArgs = flags.build({
-  default: () => getConfigDefault('browserArgs') || defaultBrowserArgs,
+  default: () =>
+    getConfigDefault('browserArgs', defaultFlagArgs.browserArgs) ||
+    defaultFlagArgs.browserArgs,
   description: `(Default Recommended) Browser additional options for the TracerBench render benchmark`,
   parse: browserArgs => {
     if (typeof browserArgs === 'string') {
@@ -52,17 +34,23 @@ export const appName = flags.build({
 });
 
 export const harsPath = flags.build({
-  default: () => getConfigDefault('harsPath') || './hars',
+  default: () =>
+    getConfigDefault('harsPath', defaultFlagArgs.harsPath) ||
+    defaultFlagArgs.harsPath,
   description: 'The output directory for recorded har files'
 });
 
 export const traceOutput = flags.build({
-  default: () => getConfigDefault('archiveOutput') || './trace.archive',
+  default: () =>
+    getConfigDefault('archiveOutput', defaultFlagArgs.traceOutput) ||
+    defaultFlagArgs.traceOutput,
   description: 'The archive output file name'
 });
 
 export const archiveOutput = flags.build({
-  default: () => getConfigDefault('archiveOutput') || './trace.json',
+  default: () =>
+    getConfigDefault('archiveOutput', defaultFlagArgs.trace) ||
+    defaultFlagArgs.trace,
   description: 'The output filepath/name to save the trace to'
 });
 
@@ -79,13 +67,16 @@ export const event = flags.build({
 
 export const file = flags.build({
   char: 'f',
-  default: () => getConfigDefault('file') || './trace.json',
-  description: 'Path to the trace JSON file'
+  default: () =>
+    getConfigDefault('file', defaultFlagArgs.file) || defaultFlagArgs.file,
+  description: 'Path to the existing trace JSON file'
 });
 
 export const methods = flags.build({
   char: 'm',
-  default: () => getConfigDefault('methods') || '',
+  default: () =>
+    getConfigDefault('methods', defaultFlagArgs.methods) ||
+    defaultFlagArgs.methods,
   description: 'List of methods to aggregate'
 });
 
@@ -96,7 +87,9 @@ export const report = flags.build({
 });
 
 export const cpuThrottleRate = flags.build({
-  default: () => getConfigDefault('cpuThrottleRate') || 1,
+  default: () =>
+    getConfigDefault('cpuThrottleRate', defaultFlagArgs.cpuThrottleRate) ||
+    defaultFlagArgs.cpuThrottleRate,
   description: 'CPU throttle multiplier',
   parse: (cpuThrottleRate): number => {
     return parseInt(cpuThrottleRate, 10);
@@ -116,16 +109,24 @@ export const experiment = flags.build({
 });
 
 export const fidelity = flags.build({
-  default: () => getConfigDefault('fidelity') || 'low',
+  default: () =>
+    getConfigDefault('fidelity', defaultFlagArgs.fidelity) ||
+    defaultFlagArgs.fidelity,
   description: `Directly correlates to the number of samples per trace. High means a longer trace time.`,
-  options: [`${Object.keys(FidelityLookup).join(', ')}`],
+  options: [
+    `${Object.keys(FidelityLookup).filter(
+      k => typeof FidelityLookup[k as any] === 'number'
+    )}`
+  ],
   parse: (fidelity: any): number => {
     return parseInt(FidelityLookup[fidelity], 10);
   }
 });
 
 export const markers = flags.build({
-  default: () => getConfigDefault('markers') || defaultMarkers,
+  default: () =>
+    getConfigDefault('markers', defaultFlagArgs.markers) ||
+    defaultFlagArgs.markers,
   description: 'DOM markers',
   parse: (markers): IMarker[] => {
     const markerArray = markers.split(',');
@@ -149,8 +150,10 @@ export const network = flags.build({
 
 export const output = flags.build({
   char: 'o',
-  default: () => getConfigDefault('output') || 'tracerbench-results',
-  description: 'The output filename'
+  default: () =>
+    getConfigDefault('output', defaultFlagArgs.output) ||
+    defaultFlagArgs.output,
+  description: 'The output filename for compare results'
 });
 
 export const url = flags.build({
@@ -167,7 +170,7 @@ export const locations = flags.build({
 
 export const har = flags.build({
   char: 'h',
-  default: () => getConfigDefault('har'),
+  default: () => getConfigDefault('har', null) || null,
   description: 'Filepath to the existing HAR file'
 });
 

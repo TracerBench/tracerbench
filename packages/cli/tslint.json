@@ -11,7 +11,9 @@
     "no-string-literal": false,
     "quotemark": false,
     "max-line-length": [true, 160],
-    "member-ordering": false
+    "member-ordering": false,
+    "ordered-imports": false,
+    "object-literal-sort-keys": false
   },
   "rulesDirectory": []
 }
