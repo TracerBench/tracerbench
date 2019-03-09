@@ -55,7 +55,7 @@ USAGE
   $ tracerbench analyze
 
 OPTIONS
-  -a, --archive=archive  (required) Path to archive file
+  -a, --archive=archive  (required) [default: ./trace.har] Path to the har file
   -f, --file=file        (required) [default: ./trace.json] Path to the existing trace JSON file
   -m, --methods=methods  (required) [default: ""] List of methods to aggregate
 
@@ -67,7 +67,7 @@ OPTIONS
 
 ## `tracerbench compare`
 
-Creates an automated archive file from a URL.
+Compare the performance delta between an experiment and control
 
 ```
 USAGE
@@ -115,7 +115,7 @@ USAGE
 
 OPTIONS
   -u, --url=url                  (required) URL to visit
-  --archiveOutput=archiveOutput  (required) [default: ./trace.json] The output filepath/name to save the trace to
+  --archiveOutput=archiveOutput  (required) [default: ./trace.har] The output filepath/name to save the trace to
 ```
 
 ## `tracerbench css-parse`
