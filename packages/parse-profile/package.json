@@ -42,5 +42,6 @@
     "har-remix": "^1.3.0",
     "ora": "^3.0.0",
     "silent-error": "^1.1.1"
-  }
+  },
+  "gitHead": "6fe758f18fa80b9a1617b10771adca8c061ef381"
 }

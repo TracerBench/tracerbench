@@ -65,5 +65,6 @@
     "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md"
   },
-  "types": "dist/index.d.ts"
+  "types": "dist/index.d.ts",
+  "gitHead": "6fe758f18fa80b9a1617b10771adca8c061ef381"
 }

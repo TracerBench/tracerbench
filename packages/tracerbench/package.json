@@ -51,5 +51,6 @@
     "tslint": "^5.12.1",
     "typescript": "^3.2.4"
   },
-  "engine": "node >= 8"
+  "engine": "node >= 8",
+  "gitHead": "6fe758f18fa80b9a1617b10771adca8c061ef381"
 }
