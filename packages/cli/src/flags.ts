@@ -10,7 +10,7 @@ enum FidelityLookup {
   high = 40
 }
 
-const defaultFlagArgs = {
+export const defaultFlagArgs = {
   cpuThrottleRate: 1,
   markers: [
     { start: 'fetchStart', label: 'jquery' },

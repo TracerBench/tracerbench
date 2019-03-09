@@ -4,7 +4,14 @@ import CreateArchive from './create-archive';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import { liveTrace } from 'parse-profile';
-import { cpuThrottleRate, har, network, traceOutput, url } from '../flags';
+import {
+  defaultFlagArgs,
+  cpuThrottleRate,
+  har,
+  network,
+  traceOutput,
+  url
+} from '../flags';
 import { getCookiesFromHAR } from '../utils';
 
 export default class Trace extends Command {
@@ -22,7 +29,8 @@ export default class Trace extends Command {
     const { url, cpuThrottleRate, traceOutput } = flags;
     const network = 'none';
     const cpu = cpuThrottleRate;
-    const defaultHARLocation = './trace.json';
+    const archiveOutput = defaultFlagArgs.archiveOutput;
+
     let { har } = flags;
     let cookies: any = '';
     let shouldCreateArchive: string = '';
@@ -45,9 +53,9 @@ export default class Trace extends Command {
           '--url',
           url,
           '--archiveOutput',
-          defaultHARLocation
+          archiveOutput
         ]);
-        har = defaultHARLocation;
+        har = archiveOutput;
       } else {
         this.error(
           `A HAR is required to run a trace. Either pass via tracerbench trace --har flag or have TracerBench record one for you.`
