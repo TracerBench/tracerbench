@@ -15,7 +15,8 @@ import {
 } from '../flags';
 
 export default class Compare extends Command {
-  public static description = 'Creates an automated archive file from a URL.';
+  public static description =
+    'Compare the performance delta between an experiment and control';
   public static flags = {
     browserArgs: browserArgs({ required: true }),
     control: control(),

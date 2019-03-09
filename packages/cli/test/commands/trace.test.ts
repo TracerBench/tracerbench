@@ -7,7 +7,7 @@ import Trace from '../../src/commands/trace';
 
 chai.use(require('chai-fs'));
 
-const harFile = path.join(process.cwd() + '/test/www.tracerbench.com.har');
+const harFile = path.join(process.cwd() + '/trace.har');
 const url = 'https://www.tracerbench.com';
 const traceFile = path.join(process.cwd() + '/trace.json');
 const cpuThrottleRate = '1';

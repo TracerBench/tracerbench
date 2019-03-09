@@ -26,12 +26,9 @@ export default class Trace extends Command {
     let { har } = flags;
     let cookies: any = '';
     let shouldCreateArchive: string = '';
-    // todo
-    // trace should prompt the user to record a har if one is not found
-    // and in the same message the user tracerbench will then run trace
-    // if yes - should run `create-archive` command
-    // and then run trace
 
+    // todo
+    // trace is creating trace.json rather than trace.har
     if (!har) {
       const userResponse: any = await inquirer.prompt([
         {

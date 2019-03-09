@@ -32,8 +32,9 @@ const defaultFlagArgs = {
     '--crash-dumps-dir=./tmp'
   ],
   harsPath: './hars',
+  archive: './trace.har',
   traceOutput: './trace.archive',
-  trace: './trace.json',
+  archiveOutput: './trace.har',
   file: './trace.json',
   methods: '""',
   fidelity: 'low',
@@ -78,15 +79,17 @@ export const traceOutput = flags.build({
 
 export const archiveOutput = flags.build({
   default: () =>
-    getConfigDefault('archiveOutput', defaultFlagArgs.trace) ||
-    defaultFlagArgs.trace,
+    getConfigDefault('archiveOutput', defaultFlagArgs.archiveOutput) ||
+    defaultFlagArgs.archiveOutput,
   description: 'The output filepath/name to save the trace to'
 });
 
 export const archive = flags.build({
   char: 'a',
-  default: () => getConfigDefault('archive'),
-  description: 'Path to archive file'
+  default: () =>
+    getConfigDefault('archive', defaultFlagArgs.archive) ||
+    defaultFlagArgs.archive,
+  description: 'Path to the har file'
 });
 
 export const event = flags.build({
