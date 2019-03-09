@@ -1,6 +1,6 @@
 {
   "name": "parse-profile",
-  "version": "1.0.0-alpha.4",
+  "version": "1.0.0-alpha.5",
   "main": "dist/index.cjs.js",
   "license": "BSD-2-Clause",
   "scripts": {
