@@ -5,11 +5,13 @@ import JSEvalTime from '../../src/commands/js-eval-time';
 
 chai.use(require('chai-fs'));
 
-const traceJSON = path.join(process.cwd() + '/trace.json');
+const traceJSONOutput = path.join(process.cwd() + '/trace.json');
 
 describe('js-eval-time', () => {
-  test.stdout().it(`runs js-eval-time --file ${traceJSON}`, async ctx => {
-    await JSEvalTime.run(['--file', traceJSON]);
-    chai.expect(ctx.stdout).to.contain(`.js`);
-  });
+  test
+    .stdout()
+    .it(`runs js-eval-time --traceJSONOutput ${traceJSONOutput}`, async ctx => {
+      await JSEvalTime.run(['--traceJSONOutput', traceJSONOutput]);
+      chai.expect(ctx.stdout).to.contain(`.js`);
+    });
 });

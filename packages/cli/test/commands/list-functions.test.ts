@@ -5,11 +5,16 @@ import ListFunctions from '../../src/commands/list-functions';
 
 chai.use(require('chai-fs'));
 
-const traceFile = path.join(process.cwd() + '/trace.json');
+const traceJSONOutput = path.join(process.cwd() + '/trace.json');
 
 describe('list-functions', () => {
-  test.stdout().it(`runs list-functions --file ${traceFile}`, async ctx => {
-    await ListFunctions.run(['--file', traceFile]);
-    chai.expect(ctx.stdout).to.contain(`Successfully listed method`);
-  });
+  test
+    .stdout()
+    .it(
+      `runs list-functions --traceJSONOutput ${traceJSONOutput}`,
+      async ctx => {
+        await ListFunctions.run(['--traceJSONOutput', traceJSONOutput]);
+        chai.expect(ctx.stdout).to.contain(`Successfully listed method`);
+      }
+    );
 });

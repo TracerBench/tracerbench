@@ -1,6 +1,6 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
-import { file, filter, marks, urlOrFrame } from '../../flags';
+import { traceJSONOutput, filter, marks, urlOrFrame } from '../../flags';
 import {
   byTime,
   collect,
@@ -18,7 +18,7 @@ export default class Show extends Command {
   public static description = 'show tracefile with user timings';
 
   public static flags = {
-    file: file({ required: true }),
+    traceJSONOutput: traceJSONOutput({ required: true }),
     filter: filter(),
     marks: marks(),
     urlOrFrame: urlOrFrame({ required: true })
@@ -26,7 +26,7 @@ export default class Show extends Command {
 
   public async run() {
     const { flags } = this.parse(Show);
-    const { marks, file, urlOrFrame } = flags;
+    const { marks, traceJSONOutput, urlOrFrame } = flags;
     const filter = collect(flags.filter, []);
     let frame: any = null;
     let startTime = -1;
@@ -34,10 +34,10 @@ export default class Show extends Command {
     let trace: any = null;
 
     try {
-      traceFile = JSON.parse(fs.readFileSync(file, 'utf8'));
+      traceFile = JSON.parse(fs.readFileSync(traceJSONOutput, 'utf8'));
     } catch (error) {
       this.error(
-        `Could not extract trace events from trace file at path ${file}, ${error}`
+        `Could not extract trace events from trace JSON file at path ${traceJSONOutput}, ${error}`
       );
     }
 

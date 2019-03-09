@@ -1,5 +1,4 @@
 {
-  "archive": "./trace.archive",
   "file": "./trace.json",
   "fidelity": "low",
   "methods": "''",

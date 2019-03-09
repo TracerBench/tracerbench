@@ -33,9 +33,9 @@ export const defaultFlagArgs = {
   ],
   harsPath: './hars',
   archive: './trace.har',
-  traceOutput: './trace.archive',
+  harOutput: './trace.har',
   archiveOutput: './trace.har',
-  file: './trace.json',
+  traceJSONOutput: './trace.json',
   methods: '""',
   fidelity: 'low',
   output: 'tracerbench-results'
@@ -70,18 +70,18 @@ export const harsPath = flags.build({
   description: 'The output directory for recorded har files'
 });
 
-export const traceOutput = flags.build({
-  default: () =>
-    getConfigDefault('archiveOutput', defaultFlagArgs.traceOutput) ||
-    defaultFlagArgs.traceOutput,
-  description: 'The archive output file name'
-});
-
 export const archiveOutput = flags.build({
   default: () =>
     getConfigDefault('archiveOutput', defaultFlagArgs.archiveOutput) ||
     defaultFlagArgs.archiveOutput,
-  description: 'The output filepath/name to save the trace to'
+  description: 'The output filepath/name to save the HAR to'
+});
+
+export const harOutput = flags.build({
+  default: () =>
+    getConfigDefault('harOutput', defaultFlagArgs.harOutput) ||
+    defaultFlagArgs.archiveOutput,
+  description: 'The output filepath/name to save the HAR to'
 });
 
 export const archive = flags.build({
@@ -89,7 +89,7 @@ export const archive = flags.build({
   default: () =>
     getConfigDefault('archive', defaultFlagArgs.archive) ||
     defaultFlagArgs.archive,
-  description: 'Path to the har file'
+  description: 'Path to the existing HAR file'
 });
 
 export const event = flags.build({
@@ -97,10 +97,11 @@ export const event = flags.build({
   description: 'Slice time and see the events before and after the time slice'
 });
 
-export const file = flags.build({
+export const traceJSONOutput = flags.build({
   char: 'f',
   default: () =>
-    getConfigDefault('file', defaultFlagArgs.file) || defaultFlagArgs.file,
+    getConfigDefault('traceJSONOutput', defaultFlagArgs.traceJSONOutput) ||
+    defaultFlagArgs.traceJSONOutput,
   description: 'Path to the existing trace JSON file'
 });
 

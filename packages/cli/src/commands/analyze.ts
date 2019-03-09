@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 
 import { Command } from '@oclif/command';
 import { analyze } from 'parse-profile';
-import { archive, event, file, methods, report } from '../flags';
+import { archive, event, traceJSONOutput, methods, report } from '../flags';
 
 export default class Analyze extends Command {
   public static description =
@@ -10,22 +10,22 @@ export default class Analyze extends Command {
   public static flags = {
     archive: archive({ required: true }),
     event: event(),
-    file: file({ required: true }),
+    traceJSONOutput: traceJSONOutput({ required: true }),
     methods: methods({ required: true }),
     report: report()
   };
 
   public async run() {
     const { flags } = this.parse(Analyze);
-    const { archive, event, file, report } = flags;
+    const { archive, event, traceJSONOutput, report } = flags;
     const methods = flags.methods.split(',');
+    const file = traceJSONOutput;
     let archiveFile;
     let rawTraceData;
-
     try {
-      rawTraceData = JSON.parse(fs.readFileSync(file, 'utf8'));
+      rawTraceData = JSON.parse(fs.readFileSync(traceJSONOutput, 'utf8'));
     } catch (error) {
-      this.error(`Could not find file: ${file}, ${error}`);
+      this.error(`Could not find file: ${traceJSONOutput}, ${error}`);
     }
 
     try {

@@ -8,17 +8,22 @@ import CreateArchive from '../../src/commands/create-archive';
 chai.use(require('chai-fs'));
 
 const url = 'https://www.tracerbench.com';
-const traceFile = path.join(process.cwd() + '/trace.har');
+const archiveOutput = path.join(process.cwd() + '/trace.har');
 
 describe('create-archive', () => {
   test
     .stdout()
     .it(
-      `runs create-archive --url ${url} --archiveOutput ${traceFile}`,
+      `runs create-archive --url ${url} --archiveOutput ${archiveOutput}`,
       async ctx => {
-        await CreateArchive.run(['--url', url, '--archiveOutput', traceFile]);
+        await CreateArchive.run([
+          '--url',
+          url,
+          '--archiveOutput',
+          archiveOutput
+        ]);
         chai.expect(ctx.stdout).to.contain(`HAR successfully generated`);
-        chai.expect(traceFile).to.be.a.file();
+        chai.expect(archiveOutput).to.be.a.file();
       }
     );
 });
