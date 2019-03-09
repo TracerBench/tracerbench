@@ -5,16 +5,21 @@ import Show from '../../../src/commands/timeline/show';
 
 chai.use(require('chai-fs'));
 
-const traceFile = path.join(process.cwd() + '/trace.json');
+const traceJSONOutput = path.join(process.cwd() + '/trace.json');
 const url = 'https://www.tracerbench.com';
 
 describe('timeline:show', () => {
   test
     .stdout()
     .it(
-      `runs timeline:show --urlOrFrame ${url} --file ${traceFile}`,
+      `runs timeline:show --urlOrFrame ${url} --traceJSONOutput ${traceJSONOutput}`,
       async ctx => {
-        await Show.run(['--urlOrFrame', url, '--file', traceFile]);
+        await Show.run([
+          '--urlOrFrame',
+          url,
+          '--traceJSONOutput',
+          traceJSONOutput
+        ]);
         chai.expect(ctx.stdout).to.contain(`Timings`);
       }
     );

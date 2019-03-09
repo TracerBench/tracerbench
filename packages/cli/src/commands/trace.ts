@@ -9,34 +9,36 @@ import {
   cpuThrottleRate,
   har,
   network,
-  traceOutput,
+  traceJSONOutput,
   url
 } from '../flags';
 import { getCookiesFromHAR } from '../utils';
 
 export default class Trace extends Command {
-  public static description = `Creates an automated trace that's saved to JSON. Also takes network conditioner and CPU throttling options.`;
+  public static description = `Creates an automated trace JSON file. Also takes network conditioner and CPU throttling options.`;
   public static flags = {
     cpuThrottleRate: cpuThrottleRate({ required: true }),
+    // takes in trace.har
     har: har(),
     network: network(),
-    traceOutput: traceOutput({ required: true }),
+    // outputs trace.json
+    traceJSONOutput: traceJSONOutput({ required: true }),
     url: url({ required: true })
   };
 
   public async run() {
     const { flags } = this.parse(Trace);
-    const { url, cpuThrottleRate, traceOutput } = flags;
+    const { url, cpuThrottleRate, traceJSONOutput } = flags;
     const network = 'none';
     const cpu = cpuThrottleRate;
-    const archiveOutput = defaultFlagArgs.archiveOutput;
+    const harOutput = defaultFlagArgs.harOutput;
 
     let { har } = flags;
     let cookies: any = '';
     let shouldCreateArchive: string = '';
 
     // todo
-    // trace is creating trace.json rather than trace.har
+    // trace is only outputting trace.har and not trace.json
     if (!har) {
       const userResponse: any = await inquirer.prompt([
         {
@@ -49,13 +51,9 @@ export default class Trace extends Command {
       shouldCreateArchive = userResponse.createArchive;
 
       if (shouldCreateArchive === 'yes') {
-        await CreateArchive.run([
-          '--url',
-          url,
-          '--archiveOutput',
-          archiveOutput
-        ]);
-        har = archiveOutput;
+        // create trace.har
+        await CreateArchive.run(['--url', url, '--archiveOutput', harOutput]);
+        har = harOutput;
       } else {
         this.error(
           `A HAR is required to run a trace. Either pass via tracerbench trace --har flag or have TracerBench record one for you.`
@@ -63,6 +61,7 @@ export default class Trace extends Command {
       }
     }
 
+    // cookies stuff
     try {
       cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf8'));
     } catch (error) {
@@ -78,9 +77,14 @@ export default class Trace extends Command {
       }
     }
 
-    await liveTrace(url, traceOutput, cookies, { cpu, network });
+    // in: trace.har
+    // out: trace.json
+    await liveTrace(url, traceJSONOutput, cookies, {
+      cpu,
+      network
+    });
     return this.log(
-      `Trace successfully generated and available here: ${traceOutput}`
+      `Trace JSON file successfully generated and available here: ${traceJSONOutput}`
     );
   }
 }

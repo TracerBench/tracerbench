@@ -1,12 +1,12 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
 import { loadTrace } from 'parse-profile';
-import { file } from '../flags';
+import { traceJSONOutput } from '../flags';
 
 export default class JSEvalTime extends Command {
   public static description = 'Aggregates JS Eval time from a trace.';
   public static flags = {
-    file: file({ required: true })
+    traceJSONOutput: traceJSONOutput({ required: true })
   };
 
   public async run() {
@@ -15,13 +15,13 @@ export default class JSEvalTime extends Command {
     let totalDuration: number = 0;
 
     const { flags } = this.parse(JSEvalTime);
-    const { file } = flags;
+    const { traceJSONOutput } = flags;
 
     try {
-      events = JSON.parse(fs.readFileSync(file, 'utf8'));
+      events = JSON.parse(fs.readFileSync(traceJSONOutput, 'utf8'));
     } catch (error) {
       this.error(
-        `Could not extract trace events from trace file at path ${file}, ${error}`
+        `Could not extract trace events from trace JSON file at path ${traceJSONOutput}, ${error}`
       );
     }
 

@@ -1,6 +1,6 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
-import { file } from '../../flags';
+import { traceJSONOutput } from '../../flags';
 import { isCommitLoad, loadTraceFile } from '../../utils';
 
 interface ITrace {
@@ -15,19 +15,19 @@ interface ITrace {
 export default class List extends Command {
   public static description = 'list main frame loads';
   public static flags = {
-    file: file({ required: true })
+    traceJSONOutput: traceJSONOutput({ required: true })
   };
 
   public async run() {
     const { flags } = this.parse(List);
-    const { file } = flags;
+    const { traceJSONOutput } = flags;
     let traceFile: any = null;
     let trace: any = null;
     try {
-      traceFile = JSON.parse(fs.readFileSync(file, 'utf8'));
+      traceFile = JSON.parse(fs.readFileSync(traceJSONOutput, 'utf8'));
     } catch (error) {
       this.error(
-        `Could not extract trace events from trace file at path ${file}, ${error}`
+        `Could not extract trace events from trace file at path ${traceJSONOutput}, ${error}`
       );
     }
 

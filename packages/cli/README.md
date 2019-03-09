@@ -55,14 +55,14 @@ USAGE
   $ tracerbench analyze
 
 OPTIONS
-  -a, --archive=archive  (required) [default: ./trace.har] Path to the har file
-  -f, --file=file        (required) [default: ./trace.json] Path to the existing trace JSON file
-  -m, --methods=methods  (required) [default: ""] List of methods to aggregate
+  -a, --archive=archive                  (required) [default: ./trace.har] Path to the existing HAR file
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -m, --methods=methods                  (required) [default: ""] List of methods to aggregate
 
-  -r, --report=report    Directory path to generate a report with aggregated sums for each heuristic category and
-                         aggregated sum across all heuristics
+  -r, --report=report                    Directory path to generate a report with aggregated sums for each heuristic
+                                         category and aggregated sum across all heuristics
 
-  --event=event          Slice time and see the events before and after the time slice
+  --event=event                          Slice time and see the events before and after the time slice
 ```
 
 ## `tracerbench compare`
@@ -115,7 +115,7 @@ USAGE
 
 OPTIONS
   -u, --url=url                  (required) URL to visit
-  --archiveOutput=archiveOutput  (required) [default: ./trace.har] The output filepath/name to save the trace to
+  --archiveOutput=archiveOutput  (required) [default: ./trace.har] The output filepath/name to save the HAR to
 ```
 
 ## `tracerbench css-parse`
@@ -127,7 +127,7 @@ USAGE
   $ tracerbench css-parse
 
 OPTIONS
-  -f, --file=file  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
 ```
 
 ## `tracerbench help [COMMAND]`
@@ -156,7 +156,7 @@ USAGE
   $ tracerbench js-eval-time
 
 OPTIONS
-  -f, --file=file  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
 ```
 
 ## `tracerbench list-functions`
@@ -168,21 +168,21 @@ USAGE
   $ tracerbench list-functions
 
 OPTIONS
-  -f, --file=file            (required) [default: ./trace.json] Path to the existing trace JSON file
-  -l, --locations=locations  include locations in names
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -l, --locations=locations              include locations in names
 ```
 
 ## `tracerbench timeline:find`
 
-Get frame id from trace file and url.
+Get frame id from trace JSON file and url.
 
 ```
 USAGE
   $ tracerbench timeline:find
 
 OPTIONS
-  -f, --file=file  (required) [default: ./trace.json] Path to the existing trace JSON file
-  -u, --url=url    (required) URL to visit
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -u, --url=url                          (required) URL to visit
 ```
 
 ## `tracerbench timeline:list`
@@ -194,7 +194,7 @@ USAGE
   $ tracerbench timeline:list
 
 OPTIONS
-  -f, --file=file  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
 ```
 
 ## `tracerbench timeline:show`
@@ -206,21 +206,24 @@ USAGE
   $ tracerbench timeline:show
 
 OPTIONS
-  -f, --file=file          (required) [default: ./trace.json] Path to the existing trace JSON file
-  --filter=filter          User timing marks start with
-  --marks=marks            Show user timing marks
-  --urlOrFrame=urlOrFrame  (required) URL or Frame
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
+  --filter=filter                        User timing marks start with
+  --marks=marks                          Show user timing marks
+  --urlOrFrame=urlOrFrame                (required) URL or Frame
 ```
 
 ## `tracerbench trace`
 
-Creates an automated trace that's saved to JSON. Also takes network conditioner and CPU throttling options.
+Creates an automated trace JSON file. Also takes network conditioner and CPU throttling options.
 
 ```
 USAGE
   $ tracerbench trace
 
 OPTIONS
+  -f, --traceJSONOutput=traceJSONOutput
+      (required) [default: ./trace.json] Path to the existing trace JSON file
+
   -h, --har=har
       Filepath to the existing HAR file
 
@@ -232,8 +235,5 @@ OPTIONS
 
   --cpuThrottleRate=cpuThrottleRate
       (required) [default: 1] CPU throttle multiplier
-
-  --traceOutput=traceOutput
-      (required) [default: ./trace.archive] The archive output file name
 ```
 <!-- commandsstop -->

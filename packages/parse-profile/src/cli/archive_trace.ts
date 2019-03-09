@@ -33,7 +33,7 @@ export interface Entry {
 
 export async function harTrace(
   url: string,
-  outputPath: string = './trace.archive',
+  outputPath: string = './trace.har',
   cookies: any = null
 ) {
   return await createSession(async session => {

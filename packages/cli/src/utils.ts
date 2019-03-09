@@ -6,7 +6,7 @@ import { IMarker } from 'tracerbench';
 
 interface ITBConfig {
   archive?: string;
-  file?: string;
+  traceJSONOutput?: string;
   methods?: string;
   control?: string;
   cpuThrottleRate?: number | string;
@@ -19,6 +19,7 @@ interface ITBConfig {
   output?: string;
   url?: string;
   archiveOutput?: string;
+  harOutput?: string;
   locations?: string;
   har?: string;
   filter?: string;

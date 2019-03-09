@@ -1,14 +1,14 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
 import { loadTrace } from 'parse-profile';
-import { file, locations } from '../flags';
+import { traceJSONOutput, locations } from '../flags';
 import { normalizeFnName } from '../utils';
 
 export default class ListFunctions extends Command {
   public static description =
     'Lists all the functions and source locations from a trace.';
   public static flags = {
-    file: file({ required: true }),
+    traceJSONOutput: traceJSONOutput({ required: true }),
     locations: locations()
   };
 
@@ -18,14 +18,14 @@ export default class ListFunctions extends Command {
     let profile: any = null;
 
     const { flags } = this.parse(ListFunctions);
-    const { file, locations } = flags;
+    const { traceJSONOutput, locations } = flags;
     const methods = new Set();
 
     try {
-      events = JSON.parse(fs.readFileSync(file, 'utf8'));
+      events = JSON.parse(fs.readFileSync(traceJSONOutput, 'utf8'));
     } catch (error) {
       this.error(
-        `Could not extract trace events from trace file at path ${file}, ${error}`
+        `Could not extract trace events from trace file at path ${traceJSONOutput}, ${error}`
       );
     }
 
