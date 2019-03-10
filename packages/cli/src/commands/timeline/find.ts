@@ -1,5 +1,6 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
+import * as Listr from 'listr';
 import { traceJSONOutput, url } from '../../flags';
 import { findFrame, loadTraceFile } from '../../utils';
 
@@ -17,25 +18,30 @@ export default class Find extends Command {
     let trace: any = null;
     let traceFile: any = null;
 
-    try {
-      traceFile = JSON.parse(fs.readFileSync(traceJSONOutput, 'utf8'));
-    } catch (error) {
-      this.error(
-        `Could not extract trace events from trace JSON file at path ${traceJSONOutput}, ${error}`
-      );
-    }
+    const tasks = new Listr([
+      {
+        title: 'Extract Trace Events',
+        task: () => {
+          traceFile = JSON.parse(fs.readFileSync(traceJSONOutput, 'utf8'));
+        }
+      },
+      {
+        title: 'Load Trace File',
+        task: () => {
+          trace = loadTraceFile(traceFile);
+        }
+      },
+      {
+        title: 'Find Frame',
+        task: () => {
+          frame = findFrame(trace, url);
+          this.log(`FRAME: ${frame}`);
+        }
+      }
+    ]);
 
-    try {
-      trace = loadTraceFile(traceFile);
-    } catch (error) {
-      this.error(`Error loading trace: ${error}`);
-    }
-
-    try {
-      frame = findFrame(trace, url);
-      this.log(`FRAME: ${frame}`);
-    } catch (error) {
-      this.error(`${error}`);
-    }
+    tasks.run().catch((err: any) => {
+      this.error(err);
+    });
   }
 }

@@ -15,13 +15,17 @@
     "inquirer": "^6.2.2",
     "parse-profile": "^1.0.0-alpha.7",
     "path": "0.12.7",
-    "tslib": "^1.9.3"
+    "tslib": "^1.9.3",
+    "listr": "^0.14.3",
+    "execa": "^1.0.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.21.0",
     "@oclif/test": "^1.2.2",
     "@oclif/tslint": "^3.1.1",
     "@types/chai": "^4.1.7",
+    "@types/listr": "^0.13.0",
+    "@types/execa": "^0.9.0",
     "@types/chai-fs": "^2.0.1",
     "@types/fs-extra": "^5.0.4",
     "@types/inquirer": "^0.0.44",
