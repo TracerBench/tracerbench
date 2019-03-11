@@ -9,7 +9,7 @@
     "strict": true,
     "target": "es2017",
     "composite": true,
-    "moduleResolution": "node",
+    "moduleResolution": "node"
   },
   "include": [
     "src/**/*"

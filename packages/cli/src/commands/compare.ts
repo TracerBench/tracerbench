@@ -1,5 +1,4 @@
 import * as fs from 'fs-extra';
-
 import { Command } from '@oclif/command';
 import { InitialRenderBenchmark, Runner } from 'tracerbench';
 import {
@@ -42,34 +41,29 @@ export default class Compare extends Command {
       markers,
       url
     } = flags;
-    // todo
-    // tracerbench compare --control sha -experiment sha --cpu 4 --url https://www.tracerbench.com --marker renderEnd --fidelity low --output ./results.json
-    // har-remix, chrome-debugging-client dep?
-    // init initial render benchmark for control and experiment
-    // init runner
-    // we might need to append ?trace
+    const delay = 100;
+    const runtimeStats = true;
+    const browser = {
+      additionalArguments: browserArgs
+    };
 
     const benchmarks = {
       control: new InitialRenderBenchmark({
-        browser: {
-          additionalArguments: browserArgs
-        },
+        browser,
         cpuThrottleRate,
-        delay: 100,
+        delay,
         markers,
         name: 'control',
-        runtimeStats: true,
+        runtimeStats,
         saveTraces: () => `control-${output}-trace.json`,
         url
       }),
       experiment: new InitialRenderBenchmark({
-        browser: {
-          additionalArguments: browserArgs
-        },
-        delay: 100,
+        browser,
+        delay,
         markers,
         name: 'experiment',
-        runtimeStats: true,
+        runtimeStats,
         saveTraces: () => `experiment-${output}-trace.json`,
         url
       })
@@ -79,8 +73,8 @@ export default class Compare extends Command {
     await runner
       .run(2)
       .then(results => {
-        this.log(`Success! Results available here ${output}.json`);
         fs.writeFileSync(`${output}.json`, JSON.stringify(results, null, 2));
+        this.log(`Success! Results available here ${output}.json`);
       })
       .catch(err => {
         this.error(err);
