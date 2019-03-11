@@ -16,7 +16,7 @@ import { CpuProfile } from '../src/index';
 import { ArchiveGenerator, LocatorGenerator, ProfileGenerator } from './generators';
 
 describe('aggregate', () => {
-  let archive: Archive;
+  let har: Archive;
   beforeEach(() => {
     let content = `
       define("module/1",["exports"],function(e) {
@@ -26,7 +26,7 @@ describe('aggregate', () => {
         function barbar1() {return 'bar';}
       });
     `;
-    archive = new ArchiveGenerator().generate(content);
+    har = new ArchiveGenerator().generate(content);
   });
   it('aggregates subset of the hierarchy (function heuristics)', () => {
     let generator = new ProfileGenerator();
@@ -57,8 +57,8 @@ describe('aggregate', () => {
 
     let profile = new CpuProfile(json, generator.events, -1, -1);
     let locators = new LocatorGenerator().generate([['a', '.*'], ['c', '.*'], ['d', '.*'], ['f', '.*']]);
-    let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
-    let aggregations = aggregate(profile.hierarchy, locators, archive, modMatcher);
+    let modMatcher = new ModuleMatcher(profile.hierarchy, har);
+    let aggregations = aggregate(profile.hierarchy, locators, har, modMatcher);
 
     expect(aggregations['a.*'].total).to.equal(225);
     expect(aggregations['a.*'].attributed).to.equal(150);
@@ -101,8 +101,8 @@ describe('aggregate', () => {
 
     let profile = new CpuProfile(json, generator.events, -1, -1);
     let locators = new LocatorGenerator().generate([['a', '.*'], ['c', '.*'], ['d', '.*'], ['f', '.*']]);
-    let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
-    let aggregations = aggregate(profile.hierarchy, locators, archive, modMatcher);
+    let modMatcher = new ModuleMatcher(profile.hierarchy, har);
+    let aggregations = aggregate(profile.hierarchy, locators, har, modMatcher);
 
     expect(aggregations['a.*'].total).to.equal(225);
     expect(aggregations['a.*'].attributed).to.equal(150);
@@ -160,8 +160,8 @@ describe('aggregate', () => {
     let locators = new LocatorGenerator().generate([['.*', 'module/1'], ['.*', 'module/2']]);
 
     let profile = new CpuProfile(json, generator.events, -1, -1);
-    let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
-    let aggregations = aggregate(profile.hierarchy, locators, archive, modMatcher);
+    let modMatcher = new ModuleMatcher(profile.hierarchy, har);
+    let aggregations = aggregate(profile.hierarchy, locators, har, modMatcher);
 
     expect(aggregations['.*module/1'].attributed).to.equal(150); // a(100) + b(50)
     expect(aggregations['.*module/1'].total).to.equal(275); // a(100) + b(50) + b(50) + c(75)
@@ -214,9 +214,9 @@ describe('aggregate', () => {
 
     let profile = new CpuProfile(json, generator.events, -1, -1);
 
-    let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
+    let modMatcher = new ModuleMatcher(profile.hierarchy, har);
     addRemainingModules(locators, {}, modMatcher); // this should add module/2
-    let aggregations = aggregate(profile.hierarchy, locators, archive, modMatcher);
+    let aggregations = aggregate(profile.hierarchy, locators, har, modMatcher);
 
     expect(aggregations['.*module/1'].attributed).to.equal(150); // a(100) + b(50)
     expect(aggregations['.*module/1'].total).to.equal(275); // a(100) + b(50) + b(50) + c(75)
@@ -269,9 +269,9 @@ describe('aggregate', () => {
 
     let profile = new CpuProfile(json, generator.events, -1, -1);
 
-    let modMatcher = new ModuleMatcher(profile.hierarchy, archive); // this should add module/1 & 2
+    let modMatcher = new ModuleMatcher(profile.hierarchy, har); // this should add module/1 & 2
     addRemainingModules(locators, {}, modMatcher);
-    let aggregations = aggregate(profile.hierarchy, locators, archive, modMatcher);
+    let aggregations = aggregate(profile.hierarchy, locators, har, modMatcher);
 
     expect(aggregations['a.*'].attributed).to.equal(100); // a(100)
     expect(aggregations['a.*'].total).to.equal(225); // a(100) + b(50) + c(75)
@@ -324,8 +324,8 @@ describe('aggregate', () => {
     let locators = new LocatorGenerator().generate([['.*', 'module/1'], ['.*', 'module/2']]);
 
     let profile = new CpuProfile(json, generator.events, -1, -1);
-    let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
-    let aggregations = aggregate(profile.hierarchy, locators, archive, modMatcher);
+    let modMatcher = new ModuleMatcher(profile.hierarchy, har);
+    let aggregations = aggregate(profile.hierarchy, locators, har, modMatcher);
 
     expect(aggregations['.*module/1'].attributed).to.equal(150); // a(100) + b(25) + b'(25)
     expect(aggregations['.*module/1'].total).to.equal(275); // a(100) + b(25) + b(25) + b'(25) + b'(25) + c(50) + c'(25)
@@ -337,9 +337,9 @@ describe('aggregate', () => {
 
 describe('categorizeAggregations', () => {
   let aggregations: Aggregations;
-  let archive: Archive;
+  let har: Archive;
   beforeEach(() => {
-    archive = new ArchiveGenerator().generate();
+    har = new ArchiveGenerator().generate();
   });
   beforeEach(() => {
     let generator = new ProfileGenerator();
@@ -367,8 +367,8 @@ describe('categorizeAggregations', () => {
 
     let profile = new CpuProfile(json, generator.events, -1, -1);
     let locators = new LocatorGenerator().generate([['a', '.*'], ['c', '.*'], ['d', '.*'], ['f', '.*']]);
-    let modMatcher = new ModuleMatcher(profile.hierarchy, archive);
-    aggregations = aggregate(profile.hierarchy, locators, archive, modMatcher);
+    let modMatcher = new ModuleMatcher(profile.hierarchy, har);
+    aggregations = aggregate(profile.hierarchy, locators, har, modMatcher);
   });
 
   it('creates a categorized map', () => {

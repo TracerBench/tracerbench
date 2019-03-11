@@ -2,9 +2,10 @@
 
 import { createSession } from 'chrome-debugging-client';
 import { IO, Network, Page, Tracing } from 'chrome-debugging-client/dist/protocol/tot';
-import * as fs from 'fs';
+const fs = require('fs-extra');
 import { IConditions } from './conditions';
 import { createClient, emulate, setCookies } from './trace-utils';
+import { removeFilename } from './utils';
 
 const DEVTOOLS_CATEGORIES = [
   '-*',
@@ -85,6 +86,9 @@ export async function liveTrace(
 
     const result = await tracingComplete;
     const handle = result.stream as string;
+
+    fs.ensureDirSync(removeFilename(out));
+
     const file = fs.openSync(out, 'w');
     try {
       let read: IO.ReadReturn;

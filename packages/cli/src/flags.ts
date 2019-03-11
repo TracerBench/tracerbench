@@ -32,23 +32,30 @@ export const defaultFlagArgs: ITBConfig = {
     '--crash-dumps-dir=./tmp'
   ],
   harsPath: './hars',
-  archive: './trace.har',
-  harOutput: './trace.har',
-  archiveOutput: './trace.har',
+  har: './trace.har',
   traceJSONOutput: './trace.json',
   methods: '""',
   fidelity: 'low',
   output: 'tracerbench-results',
   url: 'http://localhost:8000/?tracing',
-  iterations: 1
+  iterations: 1,
+  outputPath: './output',
+  legacy: false
 };
 
 export const iterations = flags.build({
+  char: 'i',
   default: () => getConfigDefault('iterations', defaultFlagArgs.iterations),
   description: `Number of runs`,
   parse: iterations => {
-    parseInt(iterations, 10);
+    return parseInt(iterations, 10);
   }
+});
+
+export const outputPath = flags.build({
+  char: 'o',
+  default: () => getConfigDefault('outputPath', defaultFlagArgs.outputPath),
+  description: `Analysis output data path`
 });
 
 export const browserArgs = flags.build({
@@ -76,21 +83,10 @@ export const harsPath = flags.build({
   description: 'The output directory for recorded har files'
 });
 
-export const archiveOutput = flags.build({
-  default: () =>
-    getConfigDefault('archiveOutput', defaultFlagArgs.archiveOutput),
+export const har = flags.build({
+  char: 'h',
+  default: () => getConfigDefault('har', defaultFlagArgs.har),
   description: 'The output filepath/name to save the HAR to'
-});
-
-export const harOutput = flags.build({
-  default: () => getConfigDefault('harOutput', defaultFlagArgs.harOutput),
-  description: 'The output filepath/name to save the HAR to'
-});
-
-export const archive = flags.build({
-  char: 'a',
-  default: () => getConfigDefault('archive', defaultFlagArgs.archive),
-  description: 'Path to the existing HAR file'
 });
 
 export const event = flags.build({
@@ -102,7 +98,7 @@ export const traceJSONOutput = flags.build({
   char: 'f',
   default: () =>
     getConfigDefault('traceJSONOutput', defaultFlagArgs.traceJSONOutput),
-  description: 'Path to the existing trace JSON file'
+  description: 'Path to trace output directory'
 });
 
 export const methods = flags.build({
@@ -115,6 +111,12 @@ export const report = flags.build({
   char: 'r',
   default: () => getConfigDefault('report'),
   description: `Directory path to generate a report with aggregated sums for each heuristic category and aggregated sum across all heuristics`
+});
+
+export const legacy = flags.build({
+  char: 'l',
+  default: () => getConfigDefault('legacy', defaultFlagArgs.legacy),
+  description: `Runs heuristic analysis only, and outputs to stdout`
 });
 
 export const cpuThrottleRate = flags.build({
@@ -187,12 +189,6 @@ export const locations = flags.build({
   char: 'l',
   default: () => getConfigDefault('locations'),
   description: 'include locations in names'
-});
-
-export const har = flags.build({
-  char: 'h',
-  default: () => getConfigDefault('har', null) || null,
-  description: 'Filepath to the existing HAR file'
 });
 
 export const filter = flags.build({

@@ -5,7 +5,6 @@ import chalk from 'chalk';
 import { IMarker } from 'tracerbench';
 
 export interface ITBConfig {
-  archive?: string;
   traceJSONOutput?: string;
   methods?: string;
   control?: string;
@@ -13,13 +12,12 @@ export interface ITBConfig {
   experiment?: string;
   fidelity?: 'test' | 'low' | 'med' | 'high';
   report?: string;
+  legacy?: boolean;
   event?: string;
   markers?: string | IMarker[];
   network?: string;
   output?: string;
   url?: string;
-  archiveOutput?: string;
-  harOutput?: string;
   locations?: string;
   har?: string;
   filter?: string;
@@ -30,6 +28,7 @@ export interface ITBConfig {
   appName?: string;
   browserArgs?: string[];
   iterations?: number | string;
+  outputPath?: string;
 }
 
 type ITBConfigKeys = keyof ITBConfig;

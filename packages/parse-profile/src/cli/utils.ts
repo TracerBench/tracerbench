@@ -21,6 +21,10 @@ export interface Locator {
 
 export const AUTO_ADD_CAT = 'Auto Added Module Paths';
 
+export function removeFilename(inputPath: string) {
+  return path.join(...inputPath.split(path.sep).slice(0, -1));
+}
+
 export function getRenderingNodes(root: HierarchyNode<ICpuProfileNode>) {
   const renderNodes: Array<HierarchyNode<ICpuProfileNode>> = [];
   root.each((node: HierarchyNode<ICpuProfileNode>) => {

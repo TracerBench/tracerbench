@@ -29,6 +29,15 @@ export interface Categorized {
   [key: string]: AggregationResult[];
 }
 
+export interface StatsResult {
+  total: number;
+  self: number;
+  attributed: number;
+  functionName: string;
+  moduleName: string;
+  percentage: number;
+}
+
 export function verifyMethods(array: Locator[]) {
   let valuesSoFar: string[] = [];
   for (let i = 0; i < array.length; ++i) {
@@ -77,17 +86,17 @@ class AggregrationCollector {
   private modMatcher: ModuleMatcher;
   matcher: RegExp | undefined;
   parsedFiles: ParsedFiles = {};
-  archive: Archive;
+  har: Archive;
   hierarchy: HierarchyNode<ICpuProfileNode>;
 
   constructor(
     locators: Locator[],
-    archive: Archive,
+    har: Archive,
     hierarchy: HierarchyNode<ICpuProfileNode>,
     modMatcher: ModuleMatcher,
   ) {
     this.locators = locators;
-    this.archive = archive;
+    this.har = har;
     this.hierarchy = hierarchy;
     this.modMatcher = modMatcher;
 
@@ -196,10 +205,10 @@ export function collapseCallFrames(aggregations: Aggregations) {
 export function aggregate(
   hierarchy: HierarchyNode<ICpuProfileNode>,
   locators: Locator[],
-  archive: Archive,
+  har: Archive,
   modMatcher: ModuleMatcher,
 ) {
-  let aggregations = new AggregrationCollector(locators, archive, hierarchy, modMatcher);
+  let aggregations = new AggregrationCollector(locators, har, hierarchy, modMatcher);
   hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {
     let { self } = node.data;
     if (self !== 0) {

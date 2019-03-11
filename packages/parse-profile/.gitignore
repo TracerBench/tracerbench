@@ -5,5 +5,5 @@ LinkedInFeed*.json
 cookies.json
 feed-trace.json
 trace.json
-*.archive
+*.har
 .*_cache

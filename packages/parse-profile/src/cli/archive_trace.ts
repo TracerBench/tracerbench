@@ -2,8 +2,9 @@
 
 import { createSession } from 'chrome-debugging-client';
 import { Network, Page } from 'chrome-debugging-client/dist/protocol/tot';
-import * as fs from 'fs';
+const fs = require('fs-extra');
 import { createClient, setCookies } from './trace-utils';
+import { removeFilename } from './utils';
 
 // Represents a subset of a HAR
 export interface Archive {
@@ -57,7 +58,7 @@ export async function harTrace(
       }
     };
 
-    let archive: Archive = {
+    let har: Archive = {
       log: {
         entries: []
       }
@@ -91,10 +92,11 @@ export async function harTrace(
         request: { url: _response.url },
         response: { content: { text: responseBody.body } }
       };
-      archive.log.entries.push(entry);
+      har.log.entries.push(entry);
     }
 
-    fs.writeFileSync(cookiesPath, JSON.stringify(cookies));
-    fs.writeFileSync(outputPath, JSON.stringify(archive));
+    if (!fs.existsSync(cookiesPath)) fs.writeFileSync(cookiesPath, JSON.stringify(cookies));
+    fs.ensureDirSync(removeFilename(outputPath));
+    fs.writeFileSync(outputPath, JSON.stringify(har));
   });
 }

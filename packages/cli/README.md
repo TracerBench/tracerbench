@@ -23,7 +23,7 @@ $ npm install -g tracerbench-cli
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench-cli/1.0.0-alpha.9 darwin-x64 node-v8.14.0
+tracerbench-cli/1.0.0-alpha.8 darwin-x64 node-v10.1.0
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
@@ -142,14 +142,17 @@ USAGE
   $ tracerbench analyze
 
 OPTIONS
-  -a, --archive=archive                  (required) [default: ./trace.har] Path to the existing HAR file
-  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to trace output directory
+  -h, --har=har                          (required) [default: ./trace.har] The output filepath/name to save the HAR to
   -m, --methods=methods                  (required) [default: ""] List of methods to aggregate
+  -o, --outputPath=outputPath            (required) [default: ./output] Analysis output data path
 
   -r, --report=report                    Directory path to generate a report with aggregated sums for each heuristic
                                          category and aggregated sum across all heuristics
 
   --event=event                          Slice time and see the events before and after the time slice
+
+  --legacy
 ```
 
 ## `tracerbench compare`
@@ -201,8 +204,8 @@ USAGE
   $ tracerbench create-archive
 
 OPTIONS
-  -u, --url=url                  (required) [default: http://localhost:8000/?tracing] URL to visit
-  --archiveOutput=archiveOutput  (required) [default: ./trace.har] The output filepath/name to save the HAR to
+  -h, --har=har  (required) [default: ./trace.har] The output filepath/name to save the HAR to
+  -u, --url=url  (required) [default: http://localhost:8000/?tracing] URL to visit
 ```
 
 ## `tracerbench css-parse`
@@ -214,7 +217,7 @@ USAGE
   $ tracerbench css-parse
 
 OPTIONS
-  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to trace output directory
 ```
 
 ## `tracerbench help [COMMAND]`
@@ -243,7 +246,7 @@ USAGE
   $ tracerbench js-eval-time
 
 OPTIONS
-  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to trace output directory
 ```
 
 ## `tracerbench list-functions`
@@ -255,7 +258,7 @@ USAGE
   $ tracerbench list-functions
 
 OPTIONS
-  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to trace output directory
   -l, --locations=locations              include locations in names
 ```
 
@@ -268,7 +271,7 @@ USAGE
   $ tracerbench timeline:find
 
 OPTIONS
-  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to trace output directory
   -u, --url=url                          (required) [default: http://localhost:8000/?tracing] URL to visit
 ```
 
@@ -281,7 +284,7 @@ USAGE
   $ tracerbench timeline:list
 
 OPTIONS
-  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to trace output directory
 ```
 
 ## `tracerbench timeline:show`
@@ -293,7 +296,7 @@ USAGE
   $ tracerbench timeline:show
 
 OPTIONS
-  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to trace output directory
   --filter=filter                        User timing marks start with
   --marks=marks                          Show user timing marks
   --urlOrFrame=urlOrFrame                (required) URL or Frame
@@ -309,11 +312,16 @@ USAGE
 
 OPTIONS
   -f, --traceJSONOutput=traceJSONOutput                                                     (required) [default:
-                                                                                            ./trace.json] Path to the
-                                                                                            existing trace JSON file
+                                                                                            ./trace.json] Path to trace
+                                                                                            output directory
 
-  -h, --har=har                                                                             Filepath to the existing HAR
-                                                                                            file
+  -h, --har=har                                                                             (required) [default:
+                                                                                            ./trace.har] The output
+                                                                                            filepath/name to save the
+                                                                                            HAR to
+
+  -i, --iterations=iterations                                                               (required) [default: 1]
+                                                                                            Number of runs
 
   -n, --network=none|offline|dialup|2g|edge|slow-3g|em-3g|dsl|3g|fast-3g|4g|cable|LTE|FIOS  Simulated network
                                                                                             conditions.
@@ -322,16 +330,8 @@ OPTIONS
                                                                                             http://localhost:8000/?traci
                                                                                             ng] URL to visit
 
-  --archiveOutput=archiveOutput                                                             (required) [default:
-                                                                                            ./trace.har] The output
-                                                                                            filepath/name to save the
-                                                                                            HAR to
-
   --cpuThrottleRate=cpuThrottleRate                                                         (required) [default: 1] CPU
                                                                                             throttle multiplier
-
-  --iterations=iterations                                                                   (required) [default: 1]
-                                                                                            Number of runs
 ```
 
 <!-- commandsstop -->

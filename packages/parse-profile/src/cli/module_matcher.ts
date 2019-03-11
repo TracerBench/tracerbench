@@ -9,11 +9,11 @@ export interface ParsedFiles {
 
 export class ModuleMatcher {
   private parsedFiles: ParsedFiles = {};
-  private archive: Archive;
+  private har: Archive;
   private moduleSet = new Set<string>();
 
-  constructor(hierarchy: HierarchyNode<ICpuProfileNode>, archive: Archive) {
-    this.archive = archive;
+  constructor(hierarchy: HierarchyNode<ICpuProfileNode>, har: Archive) {
+    this.har = har;
     hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {
       const moduleName = this.findModuleName(node.data.callFrame);
       if (moduleName === undefined || moduleName === 'unknown') {
@@ -51,10 +51,10 @@ export class ModuleMatcher {
   }
 
   private contentFor(url: string) {
-    let entry = this.archive.log.entries.find(e => e.request.url === url);
+    let entry = this.har.log.entries.find(e => e.request.url === url);
 
     if (!entry) {
-      throw new Error(`Could not find "${url}" in the archive file.`);
+      throw new Error(`Could not find "${url}" in the har file.`);
     }
 
     return entry.response.content.text;

@@ -1,6 +1,6 @@
 import { Command } from '@oclif/command';
 import CreateArchive from './create-archive';
-
+import * as path from 'path';
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import { liveTrace } from 'parse-profile';
@@ -10,7 +10,6 @@ import {
   network,
   traceJSONOutput,
   url,
-  archiveOutput,
   iterations
 } from '../flags';
 import { getCookiesFromHAR } from '../utils';
@@ -19,8 +18,7 @@ export default class Trace extends Command {
   public static description = `Creates an automated trace JSON file. Also takes network conditioner and CPU throttling options.`;
   public static flags = {
     cpuThrottleRate: cpuThrottleRate({ required: true }),
-    archiveOutput: archiveOutput({ required: true }),
-    har: har(),
+    har: har({ required: true }),
     network: network(),
     traceJSONOutput: traceJSONOutput({ required: true }),
     url: url({ required: true }),
@@ -33,13 +31,12 @@ export default class Trace extends Command {
       url,
       cpuThrottleRate,
       traceJSONOutput,
-      archiveOutput,
+      har,
       iterations
     } = flags;
     const network = 'none';
     const cpu = cpuThrottleRate;
 
-    let { har } = flags;
     let cookies: any = '';
     let shouldCreateArchive: string = '';
 
@@ -58,10 +55,9 @@ export default class Trace extends Command {
         await CreateArchive.run([
           '--url',
           url,
-          '--archiveOutput',
-          archiveOutput
+          '--har',
+          har
         ]);
-        har = archiveOutput;
       } else {
         this.error(
           `A HAR is required to run a trace. Either pass via tracerbench trace --har flag or have TracerBench record one for you.`
@@ -84,12 +80,15 @@ export default class Trace extends Command {
       }
     }
 
-    await liveTrace(url, traceJSONOutput, cookies, {
-      cpu,
-      network
-    });
-    return this.log(
-      `Trace JSON file successfully generated and available here: ${traceJSONOutput}`
-    );
+    for (let i = 0; i < iterations; i++) {
+      const outputPath = path.join(`${traceJSONOutput}`, `raw-traces`, `trace-${i}.json`);
+      await liveTrace(url, outputPath, cookies, {
+        cpu,
+        network
+      });
+      this.log(
+        `Trace JSON file successfully generated and available here: ${outputPath}`
+      );
+    }
   }
 }

@@ -1,13 +1,14 @@
 import { HierarchyNode } from 'd3-hierarchy';
-import * as fs from 'fs';
+const fs = require('fs-extra');
 import { ModuleMatcher } from '../cli/module_matcher';
+import { removeFilename } from '../cli/utils';
 import { ICpuProfileNode, ITraceEvent, Trace, TRACE_EVENT_PHASE } from '../trace';
 
 export function exportHierarchy(
     rawTraceData: any,
     hierarchy: HierarchyNode<ICpuProfileNode>,
     trace: Trace,
-    filePath: string,
+    outputFilepath: string,
     modMatcher: ModuleMatcher) {
 
     const newTraceData = JSON.parse(JSON.stringify(rawTraceData));
@@ -29,6 +30,6 @@ export function exportHierarchy(
         newTraceData.traceEvents.push(completeEvent);
     });
 
-    const outputFilePath = filePath.endsWith('.json') ? filePath.slice(0, filePath.length - 5) : filePath;
-    fs.writeFileSync(`${outputFilePath}-processed.json`, JSON.stringify(newTraceData, null, ' '), 'utf8');
+    fs.ensureDirSync(removeFilename(outputFilepath));
+    fs.writeFileSync(outputFilepath, JSON.stringify(newTraceData, null, ' '), 'utf8');
 }
