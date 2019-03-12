@@ -1,17 +1,16 @@
-import { CLIError } from '@oclif/errors';
-
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { IMarker } from 'tracerbench';
+import { FidelityLookup } from './flags';
 
-interface ITBConfig {
+export interface ITBConfig {
   archive?: string;
   traceJSONOutput?: string;
   methods?: string;
   control?: string;
   cpuThrottleRate?: number | string;
   experiment?: string;
-  fidelity?: string;
+  fidelity?: keyof typeof FidelityLookup;
   report?: string;
   event?: string;
   markers?: IMarker[];

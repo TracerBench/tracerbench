@@ -71,7 +71,7 @@ export default class Compare extends Command {
 
     const runner = new Runner([benchmarks.control, benchmarks.experiment]);
     await runner
-      .run(2)
+      .run(fidelity)
       .then(results => {
         fs.writeFileSync(`${output}.json`, JSON.stringify(results, null, 2));
         this.log(`Success! Results available here ${output}.json`);

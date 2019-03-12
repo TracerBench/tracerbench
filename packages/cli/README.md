@@ -97,7 +97,7 @@ OPTIONS
   --cpuThrottleRate=cpuThrottleRate
       (required) [default: 1] CPU throttle multiplier
 
-  --fidelity=test,low,medium,high
+  --fidelity=test|low|medium|high
       (required) [default: low] Directly correlates to the number of samples per trace. High means a longer trace time.
 
   --markers=markers
@@ -232,6 +232,9 @@ OPTIONS
 
   -u, --url=url
       (required) URL to visit
+
+  --archiveOutput=archiveOutput
+      (required) [default: ./trace.har] The output filepath/name to save the HAR to
 
   --cpuThrottleRate=cpuThrottleRate
       (required) [default: 1] CPU throttle multiplier

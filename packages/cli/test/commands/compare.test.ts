@@ -9,11 +9,14 @@ const indexFile = path.join(
   process.cwd() + '/test/fixtures/release/index.html'
 );
 const url = `file://${indexFile}?tracing`;
+const fidelity = 'test';
 
 describe('compare', () => {
-  test.stdout().it(`runs compare --url ${url}`, async ctx => {
-    await Compare.run(['--url', url]);
+  test
+    .stdout()
+    .it(`runs compare --url ${url} --fidelity ${fidelity}`, async ctx => {
+      await Compare.run(['--url', url, '--fidelity', fidelity]);
 
-    chai.expect(ctx.stdout).to.contain(`Success`);
-  });
+      chai.expect(ctx.stdout).to.contain(`Success`);
+    });
 });
