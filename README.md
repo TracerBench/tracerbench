@@ -4,7 +4,7 @@
 
 TracerBench is a benchmarking tool for benchmarking web applications by automating chrome traces then extracting a metric from them, while controlling that each sample is independent. In essence, it provides developers with a simple API that can run a site locally many times in both a control and experiment to then provide the necessary data for determining if a page load performance delta exists.
 
-Motivation, one trace varies to much to detect regressions in small changes to an app unless the effect size is very large. Additionally, most statistical tests I know of assume sample independence which given caching like Chrome's v8 caching is quite difficult to meet.
+One trace varies to much to detect regressions in small changes to an app unless the effect size is very large. Additionally, most statistical tests assume sample independence which given caching like Chrome's v8 caching is quite difficult to meet.
 
 It is similar to [Telemetry](https://github.com/catapult-project/catapult/blob/master/telemetry/docs/run_benchmarks_locally.md) which is used to benchmark chromium.
 
