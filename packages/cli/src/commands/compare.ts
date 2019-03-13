@@ -1,5 +1,9 @@
 import * as fs from 'fs-extra';
 import * as Table from 'cli-table2';
+import * as path from 'path';
+import * as jsonQuery from 'json-query';
+
+import { FidelityLookup } from '../flags';
 import chalk from 'chalk';
 import { Command } from '@oclif/command';
 import { InitialRenderBenchmark, Runner } from 'tracerbench';
@@ -14,6 +18,12 @@ import {
   output,
   url
 } from '../flags';
+
+const cHead = chalk.rgb(255, 255, 255);
+const cRegress = chalk.rgb(239, 100, 107);
+const cNeutral = chalk.rgb(165, 173, 186);
+const cImprv = chalk.rgb(135, 197, 113);
+const cPhase = chalk.rgb(165, 173, 186);
 
 export default class Compare extends Command {
   public static description =
@@ -37,29 +47,22 @@ export default class Compare extends Command {
       cpuThrottleRate,
       output,
       network,
-      fidelity,
       experiment,
       control,
       markers,
       url
     } = flags;
+    let { fidelity } = flags;
     const delay = 100;
     const runtimeStats = true;
     const browser = {
       additionalArguments: browserArgs
     };
-
-    // const url = `http://localhost:${port}${entry}?trace_redirect`;
-
-    const cHead = chalk.rgb(165, 173, 186);
-    const cRegress = chalk.rgb(239, 100, 107);
-    const cNeutral = chalk.rgb(165, 173, 186);
-    const cImprv = chalk.rgb(135, 197, 113);
-    const cPhase = chalk.rgb(165, 173, 186);
+    fidelity = parseInt(FidelityLookup[fidelity], 10);
 
     const phaseTableConfig: Table.TableConstructorOptions = {
       colWidths: [35, 15, 10],
-      head: [cHead('Phase'), cHead('Status'), cHead('Delta')],
+      head: [cHead('Phase'), cHead('Status'), cHead('Duration')],
       style: {
         head: [],
         border: []
@@ -91,7 +94,7 @@ export default class Compare extends Command {
 
     const runner = new Runner([benchmarks.control, benchmarks.experiment]);
     await runner
-      .run(fidelity)
+      .run(2)
       .then(results => {
         if (!results[0].samples[0]) {
           this.error(`Could not sample from provided url: ${url}.`);
@@ -100,21 +103,25 @@ export default class Compare extends Command {
         const { js, duration, phases } = results[0].samples[0];
         const message = {
           output: `Success! A detailed report and JSON file are available at ${output}.json`,
-          ext: `The overall ${fidelity}-fidelity result is significant in ${
+          ext: `${fidelity} test samples were run and the result is significant in ${
             results[0].meta.browserVersion
           }. A recommended high-fidelity analysis should be performed.`
         };
 
         fs.writeFileSync(`${output}.json`, JSON.stringify(results, null, 2));
 
-        // js
-        phaseTable.push([cPhase(`js`), cNeutral('Neutral'), cNeutral(`${js}`)]);
+        // format output: js
+        phaseTable.push([
+          cPhase(`js`),
+          cNeutral('Neutral'),
+          cNeutral(`${js}µs`)
+        ]);
 
-        // duration
+        // format output: duration
         phaseTable.push([
           cPhase(`duration`),
           cNeutral('Neutral'),
-          cNeutral(`${duration}`)
+          cNeutral(`${duration}µs`)
         ]);
 
         // todo
@@ -128,16 +135,21 @@ export default class Compare extends Command {
           ]);
         });
 
-        // phaseTable.push(
-        //   [cPhase('Load'), cRegress('Regression'), cRegress('+1500µs')],
-        //   [cPhase('Boot'), cNeutral('Neutral'), cNeutral('~0µs')],
-        //   [cPhase('Render'), cNeutral('Neutral'), cNeutral('~0µs')],
-        //   [cPhase('Lazy-Render'), cNeutral('Neutral'), cNeutral('~0µs')],
-        //   [cPhase('After-Render'), cImprv('Improvement'), cImprv('-2000µs')]
-        // );
+        // control samples
+        // controlSamples.forEach(sample => {
+        //   // phases
+        //   sample.phases.forEach(i => {
+        //     // each phase (id, start, duration)
+        //     const p = {
+        //       id: i.phase,
+        //       start: i.start,
+        //       duration: i.duration
+        //     };
+        //   });
+        // });
 
         this.log(`\n\n${phaseTable.toString()}`);
-        this.log(cHead(`\n\n${message.output}\n\n${message.ext}\n\n`));
+        this.log(cNeutral(`\n\n${message.output}\n\n${message.ext}\n\n`));
       })
       .catch(err => {
         this.error(err);

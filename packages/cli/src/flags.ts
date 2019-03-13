@@ -5,9 +5,9 @@ import { getConfigDefault, ITBConfig } from './utils';
 
 export enum FidelityLookup {
   test = '2',
-  low = '20',
-  medium = '30',
-  high = '40'
+  low = '25',
+  medium = '35',
+  high = '50'
 }
 
 export const defaultFlagArgs: ITBConfig = {
@@ -38,8 +38,18 @@ export const defaultFlagArgs: ITBConfig = {
   traceJSONOutput: './trace.json',
   methods: '""',
   fidelity: 'low',
-  output: 'tracerbench-results'
+  output: 'tracerbench-results',
+  url: 'http://localhost:8000/?tracing',
+  iterations: 1
 };
+
+export const iterations = flags.build({
+  default: () => getConfigDefault('iterations', defaultFlagArgs.iterations),
+  description: `Number of runs`,
+  parse: iterations => {
+    parseInt(iterations, 10);
+  }
+});
 
 export const browserArgs = flags.build({
   default: () => getConfigDefault('browserArgs', defaultFlagArgs.browserArgs),
@@ -169,7 +179,7 @@ export const output = flags.build({
 
 export const url = flags.build({
   char: 'u',
-  default: () => getConfigDefault('url'),
+  default: () => getConfigDefault('url', defaultFlagArgs.url),
   description: 'URL to visit'
 });
 

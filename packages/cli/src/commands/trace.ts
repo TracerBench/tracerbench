@@ -10,7 +10,8 @@ import {
   network,
   traceJSONOutput,
   url,
-  archiveOutput
+  archiveOutput,
+  iterations
 } from '../flags';
 import { getCookiesFromHAR } from '../utils';
 
@@ -22,12 +23,19 @@ export default class Trace extends Command {
     har: har(),
     network: network(),
     traceJSONOutput: traceJSONOutput({ required: true }),
-    url: url({ required: true })
+    url: url({ required: true }),
+    iterations: iterations({ required: true })
   };
 
   public async run() {
     const { flags } = this.parse(Trace);
-    const { url, cpuThrottleRate, traceJSONOutput, archiveOutput } = flags;
+    const {
+      url,
+      cpuThrottleRate,
+      traceJSONOutput,
+      archiveOutput,
+      iterations
+    } = flags;
     const network = 'none';
     const cpu = cpuThrottleRate;
 

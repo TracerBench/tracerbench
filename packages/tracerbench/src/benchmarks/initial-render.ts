@@ -150,9 +150,6 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
     const sample = metric.measure(trace);
 
     // log progress to stderr
-    // TODO make some events or logger
-    // console.error(`${this.name} ${sample.duration} µs`);
-
     results.samples.push(sample);
   }
 }

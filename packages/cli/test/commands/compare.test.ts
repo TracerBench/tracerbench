@@ -9,6 +9,8 @@ const indexFile = path.join(
   process.cwd() + '/test/fixtures/release/index.html'
 );
 const url = `file://${indexFile}?tracing`;
+// const url = 'http://localhost:8000/?tracing';
+
 const fidelity = 'test';
 
 describe('compare', () => {

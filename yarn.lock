@@ -822,6 +822,11 @@
   resolved "https://registry.yarnpkg.com/@types/d3-array/-/d3-array-1.2.4.tgz#7088445c8717ba1fba416a1df7bbd11cc72a3763"
   integrity sha512-3r1fOAAb+SGfcOGXty/LGvoP0ovMec4UtGNUyHOSzYyvSGpmt+eNMxLowol/3HryusevznSfcHZebEShXMwsZA==
 
+"@types/d3-array@^1.2.6":
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/@types/d3-array/-/d3-array-1.2.6.tgz#bbc5d7e6e837353f5849c0ffad9bf6fbf9c775bb"
+  integrity sha512-/EcY/15X5tnwkMT2txpjiLUNJj5xHA2vGHOXI8NTYGhETK914RRLQLjNm6EpAI1D2IY5vh3CzuLODnqBAwKjPA==
+
 "@types/d3-axis@*":
   version "1.0.11"
   resolved "https://registry.yarnpkg.com/@types/d3-axis/-/d3-axis-1.0.11.tgz#efd975f9fec14c2afd03828f3acec0ef97d37c3b"
@@ -1078,6 +1083,11 @@
   dependencies:
     "@types/rx" "*"
     "@types/through" "*"
+
+"@types/json-query@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@types/json-query/-/json-query-2.2.0.tgz#4d54169ea7b88756574222bbd22c391a3cee595d"
+  integrity sha512-q8LHb92H9xGK0+eZjXev4QJ9HpvZIM12sdAYrLhtEhxoCklElqgQoz/1D8jLCADGdRUMySYwlseCDINskXFcwA==
 
 "@types/listr@^0.13.0":
   version "0.13.0"
@@ -4207,6 +4217,11 @@ json-parse-better-errors@^1.0.0, json-parse-better-errors@^1.0.1:
   resolved "https://registry.yarnpkg.com/json-parse-better-errors/-/json-parse-better-errors-1.0.2.tgz#bb867cfb3450e69107c131d1c514bab3dc8bcaa9"
   integrity sha512-mrqyZKfX5EhL7hvqcV6WG1yYjnjeuYDzDhhcAAUrq8Po85NBQBJP+ZDUT75qZQ98IkUoBqdkExkukOU7Ts2wrw==
 
+json-query@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/json-query/-/json-query-2.2.2.tgz#b6558b8a3794ccd217926aa38024324b77b48ab1"
+  integrity sha1-tlWLijeUzNIXkmqjgCQyS3e0irE=
+
 json-schema-traverse@^0.3.0:
   version "0.3.1"
   resolved "https://registry.yarnpkg.com/json-schema-traverse/-/json-schema-traverse-0.3.1.tgz#349a6d44c53a51de89b40805c5d5e59b417d3340"
@@ -4542,6 +4557,11 @@ make-fetch-happen@^4.0.1:
     promise-retry "^1.1.1"
     socks-proxy-agent "^4.0.0"
     ssri "^6.0.0"
+
+mann-whitney-utest@^1.0.5:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/mann-whitney-utest/-/mann-whitney-utest-1.0.5.tgz#96d2cde440dba8992d8202f81d2bfb8edd5f0909"
+  integrity sha1-ltLN5EDbqJktggL4HSv7jt1fCQk=
 
 map-cache@^0.2.2:
   version "0.2.2"

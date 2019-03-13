@@ -18,7 +18,9 @@
     "path": "0.12.7",
     "tslib": "^1.9.3",
     "cli-table2": "^0.2.0",
-    "chalk": "^2.4.2"
+    "chalk": "^2.4.2",
+    "json-query": "^2.2.2",
+    "mann-whitney-utest": "^1.0.5"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.21.0",
@@ -26,6 +28,8 @@
     "@oclif/tslint": "^3.1.1",
     "@types/chalk": "^2.2.0",
     "@types/chai": "^4.1.7",
+    "@types/json-query": "^2.2.0",
+    "@types/d3-array": "^1.2.6",
     "@types/chai-fs": "^2.0.1",
     "@types/execa": "^0.9.0",
     "@types/fs-extra": "^5.0.4",

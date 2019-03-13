@@ -28,6 +28,7 @@ export interface ITBConfig {
   routes?: string[];
   appName?: string;
   browserArgs?: string[];
+  iterations?: number | string;
 }
 
 type ITBConfigKeys = keyof ITBConfig;

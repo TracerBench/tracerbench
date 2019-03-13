@@ -87,7 +87,7 @@ OPTIONS
       (required) [default: tracerbench-results] The output filename for compare results
 
   -u, --url=url
-      (required) URL to visit
+      (required) [default: http://localhost:8000/?tracing] URL to visit
 
   --browserArgs=browserArgs
       (required) [default: 
@@ -114,7 +114,7 @@ USAGE
   $ tracerbench create-archive
 
 OPTIONS
-  -u, --url=url                  (required) URL to visit
+  -u, --url=url                  (required) [default: http://localhost:8000/?tracing] URL to visit
   --archiveOutput=archiveOutput  (required) [default: ./trace.har] The output filepath/name to save the HAR to
 ```
 
@@ -182,7 +182,7 @@ USAGE
 
 OPTIONS
   -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
-  -u, --url=url                          (required) URL to visit
+  -u, --url=url                          (required) [default: http://localhost:8000/?tracing] URL to visit
 ```
 
 ## `tracerbench timeline:list`
@@ -231,7 +231,9 @@ OPTIONS
   -n, --network=none|offline|dialup|2g|edge|slow-3g|em-3g|dsl|3g|fast-3g|4g|cable|LTE|FIOS  Simulated network
                                                                                             conditions.
 
-  -u, --url=url                                                                             (required) URL to visit
+  -u, --url=url                                                                             (required) [default:
+                                                                                            http://localhost:8000/?traci
+                                                                                            ng] URL to visit
 
   --archiveOutput=archiveOutput                                                             (required) [default:
                                                                                             ./trace.har] The output
@@ -240,5 +242,8 @@ OPTIONS
 
   --cpuThrottleRate=cpuThrottleRate                                                         (required) [default: 1] CPU
                                                                                             throttle multiplier
+
+  --iterations=iterations                                                                   (required) [default: 1]
+                                                                                            Number of runs
 ```
 <!-- commandsstop -->
