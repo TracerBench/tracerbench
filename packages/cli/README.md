@@ -80,7 +80,7 @@ OPTIONS
   -e, --experiment=experiment
       The path to the experiment SHA
 
-  -n, --network=none, offline, dialup, 2g, edge, slow-3g, em-3g, dsl, 3g, fast-3g, 4g, cable, LTE, FIOS
+  -n, --network=none|offline|dialup|2g|edge|slow-3g|em-3g|dsl|3g|fast-3g|4g|cable|LTE|FIOS
       Simulated network conditions.
 
   -o, --output=output
@@ -221,22 +221,24 @@ USAGE
   $ tracerbench trace
 
 OPTIONS
-  -f, --traceJSONOutput=traceJSONOutput
-      (required) [default: ./trace.json] Path to the existing trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput                                                     (required) [default:
+                                                                                            ./trace.json] Path to the
+                                                                                            existing trace JSON file
 
-  -h, --har=har
-      Filepath to the existing HAR file
+  -h, --har=har                                                                             Filepath to the existing HAR
+                                                                                            file
 
-  -n, --network=none, offline, dialup, 2g, edge, slow-3g, em-3g, dsl, 3g, fast-3g, 4g, cable, LTE, FIOS
-      Simulated network conditions.
+  -n, --network=none|offline|dialup|2g|edge|slow-3g|em-3g|dsl|3g|fast-3g|4g|cable|LTE|FIOS  Simulated network
+                                                                                            conditions.
 
-  -u, --url=url
-      (required) URL to visit
+  -u, --url=url                                                                             (required) URL to visit
 
-  --archiveOutput=archiveOutput
-      (required) [default: ./trace.har] The output filepath/name to save the HAR to
+  --archiveOutput=archiveOutput                                                             (required) [default:
+                                                                                            ./trace.har] The output
+                                                                                            filepath/name to save the
+                                                                                            HAR to
 
-  --cpuThrottleRate=cpuThrottleRate
-      (required) [default: 1] CPU throttle multiplier
+  --cpuThrottleRate=cpuThrottleRate                                                         (required) [default: 1] CPU
+                                                                                            throttle multiplier
 ```
 <!-- commandsstop -->

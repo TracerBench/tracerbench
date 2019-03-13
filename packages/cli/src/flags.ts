@@ -13,13 +13,13 @@ export enum FidelityLookup {
 export const defaultFlagArgs: ITBConfig = {
   cpuThrottleRate: 1,
   markers: [
-    { start: 'fetchStart', label: 'jquery' },
-    { start: 'jqueryLoaded', label: 'ember' },
-    { start: 'emberLoaded', label: 'application' },
-    { start: 'startRouting', label: 'routing' },
-    { start: 'willTransition', label: 'transition' },
-    { start: 'didTransition', label: 'render' },
-    { start: 'renderEnd', label: 'afterRender' }
+    { start: 'fetchStart', label: 'fetchStart' },
+    { start: 'jqueryLoaded', label: 'jqueryLoaded' },
+    { start: 'emberLoaded', label: 'emberLoaded' },
+    { start: 'startRouting', label: 'startRouting' },
+    { start: 'willTransition', label: 'willTransition' },
+    { start: 'didTransition', label: 'didTransition' },
+    { start: 'renderEnd', label: 'renderEnd' }
   ],
   browserArgs: [
     '--headless',
@@ -140,10 +140,11 @@ export const fidelity = flags.build({
 export const markers = flags.build({
   default: () => getConfigDefault('markers', defaultFlagArgs.markers),
   description: 'DOM markers',
-  parse: (markers): IMarker[] => {
-    const markerArray = markers.split(',');
+  parse: (markers: string): IMarker[] => {
     const a: IMarker[] = [];
-    markerArray.forEach(marker => {
+    const m = markers.split(',');
+
+    m.forEach(marker => {
       a.push({
         label: marker,
         start: marker
@@ -157,7 +158,7 @@ export const network = flags.build({
   char: 'n',
   default: () => getConfigDefault('network'),
   description: 'Simulated network conditions.',
-  options: [`${Object.keys(networkConditions).join(', ')}`]
+  options: [`${Object.keys(networkConditions).join('|')}`]
 });
 
 export const output = flags.build({

@@ -13,7 +13,7 @@ export interface ITBConfig {
   fidelity?: keyof typeof FidelityLookup;
   report?: string;
   event?: string;
-  markers?: IMarker[];
+  markers?: string | IMarker[];
   network?: string;
   output?: string;
   url?: string;

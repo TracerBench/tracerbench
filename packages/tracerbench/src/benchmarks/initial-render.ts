@@ -1,11 +1,11 @@
-import { Network } from "chrome-debugging-client/dist/protocol/tot";
-import * as fs from "fs";
-import { Benchmark, IBenchmarkMeta, IBenchmarkParams } from "../benchmark";
-import { ITab } from "../tab";
+import { Network } from 'chrome-debugging-client/dist/protocol/tot';
+import * as fs from 'fs';
+import { Benchmark, IBenchmarkMeta, IBenchmarkParams } from '../benchmark';
+import { ITab } from '../tab';
 import InitialRenderMetric, {
   IInitialRenderSamples,
   IMarker
-} from "./initial-render-metric";
+} from './initial-render-metric';
 
 /* tslint:disable:no-console */
 
@@ -85,10 +85,10 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
 
     // in Canary, devtools.timeline can be removed for rail category
     let categories =
-      "blink.user_timing,blink_gc,devtools.timeline,rail,v8,v8.execute";
+      'blink.user_timing,blink_gc,devtools.timeline,rail,v8,v8.execute';
 
     if (this.params.runtimeStats) {
-      categories += ",disabled-by-default-v8.runtime_stats";
+      categories += ',disabled-by-default-v8.runtime_stats';
     }
 
     if (this.params.cpuThrottleRate !== undefined) {
@@ -104,7 +104,7 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
 
     const navigateToBlank = new Promise<void>(resolve => {
       t.onNavigate = () => {
-        if (t.frame.url === "about:blank") {
+        if (t.frame.url === 'about:blank') {
           resolve(tracing.end());
         }
       };
@@ -142,7 +142,7 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
     }
 
     if (!trace.mainProcess || !trace.mainProcess.mainThread) {
-      console.warn("unable to find main process");
+      console.warn('unable to find main process');
       return;
     }
 
@@ -151,7 +151,7 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
 
     // log progress to stderr
     // TODO make some events or logger
-    console.error(`${this.name} ${sample.duration} µs`);
+    // console.error(`${this.name} ${sample.duration} µs`);
 
     results.samples.push(sample);
   }
@@ -161,12 +161,12 @@ function validateParams(params: IInitialRenderBenchmarkParams) {
   if (!params.markers || params.markers.length === 0) {
     params.markers = [
       {
-        label: "render",
-        start: "fetchStart"
+        label: 'render',
+        start: 'fetchStart'
       }
     ];
   }
   if (!params.url) {
-    throw new Error("url is required");
+    throw new Error('url is required');
   }
 }
