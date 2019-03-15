@@ -129,15 +129,14 @@ export default class Compare extends Command {
         fs.writeFileSync(`${output}.json`, JSON.stringify(results, null, 2));
 
         interface IOutputResults {
-          experiment: IOutputResultsSet;
-          control: IOutputResultsSet;
+          [key: string]: IOutputResultsSet;
         }
 
         interface IOutputResultsSet {
           set: number[];
           duration: number[];
           js: number[];
-          phases: [IPhase[]];
+          phases: IPhase[];
         }
 
         interface IPhase {
@@ -173,36 +172,30 @@ export default class Compare extends Command {
           }
         };
 
-        getPhasesData(outputResults, markers, results);
+        getPhasesData(outputResults, markers, results, [
+          'control',
+          'experiment'
+        ]);
 
-        // what do i want
-        // i would like to pass all the markers, data and set
-        // and get back an array of numbers
         function getPhasesData(
           outputResults: IOutputResults,
           markers: any,
-          data: any
+          data: any,
+          resultIDKey: string[]
         ) {
           markers.forEach((marker: any) => {
-            outputResults['control'].phases.push(
-              jsonQuery(
-                `[*set=control][samples][**][phases][*phase=${marker.start}]`,
-                { data }
-              ).value
-            );
-            outputResults['experiment'].phases.push(
-              jsonQuery(
-                `[*set=experiment][samples][**][phases][*phase=${
-                  marker.start
-                }]`,
-                { data }
-              ).value
-            );
+            resultIDKey.forEach(k => {
+              outputResults[k].phases.push(
+                jsonQuery(
+                  `[*set=${k}][samples][**][phases][*phase=${marker.start}]`,
+                  { data }
+                ).value
+              );
+            });
           });
         }
 
-        // return a nested array for each phase
-        // [[{"phase":"fetchStart","start":0,"duration":39102},{"phase":"fetchStart","start":0,"duration":30613}]],
+        // build control & experiment seper
 
         // format output: js
         phaseTable.push([
@@ -222,14 +215,14 @@ export default class Compare extends Command {
           cNeutral(`${duration}µs`)
         ]);
 
-        outputResults.control.phases.forEach(i => {
+        outputResults.control.phases.forEach((i: any) => {
           const tableItem: any = {};
           tableItem.phase = `${i[0].phase}`;
           tableItem.control = [];
           tableItem.experiment = [];
           tableItem.status = 'Neutral';
           tableItem.delta = [];
-          i.forEach(ii => {
+          i.forEach((ii: any) => {
             tableItem.control.push(`${ii.duration}`);
             tableItem.experiment.push(`${ii.duration}`);
             tableItem.delta.push(`${ii.duration}`);
