@@ -3,12 +3,12 @@ import { networkConditions } from 'parse-profile';
 import { IMarker } from 'tracerbench';
 import { getConfigDefault, ITBConfig } from './utils';
 
-export enum FidelityLookup {
-  test = '2',
-  low = '25',
-  medium = '35',
-  high = '50'
-}
+export const fidelityLookup = {
+  test: 2,
+  low: 25,
+  medium: 35,
+  high: 50
+};
 
 export const defaultFlagArgs: ITBConfig = {
   cpuThrottleRate: 1,
@@ -141,9 +141,9 @@ export const experiment = flags.build({
 export const fidelity = flags.build({
   default: () => getConfigDefault('fidelity', defaultFlagArgs.fidelity),
   description: `Directly correlates to the number of samples per trace. High means a longer trace time.`,
-  options: ['test', 'low', 'medium', 'high'],
-  parse: (fidelity: any): number => {
-    return parseInt(FidelityLookup[fidelity], 10);
+  options: Object.keys(fidelityLookup),
+  parse: (fidelity: string): number => {
+    return parseInt((fidelityLookup as any)[fidelity], 10);
   }
 });
 

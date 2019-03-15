@@ -1,7 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { IMarker } from 'tracerbench';
-import { FidelityLookup } from './flags';
 
 export interface ITBConfig {
   archive?: string;
@@ -10,7 +9,7 @@ export interface ITBConfig {
   control?: string;
   cpuThrottleRate?: number | string;
   experiment?: string;
-  fidelity?: keyof typeof FidelityLookup;
+  fidelity?: 'test' | 'low' | 'med' | 'high';
   report?: string;
   event?: string;
   markers?: string | IMarker[];
