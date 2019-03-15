@@ -20,6 +20,23 @@ import {
   url
 } from '../flags';
 
+interface IOutputResults {
+  [key: string]: IOutputResultsSet;
+}
+
+interface IOutputResultsSet {
+  set: number[];
+  duration: number[];
+  js: number[];
+  phases: IPhase[];
+}
+
+interface IPhase {
+  phase: string;
+  start: number;
+  duration: number;
+}
+
 const jsonHelpers = {
   applySomeStats: (inputA: string, inputB: string) => {
     // do something with it
@@ -118,7 +135,7 @@ export default class Compare extends Command {
           this.error(`Could not sample from provided url: ${url}.`);
         }
 
-        const { js, duration, phases } = results[0].samples[0];
+        const { js, duration } = results[0].samples[0];
         const message = {
           output: `Success! A detailed report and JSON file are available at ${output}.json`,
           ext: `${fidelity} test samples were run and the results are significant in ${
@@ -127,23 +144,6 @@ export default class Compare extends Command {
         };
 
         fs.writeFileSync(`${output}.json`, JSON.stringify(results, null, 2));
-
-        interface IOutputResults {
-          [key: string]: IOutputResultsSet;
-        }
-
-        interface IOutputResultsSet {
-          set: number[];
-          duration: number[];
-          js: number[];
-          phases: IPhase[];
-        }
-
-        interface IPhase {
-          phase: string;
-          start: number;
-          duration: number;
-        }
 
         const outputResults: IOutputResults = {
           experiment: {
@@ -195,26 +195,25 @@ export default class Compare extends Command {
           });
         }
 
-        // build control & experiment seper
-
-        // format output: js
+        // JS OUTPUT FORMAT
         phaseTable.push([
           cPhase(`js`),
-          cNeutral(`${js}µs`),
-          cNeutral(`${js}µs`),
+          cNeutral(`${outputResults.control.js}µs`),
+          cNeutral(`${outputResults.experiment.js}µs`),
           cNeutral('Neutral'),
-          cNeutral(`${js}µs`)
+          cNeutral(`${outputResults.control.js}µs`)
         ]);
 
-        // format output: duration
+        // DURATION OUTPUT FORMAT
         phaseTable.push([
           cPhase(`duration`),
-          cNeutral(`${duration}µs`),
-          cNeutral(`${duration}µs`),
+          cNeutral(`${outputResults.control.duration}µs`),
+          cNeutral(`${outputResults.experiment.duration}µs`),
           cNeutral('Neutral'),
-          cNeutral(`${duration}µs`)
+          cNeutral(`${outputResults.control.duration}µs`)
         ]);
 
+        // PHASES OUTPUT FORMAT
         outputResults.control.phases.forEach((i: any) => {
           const tableItem: any = {};
           tableItem.phase = `${i[0].phase}`;
@@ -228,20 +227,18 @@ export default class Compare extends Command {
             tableItem.delta.push(`${ii.duration}`);
           });
           phaseTable.push([
-            // phase name
             cPhase(tableItem.phase),
-            // control duration
             cNeutral(`${tableItem.control}µs`),
-            // experiment duration
             cNeutral(`${tableItem.experiment}µs`),
-            // qualitative status based on the p-value
             cNeutral(tableItem.status),
-            // quantitative delta based on the p-value
             cNeutral(`${tableItem.delta}µs`)
           ]);
         });
 
+        // LOG JS, DURATION & PHASES AS SINGLE TABLE
         this.log(`\n\n${phaseTable.toString()}`);
+
+        // LOG MESSAGE
         this.log(cNeutral(`\n\n${message.output}\n\n${message.ext}\n\n`));
       })
       .catch(err => {
