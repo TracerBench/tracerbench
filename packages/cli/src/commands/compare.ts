@@ -1,9 +1,8 @@
 import * as fs from 'fs-extra';
 import * as Table from 'cli-table2';
-import * as path from 'path';
 import * as jsonQuery from 'json-query';
-// import * as mannWhitneyUtest from 'mann-whitney-utest';
 
+import { StatDisplay } from '../stats';
 import { fidelityLookup } from '../flags';
 import chalk from 'chalk';
 import { Command } from '@oclif/command';
@@ -20,29 +19,7 @@ import {
   url
 } from '../flags';
 
-interface IOutputResults {
-  [key: string]: IOutputResultsSet;
-}
-
-interface IOutputResultsSet {
-  set: number[];
-  duration: number[];
-  js: number[];
-  phases: IPhase[];
-}
-
-interface IPhase {
-  phase: string;
-  start: number;
-  duration: number;
-}
-
-const jsonHelpers = {
-  applySomeStats: (inputA: string, inputB: string) => {
-    // do something with it
-    return inputA && inputB;
-  }
-};
+const displayedStats: StatDisplay[] = [];
 
 const cHead = chalk.rgb(255, 255, 255);
 const cRegress = chalk.rgb(239, 100, 107);
@@ -93,10 +70,10 @@ export default class Compare extends Command {
       colWidths: [30, 20, 20, 20, 20],
       head: [
         cHead('Phase'),
-        cHead('Control'),
-        cHead('Experiment'),
-        cHead('Status'),
-        cHead('Delta')
+        cHead('Control p50'),
+        cHead('Experiment p50'),
+        cHead('Delta p50'),
+        cHead('Significant')
       ],
       style: {
         head: [],
@@ -135,7 +112,6 @@ export default class Compare extends Command {
           this.error(`Could not sample from provided url: ${url}.`);
         }
 
-        const { js, duration } = results[0].samples[0];
         const message = {
           output: `Success! A detailed report and JSON file are available at ${output}.json`,
           ext: `${fidelity} test samples were run and the results are significant in ${
@@ -145,93 +121,45 @@ export default class Compare extends Command {
 
         fs.writeFileSync(`${output}.json`, JSON.stringify(results, null, 2));
 
-        const outputResults: IOutputResults = {
-          experiment: {
-            set: jsonQuery('[*set=experiment]', {
+        function getSample(id: string) {
+          const o: any = {
+            control: jsonQuery(`[*set=control][samples][**][*${id}]`, {
               data: results
             }).value,
-            duration: jsonQuery('[*set=experiment][samples][**][*duration]', {
+            experiment: jsonQuery(`[*set=experiment][samples][**][*${id}]`, {
               data: results
             }).value,
-            js: jsonQuery('[*set=experiment][samples][**][*js]', {
-              data: results
-            }).value,
-            phases: []
-          },
-          control: {
-            set: jsonQuery('[*set=control]', {
-              data: results
-            }).value,
-            duration: jsonQuery('[*set=control][samples][**][*duration]', {
-              data: results
-            }).value,
-            js: jsonQuery('[*set=control][samples][**][*js]', {
-              data: results
-            }).value,
-            phases: []
-          }
-        };
-
-        getPhasesData(outputResults, markers, results, [
-          'control',
-          'experiment'
-        ]);
-
-        function getPhasesData(
-          outputResults: IOutputResults,
-          markers: any,
-          data: any,
-          resultIDKey: string[]
-        ) {
-          markers.forEach((marker: any) => {
-            resultIDKey.forEach(k => {
-              outputResults[k].phases.push(
-                jsonQuery(
-                  `[*set=${k}][samples][**][phases][*phase=${marker.start}]`,
-                  { data }
-                ).value
-              );
-            });
-          });
+            name: id
+          };
+          displayedStats.push(new StatDisplay(o));
         }
 
-        // JS OUTPUT FORMAT
-        phaseTable.push([
-          cPhase(`js`),
-          cNeutral(`${outputResults.control.js}µs`),
-          cNeutral(`${outputResults.experiment.js}µs`),
-          cNeutral('Neutral'),
-          cNeutral(`${outputResults.control.js}µs`)
-        ]);
+        getSample('duration');
+        getSample('js');
 
-        // DURATION OUTPUT FORMAT
-        phaseTable.push([
-          cPhase(`duration`),
-          cNeutral(`${outputResults.control.duration}µs`),
-          cNeutral(`${outputResults.experiment.duration}µs`),
-          cNeutral('Neutral'),
-          cNeutral(`${outputResults.control.duration}µs`)
-        ]);
+        markers.forEach(marker => {
+          const o: any = {
+            control: jsonQuery(
+              `[*set=control][samples][**][phases][*phase=${marker.start}]`,
+              { data: results }
+            ).value,
+            experiment: jsonQuery(
+              `[*set=experiment][samples][**][phases][*phase=${marker.start}]`,
+              { data: results }
+            ).value,
+            name: marker
+          };
+          displayedStats.push(new StatDisplay(o));
+        });
 
-        // PHASES OUTPUT FORMAT
-        outputResults.control.phases.forEach((i: any) => {
-          const tableItem: any = {};
-          tableItem.phase = `${i[0].phase}`;
-          tableItem.control = [];
-          tableItem.experiment = [];
-          tableItem.status = 'Neutral';
-          tableItem.delta = [];
-          i.forEach((ii: any) => {
-            tableItem.control.push(`${ii.duration}`);
-            tableItem.experiment.push(`${ii.duration}`);
-            tableItem.delta.push(`${ii.duration}`);
-          });
+        // ITERATE OVER STAT DISPLAY ARRAY AND OUTPUT
+        displayedStats.forEach(stat => {
           phaseTable.push([
-            cPhase(tableItem.phase),
-            cNeutral(`${tableItem.control}µs`),
-            cNeutral(`${tableItem.experiment}µs`),
-            cNeutral(tableItem.status),
-            cNeutral(`${tableItem.delta}µs`)
+            cPhase(`${stat.name}`),
+            cNeutral(`${stat.controlQ}`),
+            cNeutral(`${stat.experimentQ}`),
+            cNeutral(`${stat.deltaQ}`),
+            cNeutral(`${stat.isSignificant}`)
           ]);
         });
 
