@@ -1,3 +1,6 @@
+// all props and credit to:
+// npm package "mann-whitney-utest"
+
 const kk = 'val';
 
 const rank = (list: any) => {
