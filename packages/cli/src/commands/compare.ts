@@ -4,7 +4,6 @@ import * as jsonQuery from 'json-query';
 
 import { StatDisplay, IStatDisplayOptions } from '../stats';
 import { fidelityLookup } from '../flags';
-import chalk from 'chalk';
 import { Command } from '@oclif/command';
 import { InitialRenderBenchmark, Runner } from 'tracerbench';
 import {
@@ -18,15 +17,9 @@ import {
   output,
   url
 } from '../flags';
-import { json } from 'd3';
+import { chalkScheme } from '../utils';
 
 const displayedStats: StatDisplay[] = [];
-
-const cHead = chalk.rgb(255, 255, 255);
-const cRegress = chalk.rgb(239, 100, 107);
-const cNeutral = chalk.rgb(165, 173, 186);
-const cImprv = chalk.rgb(135, 197, 113);
-const cPhase = chalk.rgb(165, 173, 186);
 
 export default class Compare extends Command {
   public static description =
@@ -70,11 +63,11 @@ export default class Compare extends Command {
     const phaseTableConfig: Table.TableConstructorOptions = {
       colWidths: [30, 20, 20, 20, 20],
       head: [
-        cHead('Phase'),
-        cHead('Control p50'),
-        cHead('Experiment p50'),
-        cHead('Delta p50'),
-        cHead('Significant')
+        chalkScheme.header('Phase'),
+        chalkScheme.header('Control p50'),
+        chalkScheme.header('Experiment p50'),
+        chalkScheme.header('Delta p50'),
+        chalkScheme.header('Significance')
       ],
       style: {
         head: [],
@@ -122,9 +115,6 @@ export default class Compare extends Command {
 
         fs.writeFileSync(`${output}.json`, JSON.stringify(results, null, 2));
 
-        displayedStats.push(new StatDisplay(getQueryData('duration')));
-        displayedStats.push(new StatDisplay(getQueryData('js')));
-
         function getQueryData(id: string, marker?: any): IStatDisplayOptions {
           const query = !marker
             ? `[samples][**][*${id}]`
@@ -141,6 +131,9 @@ export default class Compare extends Command {
           };
         }
 
+        displayedStats.push(new StatDisplay(getQueryData('duration')));
+        displayedStats.push(new StatDisplay(getQueryData('js')));
+
         // TODO this is coming off a default set of markers
         // this might not be ideal
         markers.forEach(marker => {
@@ -150,14 +143,14 @@ export default class Compare extends Command {
           displayedStats.push(new StatDisplay(o));
         });
 
-        // ITERATE OVER STAT DISPLAY ARRAY AND OUTPUT
+        // ITERATE OVER ARRAY OF STATDISPLAY AND OUTPUT
         displayedStats.forEach(stat => {
           phaseTable.push([
-            cPhase(`${stat.name}`),
-            cNeutral(`${stat.controlQ}`),
-            cNeutral(`${stat.experimentQ}`),
-            cNeutral(`${stat.deltaQ}`),
-            cNeutral(`${stat.isSignificant}`)
+            chalkScheme.phase(`${stat.name}`),
+            chalkScheme.neutral(`${stat.controlQ}μs`),
+            chalkScheme.neutral(`${stat.experimentQ}μs`),
+            chalkScheme.neutral(`${stat.deltaQ}μs`),
+            chalkScheme.neutral(`${stat.significance}`)
           ]);
         });
 
@@ -165,7 +158,9 @@ export default class Compare extends Command {
         this.log(`\n\n${phaseTable.toString()}`);
 
         // LOG MESSAGE
-        this.log(cNeutral(`\n\n${message.output}\n\n${message.ext}\n\n`));
+        this.log(
+          chalkScheme.neutral(`\n\n${message.output}\n\n${message.ext}\n\n`)
+        );
       })
       .catch(err => {
         this.error(err);
