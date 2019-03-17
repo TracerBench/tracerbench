@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as Table from 'cli-table2';
 import * as jsonQuery from 'json-query';
 
-import { StatDisplay } from '../stats';
+import { StatDisplay, IStatDisplayOptions } from '../stats';
 import { fidelityLookup } from '../flags';
 import chalk from 'chalk';
 import { Command } from '@oclif/command';
@@ -18,6 +18,7 @@ import {
   output,
   url
 } from '../flags';
+import { json } from 'd3';
 
 const displayedStats: StatDisplay[] = [];
 
@@ -121,34 +122,31 @@ export default class Compare extends Command {
 
         fs.writeFileSync(`${output}.json`, JSON.stringify(results, null, 2));
 
-        function getSample(id: string) {
-          const o: any = {
-            control: jsonQuery(`[*set=control][samples][**][*${id}]`, {
+        displayedStats.push(new StatDisplay(getQueryData('duration')));
+        displayedStats.push(new StatDisplay(getQueryData('js')));
+
+        function getQueryData(id: string, marker?: any): IStatDisplayOptions {
+          const query = !marker
+            ? `[samples][**][*${id}]`
+            : `[samples][**][${id}][*phase=${marker.start}]`;
+          const name = !marker ? id : marker.start;
+          return {
+            control: jsonQuery(`[*set=control]${query}`, {
               data: results
             }).value,
-            experiment: jsonQuery(`[*set=experiment][samples][**][*${id}]`, {
+            experiment: jsonQuery(`[*set=experiment]${query}`, {
               data: results
             }).value,
-            name: id
+            name
           };
-          displayedStats.push(new StatDisplay(o));
         }
 
-        getSample('duration');
-        getSample('js');
-
+        // TODO this is coming off a default set of markers
+        // this might not be ideal
         markers.forEach(marker => {
-          const o: any = {
-            control: jsonQuery(
-              `[*set=control][samples][**][phases][*phase=${marker.start}]`,
-              { data: results }
-            ).value,
-            experiment: jsonQuery(
-              `[*set=experiment][samples][**][phases][*phase=${marker.start}]`,
-              { data: results }
-            ).value,
-            name: marker
-          };
+          const o = getQueryData('phases', marker);
+          o.control = jsonQuery(`duration`, { data: o.control }).value;
+          o.experiment = jsonQuery(`duration`, { data: o.experiment }).value;
           displayedStats.push(new StatDisplay(o));
         });
 
