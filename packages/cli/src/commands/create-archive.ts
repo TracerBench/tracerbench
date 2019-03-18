@@ -3,7 +3,7 @@ import { harTrace } from 'parse-profile';
 import { archiveOutput, url } from '../flags';
 
 export default class CreateArchive extends Command {
-  public static description = 'Creates an automated archive file from a URL.';
+  public static description = 'Creates an automated HAR file from a URL.';
   public static flags = {
     archiveOutput: archiveOutput({ required: true }),
     url: url({ required: true })
