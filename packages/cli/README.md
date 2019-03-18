@@ -31,7 +31,7 @@ USAGE
 
 # Optional Config
 
-The optional existance of a "tbconfig.json" file in the project root will be consumed by TracerBench and specifies default command flag options. Please not this file is optional, however is strongly recommended as this drastically speeds up running TracerBench tests succinctly. [Typings]("https://github.com/TracerBench/tracerbench/blob/master/packages/cli/src/utils.ts#L7-L33") and Example:
+The optional existance of a "tbconfig.json" file in the project root will be consumed by TracerBench and specifies default command flag options. Please note this file is optional, however is strongly recommended as this drastically speeds up running TracerBench tests succinctly. [Typings]("https://github.com/TracerBench/tracerbench/blob/master/packages/cli/src/utils.ts#L7-L33") and Example:
 
 ```json
 {
