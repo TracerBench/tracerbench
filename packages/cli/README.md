@@ -1,4 +1,4 @@
-#### !!! This is unstable, incomplete, work-in-progress software in a constant state of change. You have been warned!!! \*\*
+#### !!! This is unstable, incomplete, work-in-progress software in a constant state of change. You have been warned!!!
 
 ## TracerBench-CLI: Automated Chrome Tracing For Benchmarking
 
