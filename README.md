@@ -213,4 +213,4 @@ The typings for "trace-results.json" is as follows:
 
 Assuming you have the output results ("trace-results.json") from your TracerBench run, its time to perform statistical analysis on the [Trace-Results](#Trace-Results) JSON file.
 
-TracerBench does not currently expose an API to manually handle stat-analysis, however an industry standard is leveraging [SciPy](http://www.numpy.org/).
+TracerBench does not currently expose an API to manually handle stat-analysis, however an industry standard is leveraging [SciPy](http://www.scipy.org/).
