@@ -127,7 +127,8 @@ const samplesCount = 40;
 // the markers leveraged tuning your web application. additionally this assumes you have tuned 
 // your web application with the following marker "renderEnd" (see "Instrument your web application" above)
 const markers = [{ start: 'renderEnd', label: 'renderEnd' }];
-// the interface for optional chrome browser options is robust. typings available here: https://github.com/TracerBench/chrome-debugging-client/blob/ce0cdf3341fbbff2164a1d46bac16885d39deb15/lib/types.ts#L114-L128
+// the interface for optional chrome browser options is robust. typings available here:
+// https://github.com/TracerBench/chrome-debugging-client/blob/ce0cdf3341fbbff2164a1d46bac16885d39deb15/lib/types.ts#L114-L128
 const browser = {
   type: 'canary',
   additionalArguments: [
