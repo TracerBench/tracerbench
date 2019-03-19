@@ -54,7 +54,7 @@ $ tracerbench create-archive --url http://localhost:8000
 
 2. Now have TracerBench record a Trace of that HAR:
 
-```zsh
+```console
 $ tracerbench trace --url http://localhost:8000 --har ./trace.har
 ...
 
@@ -69,7 +69,7 @@ $ tracerbench trace --url http://localhost:8000 --har ./trace.har
 
 3. Now that you have "trace.har" and "trace.json" files you can benchmark for the list of timings:
 
-```s
+```console
 $ tracerbench timeline:show --urlOrFrame http://localhost:8000
 ...
 
