@@ -68,6 +68,7 @@ The optional existance of a "tbconfig.json" file in the project root will be con
 # FAQ
 
 _What exactly is contained within the `tracerbench compare` "tracerbench-results.json"?_
+
 [Trace-Results]("https://github.com/TracerBench/tracerbench/blob/master/README.md#trace-results")
 
 _What exactly is a HAR file?_  
