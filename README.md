@@ -16,7 +16,7 @@ When comparing TracerBench to [Lighthouse](https://github.com/GoogleChrome/light
 
 # CLI
 
-The recommended way of consuming TracerBench is via the (TracerBench-CLI)[https://github.com/TracerBench/tracerbench/tree/master/packages/cli]
+The recommended way of consuming TracerBench is via the [TracerBench-CLI](https://github.com/TracerBench/tracerbench/tree/master/packages/cli)
 
 # Ambient Noise
 
