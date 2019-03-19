@@ -89,7 +89,7 @@ $ tracerbench timeline:show --urlOrFrame http://localhost:8000
 ✔ Timings:     410.85 ms firstLayout
 ```
 
-# Manual Workflow
+# TracerBench Compare: Manual Workflow
 
 ### Instrument your web application
 
@@ -115,15 +115,17 @@ In the example above we would mark right after we render the app and then call a
 
 ### Init Benchmark & Runner
 
-The most common and recommended consumption of TracerBench is via the [TracerBench-CLI](https://github.com/TracerBench/tracerbench/tree/master/packages/cli). Optionally, TracerBench does however expose an API directly. The most basic consumption of this is via the `InitialRenderBenchmark` and `Runner` with the option to leverage[HAR-Remix](https://github.com/TracerBench/har-remix) to serve recorded HARs.
+The most common and recommended consumption of TracerBench is via the [TracerBench-CLI](https://github.com/TracerBench/tracerbench/tree/master/packages/cli). Optionally, TracerBench does however expose an API directly. The most basic consumption of this is via the `InitialRenderBenchmark` and `Runner` with the option to leverage [HAR-Remix](https://github.com/TracerBench/har-remix) to serve recorded HARs.
 
 ```js
 import * as fs from 'fs-extra';
 import { InitialRenderBenchmark, Runner } from 'tracerbench';
 
-// the number of samples TracerBench will run. Higher sample count = more accurate. However the duration of the test will increase. The recommendation is somewhere between 30-60 samples.
+// the number of samples TracerBench will run. Higher sample count = more accurate. 
+// However the duration of the test will increase. The recommendation is somewhere between 30-60 samples.
 const samplesCount = 40;
-// the markers leveraged tuning your web application. additionally this assumes you have tuned your web application with the following marker "renderEnd" (see "Instrument your web application" above)
+// the markers leveraged tuning your web application. additionally this assumes you have tuned 
+// your web application with the following marker "renderEnd" (see "Instrument your web application" above)
 const markers = [{ start: 'renderEnd', label: 'renderEnd' }];
 // the interface for optional chrome browser options is robust. typings available here: https://github.com/TracerBench/chrome-debugging-client/blob/ce0cdf3341fbbff2164a1d46bac16885d39deb15/lib/types.ts#L114-L128
 const browser = {
@@ -178,7 +180,7 @@ runner
   });
 ```
 
-# Trace-Results
+### Trace-Results
 
 The typings for "trace-results.json" is as follows:
 
@@ -206,7 +208,7 @@ The typings for "trace-results.json" is as follows:
 }]
 ```
 
-# Statistical Analysis
+### Statistical Analysis
 
 Assuming you have the output results ("trace-results.json") from your TracerBench run, its time to perform statistical analysis on the [Trace-Results](#Trace-Results) JSON file.
 
