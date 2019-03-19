@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/TracerBench/tracerbench.svg?branch=master)](https://travis-ci.org/TracerBench/tracerbench)
 
-TracerBench: a web application benchmarking tool providing clear, usable insights for performance regressions with continuous integration hooks. This includes Response, Animation, Idle, and Load analysis, among others by automating chrome traces, controlling that each sample is independent and extracting metrics from them. TracerBench is focused on getting a low variance for a metric across many samples versus getting a hard to replicate performance report. At its core, TracerBench is framework agnostic, though it will have tight Ember.js integrations out-of-the-box.
+TracerBench: a web application benchmarking tool providing clear, usable insights for performance regressions with continuous integration hooks. This includes Response, Animation, Idle, and Load analysis, among others by automating chrome traces, controlling that each sample is independent and extracting metrics from them. TracerBench is focused on getting a low variance for a metric across many samples versus getting a hard to replicate performance report.
 
 # Motivation
 
