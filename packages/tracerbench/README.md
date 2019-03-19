@@ -10,7 +10,7 @@ There’s currently a gap in performance analysis tooling for web applications, 
 
 A single trace varies far to much to detect regressions in small changes to an app unless the effect size is very large. Additionally, most statistical tests assume sample independence which given caching like Chrome's v8 caching is quite difficult to meet.
 
-TracerBench has greatly inspired by the Chromium benchmark tool [Telemetry](https://github.com/catapult-project/catapult/blob/master/telemetry/docs/run_benchmarks_locally.md).
+TracerBench has been greatly inspired by the Chromium benchmark tool [Telemetry](https://github.com/catapult-project/catapult/blob/master/telemetry/docs/run_benchmarks_locally.md).
 
 When comparing TracerBench to [Lighthouse](https://github.com/GoogleChrome/lighthouse). The primary difference is TracerBench is focused on getting a low variance for a metric across many samples versus getting a hard to replicate performance report. Lighthouse enables many "disabled-by-default" tracing categories while TracerBench can be instrumented without any "disabled-by-default" and with minimal impact on your application; as such TracerBench instrumentation can be "check-in" and left in your application without worry of negative performance impacts.
 
