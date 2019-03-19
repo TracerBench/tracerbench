@@ -42,7 +42,7 @@ Assuming the TracerBench-CLI is globally [installed](https://github.com/TracerBe
 
 1. Start by having TracerBench record a HAR:
 
-```s
+```console
 $ tracerbench create-archive --url http://localhost:8000
 ...
 
@@ -54,7 +54,7 @@ $ tracerbench create-archive --url http://localhost:8000
 
 2. Now have TracerBench record a Trace of that HAR:
 
-```s
+```zsh
 $ tracerbench trace --url http://localhost:8000 --har ./trace.har
 ...
 
