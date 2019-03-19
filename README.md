@@ -6,9 +6,7 @@ TracerBench is a benchmarking tool for benchmarking web applications by automati
 
 One trace varies to much to detect regressions in small changes to an app unless the effect size is very large. Additionally, most statistical tests assume sample independence which given caching like Chrome's v8 caching is quite difficult to meet.
 
-It is similar to [Telemetry](https://github.com/catapult-project/catapult/blob/master/telemetry/docs/run_benchmarks_locally.md) which is used to benchmark chromium.
-
-It is similar to [Lighthouse](https://github.com/GoogleChrome/lighthouse) which also automates tracing then extracting metrics. TracerBench is focused on getting a low variance for a metric across many samples versus getting a hard to replicate performance report. Lighthouse enables many disabled-by-default tracing categories and tracerbench can be run without any disabled-by-default and minimal impact on the application.
+TracerBench is similar to [Telemetry](https://github.com/catapult-project/catapult/blob/master/telemetry/docs/run_benchmarks_locally.md) which is used to benchmark chromium and [Lighthouse](https://github.com/GoogleChrome/lighthouse) which also automates tracing then extracting metrics. TracerBench is focused on getting a low variance for a metric across many samples versus getting a hard to replicate performance report. Lighthouse enables many disabled-by-default tracing categories and tracerbench can be run without any disabled-by-default and minimal impact on the application.
 
 ## Basic Usage
 
