@@ -7,16 +7,18 @@
 [![License](https://img.shields.io/npm/l/tracerbench-cli.svg)](https://github.com/TracerBench/tracerbench/blob/master/package.json)
 
 <!-- toc -->
-* [Usage](#usage)
-* [Optional Config](#optional-config)
-* [FAQ](#faq)
-* [Commands](#commands)
-<!-- tocstop -->
+
+- [Usage](#usage)
+- [Optional Config](#optional-config)
+- [FAQ](#faq)
+- [Commands](#commands)
+  <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-```sh-session
+
+```s
 $ npm install -g tracerbench-cli
 $ tracerbench COMMAND
 running command...
@@ -27,6 +29,7 @@ USAGE
   $ tracerbench COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Optional Config
@@ -63,6 +66,9 @@ The optional existance of a "tbconfig.json" file in the project root will be con
 ```
 
 # FAQ
+
+_What exactly is contained within the `tracerbench compare` "tracerbench-results.json"?_
+(Trace-Results)["https://github.com/TracerBench/tracerbench/blob/master/README.md#trace-results"]
 
 _What exactly is a HAR file?_  
 HAR (HTTP Archive) is a file format used by several HTTP session tools to export the captured data. The format is basically a JSON object with a particular field distribution. In any case, please note that not all the fields are mandatory, and many times some information won't be saved to the file ["Additional insight on Google's HAR Analyzer"](https://toolbox.googleapps.com/apps/har_analyzer/)
@@ -114,17 +120,18 @@ s?: TRACE_EVENT_SCOPE;
 # Commands
 
 <!-- commands -->
-* [`tracerbench analyze`](#tracerbench-analyze)
-* [`tracerbench compare`](#tracerbench-compare)
-* [`tracerbench create-archive`](#tracerbench-create-archive)
-* [`tracerbench css-parse`](#tracerbench-css-parse)
-* [`tracerbench help [COMMAND]`](#tracerbench-help-command)
-* [`tracerbench js-eval-time`](#tracerbench-js-eval-time)
-* [`tracerbench list-functions`](#tracerbench-list-functions)
-* [`tracerbench timeline:find`](#tracerbench-timelinefind)
-* [`tracerbench timeline:list`](#tracerbench-timelinelist)
-* [`tracerbench timeline:show`](#tracerbench-timelineshow)
-* [`tracerbench trace`](#tracerbench-trace)
+
+- [`tracerbench analyze`](#tracerbench-analyze)
+- [`tracerbench compare`](#tracerbench-compare)
+- [`tracerbench create-archive`](#tracerbench-create-archive)
+- [`tracerbench css-parse`](#tracerbench-css-parse)
+- [`tracerbench help [COMMAND]`](#tracerbench-help-command)
+- [`tracerbench js-eval-time`](#tracerbench-js-eval-time)
+- [`tracerbench list-functions`](#tracerbench-list-functions)
+- [`tracerbench timeline:find`](#tracerbench-timelinefind)
+- [`tracerbench timeline:list`](#tracerbench-timelinelist)
+- [`tracerbench timeline:show`](#tracerbench-timelineshow)
+- [`tracerbench trace`](#tracerbench-trace)
 
 ## `tracerbench analyze`
 
@@ -170,7 +177,7 @@ OPTIONS
       (required) [default: http://localhost:8000/?tracing] URL to visit
 
   --browserArgs=browserArgs
-      (required) [default: 
+      (required) [default:
       --headless,--disable-gpu,--hide-scrollbars,--mute-audio,--v8-cache-options=none,--disable-cache,--disable-v8-idle-ta
       sks,--crash-dumps-dir=./tmp] (Default Recommended) Browser additional options for the TracerBench render benchmark
 
@@ -181,7 +188,7 @@ OPTIONS
       (required) [default: low] Directly correlates to the number of samples per trace. High means a longer trace time.
 
   --markers=markers
-      (required) [default: [object Object],[object Object],[object Object],[object Object],[object Object],[object 
+      (required) [default: [object Object],[object Object],[object Object],[object Object],[object Object],[object
       Object],[object Object]] DOM markers
 ```
 
@@ -326,4 +333,5 @@ OPTIONS
   --iterations=iterations                                                                   (required) [default: 1]
                                                                                             Number of runs
 ```
+
 <!-- commandsstop -->

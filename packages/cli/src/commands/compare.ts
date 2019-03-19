@@ -120,7 +120,7 @@ export default class Compare extends Command {
     const runner = new Runner([benchmarks.control, benchmarks.experiment]);
     await runner
       .run(fidelity)
-      .then(results => {
+      .then((results: any) => {
         if (!results[0].samples[0]) {
           this.error(`Could not sample from provided url: ${url}.`);
         }
@@ -208,7 +208,7 @@ export default class Compare extends Command {
           )
         );
       })
-      .catch(err => {
+      .catch((err: any) => {
         this.error(err);
       });
   }
