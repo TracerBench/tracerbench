@@ -67,8 +67,8 @@ The optional existance of a "tbconfig.json" file in the project root will be con
 
 # FAQ
 
-_What exactly is contained within the `tracerbench compare` "tracerbench-results.json"?_
-An overview of "tracerbench-results.json" is available [here]("https://github.com/TracerBench/tracerbench/blob/master/README.md#trace-results")
+_What exactly is contained within the `tracerbench compare` "tracerbench-results.json"?_  
+An overview of "tracerbench-results.json" is available [here](https://github.com/TracerBench/tracerbench/blob/master/README.md#trace-results)
 
 _What exactly is a HAR file?_  
 HAR (HTTP Archive) is a file format used by several HTTP session tools to export the captured data. The format is basically a JSON object with a particular field distribution. In any case, please note that not all the fields are mandatory, and many times some information won't be saved to the file ["Additional insight on Google's HAR Analyzer"](https://toolbox.googleapps.com/apps/har_analyzer/)
