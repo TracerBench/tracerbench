@@ -18,7 +18,6 @@
     "inquirer": "^6.2.2",
     "json-query": "^2.2.2",
     "listr": "^0.14.3",
-    "parse-profile": "^1.0.0-alpha.9",
     "path": "0.12.7",
     "tracerbench": "^1.0.0-alpha.9",
     "tslib": "^1.9.3"

@@ -1,7 +1,7 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
 import * as Listr from 'listr';
-import { loadTrace } from 'parse-profile';
+import { loadTrace } from 'tracerbench';
 import { traceJSONOutput } from '../flags';
 
 export default class JSEvalTime extends Command {

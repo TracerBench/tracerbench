@@ -1,5 +1,5 @@
 import { Command } from '@oclif/command';
-import { harTrace } from 'parse-profile';
+import { harTrace } from 'tracerbench';
 import { archiveOutput, url } from '../flags';
 
 export default class CreateArchive extends Command {

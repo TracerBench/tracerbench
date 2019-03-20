@@ -6,6 +6,7 @@ export interface ITrace {
 }
 
 export function loadTrace(events: ITraceEvent[] | ITrace) {
+  console.error('TRACE LOADED');
   const trace = new Trace();
   if (!Array.isArray(events)) {
     events = events.traceEvents;
