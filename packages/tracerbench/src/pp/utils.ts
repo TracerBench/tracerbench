@@ -3,8 +3,8 @@
 import { HierarchyNode } from 'd3-hierarchy';
 import * as fs from 'fs';
 import * as path from 'path';
-
-import { ICpuProfileNode, Trace, isRenderNode } from '../trace';
+import { isRenderNode } from './render-events';
+import { ICpuProfileNode, Trace } from '../trace';
 import { ModuleMatcher } from './module_matcher';
 
 export interface ICategories {

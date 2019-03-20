@@ -15,3 +15,6 @@ export {
   categorizeAggregations,
   verifyMethods
 } from './aggregator';
+export { default as CpuProfile } from './cpu-profile';
+
+export * from './render-events';

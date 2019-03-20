@@ -1,9 +1,8 @@
 import binsearch from 'array-binsearch';
+import { CpuProfile, isRenderEnd, isRenderStart } from '../pp';
 import { Bounds } from './bounds';
 import { Process } from './process';
 import Thread from './thread';
-import CpuProfile from './cpu-profile';
-import { isRenderEnd, isRenderStart } from './render-events';
 
 import {
   ICpuProfile,
@@ -176,6 +175,7 @@ export default class Trace {
 
       process.addEvent(event);
 
+      // TODO make this conditional
       this.cpuProfileBuildModel(event);
     }
   }

@@ -7,7 +7,7 @@ import {
   TRACE_EVENT_PHASE_COMPLETE,
   TRACE_EVENT_PHASE_NESTABLE_ASYNC_END,
   TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN
-} from './trace_event';
+} from '../trace';
 
 export function addRenderNodes(
   hierarchy: HierarchyNode<ICpuProfileNode>,

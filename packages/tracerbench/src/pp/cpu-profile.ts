@@ -10,7 +10,7 @@ import {
   TRACE_EVENT_NAME,
   TRACE_EVENT_PHASE_BEGIN,
   TRACE_EVENT_PHASE_END
-} from './trace_event';
+} from '../trace';
 
 export default class CpuProfile {
   public profile: ICpuProfile;

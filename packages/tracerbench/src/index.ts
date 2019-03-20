@@ -30,12 +30,10 @@ export {
   ICpuProfileNode,
   ITraceEvent,
   Trace,
-  isRenderNode,
   TRACE_EVENT_PHASE_COMPLETE,
   TRACE_EVENT_PHASE_BEGIN,
   TRACE_EVENT_PHASE_END,
   TRACE_EVENT_NAME,
-  CpuProfile,
   ICpuProfile,
   FUNCTION_NAME
 } from './trace';
@@ -60,5 +58,7 @@ export {
   findMangledDefine,
   getModuleIndex,
   ParsedFile,
-  methodsFromCategories
+  methodsFromCategories,
+  CpuProfile,
+  isRenderNode
 } from './pp';
