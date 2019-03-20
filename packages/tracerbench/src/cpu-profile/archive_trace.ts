@@ -7,29 +7,29 @@ import * as fs from 'fs';
 import { createClient, setCookies } from './trace-utils';
 
 // Represents a subset of a HAR
-export interface Archive {
-  log: Log;
+export interface IArchive {
+  log: ILog;
 }
 
-export interface Log {
-  entries: Entry[];
+export interface ILog {
+  entries: IEntry[];
 }
 
-export interface Request {
+export interface IRequest {
   url: string;
 }
 
-export interface Response {
-  content: Content;
+export interface IResponse {
+  content: IContent;
 }
 
-export interface Content {
+export interface IContent {
   text: string;
 }
 
-export interface Entry {
-  request: Request;
-  response: Response;
+export interface IEntry {
+  request: IRequest;
+  response: IResponse;
 }
 
 export async function harTrace(
@@ -43,9 +43,9 @@ export async function harTrace(
     const network = new Network(client);
     const cookiesPath = './cookies.json';
 
-    let requestIds: string[] = [];
-    let responses: Network.Response[] = [];
-    let urls = [url];
+    const requestIds: string[] = [];
+    const responses: Network.Response[] = [];
+    const urls = [url];
 
     network.responseReceived = ({ requestId, response }) => {
       if (
@@ -58,7 +58,7 @@ export async function harTrace(
       }
     };
 
-    let archive: Archive = {
+    const archive: IArchive = {
       log: {
         entries: []
       }
@@ -85,11 +85,11 @@ export async function harTrace(
     await pageLoad;
 
     for (let i = 0; i < requestIds.length; i++) {
-      let requestId = requestIds[i];
-      let _response = responses[i];
-      let responseBody = await network.getResponseBody({ requestId });
-      let entry: Entry = {
-        request: { url: _response.url },
+      const requestId = requestIds[i];
+      const response = responses[i];
+      const responseBody = await network.getResponseBody({ requestId });
+      const entry: IEntry = {
+        request: { url: response.url },
         response: { content: { text: responseBody.body } }
       };
       archive.log.entries.push(entry);

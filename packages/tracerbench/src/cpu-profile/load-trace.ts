@@ -1,4 +1,4 @@
-import { ITraceEvent, Trace } from '../../trace';
+import { ITraceEvent, Trace } from '../trace';
 
 export interface ITrace {
   metadata: {};

@@ -2,16 +2,17 @@
 
 import { expect } from 'chai';
 import 'mocha';
-import { TRACE_EVENT_NAME, CpuProfile } from 'tracerbench';
 import {
+  TRACE_EVENT_NAME,
+  CpuProfile,
   aggregate,
-  Aggregations,
+  IAggregations,
   categorizeAggregations,
-  verifyMethods
-} from '../src/cli/aggregator';
-import { Archive } from '../src/cli/archive_trace';
-import { ModuleMatcher } from '../src/cli/module_matcher';
-import { addRemainingModules } from '../src/cli/utils';
+  verifyMethods,
+  IArchive,
+  ModuleMatcher,
+  addRemainingModules
+} from 'tracerbench';
 import {
   ArchiveGenerator,
   LocatorGenerator,
@@ -19,7 +20,7 @@ import {
 } from './generators';
 
 describe('aggregate', () => {
-  let archive: Archive;
+  let archive: IArchive;
   beforeEach(() => {
     let content = `
       define("module/1",["exports"],function(e) {
@@ -388,8 +389,8 @@ describe('aggregate', () => {
 });
 
 describe('categorizeAggregations', () => {
-  let aggregations: Aggregations;
-  let archive: Archive;
+  let aggregations: IAggregations;
+  let archive: IArchive;
   beforeEach(() => {
     archive = new ArchiveGenerator().generate();
   });

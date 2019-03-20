@@ -1,7 +1,9 @@
+/* tslint:disable:max-classes-per-file */
+
 class Cell {
   constructor(public content: string) {}
-  pad(size: number, dir: string) {
-    let { content } = this;
+  public pad(size: number, dir: string) {
+    const { content } = this;
     switch (dir) {
       case 'left':
         this.content = `${new Array(size + 1).join(' ')}${content}`;
@@ -12,11 +14,11 @@ class Cell {
     }
   }
 
-  size() {
+  public size() {
     return this.content.length;
   }
 
-  toString() {
+  public toString() {
     return this.content;
   }
 }
@@ -25,41 +27,41 @@ class Row {
   private cells: Cell[] = [];
   constructor(public divider?: string) {}
 
-  addCell(content: string) {
-    let cell = new Cell(content);
+  public addCell(content: string) {
+    const cell = new Cell(content);
     this.cells.push(cell);
     return cell;
   }
 
-  size() {
+  public size() {
     return this.toString().length;
   }
 
-  cellSizes() {
+  public cellSizes() {
     return this.cells.map(c => c.size());
   }
 
-  fit(maxCellSizes: number[]) {
-    let cellSizes = this.cellSizes();
+  public fit(maxCellSizes: number[]) {
+    const cellSizes = this.cellSizes();
 
     if (!this.divider) {
       cellSizes.forEach((size, i) => {
-        let amount = maxCellSizes[i] - size;
+        const amount = maxCellSizes[i] - size;
         this.cells[i].pad(amount, 'right');
       });
     }
   }
 
-  empty() {
+  public empty() {
     this.addCell('');
   }
 
-  fill(size: number) {
-    let content = new Array(size + 1).join(this.divider);
+  public fill(size: number) {
+    const content = new Array(size + 1).join(this.divider);
     this.cells.push(new Cell(content));
   }
 
-  toString() {
+  public toString() {
     return this.cells.join('');
   }
 }
@@ -67,15 +69,15 @@ class Row {
 export class Table {
   private rows: Row[] = [];
 
-  addRow(divider?: string) {
-    let row = new Row(divider);
+  public addRow(divider?: string) {
+    const row = new Row(divider);
     this.rows.push(row);
     return row;
   }
 
-  toString() {
-    let { rows } = this;
-    let maxCellSizes = this.maxCellSizes();
+  public toString() {
+    const { rows } = this;
+    const maxCellSizes = this.maxCellSizes();
 
     rows.forEach(row => {
       if (!row.divider) {
@@ -83,7 +85,7 @@ export class Table {
       }
     });
 
-    let rowLength = this.maxRowSize();
+    const rowLength = this.maxRowSize();
 
     rows.forEach(row => {
       if (row.divider) {
@@ -96,10 +98,10 @@ export class Table {
 
   private maxRowSize() {
     let maxRowSize = 0;
-    let { rows } = this;
+    const { rows } = this;
 
     rows.forEach(row => {
-      let len = row.size();
+      const len = row.size();
       if (len > maxRowSize) {
         maxRowSize = len;
       }
@@ -109,11 +111,11 @@ export class Table {
   }
 
   private maxCellSizes() {
-    let maxCellSizes: number[] = [];
-    let { rows } = this;
+    const maxCellSizes: number[] = [];
+    const { rows } = this;
 
     rows.forEach(row => {
-      let cellSizes = row.cellSizes();
+      const cellSizes = row.cellSizes();
       cellSizes.forEach((col, i) => {
         if (!maxCellSizes[i] || col > maxCellSizes[i]) {
           maxCellSizes[i] = col;

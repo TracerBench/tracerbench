@@ -1,12 +1,12 @@
 import { HierarchyNode } from 'd3-hierarchy';
 import * as fs from 'fs';
-import { ModuleMatcher } from '../cli/module_matcher';
+import { ModuleMatcher } from './module_matcher';
 import {
   ICpuProfileNode,
   ITraceEvent,
   Trace,
   TRACE_EVENT_PHASE_COMPLETE
-} from '../../trace';
+} from '../trace';
 
 export function exportHierarchy(
   rawTraceData: any,

@@ -4,13 +4,7 @@
   "main": "dist/index.js",
   "license": "BSD-2-Clause",
   "scripts": {
-    "build": "yarn nuke && tsc -b",
-    "watch": "rollup -cw",
-    "start": "node serve.js",
-    "nuke": "rm -rf dist",
     "lint": "tslint -p test -t stylish",
-    "prepare": "yarn build",
-    "ts:d": "tsc -p d.tsconfig.json",
     "test": "nyc --extension .ts mocha --forbid-only \"test/*.test.ts\""
   },
   "typings": "dist/src/index.d.ts",

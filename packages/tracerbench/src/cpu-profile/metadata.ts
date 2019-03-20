@@ -1,6 +1,6 @@
-import { ICallFrame } from 'tracerbench';
+import { ICallFrame } from '../trace';
 
-export interface ModuleInfo {
+export interface IModuleInfo {
   name: string;
   callFrames: ICallFrame[];
 }
@@ -10,21 +10,21 @@ const EOF = -1;
 export class ParsedFile {
   private lines: string[] = [];
   private mangledDefine: string;
-  private moduleLocators: Map<string, ModuleInfo> = new Map();
+  private moduleLocators: Map<string, IModuleInfo> = new Map();
   constructor(private content: string) {
     this.mangledDefine = findMangledDefine(this.content);
     this.lines = this.content.split('\n');
   }
 
-  moduleNameFor(callFrame: ICallFrame) {
-    let { lineNumber, columnNumber, functionName } = callFrame;
-    let key = `${lineNumber}${columnNumber}${functionName}`;
-    let moduleLocator = this.moduleLocators.get(key);
+  public moduleNameFor(callFrame: ICallFrame) {
+    const { lineNumber, columnNumber, functionName } = callFrame;
+    const key = `${lineNumber}${columnNumber}${functionName}`;
+    const moduleLocator = this.moduleLocators.get(key);
     if (moduleLocator) {
       return moduleLocator.name;
     }
 
-    let name = this.findModuleName(lineNumber);
+    const name = this.findModuleName(lineNumber);
 
     this.moduleLocators.set(key, {
       name,
@@ -35,11 +35,12 @@ export class ParsedFile {
   }
 
   private findModuleName(line: number): string {
-    if (line === EOF) return 'unknown';
-
-    let currentLine = this.lines[line];
-    let defineIndex = getModuleIndex(currentLine, 'define');
-    let mangledIndex = getModuleIndex(currentLine, this.mangledDefine);
+    if (line === EOF) {
+      return 'unknown';
+    }
+    const currentLine = this.lines[line];
+    const defineIndex = getModuleIndex(currentLine, 'define');
+    const mangledIndex = getModuleIndex(currentLine, this.mangledDefine);
 
     if (defineIndex === EOF && mangledIndex === EOF) {
       return this.findModuleName(line - 1);
@@ -60,14 +61,14 @@ export class ParsedFile {
 }
 
 export function findMangledDefine(content: string) {
-  let tail = content.indexOf('.__loader.define');
-  let sub = content.slice(0, tail);
+  const tail = content.indexOf('.__loader.define');
+  const sub = content.slice(0, tail);
   let defineToken = '';
   let end = sub.length - 1;
   let scanning = true;
   let declaration = false;
   while (scanning) {
-    let char = sub[end--];
+    const char = sub[end--];
     switch (char) {
       case '=':
         declaration = true;
@@ -87,17 +88,17 @@ export function findMangledDefine(content: string) {
 }
 
 export function getModuleIndex(str: string, ident: string) {
-  let matcher = new RegExp(
+  const matcher = new RegExp(
     `(?:${ident}\\\(")(.*?)(?=",\\\[\\\"(.*)\\\"],(function|\\\(function))`,
     'g'
   );
-  let matches = str.match(matcher);
+  const matches = str.match(matcher);
 
   if (matches === null) {
     return EOF;
   }
 
-  let lastMatched = matches[matches.length - 1];
+  const lastMatched = matches[matches.length - 1];
   return str.indexOf(lastMatched);
 }
 

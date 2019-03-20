@@ -1,9 +1,17 @@
-export { report } from './cli/reporter';
-export { liveTrace } from './cli/live_trace';
-export { networkConditions } from './cli/conditions';
-export { harTrace } from './cli/archive_trace';
-export { analyze } from './cli/analyze';
-export { showError } from './cli/error';
-
-export { ITrace, loadTrace } from './trace/load-trace';
-export { exportHierarchy } from './trace/export-hierarchy';
+export { report } from './reporter';
+export { liveTrace } from './live_trace';
+export { networkConditions } from './conditions';
+export { harTrace, IArchive } from './archive_trace';
+export { analyze } from './analyze';
+export { showError } from './error';
+export { ModuleMatcher } from './module_matcher';
+export { ITrace, loadTrace } from './load-trace';
+export { exportHierarchy } from './export-hierarchy';
+export { addRemainingModules, methodsFromCategories } from './utils';
+export { findMangledDefine, getModuleIndex, ParsedFile } from './metadata';
+export {
+  aggregate,
+  IAggregations,
+  categorizeAggregations,
+  verifyMethods
+} from './aggregator';

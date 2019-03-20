@@ -1,4 +1,5 @@
 import {
+  IArchive,
   ICallFrame,
   ICpuProfile,
   ICpuProfileNode,
@@ -8,7 +9,6 @@ import {
   TRACE_EVENT_PHASE_BEGIN,
   TRACE_EVENT_PHASE_END
 } from 'tracerbench';
-import { Archive } from '../src/cli/archive_trace';
 
 interface INode {
   child(options: OptionalCallFrame): CPUProfileNode;
@@ -180,7 +180,7 @@ export class LocatorGenerator {
 }
 
 export class ArchiveGenerator {
-  generate(content: string = ''): Archive {
+  generate(content: string = ''): IArchive {
     return {
       log: {
         entries: [

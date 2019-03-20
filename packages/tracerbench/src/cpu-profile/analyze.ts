@@ -1,4 +1,4 @@
-import { ITraceEvent } from '../../trace';
+import { ITraceEvent } from '../trace';
 import { ITrace, loadTrace, exportHierarchy } from '../index';
 import {
   aggregate,
@@ -6,7 +6,7 @@ import {
   collapseCallFrames,
   verifyMethods
 } from './aggregator';
-import { Archive } from './archive_trace';
+import { IArchive } from './archive_trace';
 import { ModuleMatcher } from './module_matcher';
 import { report as reporter } from './reporter';
 import {
@@ -19,7 +19,7 @@ import {
 
 interface IAnalyze {
   rawTraceData: ITraceEvent[] | ITrace;
-  archiveFile: Archive;
+  archiveFile: IArchive;
   methods: string[];
   event?: string;
   report?: string;
@@ -28,31 +28,39 @@ interface IAnalyze {
 }
 
 export async function analyze(options: IAnalyze) {
-  let { archiveFile, event, file, rawTraceData, report, methods } = options;
-  let trace = loadTrace(rawTraceData);
-  let profile = getCPUProfile(trace, event)!;
+  const { archiveFile, event, file, rawTraceData, report, methods } = options;
+  const trace = loadTrace(rawTraceData);
+  const profile = getCPUProfile(trace, event)!;
   const { hierarchy } = profile;
 
-  let modMatcher = new ModuleMatcher(hierarchy, archiveFile);
+  const modMatcher = new ModuleMatcher(hierarchy, archiveFile);
   exportHierarchy(rawTraceData, hierarchy, trace, file, modMatcher);
 
-  let categories = formatCategories(report, methods);
-  let allMethods = methodsFromCategories(categories);
+  const categories = formatCategories(report, methods);
+  const allMethods = methodsFromCategories(categories);
 
   addRemainingModules(allMethods, categories, modMatcher);
   verifyMethods(allMethods);
 
-  let aggregations = aggregate(hierarchy, allMethods, archiveFile, modMatcher);
-  let collapsed = collapseCallFrames(aggregations);
-  let categorized = categorizeAggregations(collapsed, categories);
+  const aggregations = aggregate(
+    hierarchy,
+    allMethods,
+    archiveFile,
+    modMatcher
+  );
+  const collapsed = collapseCallFrames(aggregations);
+  const categorized = categorizeAggregations(collapsed, categories);
 
   reporter(categorized);
 
   const renderNodes = getRenderingNodes(hierarchy);
   renderNodes.forEach(node => {
-    let renderAgg = aggregate(node, allMethods, archiveFile, modMatcher);
-    let renderCollapsed = collapseCallFrames(renderAgg);
-    let renderCategorized = categorizeAggregations(renderCollapsed, categories);
+    const renderAgg = aggregate(node, allMethods, archiveFile, modMatcher);
+    const renderCollapsed = collapseCallFrames(renderAgg);
+    const renderCategorized = categorizeAggregations(
+      renderCollapsed,
+      categories
+    );
     console.log(`Render Node:${node.data.callFrame.functionName}`); // tslint:disable-line  no-console
     reporter(renderCategorized);
   });

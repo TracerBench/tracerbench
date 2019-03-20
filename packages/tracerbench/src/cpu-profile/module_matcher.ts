@@ -1,19 +1,19 @@
 import { HierarchyNode } from 'd3-hierarchy';
-import { ICallFrame, ICpuProfileNode } from 'tracerbench';
 
-import { Archive } from './archive_trace';
+import { ICallFrame, ICpuProfileNode } from '../trace';
+import { IArchive } from './archive_trace';
 import { ParsedFile } from './metadata';
 
-export interface ParsedFiles {
+export interface IParsedFiles {
   [key: string]: ParsedFile;
 }
 
 export class ModuleMatcher {
-  private parsedFiles: ParsedFiles = {};
-  private archive: Archive;
+  private parsedFiles: IParsedFiles = {};
+  private archive: IArchive;
   private moduleSet = new Set<string>();
 
-  constructor(hierarchy: HierarchyNode<ICpuProfileNode>, archive: Archive) {
+  constructor(hierarchy: HierarchyNode<ICpuProfileNode>, archive: IArchive) {
     this.archive = archive;
     hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {
       const moduleName = this.findModuleName(node.data.callFrame);
@@ -24,12 +24,12 @@ export class ModuleMatcher {
     });
   }
 
-  getModuleList() {
+  public getModuleList() {
     return this.moduleSet;
   }
 
-  findModuleName(callFrame: ICallFrame) {
-    let { url } = callFrame;
+  public findModuleName(callFrame: ICallFrame) {
+    const { url } = callFrame;
     // guards against things like undefined url or urls like "extensions::SafeBuiltins"
     if (
       url === undefined ||
@@ -41,7 +41,7 @@ export class ModuleMatcher {
     ) {
       return undefined;
     }
-    let { parsedFiles } = this;
+    const { parsedFiles } = this;
     let file = parsedFiles[url];
     if (file) {
       return file.moduleNameFor(callFrame);
@@ -52,7 +52,7 @@ export class ModuleMatcher {
   }
 
   private contentFor(url: string) {
-    let entry = this.archive.log.entries.find(e => e.request.url === url);
+    const entry = this.archive.log.entries.find(e => e.request.url === url);
 
     if (!entry) {
       throw new Error(`Could not find "${url}" in the archive file.`);

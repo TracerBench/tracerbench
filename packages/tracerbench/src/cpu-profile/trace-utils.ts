@@ -14,8 +14,8 @@ import { filterObjectByKeys } from './utils';
 export async function createClient(session: ISession) {
   let browserType;
   let executablePath;
-  let additionalArguments = ['--headless', '--crash-dumps-dir=/tmp'];
-  let windowSize = {
+  const additionalArguments = ['--headless', '--crash-dumps-dir=/tmp'];
+  const windowSize = {
     width: 320,
     height: 640
   };
@@ -67,7 +67,7 @@ export async function emulate(
     conditions.network !== undefined &&
     network.canEmulateNetworkConditions()
   ) {
-    let networkCondition = networkConditions[conditions.network];
+    const networkCondition = networkConditions[conditions.network];
 
     if (networkCondition) {
       await network.emulateNetworkConditions(networkCondition);
@@ -84,7 +84,7 @@ export async function setCookies(
   cookies: Network.SetCookieParameters[]
 ) {
   for (let i = 0; i < cookies.length; i++) {
-    let cookie = filterObjectByKeys(cookies[i], ['name', 'value', 'domain']);
+    const cookie = filterObjectByKeys(cookies[i], ['name', 'value', 'domain']);
     await network.setCookie(cookie);
   }
 }

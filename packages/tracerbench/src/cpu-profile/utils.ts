@@ -4,15 +4,14 @@ import { HierarchyNode } from 'd3-hierarchy';
 import * as fs from 'fs';
 import * as path from 'path';
 
-import { ICpuProfileNode, Trace, isRenderNode } from '../../trace';
+import { ICpuProfileNode, Trace, isRenderNode } from '../trace';
 import { ModuleMatcher } from './module_matcher';
-import { Categories, Locator } from './utils';
 
-export interface Categories {
-  [key: string]: Locator[];
+export interface ICategories {
+  [key: string]: ILocator[];
 }
 
-export interface Locator {
+export interface ILocator {
   functionName: string;
   functionNameRegex: RegExp;
   moduleName: string;
@@ -22,28 +21,30 @@ export interface Locator {
 export const AUTO_ADD_CAT = 'Auto Added Module Paths';
 
 export function getCPUProfile(trace: Trace, event?: string) {
-  let { min, max } = computeMinMax(trace, 'navigationStart', event!);
+  const { min, max } = computeMinMax(trace, 'navigationStart', event!);
   return trace.cpuProfile(min, max);
 }
 
 export function getRenderingNodes(root: HierarchyNode<ICpuProfileNode>) {
   const renderNodes: Array<HierarchyNode<ICpuProfileNode>> = [];
   root.each((node: HierarchyNode<ICpuProfileNode>) => {
-    if (isRenderNode(node)) renderNodes.push(node);
+    if (isRenderNode(node)) {
+      renderNodes.push(node);
+    }
   });
   return renderNodes;
 }
 
 export function filterObjectByKeys(obj: any, keyArray: string[]) {
-  let _obj = Object.assign({}, obj);
-  let k = Object.keys(_obj);
+  const o = Object.assign({}, obj);
+  const k = Object.keys(o);
   k.forEach(c => {
     if (!keyArray.includes(c)) {
-      delete _obj[c];
+      delete o[c];
     }
   });
 
-  return _obj;
+  return o;
 }
 
 export function computeMinMax(
@@ -55,8 +56,8 @@ export function computeMinMax(
   let max;
   if (end) {
     // TODO harden this to find the correct frame
-    let startEvent = trace.events.find(e => e.name === start)!;
-    let endEvent = trace.events.find(e => e.name === end);
+    const startEvent = trace.events.find(e => e.name === start)!;
+    const endEvent = trace.events.find(e => e.name === end);
 
     if (!endEvent) {
       throw new Error(`Could not find "${end}" marker in the trace.`);
@@ -77,8 +78,8 @@ export function computeMinMax(
  * user provided heuristic config entries which specify a non-".*" module name regex.
  */
 export function addRemainingModules(
-  locators: Locator[],
-  categories: Categories,
+  locators: ILocator[],
+  categories: ICategories,
   modMatcher: ModuleMatcher
 ) {
   const allModules = modMatcher.getModuleList();
@@ -104,9 +105,9 @@ export function addRemainingModules(
   });
 }
 
-export function methodsFromCategories(categories: Categories) {
+export function methodsFromCategories(categories: ICategories) {
   return Object.keys(categories).reduce(
-    (accum: Locator[], category: string) => {
+    (accum: ILocator[], category: string) => {
       accum.push(...categories[category]);
       return accum;
     },
@@ -114,12 +115,12 @@ export function methodsFromCategories(categories: Categories) {
   );
 }
 
-export function toRegex(locators: Locator[]) {
+export function toRegex(locators: ILocator[]) {
   return locators.map(({ functionName }) => {
     if (functionName === '*') {
       return /.*/;
     }
-    let parts = functionName.split('.'); // Path expression
+    const parts = functionName.split('.'); // Path expression
     if (parts.length > 1) {
       parts.shift();
       return new RegExp(`^([A-z]+\\.${parts.join('\\.')})$`);
@@ -133,16 +134,16 @@ export function formatCategories(
   methods: string[]
 ) {
   if (report) {
-    let stats = fs.statSync(report);
-    let _categories: Categories = {};
+    const stats = fs.statSync(report);
+    const categories: ICategories = {};
 
     if (stats.isDirectory()) {
-      let files = fs.readdirSync(report);
+      const files = fs.readdirSync(report);
 
       files.map(file => {
-        let name = path.basename(file).replace('.json', '');
+        const name = path.basename(file).replace('.json', '');
         // tslint:disable-next-line:no-shadowed-variable
-        let methods: Locator[] = JSON.parse(
+        const methods: ILocator[] = JSON.parse(
           fs.readFileSync(`${report}/${file}`, 'utf8')
         );
         methods.forEach(method => {
@@ -156,11 +157,11 @@ export function formatCategories(
           method.moduleNameRegex = new RegExp(`^${method.moduleName}$`);
         });
 
-        _categories[name] = methods;
+        categories[name] = methods;
       });
     } else {
-      let category = path.basename(report).replace('.json', '');
-      let methods2 = JSON.parse(fs.readFileSync(report, 'utf8'));
+      const category = path.basename(report).replace('.json', '');
+      const methods2 = JSON.parse(fs.readFileSync(report, 'utf8'));
       if (methods2.functionName === '*') {
         methods2.functionName = '.*';
       }
@@ -169,16 +170,16 @@ export function formatCategories(
         methods2.moduleName = '.*';
       }
       methods2.moduleNameRegex = new RegExp(`^${methods2.moduleName}$`);
-      _categories[category] = methods2;
+      categories[category] = methods2;
     }
 
-    return _categories;
+    return categories;
   } else {
     if (methods === undefined) {
       throw new Error(`Error: Must pass a list of method names.`);
     }
 
-    let addHocLocators = methods.map(method => {
+    const addHocLocators = methods.map(method => {
       return {
         functionName: method,
         functionNameRegex: new RegExp(`^${method}$`),

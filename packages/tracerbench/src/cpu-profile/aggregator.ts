@@ -2,39 +2,39 @@
 
 import { HierarchyNode } from 'd3-hierarchy';
 
-import { ICallFrame, ICpuProfileNode } from '../../trace';
-import { Archive } from './archive_trace';
+import { ICallFrame, ICpuProfileNode } from '../trace';
+import { IArchive } from './archive_trace';
 import { ParsedFile } from './metadata';
 import { ModuleMatcher } from './module_matcher';
-import { Categories, Locator } from './utils';
+import { ICategories, ILocator } from './utils';
 
-export interface CallFrameInfo {
+export interface ICallFrameInfo {
   self: number;
   stack: ICallFrame[];
 }
 
-export interface Aggregations {
-  [key: string]: AggregationResult;
+export interface IAggregations {
+  [key: string]: IAggregationResult;
 }
 
-export interface AggregationResult {
+export interface IAggregationResult {
   total: number;
   self: number;
   attributed: number;
   functionName: string;
   moduleName: string;
-  callframes: CallFrameInfo[];
+  callframes: ICallFrameInfo[];
 }
 
-export interface Categorized {
-  [key: string]: AggregationResult[];
+export interface ICategorized {
+  [key: string]: IAggregationResult[];
 }
 
-export function verifyMethods(array: Locator[]) {
-  let valuesSoFar: string[] = [];
+export function verifyMethods(array: ILocator[]) {
+  const valuesSoFar: string[] = [];
   for (let i = 0; i < array.length; ++i) {
-    let { functionName, moduleName } = array[i];
-    let key = `${functionName}${moduleName}`;
+    const { functionName, moduleName } = array[i];
+    const key = `${functionName}${moduleName}`;
     if (valuesSoFar.includes(key)) {
       throw new Error(
         `Duplicate heuristic detected ${moduleName}@${functionName}`
@@ -45,10 +45,10 @@ export function verifyMethods(array: Locator[]) {
 }
 
 export function categorizeAggregations(
-  aggregations: Aggregations,
-  categories: Categories
+  aggregations: IAggregations,
+  categories: ICategories
 ) {
-  let categorized: Categorized = {
+  const categorized: ICategorized = {
     unknown: [aggregations.unknown]
   };
 
@@ -73,22 +73,22 @@ export function categorizeAggregations(
   return categorized;
 }
 
-export interface ParsedFiles {
+export interface IParsedFiles {
   [key: string]: ParsedFile;
 }
 
 class AggregrationCollector {
-  private _aggregations: Aggregations = {};
-  private locators: Locator[];
+  private aggregations: IAggregations = {};
+  private locators: ILocator[];
   private modMatcher: ModuleMatcher;
-  matcher: RegExp | undefined;
-  parsedFiles: ParsedFiles = {};
-  archive: Archive;
-  hierarchy: HierarchyNode<ICpuProfileNode>;
+  public matcher: RegExp | undefined;
+  public parsedFiles: IParsedFiles = {};
+  public archive: IArchive;
+  public hierarchy: HierarchyNode<ICpuProfileNode>;
 
   constructor(
-    locators: Locator[],
-    archive: Archive,
+    locators: ILocator[],
+    archive: IArchive,
     hierarchy: HierarchyNode<ICpuProfileNode>,
     modMatcher: ModuleMatcher
   ) {
@@ -98,7 +98,7 @@ class AggregrationCollector {
     this.modMatcher = modMatcher;
 
     locators.forEach(({ functionName, moduleName }) => {
-      this._aggregations[functionName + moduleName] = {
+      this.aggregations[functionName + moduleName] = {
         total: 0,
         self: 0,
         attributed: 0,
@@ -108,7 +108,7 @@ class AggregrationCollector {
       };
     });
 
-    this._aggregations.unknown = {
+    this.aggregations.unknown = {
       total: 0,
       self: 0,
       attributed: 0,
@@ -118,75 +118,93 @@ class AggregrationCollector {
     };
   }
 
-  pushCallFrames(name: string, callFrame: CallFrameInfo) {
-    this._aggregations[name].callframes.push(callFrame);
+  public pushCallFrames(name: string, callFrame: ICallFrameInfo) {
+    this.aggregations[name].callframes.push(callFrame);
   }
 
-  addToAttributed(name: string, time: number) {
-    this._aggregations[name].attributed += time;
+  public addToAttributed(name: string, time: number) {
+    this.aggregations[name].attributed += time;
   }
 
-  addToTotal(name: string, time: number) {
-    this._aggregations[name].total += time;
+  public addToTotal(name: string, time: number) {
+    this.aggregations[name].total += time;
   }
 
-  collect() {
-    Object.keys(this._aggregations).forEach(method => {
-      let { callframes } = this._aggregations[method];
-      this._aggregations[method].self = callframes.reduce(
+  public collect() {
+    Object.keys(this.aggregations).forEach(method => {
+      const { callframes } = this.aggregations[method];
+      this.aggregations[method].self = callframes.reduce(
         (a, c) => a + c.self,
         0
       );
     });
 
-    return this._aggregations;
+    return this.aggregations;
   }
 
-  private isBuiltIn(callFrame: ICallFrame) {
-    let { url, lineNumber } = callFrame;
-    if (url === undefined) return true;
-    if (url === 'extensions::SafeBuiltins') return true;
-    if (url === 'v8/LoadTimes') return true;
-    if (url === 'native array.js') return true;
-    if (url === 'native intl.js') return true;
-    if (lineNumber === -1 || lineNumber === undefined) return true;
-
-    return false;
-  }
-
-  match(callFrame: ICallFrame) {
+  public match(callFrame: ICallFrame) {
     return this.locators.find(locator => {
       // try to avoid having to regex match is there are .* entries
-      let sameFN = locator.functionName === callFrame.functionName;
-      if (locator.moduleName === '.*' && sameFN) return true;
-
-      if (this.isBuiltIn(callFrame)) return false;
-
-      let callFrameModuleName = this.modMatcher.findModuleName(callFrame);
-      if (callFrameModuleName === undefined) return false;
-
+      const sameFN = locator.functionName === callFrame.functionName;
+      if (locator.moduleName === '.*' && sameFN) {
+        return true;
+      }
+      if (this.isBuiltIn(callFrame)) {
+        return false;
+      }
+      const callFrameModuleName = this.modMatcher.findModuleName(callFrame);
+      if (callFrameModuleName === undefined) {
+        return false;
+      }
       // try to avoid having to regex match is there are .* entries
-      let sameMN = locator.moduleName === callFrameModuleName;
-      if (sameMN && locator.functionName === '.*') return true;
-
-      if (sameFN && sameMN) return true;
-
+      const sameMN = locator.moduleName === callFrameModuleName;
+      if (sameMN && locator.functionName === '.*') {
+        return true;
+      }
+      if (sameFN && sameMN) {
+        return true;
+      }
       // if nothing else matches, do full regex check
-      let sameFNRegex = locator.functionNameRegex.test(callFrame.functionName);
-      let sameMNRegex = locator.moduleNameRegex.test(callFrameModuleName);
+      const sameFNRegex = locator.functionNameRegex.test(
+        callFrame.functionName
+      );
+      const sameMNRegex = locator.moduleNameRegex.test(callFrameModuleName);
       return sameFNRegex && sameMNRegex;
     });
   }
+
+  private isBuiltIn(callFrame: ICallFrame) {
+    const { url, lineNumber } = callFrame;
+    if (url === undefined) {
+      return true;
+    }
+    if (url === 'extensions::SafeBuiltins') {
+      return true;
+    }
+    if (url === 'v8/LoadTimes') {
+      return true;
+    }
+    if (url === 'native array.js') {
+      return true;
+    }
+    if (url === 'native intl.js') {
+      return true;
+    }
+    if (lineNumber === -1 || lineNumber === undefined) {
+      return true;
+    }
+    return false;
+  }
 }
 
-export function collapseCallFrames(aggregations: Aggregations) {
+export function collapseCallFrames(aggregations: IAggregations) {
   Object.keys(aggregations).forEach(methodName => {
-    let collapsed: CallFrameInfo[] = [];
-    let keys: string[] = [];
+    const collapsed: ICallFrameInfo[] = [];
+    const keys: string[] = [];
 
     aggregations[methodName].callframes.forEach(callframeInfo => {
-      let key = callframeInfo.stack.reduce((acc, cur) => {
-        let { functionName, columnNumber, lineNumber } = cur;
+      const key = callframeInfo.stack.reduce((acc, cur) => {
+        const { functionName, columnNumber, lineNumber } = cur;
         return (acc += `${functionName}${columnNumber}${lineNumber}`);
       }, '');
 
@@ -204,27 +222,27 @@ export function collapseCallFrames(aggregations: Aggregations) {
 
 export function aggregate(
   hierarchy: HierarchyNode<ICpuProfileNode>,
-  locators: Locator[],
-  archive: Archive,
+  locators: ILocator[],
+  archive: IArchive,
   modMatcher: ModuleMatcher
 ) {
-  let aggregations = new AggregrationCollector(
+  const aggregations = new AggregrationCollector(
     locators,
     archive,
     hierarchy,
     modMatcher
   );
   hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {
-    let { self } = node.data;
+    const { self } = node.data;
     if (self !== 0) {
       let currentNode: HierarchyNode<ICpuProfileNode> | null = node;
-      let stack: ICallFrame[] = [];
+      const stack: ICallFrame[] = [];
       let containerNode: HierarchyNode<ICpuProfileNode> | null = null;
 
       while (currentNode) {
-        let canonicalLocator = aggregations.match(currentNode.data.callFrame);
+        const canonicalLocator = aggregations.match(currentNode.data.callFrame);
         if (canonicalLocator) {
-          let {
+          const {
             functionName: canonicalizeName,
             moduleName: canonicalizeModName
           } = canonicalLocator;

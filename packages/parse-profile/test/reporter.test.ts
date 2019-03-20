@@ -2,7 +2,7 @@
 
 import { expect } from 'chai';
 import 'mocha';
-import { report } from '../src/cli/reporter';
+import { report } from 'tracerbench';
 
 describe('Reporter', () => {
   it('class exists', () => {

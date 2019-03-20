@@ -57,16 +57,21 @@ export async function liveTrace(
     });
 
     page.frameStartedLoading = evt => {
-      if (mainFrameId === evt.frameId) console.log('frameStartedLoading', evt);
+      if (mainFrameId === evt.frameId) {
+        console.log('frameStartedLoading', evt);
+      }
     };
 
     page.frameScheduledNavigation = evt => {
-      if (mainFrameId === evt.frameId)
+      if (mainFrameId === evt.frameId) {
         console.log('frameScheduledNavigation', evt);
+      }
     };
 
     page.frameNavigated = evt => {
-      if (mainFrameId === evt.frame.id) console.log('frameNavigated', evt);
+      if (mainFrameId === evt.frame.id) {
+        console.log('frameNavigated', evt);
+      }
     };
 
     const tracingComplete = new Promise<Tracing.TracingCompleteParameters>(

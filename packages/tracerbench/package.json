@@ -40,7 +40,11 @@
   "dependencies": {
     "@types/node": "*",
     "array-binsearch": "^1.0.1",
-    "chrome-debugging-client": "^0.6.8"
+    "chrome-debugging-client": "^0.6.8",
+    "@types/d3": "^5.7.0",
+    "chalk": "^2.4.2",
+    "d3": "^5.7.0",
+    "silent-error": "^1.1.1"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",
@@ -49,7 +53,14 @@
     "mkdirp": "^0.5.1",
     "tar": "^4.4.8",
     "tslint": "^5.14.0",
-    "typescript": "^3.3.4000"
+    "typescript": "^3.3.4000",
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.5",
+    "chai": "^4.2.0",
+    "finalhandler": "^1.1.1",
+    "mocha": "^5.2.0",
+    "nyc": "^13.1.0",
+    "ts-node": "^8.0.3"
   },
   "engine": "node >= 8",
   "gitHead": "6fe758f18fa80b9a1617b10771adca8c061ef381"

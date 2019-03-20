@@ -2,7 +2,7 @@
 
 import { expect } from 'chai';
 import 'mocha';
-import { loadTrace } from '../src';
+import { loadTrace } from 'tracerbench';
 
 describe('loadTrace', () => {
   it('function exists', () => {

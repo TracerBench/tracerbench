@@ -39,3 +39,26 @@ export {
   ICpuProfile,
   FUNCTION_NAME
 } from './trace';
+
+export {
+  report,
+  liveTrace,
+  networkConditions,
+  harTrace,
+  analyze,
+  showError,
+  ITrace,
+  loadTrace,
+  exportHierarchy,
+  aggregate,
+  categorizeAggregations,
+  IAggregations,
+  verifyMethods,
+  IArchive,
+  ModuleMatcher,
+  addRemainingModules,
+  findMangledDefine,
+  getModuleIndex,
+  ParsedFile,
+  methodsFromCategories
+} from './cpu-profile';
