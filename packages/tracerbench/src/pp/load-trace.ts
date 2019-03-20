@@ -1,4 +1,5 @@
-import { ITraceEvent, Trace } from '../trace';
+import Trace from '../trace/trace';
+import { ITraceEvent } from '../trace/trace_event';
 
 export interface ITrace {
   metadata: {};
@@ -6,7 +7,6 @@ export interface ITrace {
 }
 
 export function loadTrace(events: ITraceEvent[] | ITrace) {
-  console.error('TRACE LOADED');
   const trace = new Trace();
   if (!Array.isArray(events)) {
     events = events.traceEvents;

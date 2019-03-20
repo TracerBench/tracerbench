@@ -53,6 +53,7 @@ export default class Trace {
   public cpuProfile(min: number, max: number): CpuProfile {
     const { cpuProfileK } = this;
     if (cpuProfileK === undefined) {
+      console.trace('public cpuProfile');
       throw new Error('trace is missing CpuProfile');
     }
     return new CpuProfile(cpuProfileK, this.events, min, max);
@@ -77,6 +78,91 @@ export default class Trace {
     }
   }
 
+  public cpuProfileBuildModel(event: any) {
+    if (
+      event.ph === TRACE_EVENT_PHASE_INSTANT &&
+      event.cat === 'disabled-by-default-devtools.timeline'
+    ) {
+      if (event.name === 'CpuProfile') {
+        this.cpuProfileK = (event as ICpuProfileEvent).args.data.cpuProfile;
+      } else if (event.name === 'TracingStartedInPage') {
+        this.lastTracingStartedInPageEvent = event;
+      }
+    } else if (event.ph === TRACE_EVENT_PHASE_SAMPLE) {
+      if (event.name === 'Profile') {
+        const profile = event as IProfileEvent;
+        this.profileMap.set(profile.id, {
+          pid: profile.pid,
+          tid: profile.tid,
+          cpuProfile: {
+            startTime: profile.args.data.startTime,
+            endTime: 0,
+            duration: 0,
+            nodes: [] as Array<ICpuProfileNode & IProfileNode>,
+            samples: [] as number[],
+            timeDeltas: [] as number[]
+          }
+        });
+      } else if (event.name === 'ProfileChunk') {
+        const profileChunk = event as IProfileChunkEvent;
+        const profileEntry = this.profileMap.get(profileChunk.id)!;
+        if (profileChunk.args.data.cpuProfile.nodes) {
+          profileChunk.args.data.cpuProfile.nodes.forEach((node: any) => {
+            profileEntry.cpuProfile.nodes.push(
+              Object.assign(node, {
+                sampleCount: 0,
+                min: 0,
+                max: 0,
+                total: 0,
+                self: 0
+              })
+            );
+          });
+        }
+        profileEntry.cpuProfile.samples.push(
+          ...profileChunk.args.data.cpuProfile.samples
+        );
+        profileEntry.cpuProfile.timeDeltas.push(
+          ...profileChunk.args.data.timeDeltas
+        );
+      }
+    }
+
+    // determine main process
+    if (this.lastTracingStartedInPageEvent) {
+      // if this was recorded with the Performance tab, this should be the main process
+      this.mainProcess = this.process(this.lastTracingStartedInPageEvent.pid);
+    } else {
+      // fallback to Renderer process with most events
+      this.mainProcess = this.processes
+        .filter(p => p.name === PROCESS_NAME.RENDERER)
+        .reduce((a, b) => (b.events.length > a.events.length ? b : a));
+    }
+
+    for (const profileEntry of this.profileMap.values()) {
+      if (
+        profileEntry.pid === this.mainProcess.id &&
+        profileEntry.tid === this.mainProcess.mainThread!.id
+      ) {
+        this.cpuProfileK = profileEntry.cpuProfile;
+        const { nodes } = profileEntry.cpuProfile;
+        const nodeMap = new Map<number, typeof nodes[0]>();
+        nodes.forEach(node => nodeMap.set(node.id, node));
+        nodes.forEach(node => {
+          if (node.parent !== undefined) {
+            const parent = nodeMap.get(node.parent)!;
+            if (parent.children) {
+              parent.children.push(node.id);
+            } else {
+              parent.children = [node.id];
+            }
+          }
+        });
+        break;
+      }
+    }
+  }
+
   public buildModel() {
     const { events } = this;
     if (this.stack.length > 0) {
@@ -90,88 +176,7 @@ export default class Trace {
 
       process.addEvent(event);
 
-      if (
-        event.ph === TRACE_EVENT_PHASE_INSTANT &&
-        event.cat === 'disabled-by-default-devtools.timeline'
-      ) {
-        if (event.name === 'CpuProfile') {
-          this.cpuProfileK = (event as ICpuProfileEvent).args.data.cpuProfile;
-        } else if (event.name === 'TracingStartedInPage') {
-          this.lastTracingStartedInPageEvent = event;
-        }
-      } else if (event.ph === TRACE_EVENT_PHASE_SAMPLE) {
-        if (event.name === 'Profile') {
-          const profile = event as IProfileEvent;
-          this.profileMap.set(profile.id, {
-            pid: profile.pid,
-            tid: profile.tid,
-            cpuProfile: {
-              startTime: profile.args.data.startTime,
-              endTime: 0,
-              duration: 0,
-              nodes: [] as Array<ICpuProfileNode & IProfileNode>,
-              samples: [] as number[],
-              timeDeltas: [] as number[]
-            }
-          });
-        } else if (event.name === 'ProfileChunk') {
-          const profileChunk = event as IProfileChunkEvent;
-          const profileEntry = this.profileMap.get(profileChunk.id)!;
-          if (profileChunk.args.data.cpuProfile.nodes) {
-            profileChunk.args.data.cpuProfile.nodes.forEach((node: any) => {
-              profileEntry.cpuProfile.nodes.push(
-                Object.assign(node, {
-                  sampleCount: 0,
-                  min: 0,
-                  max: 0,
-                  total: 0,
-                  self: 0
-                })
-              );
-            });
-          }
-          profileEntry.cpuProfile.samples.push(
-            ...profileChunk.args.data.cpuProfile.samples
-          );
-          profileEntry.cpuProfile.timeDeltas.push(
-            ...profileChunk.args.data.timeDeltas
-          );
-        }
-      }
-
-      // determine main process
-      if (this.lastTracingStartedInPageEvent) {
-        // if this was recorded with the Performance tab, this should be the main process
-        this.mainProcess = this.process(this.lastTracingStartedInPageEvent.pid);
-      } else {
-        // fallback to Renderer process with most events
-        this.mainProcess = this.processes
-          .filter(p => p.name === PROCESS_NAME.RENDERER)
-          .reduce((a, b) => (b.events.length > a.events.length ? b : a));
-      }
-
-      for (const profileEntry of this.profileMap.values()) {
-        if (
-          profileEntry.pid === this.mainProcess.id &&
-          profileEntry.tid === this.mainProcess.mainThread!.id
-        ) {
-          this.cpuProfileK = profileEntry.cpuProfile;
-          const { nodes } = profileEntry.cpuProfile;
-          const nodeMap = new Map<number, typeof nodes[0]>();
-          nodes.forEach(node => nodeMap.set(node.id, node));
-          nodes.forEach(node => {
-            if (node.parent !== undefined) {
-              const parent = nodeMap.get(node.parent)!;
-              if (parent.children) {
-                parent.children.push(node.id);
-              } else {
-                parent.children = [node.id];
-              }
-            }
-          });
-          break;
-        }
-      }
+      this.cpuProfileBuildModel(event);
     }
   }
 

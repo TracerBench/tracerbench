@@ -61,4 +61,4 @@ export {
   getModuleIndex,
   ParsedFile,
   methodsFromCategories
-} from './cpu-profile';
+} from './pp';
