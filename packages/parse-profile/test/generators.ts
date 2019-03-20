@@ -42,7 +42,7 @@ class RootCPUProfileNode implements INode {
       scriptId: 0,
       url: 'script'
     };
-    Object.assign(this.callFrame, options);
+    (Object as any).assign(this.callFrame, options);
   }
 
   child(options: OptionalCallFrame) {
