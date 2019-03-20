@@ -1,6 +1,5 @@
 import * as Domains from 'chrome-debugging-client/dist/protocol/tot';
-import * as Trace from './trace/index';
-export { Domains, Trace };
+export { Domains };
 export {
   IV8GCSample,
   IGCStat,
@@ -25,3 +24,18 @@ export { Runner, IBenchmark } from './runner';
 export { Bounds } from './trace/bounds';
 export { Process } from './trace/process';
 export { ITab } from './tab';
+
+export {
+  ICallFrame,
+  ICpuProfileNode,
+  ITraceEvent,
+  Trace,
+  isRenderNode,
+  TRACE_EVENT_PHASE_COMPLETE,
+  TRACE_EVENT_PHASE_BEGIN,
+  TRACE_EVENT_PHASE_END,
+  TRACE_EVENT_NAME,
+  CpuProfile,
+  ICpuProfile,
+  FUNCTION_NAME
+} from './trace';

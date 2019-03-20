@@ -2,7 +2,7 @@
 
 import { expect } from 'chai';
 import 'mocha';
-import Trace from '../src/trace/trace';
+import { Trace } from 'tracerbench';
 
 describe('Trace', () => {
   it('class exists', () => {

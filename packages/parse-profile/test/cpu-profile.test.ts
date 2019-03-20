@@ -2,9 +2,7 @@
 
 import { expect } from 'chai';
 import 'mocha';
-import CpuProfile from '../src/trace/cpuprofile';
-
-import {FUNCTION_NAME, TRACE_EVENT_NAME } from '../src';
+import { CpuProfile, FUNCTION_NAME, TRACE_EVENT_NAME } from 'tracerbench';
 
 import { ProfileGenerator } from './generators';
 
@@ -15,9 +13,9 @@ describe('CpuProfile', () => {
 
     generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, true);
     generator.tick(1);
-    const a = generator.appendNode(root, {functionName: 'a'});
+    const a = generator.appendNode(root, { functionName: 'a' });
     generator.tick(10);
-    generator.appendNode(a, {functionName: 'b'});
+    generator.appendNode(a, { functionName: 'b' });
     generator.tick(20);
     generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, false);
     generator.tick(1);
@@ -56,23 +54,23 @@ describe('CpuProfile', () => {
 
     generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, true);
     generator.tick(1);
-    const a = generator.appendNode(root, {functionName: 'a'});
+    const a = generator.appendNode(root, { functionName: 'a' });
     generator.tick(5);
-    generator.appendNode(root, {functionName: FUNCTION_NAME.GC});
+    generator.appendNode(root, { functionName: FUNCTION_NAME.GC });
     generator.tick(2);
     generator.appendSample(a);
     generator.tick(3);
     generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, false);
 
     generator.tick(1);
-    generator.appendNode(root, {functionName: FUNCTION_NAME.PROGRAM});
+    generator.appendNode(root, { functionName: FUNCTION_NAME.PROGRAM });
     generator.tick(1);
 
     generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, true);
     generator.tick(1);
     generator.appendSample(a);
     generator.tick(5);
-    generator.appendNode(root, {functionName: FUNCTION_NAME.PROGRAM});
+    generator.appendNode(root, { functionName: FUNCTION_NAME.PROGRAM });
     generator.tick(2);
     generator.appendSample(a);
     generator.tick(3);
@@ -112,13 +110,16 @@ describe('CpuProfile', () => {
 
     generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, true);
     generator.tick(1);
-    const a = generator.appendNode(root, {functionName: 'a'});
+    const a = generator.appendNode(root, { functionName: 'a' });
     generator.tick(10);
-    generator.appendNode(a, {functionName: 'b'});
+    generator.appendNode(a, { functionName: 'b' });
     generator.tick(5);
-    generator.appendRenderEvent('<pillar@component:addond@addon::ember1> (Rendering: update)', 10);
+    generator.appendRenderEvent(
+      '<pillar@component:addond@addon::ember1> (Rendering: update)',
+      10
+    );
     generator.tick(5);
-    generator.appendNode(a, {functionName: 'c'});
+    generator.appendNode(a, { functionName: 'c' });
     generator.tick(10);
     generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, false);
     const json = generator.end();
@@ -170,13 +171,16 @@ describe('CpuProfile', () => {
 
     generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, true);
     generator.tick(1);
-    const a = generator.appendNode(root, {functionName: 'a'});
+    const a = generator.appendNode(root, { functionName: 'a' });
     generator.tick(10);
-    const b = generator.appendNode(a, {functionName: 'b'});
+    const b = generator.appendNode(a, { functionName: 'b' });
     generator.tick(3);
-    generator.appendNode(b, {functionName: 'c'});
+    generator.appendNode(b, { functionName: 'c' });
     generator.tick(2);
-    generator.appendRenderEvent('<pillar@component:addond@addon::ember1> (Rendering: update)', 10);
+    generator.appendRenderEvent(
+      '<pillar@component:addond@addon::ember1> (Rendering: update)',
+      10
+    );
     generator.tick(3);
     generator.appendSample(b);
     generator.tick(2);
@@ -236,19 +240,22 @@ describe('CpuProfile', () => {
 
     generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, true);
     generator.tick(1);
-    const a = generator.appendNode(root, {functionName: 'a'});
+    const a = generator.appendNode(root, { functionName: 'a' });
     generator.tick(5);
-    generator.appendNode(a, {functionName: 'b'});
+    generator.appendNode(a, { functionName: 'b' });
     generator.tick(5);
     generator.appendSample(a);
     generator.tick(2);
-    generator.appendRenderEvent('<pillar@component:addond@addon::ember1> (Rendering: update)', 10);
+    generator.appendRenderEvent(
+      '<pillar@component:addond@addon::ember1> (Rendering: update)',
+      10
+    );
     generator.tick(3);
-    generator.appendNode(a, {functionName: 'c'});
+    generator.appendNode(a, { functionName: 'c' });
     generator.tick(5);
     generator.appendSample(a);
     generator.tick(5);
-    generator.appendNode(a, {functionName: 'd'});
+    generator.appendNode(a, { functionName: 'd' });
     generator.tick(5);
     generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, false);
 
@@ -297,15 +304,21 @@ describe('CpuProfile', () => {
 
     generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, true);
     generator.tick(1);
-    const a = generator.appendNode(root, {functionName: 'a'});
+    const a = generator.appendNode(root, { functionName: 'a' });
     generator.tick(10);
-    const b = generator.appendNode(a, {functionName: 'b'});
+    const b = generator.appendNode(a, { functionName: 'b' });
     generator.tick(3);
-    generator.appendNode(b, {functionName: 'c'});
+    generator.appendNode(b, { functionName: 'c' });
     generator.tick(2);
-    generator.appendRenderEvent('<pillar@component:addond@addon::ember1> (Rendering: update)', 12);
+    generator.appendRenderEvent(
+      '<pillar@component:addond@addon::ember1> (Rendering: update)',
+      12
+    );
     generator.tick(1);
-    generator.appendRenderEvent('<pillar@component:addond@addon::ember2> (Rendering: update)', 10);
+    generator.appendRenderEvent(
+      '<pillar@component:addond@addon::ember2> (Rendering: update)',
+      10
+    );
     generator.tick(3);
     generator.appendSample(b);
     generator.tick(2);

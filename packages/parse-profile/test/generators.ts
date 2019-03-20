@@ -7,7 +7,7 @@ import {
   TRACE_EVENT_PHASE_COMPLETE,
   TRACE_EVENT_PHASE_BEGIN,
   TRACE_EVENT_PHASE_END
-} from '../src';
+} from 'tracerbench';
 import { Archive } from '../src/cli/archive_trace';
 
 interface INode {
