@@ -2,17 +2,17 @@
 
 <head>
   <title>Test Initial Render</title>
+
   <script src="./jquery.min.js"></script>
   <script>
     if ($) performance.mark("jqueryLoaded");
-    if (location.search === "?profile") {
-      console.profile("initialRender");
-    }
   </script>
+
   <script src="./ember.prod.js"></script>
   <script>
     if (Ember) performance.mark("emberLoaded");
   </script>
+
 </head>
 
 <body>
