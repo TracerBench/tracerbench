@@ -7,6 +7,7 @@ import {
   ISession
 } from 'chrome-debugging-client';
 import { Emulation, Network } from 'chrome-debugging-client/dist/protocol/tot';
+
 import { IConditions, networkConditions } from './conditions';
 import { filterObjectByKeys } from './utils';
 

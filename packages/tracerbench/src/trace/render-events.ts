@@ -1,30 +1,51 @@
 import binsearch from 'array-binsearch';
 import { HierarchyNode } from 'd3-hierarchy';
-import { getChildren } from './cpuprofile';
+import { getChildren } from './cpu-profile';
 import {
   ICpuProfileNode,
   ITraceEvent,
-  TRACE_EVENT_PHASE,
+  TRACE_EVENT_PHASE_COMPLETE,
+  TRACE_EVENT_PHASE_NESTABLE_ASYNC_END,
+  TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN
 } from './trace_event';
 
-export function addRenderNodes(hierarchy: HierarchyNode<ICpuProfileNode>, events: ITraceEvent[]) {
+export function addRenderNodes(
+  hierarchy: HierarchyNode<ICpuProfileNode>,
+  events: ITraceEvent[]
+) {
   events.forEach(event => {
-    if (!isRenderPhase(event)) return;
+    if (!isRenderPhase(event)) {
+      return;
+    }
     let found: HierarchyNode<ICpuProfileNode> | null = null;
     // Search for the closest node which fully encloses the render event
     hierarchy.eachBefore((node: HierarchyNode<ICpuProfileNode>) => {
-      if (nodeEnclosesEvent(node, event)) found = node;
+      if (nodeEnclosesEvent(node, event)) {
+        found = node;
+      }
     });
-    if (found) insertRenderEvent(found, event);
+    if (found) {
+      insertRenderEvent(found, event);
+    }
   });
 }
 
-function nodeEnclosesEvent(node: HierarchyNode<ICpuProfileNode>, event: ITraceEvent) {
-  return node.data.min !== -1 && node.data.max !== -1 &&
-         node.data.min < event.ts && event.ts + event.dur! < node.data.max;
+function nodeEnclosesEvent(
+  node: HierarchyNode<ICpuProfileNode>,
+  event: ITraceEvent
+) {
+  return (
+    node.data.min !== -1 &&
+    node.data.max !== -1 &&
+    node.data.min < event.ts &&
+    event.ts + event.dur! < node.data.max
+  );
 }
 
-function insertRenderEvent(enclosingNode: HierarchyNode<ICpuProfileNode>, event: ITraceEvent) {
+function insertRenderEvent(
+  enclosingNode: HierarchyNode<ICpuProfileNode>,
+  event: ITraceEvent
+) {
   const eventStart = event.ts;
   const eventEnd = event.ts + event.dur!;
 
@@ -48,19 +69,25 @@ function insertRenderEvent(enclosingNode: HierarchyNode<ICpuProfileNode>, event:
 
   const children = getChildren(enclosingNode);
   // Children who are fully to the left or right of the render event
-  const childrenForOriginal = children.filter(child => child.data.max < eventStart ||
-                                                             child.data.min > eventEnd);
+  const childrenForOriginal = children.filter(
+    child => child.data.max < eventStart || child.data.min > eventEnd
+  );
   // Children who are fully within the render event
-  const childrenForRenderNode = children.filter(child => child.data.min > eventStart &&
-                                                               child.data.max < eventEnd);
+  const childrenForRenderNode = children.filter(
+    child => child.data.min > eventStart && child.data.max < eventEnd
+  );
   // Children who are split by the render event
-  const leftSplitChild = children.find(n => n.data.min < eventStart && n.data.max > eventStart);
-  const rightSplitChild = children.find(n => n.data.min < eventEnd && n.data.max > eventEnd);
+  const leftSplitChild = children.find(
+    n => n.data.min < eventStart && n.data.max > eventStart
+  );
+  const rightSplitChild = children.find(
+    n => n.data.min < eventEnd && n.data.max > eventEnd
+  );
 
   // Fix parent/child links for all children other then split children
   enclosingNode.children = childrenForOriginal;
   renderNode.children = childrenForRenderNode;
-  childrenForRenderNode.forEach(child => child.parent = renderNode);
+  childrenForRenderNode.forEach(child => (child.parent = renderNode));
 
   // fix node/render node parent/child link
   renderNode.parent = enclosingNode;
@@ -70,7 +97,10 @@ function insertRenderEvent(enclosingNode: HierarchyNode<ICpuProfileNode>, event:
   splitChild(renderNode, enclosingNode, rightSplitChild, eventEnd);
 }
 
-function insertChildInOrder(children: Array<HierarchyNode<ICpuProfileNode>>, node: HierarchyNode<ICpuProfileNode>) {
+function insertChildInOrder(
+  children: Array<HierarchyNode<ICpuProfileNode>>,
+  node: HierarchyNode<ICpuProfileNode>
+) {
   let index = binsearch(children, node, (a, b) => a.data.min - b.data.min);
   if (index < 0) {
     /* tslint:disable:no-bitwise */
@@ -82,11 +112,15 @@ function insertChildInOrder(children: Array<HierarchyNode<ICpuProfileNode>>, nod
   children.splice(index, 0, node);
 }
 
-function splitChild(leftParent: HierarchyNode<ICpuProfileNode>,
-                    rightParent: HierarchyNode<ICpuProfileNode>,
-                    node: HierarchyNode<ICpuProfileNode> | undefined,
-                    splitTS: number) {
-  if (node === undefined) return {middleLeftTime: 0, middleRightTime: 0};
+function splitChild(
+  leftParent: HierarchyNode<ICpuProfileNode>,
+  rightParent: HierarchyNode<ICpuProfileNode>,
+  node: HierarchyNode<ICpuProfileNode> | undefined,
+  splitTS: number
+) {
+  if (node === undefined) {
+    return { middleLeftTime: 0, middleRightTime: 0 };
+  }
 
   // Split node
   const left = node;
@@ -108,13 +142,17 @@ function splitChild(leftParent: HierarchyNode<ICpuProfileNode>,
   if (children.length === 0) {
     left.data.self = left.data.max - left.data.min;
     right.data.self = right.data.max - right.data.min;
-    return {middleLeftTime: left.data.self, middleRightTime: right.data.self};
+    return { middleLeftTime: left.data.self, middleRightTime: right.data.self };
   }
 
   // Reasign children correctly
-  const middleChild = children.find(n => n.data.min < splitTS && n.data.max > splitTS);
+  const middleChild = children.find(
+    n => n.data.min < splitTS && n.data.max > splitTS
+  );
   const leftChildren = children.filter(child => child.data.max < left.data.max);
-  const rightChildren = children.filter(child => child.data.min > right.data.min);
+  const rightChildren = children.filter(
+    child => child.data.min > right.data.min
+  );
 
   left.children = leftChildren;
   right.children = rightChildren;
@@ -124,7 +162,12 @@ function splitChild(leftParent: HierarchyNode<ICpuProfileNode>,
   let righChildrentTime = rightChildren.reduce((a, b) => a + b.data.self, 0);
 
   // Split middle child and asign the resulting left/right node self times
-  const { middleLeftTime, middleRightTime } = splitChild(left, right, middleChild, splitTS);
+  const { middleLeftTime, middleRightTime } = splitChild(
+    left,
+    right,
+    middleChild,
+    splitTS
+  );
   leftChildrenTime += middleLeftTime;
   righChildrentTime += middleRightTime;
 
@@ -132,22 +175,26 @@ function splitChild(leftParent: HierarchyNode<ICpuProfileNode>,
   right.data.self = right.data.max - right.data.min - righChildrentTime;
 
   // Return the resulting left/right split times, so parents can determine their own self times
-  return {middleLeftTime: left.data.max - left.data.min, middleRightTime: right.data.max - right.data.min};
+  return {
+    middleLeftTime: left.data.max - left.data.min,
+    middleRightTime: right.data.max - right.data.min
+  };
 }
 
 export function isRenderEnd(event: ITraceEvent) {
-  return event.ph === TRACE_EVENT_PHASE.NESTABLE_ASYNC_END &&
-         isRender(event.name);
+  return (
+    event.ph === TRACE_EVENT_PHASE_NESTABLE_ASYNC_END && isRender(event.name)
+  );
 }
 
 export function isRenderStart(event: ITraceEvent) {
-  return event.ph === TRACE_EVENT_PHASE.NESTABLE_ASYNC_BEGIN &&
-         isRender(event.name);
+  return (
+    event.ph === TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN && isRender(event.name)
+  );
 }
 
 function isRenderPhase(event: ITraceEvent) {
-  return event.ph === TRACE_EVENT_PHASE.COMPLETE &&
-         isRender(event.name);
+  return event.ph === TRACE_EVENT_PHASE_COMPLETE && isRender(event.name);
 }
 
 export function isRenderNode(node: HierarchyNode<ICpuProfileNode>) {
@@ -155,7 +202,9 @@ export function isRenderNode(node: HierarchyNode<ICpuProfileNode>) {
 }
 
 function isRender(name: string) {
-  return name.endsWith('(Rendering: initial)') ||
-         name.endsWith('(Rendering: update)') ||
-         name.endsWith('(Rendering: outlet)');
+  return (
+    name.endsWith('(Rendering: initial)') ||
+    name.endsWith('(Rendering: update)') ||
+    name.endsWith('(Rendering: outlet)')
+  );
 }

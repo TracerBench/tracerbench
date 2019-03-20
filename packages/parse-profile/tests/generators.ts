@@ -1,4 +1,13 @@
-import { ICallFrame, ICpuProfile, ICpuProfileNode, ITraceEvent, TRACE_EVENT_NAME, TRACE_EVENT_PHASE } from '../src';
+import {
+  ICallFrame,
+  ICpuProfile,
+  ICpuProfileNode,
+  ITraceEvent,
+  TRACE_EVENT_NAME,
+  TRACE_EVENT_PHASE_COMPLETE,
+  TRACE_EVENT_PHASE_BEGIN,
+  TRACE_EVENT_PHASE_END
+} from '../src';
 import { Archive } from '../src/cli/archive_trace';
 
 interface INode {
@@ -31,7 +40,7 @@ class RootCPUProfileNode implements INode {
       lineNumber: -1,
       columnNumber: -1,
       scriptId: 0,
-      url: 'script',
+      url: 'script'
     };
     Object.assign(this.callFrame, options);
   }
@@ -58,7 +67,7 @@ class RootCPUProfileNode implements INode {
       max,
       children,
       sampleCount,
-      total,
+      total
     };
   }
 }
@@ -118,11 +127,11 @@ export class ProfileGenerator {
       pid: -1,
       tid: -1,
       ts: this.curTime,
-      ph: TRACE_EVENT_PHASE.COMPLETE,
+      ph: TRACE_EVENT_PHASE_COMPLETE,
       dur: duration,
       cat: '',
       name,
-      args: {},
+      args: {}
     };
     this.events.push(event);
   }
@@ -134,10 +143,10 @@ export class ProfileGenerator {
         pid: -1,
         tid: -1,
         ts: this.curTime,
-        ph: isStart ? TRACE_EVENT_PHASE.BEGIN : TRACE_EVENT_PHASE.END,
+        ph: isStart ? TRACE_EVENT_PHASE_BEGIN : TRACE_EVENT_PHASE_END,
         cat: '',
         name,
-        args: {},
+        args: {}
       };
     } else throw Error('Trying to create an unknown event in test');
     this.events.push(event);
@@ -152,7 +161,7 @@ export class ProfileGenerator {
       duration,
       timeDeltas,
       nodes: nodes.map(node => node.toJSON()),
-      samples,
+      samples
     };
   }
 }
@@ -164,7 +173,7 @@ export class LocatorGenerator {
         functionName: m[0],
         functionNameRegex: new RegExp(`^${m[0]}$`),
         moduleName: m[1],
-        moduleNameRegex: new RegExp(`^${m[1]}$`),
+        moduleNameRegex: new RegExp(`^${m[1]}$`)
       };
     });
   }
@@ -179,12 +188,12 @@ export class ArchiveGenerator {
             request: { url: 'https://www.example.com/a.js' },
             response: {
               content: {
-                text: content,
-              },
-            },
-          },
-        ],
-      },
+                text: content
+              }
+            }
+          }
+        ]
+      }
     };
   }
 }

@@ -3,8 +3,8 @@
 import { HierarchyNode } from 'd3-hierarchy';
 import * as fs from 'fs';
 import * as path from 'path';
-import { ICpuProfileNode, Trace } from '../trace';
-import { isRenderNode } from '../trace/renderEvents';
+import { ICpuProfileNode, Trace, isRenderNode } from 'tracerbench';
+
 import { ModuleMatcher } from './module_matcher';
 import { Categories, Locator } from './utils';
 
@@ -20,6 +20,11 @@ export interface Locator {
 }
 
 export const AUTO_ADD_CAT = 'Auto Added Module Paths';
+
+export function getCPUProfile(trace: Trace, event?: string) {
+  let { min, max } = computeMinMax(trace, 'navigationStart', event!);
+  return trace.cpuProfile(min, max);
+}
 
 export function getRenderingNodes(root: HierarchyNode<ICpuProfileNode>) {
   const renderNodes: Array<HierarchyNode<ICpuProfileNode>> = [];
@@ -41,7 +46,11 @@ export function filterObjectByKeys(obj: any, keyArray: string[]) {
   return _obj;
 }
 
-export function computeMinMax(trace: Trace, start: string = 'navigationStart', end: string) {
+export function computeMinMax(
+  trace: Trace,
+  start: string = 'navigationStart',
+  end: string
+) {
   let min;
   let max;
   if (end) {
@@ -70,7 +79,7 @@ export function computeMinMax(trace: Trace, start: string = 'navigationStart', e
 export function addRemainingModules(
   locators: Locator[],
   categories: Categories,
-  modMatcher: ModuleMatcher,
+  modMatcher: ModuleMatcher
 ) {
   const allModules = modMatcher.getModuleList();
   categories[AUTO_ADD_CAT] = [];
@@ -78,14 +87,16 @@ export function addRemainingModules(
     // If the locator is going to match an entire module anyway, don't add that module to the auto
     // generated list of module aggergations.
     const found = locators.find(locator => {
-      return locator.functionName === '.*' ? locator.moduleNameRegex.test(moduleName) : false;
+      return locator.functionName === '.*'
+        ? locator.moduleNameRegex.test(moduleName)
+        : false;
     });
     if (!found) {
       const newLocator = {
         functionName: '.*',
         functionNameRegex: /.*/,
         moduleName,
-        moduleNameRegex: new RegExp(`^${moduleName}$`),
+        moduleNameRegex: new RegExp(`^${moduleName}$`)
       };
       locators.push(newLocator);
       categories[AUTO_ADD_CAT].push(newLocator);
@@ -94,10 +105,13 @@ export function addRemainingModules(
 }
 
 export function methodsFromCategories(categories: Categories) {
-  return Object.keys(categories).reduce((accum: Locator[], category: string) => {
-    accum.push(...categories[category]);
-    return accum;
-  }, []);
+  return Object.keys(categories).reduce(
+    (accum: Locator[], category: string) => {
+      accum.push(...categories[category]);
+      return accum;
+    },
+    []
+  );
 }
 
 export function toRegex(locators: Locator[]) {
@@ -114,7 +128,10 @@ export function toRegex(locators: Locator[]) {
   });
 }
 
-export function formatCategories(report: string | undefined, methods: string[]) {
+export function formatCategories(
+  report: string | undefined,
+  methods: string[]
+) {
   if (report) {
     let stats = fs.statSync(report);
     let _categories: Categories = {};
@@ -125,7 +142,9 @@ export function formatCategories(report: string | undefined, methods: string[]) 
       files.map(file => {
         let name = path.basename(file).replace('.json', '');
         // tslint:disable-next-line:no-shadowed-variable
-        let methods: Locator[] = JSON.parse(fs.readFileSync(`${report}/${file}`, 'utf8'));
+        let methods: Locator[] = JSON.parse(
+          fs.readFileSync(`${report}/${file}`, 'utf8')
+        );
         methods.forEach(method => {
           if (method.functionName === '*') {
             method.functionName = '.*';
@@ -164,7 +183,7 @@ export function formatCategories(report: string | undefined, methods: string[]) 
         functionName: method,
         functionNameRegex: new RegExp(`^${method}$`),
         moduleName: '*',
-        moduleNameRegex: /.*/,
+        moduleNameRegex: /.*/
       };
     });
 

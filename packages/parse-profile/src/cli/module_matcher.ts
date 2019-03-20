@@ -1,5 +1,6 @@
 import { HierarchyNode } from 'd3-hierarchy';
-import { ICallFrame, ICpuProfileNode } from '../trace';
+import { ICallFrame, ICpuProfileNode } from 'tracerbench';
+
 import { Archive } from './archive_trace';
 import { ParsedFile } from './metadata';
 

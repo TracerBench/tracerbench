@@ -27,9 +27,9 @@
     "rollup-plugin-node-resolve": "^4.0.0",
     "rollup-plugin-typescript": "^1.0.0",
     "serve-static": "^1.13.2",
-    "ts-node": "^7.0.1",
-    "tslint": "^5.12.1",
-    "typescript": "^3.2.2"
+    "ts-node": "^8.0.3",
+    "tslint": "^5.14.0",
+    "typescript": "^3.3.4000"
   },
   "dependencies": {
     "@types/d3": "^5.7.0",
@@ -40,7 +40,8 @@
     "commander": "^2.19.0",
     "d3": "^5.7.0",
     "ora": "^3.0.0",
-    "silent-error": "^1.1.1"
+    "silent-error": "^1.1.1",
+    "tracerbench": "^1.0.0-alpha.9"
   },
   "gitHead": "6fe758f18fa80b9a1617b10771adca8c061ef381"
 }

@@ -1,8 +1,14 @@
 // tslint:disable:no-console
 
 import { createSession } from 'chrome-debugging-client';
-import { IO, Network, Page, Tracing } from 'chrome-debugging-client/dist/protocol/tot';
+import {
+  IO,
+  Network,
+  Page,
+  Tracing
+} from 'chrome-debugging-client/dist/protocol/tot';
 import * as fs from 'fs';
+
 import { IConditions } from './conditions';
 import { createClient, emulate, setCookies } from './trace-utils';
 
@@ -19,14 +25,14 @@ const DEVTOOLS_CATEGORIES = [
   'latencyInfo',
   'disabled-by-default-devtools.timeline.stack',
   'disabled-by-default-v8.cpu_profiler',
-  'disabled-by-default-v8.cpu_profiler.hires',
+  'disabled-by-default-v8.cpu_profiler.hires'
 ];
 
 export async function liveTrace(
   url: string,
   out: string,
   cookies: Network.SetCookieParameters[],
-  conditions: IConditions,
+  conditions: IConditions
 ) {
   return await createSession(async session => {
     const client = await createClient(session);
@@ -55,26 +61,29 @@ export async function liveTrace(
     };
 
     page.frameScheduledNavigation = evt => {
-      if (mainFrameId === evt.frameId) console.log('frameScheduledNavigation', evt);
+      if (mainFrameId === evt.frameId)
+        console.log('frameScheduledNavigation', evt);
     };
 
     page.frameNavigated = evt => {
       if (mainFrameId === evt.frame.id) console.log('frameNavigated', evt);
     };
 
-    const tracingComplete = new Promise<Tracing.TracingCompleteParameters>(resolve => {
-      tracing.tracingComplete = resolve;
-    });
+    const tracingComplete = new Promise<Tracing.TracingCompleteParameters>(
+      resolve => {
+        tracing.tracingComplete = resolve;
+      }
+    );
 
     console.log(`starting trace`);
     await tracing.start({
       categories: DEVTOOLS_CATEGORIES.join(','),
       transferMode: 'ReturnAsStream',
-      streamCompression: 'none',
+      streamCompression: 'none'
     });
     console.log(`navigating to ${url}`);
     await page.navigate({
-      url,
+      url
     });
 
     console.log(`waiting for load event`);
@@ -92,7 +101,9 @@ export async function liveTrace(
         read = await io.read({ handle });
         fs.writeSync(
           file,
-          read.base64Encoded ? Buffer.from(read.data, 'base64') : Buffer.from(read.data),
+          read.base64Encoded
+            ? Buffer.from(read.data, 'base64')
+            : Buffer.from(read.data)
         );
       } while (!read.eof);
     } finally {

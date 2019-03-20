@@ -3,6 +3,7 @@
 import { createSession } from 'chrome-debugging-client';
 import { Network, Page } from 'chrome-debugging-client/dist/protocol/tot';
 import * as fs from 'fs';
+
 import { createClient, setCookies } from './trace-utils';
 
 // Represents a subset of a HAR

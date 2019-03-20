@@ -1,7 +1,8 @@
 // tslint:disable:member-ordering
 
 import { HierarchyNode } from 'd3-hierarchy';
-import { ICallFrame, ICpuProfileNode } from '../trace';
+import { ICallFrame, ICpuProfileNode } from 'tracerbench';
+
 import { Archive } from './archive_trace';
 import { ParsedFile } from './metadata';
 import { ModuleMatcher } from './module_matcher';
@@ -35,15 +36,20 @@ export function verifyMethods(array: Locator[]) {
     let { functionName, moduleName } = array[i];
     let key = `${functionName}${moduleName}`;
     if (valuesSoFar.includes(key)) {
-      throw new Error(`Duplicate heuristic detected ${moduleName}@${functionName}`);
+      throw new Error(
+        `Duplicate heuristic detected ${moduleName}@${functionName}`
+      );
     }
     valuesSoFar.push(key);
   }
 }
 
-export function categorizeAggregations(aggregations: Aggregations, categories: Categories) {
+export function categorizeAggregations(
+  aggregations: Aggregations,
+  categories: Categories
+) {
   let categorized: Categorized = {
-    unknown: [aggregations.unknown],
+    unknown: [aggregations.unknown]
   };
 
   Object.keys(categories).forEach(category => {
@@ -56,7 +62,7 @@ export function categorizeAggregations(aggregations: Aggregations, categories: C
         categories[category].find(
           locator =>
             locator.functionName === aggergation.functionName &&
-            locator.moduleName === aggergation.moduleName,
+            locator.moduleName === aggergation.moduleName
         )
       ) {
         categorized[category].push(aggergation);
@@ -84,7 +90,7 @@ class AggregrationCollector {
     locators: Locator[],
     archive: Archive,
     hierarchy: HierarchyNode<ICpuProfileNode>,
-    modMatcher: ModuleMatcher,
+    modMatcher: ModuleMatcher
   ) {
     this.locators = locators;
     this.archive = archive;
@@ -98,7 +104,7 @@ class AggregrationCollector {
         attributed: 0,
         functionName,
         moduleName,
-        callframes: [],
+        callframes: []
       };
     });
 
@@ -108,7 +114,7 @@ class AggregrationCollector {
       attributed: 0,
       functionName: 'unknown',
       moduleName: 'unknown',
-      callframes: [],
+      callframes: []
     };
   }
 
@@ -127,7 +133,10 @@ class AggregrationCollector {
   collect() {
     Object.keys(this._aggregations).forEach(method => {
       let { callframes } = this._aggregations[method];
-      this._aggregations[method].self = callframes.reduce((a, c) => a + c.self, 0);
+      this._aggregations[method].self = callframes.reduce(
+        (a, c) => a + c.self,
+        0
+      );
     });
 
     return this._aggregations;
@@ -197,9 +206,14 @@ export function aggregate(
   hierarchy: HierarchyNode<ICpuProfileNode>,
   locators: Locator[],
   archive: Archive,
-  modMatcher: ModuleMatcher,
+  modMatcher: ModuleMatcher
 ) {
-  let aggregations = new AggregrationCollector(locators, archive, hierarchy, modMatcher);
+  let aggregations = new AggregrationCollector(
+    locators,
+    archive,
+    hierarchy,
+    modMatcher
+  );
   hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {
     let { self } = node.data;
     if (self !== 0) {
@@ -212,11 +226,17 @@ export function aggregate(
         if (canonicalLocator) {
           let {
             functionName: canonicalizeName,
-            moduleName: canonicalizeModName,
+            moduleName: canonicalizeModName
           } = canonicalLocator;
           if (!containerNode) {
-            aggregations.addToAttributed(canonicalizeName + canonicalizeModName, self);
-            aggregations.pushCallFrames(canonicalizeName + canonicalizeModName, { self, stack });
+            aggregations.addToAttributed(
+              canonicalizeName + canonicalizeModName,
+              self
+            );
+            aggregations.pushCallFrames(
+              canonicalizeName + canonicalizeModName,
+              { self, stack }
+            );
             containerNode = currentNode;
           }
           aggregations.addToTotal(canonicalizeName + canonicalizeModName, self);

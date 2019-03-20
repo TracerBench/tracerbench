@@ -1,5 +1,5 @@
-import Bounds from "./bounds";
-import { ITraceEvent } from "./trace_event";
+import { Bounds } from './bounds';
+import { ITraceEvent } from './trace_event';
 
 export default class Thread {
   public bounds: Bounds = new Bounds();

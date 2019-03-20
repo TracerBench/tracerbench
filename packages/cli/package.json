@@ -20,6 +20,7 @@
     "listr": "^0.14.3",
     "parse-profile": "^1.0.0-alpha.9",
     "path": "0.12.7",
+    "tracerbench": "^1.0.0-alpha.9",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
@@ -41,9 +42,9 @@
     "chai-fs": "^2.0.0",
     "mocha": "^5.2.0",
     "nyc": "^13.1.0",
-    "ts-node": "^8.0.1",
-    "tslint": "^5.12.1",
-    "typescript": "^3.2.4"
+    "ts-node": "^8.0.3",
+    "tslint": "^5.14.0",
+    "typescript": "^3.3.4000"
   },
   "engines": {
     "node": ">=8.0.0"

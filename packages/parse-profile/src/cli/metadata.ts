@@ -1,4 +1,4 @@
-import { ICallFrame } from '../trace';
+import { ICallFrame } from 'tracerbench';
 
 export interface ModuleInfo {
   name: string;
@@ -28,7 +28,7 @@ export class ParsedFile {
 
     this.moduleLocators.set(key, {
       name,
-      callFrames: [callFrame],
+      callFrames: [callFrame]
     });
 
     return name;
@@ -77,7 +77,7 @@ export function findMangledDefine(content: string) {
         break;
       default:
         if (declaration) {
-          defineToken =  char + defineToken;
+          defineToken = char + defineToken;
         }
         break;
     }
@@ -89,7 +89,7 @@ export function findMangledDefine(content: string) {
 export function getModuleIndex(str: string, ident: string) {
   let matcher = new RegExp(
     `(?:${ident}\\\(")(.*?)(?=",\\\[\\\"(.*)\\\"],(function|\\\(function))`,
-    'g',
+    'g'
   );
   let matches = str.match(matcher);
 
