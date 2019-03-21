@@ -5,13 +5,10 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-
     "newLine": "LF",
-
     "moduleResolution": "node",
     "module": "commonjs",
     "target": "es2017"

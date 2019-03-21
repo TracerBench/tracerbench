@@ -30,10 +30,12 @@
   "scripts": {
     "build": "tsc -b",
     "lint": "node scripts/lint",
-    "prepare": "tsc -b",
-    "test": "yarn lint && node dist/test/build.js && node dist/test/test.js",
+    "lint:opt": "tslint -p test -t stylish",
+    "prepare": "yarn build",
+    "test": "yarn lint && yarn test:build && yarn test:only && yarn test:pp",
     "test:build": "node dist/test/build.js",
     "test:only": "node dist/test/test.js",
+    "test:pp": "nyc --extension .ts mocha --forbid-only \"test/pp/*.test.ts\"",
     "watch": "tsc -b -w",
     "report": "Rscript bin/report.R test/results/results.json"
   },
@@ -44,7 +46,8 @@
     "@types/d3": "^5.7.0",
     "chalk": "^2.4.2",
     "d3": "^5.7.0",
-    "silent-error": "^1.1.1"
+    "silent-error": "^1.1.1",
+    "tslib": "^1.9.3"
   },
   "devDependencies": {
     "@types/glob": "^7.1.1",

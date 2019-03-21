@@ -1,9 +1,10 @@
 {
   "extends": "../tsconfig_base.json",
   "compilerOptions": {
-    "outDir": "../dist/test"
+    "outDir": "../dist/test",
+    "target": "ESNext"
   },
-  "exclude": ["fixtures", "vendor", "results"],
+  "exclude": ["fixtures", "vendor", "results", "pp"],
   "includes": ["*.ts", "build/*.ts"],
   "references": [{
     "path": "../src"

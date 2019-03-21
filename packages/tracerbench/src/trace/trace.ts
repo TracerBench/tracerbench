@@ -1,8 +1,6 @@
-/* tslint:disable:ordered-imports */
-/* tslint:disable:member-access */
-/* tslint:disable:member-ordering */
 /* tslint:disable:variable-name */
-/* tslint:disable:object-literal-sort-keys */
+/* tslint:disable:no-console */
+/* tslint:disable:no-bitwise */
 
 import binsearch from 'array-binsearch';
 import Bounds from './bounds';
@@ -48,7 +46,7 @@ export default class Trace {
   private parents = new Map<ITraceEvent, ITraceEvent>();
   private stack: ITraceEvent[] = [];
 
-  lastTracingStartedInPageEvent?: ITraceEvent;
+  private lastTracingStartedInPageEvent?: ITraceEvent;
   private _cpuProfile?: ICpuProfile;
   private profileMap = new Map<
     string,
@@ -175,7 +173,6 @@ export default class Trace {
   public buildModel() {
     const { events } = this;
     if (this.stack.length > 0) {
-      /* tslint:disable:no-console */
       console.error('trace has incomplete B phase events');
       this.stack.length = 0;
     }
@@ -219,7 +216,6 @@ export default class Trace {
     const events = this.events;
     let index = binsearch(events, event, traceEventComparator);
     if (index < 0) {
-      /* tslint:disable:no-bitwise */
       index = ~index;
     } else {
       // insert just after if ts order matched
@@ -285,9 +281,6 @@ export default class Trace {
     };
     const { events } = this;
     const index = binsearch(events, begin, traceEventComparator);
-    // tb imp
-    // events[index] = complete;
-    // pp imp
     events.splice(index, 0, complete);
   }
 
