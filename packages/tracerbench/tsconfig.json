@@ -1,10 +1,28 @@
 {
+  "$schema": "http://json.schemastore.org/tsconfig",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "strict": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "module": "commonjs",
+    "outDir": "dist",
+    "rootDir": "src",
+    "target": "es2017"
+  },
+  "include": [
+    "src/**/*"
+  ],
   "files": [], // container only
   "references": [{
       "path": "src"
     },
     {
       "path": "test"
+    },
+    {
+      "path": "test/pp"
     }
   ]
 }
