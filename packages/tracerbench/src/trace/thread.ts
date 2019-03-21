@@ -1,4 +1,4 @@
-import { Bounds } from './bounds';
+import Bounds from './bounds';
 import { ITraceEvent } from './trace_event';
 
 export default class Thread {

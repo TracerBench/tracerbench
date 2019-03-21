@@ -3,8 +3,8 @@
 import { HierarchyNode } from 'd3-hierarchy';
 import * as fs from 'fs';
 import * as path from 'path';
-import { isRenderNode } from './render-events';
 import { ICpuProfileNode, Trace } from '../trace';
+import { isRenderNode } from './render-events';
 import { ModuleMatcher } from './module_matcher';
 
 export interface ICategories {
@@ -19,11 +19,6 @@ export interface ILocator {
 }
 
 export const AUTO_ADD_CAT = 'Auto Added Module Paths';
-
-export function getCPUProfile(trace: Trace, event?: string) {
-  const { min, max } = computeMinMax(trace, 'navigationStart', event!);
-  return trace.cpuProfile(min, max);
-}
 
 export function getRenderingNodes(root: HierarchyNode<ICpuProfileNode>) {
   const renderNodes: Array<HierarchyNode<ICpuProfileNode>> = [];

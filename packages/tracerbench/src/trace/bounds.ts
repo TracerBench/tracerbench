@@ -4,7 +4,7 @@ import {
   TRACE_EVENT_PHASE_METADATA
 } from './trace_event';
 
-export class Bounds {
+export default class Bounds {
   public min: number = 0;
   public max: number = 0;
   public empty: boolean = true;

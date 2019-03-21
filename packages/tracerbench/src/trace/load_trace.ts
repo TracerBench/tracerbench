@@ -1,6 +1,5 @@
-import Trace from '../trace/trace';
-import { ITraceEvent } from '../trace/trace_event';
-
+import { ITraceEvent } from './trace_event';
+import Trace from './trace';
 export interface ITrace {
   metadata: {};
   traceEvents: ITraceEvent[];

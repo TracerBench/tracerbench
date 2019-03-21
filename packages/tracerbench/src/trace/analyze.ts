@@ -1,5 +1,7 @@
-import { ITraceEvent } from '../trace';
-import { ITrace, loadTrace, exportHierarchy } from '../index';
+import Trace from './trace';
+import { ITrace, loadTrace } from './load_trace';
+import { ITraceEvent } from './trace_event';
+import { exportHierarchy } from './export-hierarchy';
 import {
   aggregate,
   categorizeAggregations,
@@ -11,10 +13,10 @@ import { ModuleMatcher } from './module_matcher';
 import { report as reporter } from './reporter';
 import {
   addRemainingModules,
+  computeMinMax,
   formatCategories,
   getRenderingNodes,
-  methodsFromCategories,
-  getCPUProfile
+  methodsFromCategories
 } from './utils';
 
 interface IAnalyze {
@@ -64,4 +66,9 @@ export async function analyze(options: IAnalyze) {
     console.log(`Render Node:${node.data.callFrame.functionName}`); // tslint:disable-line  no-console
     reporter(renderCategorized);
   });
+}
+
+function getCPUProfile(trace: Trace, event?: string) {
+  const { min, max } = computeMinMax(trace, 'navigationStart', event!);
+  return trace.cpuProfile(min, max);
 }

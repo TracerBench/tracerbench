@@ -1,8 +1,16 @@
+/* tslint:disable:ordered-imports */
+/* tslint:disable:member-access */
+/* tslint:disable:member-ordering */
+/* tslint:disable:variable-name */
+/* tslint:disable:object-literal-sort-keys */
+
 import binsearch from 'array-binsearch';
-import { CpuProfile, isRenderEnd, isRenderStart } from '../pp';
-import { Bounds } from './bounds';
-import { Process } from './process';
+import Bounds from './bounds';
+import Process from './process';
 import Thread from './thread';
+
+import CpuProfile from './cpu-profile';
+import { isRenderEnd, isRenderStart } from './render-events';
 
 import {
   ICpuProfile,
@@ -20,6 +28,7 @@ import {
   TRACE_EVENT_PHASE_SAMPLE,
   TRACE_EVENT_PHASE_INSTANT
 } from './trace_event';
+
 import traceEventComparator from './trace_event_comparator';
 
 interface IPartialCpuProfile extends ICpuProfile {
@@ -35,11 +44,12 @@ export default class Trace {
   public gpuProcess: Process | null = null;
   public rendererProcesses: Process[] = [];
   public numberOfProcessors?: number;
-  public lastTracingStartedInPageEvent?: ITraceEvent;
 
-  private cpuProfileK?: ICpuProfile;
   private parents = new Map<ITraceEvent, ITraceEvent>();
   private stack: ITraceEvent[] = [];
+
+  lastTracingStartedInPageEvent?: ITraceEvent;
+  private _cpuProfile?: ICpuProfile;
   private profileMap = new Map<
     string,
     {
@@ -50,12 +60,12 @@ export default class Trace {
   >();
 
   public cpuProfile(min: number, max: number): CpuProfile {
-    const { cpuProfileK } = this;
-    if (cpuProfileK === undefined) {
+    const { _cpuProfile } = this;
+    if (_cpuProfile === undefined) {
       console.trace('public cpuProfile');
       throw new Error('trace is missing CpuProfile');
     }
-    return new CpuProfile(cpuProfileK, this.events, min, max);
+    return new CpuProfile(_cpuProfile, this.events, min, max);
   }
 
   public process(pid: number): Process {
@@ -83,7 +93,7 @@ export default class Trace {
       event.cat === 'disabled-by-default-devtools.timeline'
     ) {
       if (event.name === 'CpuProfile') {
-        this.cpuProfileK = (event as ICpuProfileEvent).args.data.cpuProfile;
+        this._cpuProfile = (event as ICpuProfileEvent).args.data.cpuProfile;
       } else if (event.name === 'TracingStartedInPage') {
         this.lastTracingStartedInPageEvent = event;
       }
@@ -143,7 +153,7 @@ export default class Trace {
         profileEntry.pid === this.mainProcess.id &&
         profileEntry.tid === this.mainProcess.mainThread!.id
       ) {
-        this.cpuProfileK = profileEntry.cpuProfile;
+        this._cpuProfile = profileEntry.cpuProfile;
         const { nodes } = profileEntry.cpuProfile;
         const nodeMap = new Map<number, typeof nodes[0]>();
         nodes.forEach(node => nodeMap.set(node.id, node));
@@ -172,10 +182,7 @@ export default class Trace {
     for (const event of events) {
       this.associateParent(event);
       const process = this.process(event.pid);
-
       process.addEvent(event);
-
-      // TODO make this conditional
       this.cpuProfileBuildModel(event);
     }
   }
@@ -278,7 +285,10 @@ export default class Trace {
     };
     const { events } = this;
     const index = binsearch(events, begin, traceEventComparator);
-    events[index] = complete;
+    // tb imp
+    // events[index] = complete;
+    // pp imp
+    events.splice(index, 0, complete);
   }
 
   private addMetadata(event: ITraceEvent) {
