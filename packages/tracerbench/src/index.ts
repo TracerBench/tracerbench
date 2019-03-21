@@ -23,5 +23,11 @@ export {
 } from './benchmark';
 export { Runner, IBenchmark } from './runner';
 export { ITab } from './tab';
-export { analyze, harTrace, loadTrace, liveTrace } from './trace';
+export {
+  analyze,
+  harTrace,
+  loadTrace,
+  liveTrace,
+  networkConditions
+} from './trace';
 export * from './util';

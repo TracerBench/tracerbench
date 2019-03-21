@@ -9,7 +9,7 @@ import {
 describe('getModuleIndex', () => {
   it('returns a module index if we detect a define ident', () => {
     const index = getModuleIndex(
-      'const a=1;define("foo-bar",["exports"],function(exports) {',
+      'let a=1;define("foo-bar",["exports"],function(exports) {',
       'define'
     );
 
@@ -18,7 +18,7 @@ describe('getModuleIndex', () => {
   });
   it('returns a module index if we detect a mangled define identifier', () => {
     const index = getModuleIndex(
-      'const a=1;e("foo-bar",["exports"],function(exports) {',
+      'let a=1;e("foo-bar",["exports"],function(exports) {',
       'e'
     );
 
@@ -28,7 +28,7 @@ describe('getModuleIndex', () => {
 
   it('does not get confused with other calls', () => {
     const index = getModuleIndex(
-      'const f=()=> e();e("foo-bar",["exports"],function(exports) {',
+      'let f=()=> e();e("foo-bar",["exports"],function(exports) {',
       'e'
     );
 
@@ -55,14 +55,14 @@ describe('findMangledDefine', () => {
 describe('ParsedFile', () => {
   it('can find module names', () => {
     const content = `
-      const a = 'b';
-      const d = 'd';
+      let a = 'b';
+      let d = 'd';
       define("foo-bar",["exports"],function(e) {
-        const something = 'woot';
+        let something = 'woot';
         function barbar() {
           return 'bar';
         }
-        const other = 'bar';
+        let other = 'bar';
       });
     `;
     const file = new ParsedFile(content);
@@ -81,14 +81,14 @@ describe('ParsedFile', () => {
   it('can find module name in mangled ident', () => {
     const content = `
       if (false) {woot=undefined;}else woot=n.__loader.define;
-      const a = 'b';
-      const d = 'd';
+      let a = 'b';
+      let d = 'd';
       woot("foo-bar",["exports"],function(e) {
-        const something = 'woot';
+        let something = 'woot';
         function barbar() {
           return 'bar';
         }
-        const other = 'bar';
+        let other = 'bar';
       });
     `;
     const file = new ParsedFile(content);
@@ -107,8 +107,8 @@ describe('ParsedFile', () => {
   it('gracefully handles unknown modules', () => {
     const content = `
       if (false) {woot=undefined;}else woot=n.__loader.define;
-      const a = 'b';
-      const d = 'd';
+      let a = 'b';
+      let d = 'd';
       function barbar() {
         return 'bar';
       }

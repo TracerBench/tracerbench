@@ -1,6 +1,5 @@
 import { flags } from '@oclif/command';
-import { networkConditions } from 'parse-profile';
-import { IMarker } from 'tracerbench';
+import { IMarker, networkConditions } from 'tracerbench';
 import { getConfigDefault, ITBConfig } from './utils';
 
 export const fidelityLookup = {

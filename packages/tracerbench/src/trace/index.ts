@@ -6,4 +6,5 @@ export { analyze } from './analyze';
 export { harTrace } from './archive_trace';
 export { loadTrace } from './load_trace';
 export { liveTrace } from './live_trace';
+export { networkConditions } from './conditions';
 export * from './trace_event';
