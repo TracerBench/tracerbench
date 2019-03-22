@@ -1,7 +1,8 @@
 {
-  "extends": "../../tsconfig",
+  "extends": "../tsconfig",
   "compilerOptions": {
-    "noEmit": true
+    "importHelpers": true,
+    "sourceMap": false
   },
   "references": [{
     "path": ".."

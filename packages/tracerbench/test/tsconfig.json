@@ -4,8 +4,7 @@
     "outDir": "../dist/test",
     "importHelpers": true,
   },
-  "exclude": ["fixtures", "vendor", "results"],
-  "includes": ["*.ts", "build/*.ts", "src/**/*"],
+  "exclude": ["fixtures", "vendor", "results", "pp"],
   "references": [{
     "path": ".."
   }],
