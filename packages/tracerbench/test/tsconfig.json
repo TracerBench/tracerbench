@@ -1,5 +1,5 @@
 {
-  "extends": "../tsconfig",
+  "extends": "../tsconfig_base.json",
   "compilerOptions": {
     "outDir": "../dist/test",
     "importHelpers": true,
@@ -7,6 +7,5 @@
   "exclude": ["fixtures", "vendor", "results", "pp"],
   "references": [{
     "path": ".."
-  }],
-  "files": []
+  }]
 }

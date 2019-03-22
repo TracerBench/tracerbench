@@ -1,6 +1,7 @@
 {
-  "extends": "../tsconfig",
+  "extends": "../../tsconfig_base.json",
   "compilerOptions": {
+    "outDir": "../../dist/test/pp",
     "importHelpers": true,
     "sourceMap": false
   },
