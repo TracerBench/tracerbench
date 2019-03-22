@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as mkdirp from 'mkdirp';
 import { resolve } from 'path';
-import { InitialRenderBenchmark, Runner } from 'tracerbench';
+import { InitialRenderBenchmark, Runner } from '../src';
 
 /* tslint:disable:no-var-requires */
 const globSync: (glob: string) => string[] = require('glob').sync;
@@ -49,7 +49,7 @@ tests.forEach((indexFile: string) => {
       ],
       name: version,
       runtimeStats: true,
-      saveTraces: i => `test/results/trace-${version}-${i}.json`,
+      saveTraces: (i: any) => `test/results/trace-${version}-${i}.json`,
       url
     })
   );
@@ -60,13 +60,13 @@ const runner = new Runner(benchmarks);
 /*tslint:disable:no-console*/
 runner
   .run(4)
-  .then(results => {
+  .then((results: any) => {
     fs.writeFileSync(
       'test/results/results.json',
       JSON.stringify(results, null, 2)
     );
   })
-  .catch(err => {
+  .catch((err: any) => {
     console.error(err.stack);
     process.exit(1);
   });
