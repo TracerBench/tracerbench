@@ -1,9 +1,11 @@
 {
   "extends": "../tsconfig_base.json",
   "compilerOptions": {
-    "outDir": "../dist/test",
-    "importHelpers": true,
+    "outDir": "../dist/test"
   },
-  "includes": ["**/*.ts"],
-  "exclude": ["fixtures", "vendor", "results", "pp"]
+  "exclude": ["fixtures", "vendor", "results", "pp"],
+  "include": ["*.ts", "build/*.ts"],
+  "references": [{
+    "path": "../src"
+  }]
 }

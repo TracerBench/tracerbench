@@ -4,5 +4,6 @@
     "outDir": "../../dist/test/pp",
     "importHelpers": true,
     "sourceMap": false
-  }
+  },
+  "include": ["*.ts"]
 }
