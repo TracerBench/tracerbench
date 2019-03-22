@@ -6143,6 +6143,18 @@ tr46@^1.0.1:
   dependencies:
     punycode "^2.1.0"
 
+"tracerbench@file:packages/tracerbench":
+  version "1.0.0-alpha.9"
+  dependencies:
+    "@types/d3" "^5.7.0"
+    "@types/node" "*"
+    array-binsearch "^1.0.1"
+    chalk "^2.4.2"
+    chrome-debugging-client "^0.6.8"
+    d3 "^5.7.0"
+    silent-error "^1.1.1"
+    tslib "^1.9.3"
+
 treeify@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/treeify/-/treeify-1.1.0.tgz#4e31c6a463accd0943879f30667c4fdaff411bb8"

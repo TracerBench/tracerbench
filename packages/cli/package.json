@@ -19,7 +19,7 @@
     "json-query": "^2.2.2",
     "listr": "^0.14.3",
     "path": "0.12.7",
-    "tracerbench": "^1.0.0-alpha.9",
+    "tracerbench": "file:../tracerbench",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
