@@ -3,7 +3,7 @@ import CreateArchive from './create-archive';
 
 import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
-import { liveTrace } from 'parse-profile';
+import { liveTrace } from 'tracerbench';
 import {
   cpuThrottleRate,
   har,

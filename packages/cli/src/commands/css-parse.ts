@@ -1,6 +1,6 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
-import { loadTrace } from 'parse-profile';
+import { loadTrace } from 'tracerbench';
 import { traceJSONOutput } from '../flags';
 
 export default class CSSParse extends Command {

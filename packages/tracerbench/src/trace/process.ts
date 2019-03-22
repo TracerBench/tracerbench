@@ -1,6 +1,6 @@
-import Bounds from "./bounds";
-import Thread from "./thread";
-import { ITraceEvent } from "./trace_event";
+import Bounds from './bounds';
+import Thread from './thread';
+import { ITraceEvent } from './trace_event';
 
 export default class Process {
   public threads: Thread[] = [];

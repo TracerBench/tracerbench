@@ -2,7 +2,7 @@ import {
   ITraceEvent,
   TRACE_EVENT_PHASE_COMPLETE,
   TRACE_EVENT_PHASE_METADATA
-} from "./trace_event";
+} from './trace_event';
 
 export default class Bounds {
   public min: number = 0;

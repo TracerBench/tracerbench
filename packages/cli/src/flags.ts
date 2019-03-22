@@ -1,6 +1,5 @@
 import { flags } from '@oclif/command';
-import { networkConditions } from 'parse-profile';
-import { IMarker } from 'tracerbench';
+import { IMarker, networkConditions } from 'tracerbench';
 import { getConfigDefault, ITBConfig } from './utils';
 
 export const fidelityLookup = {
@@ -42,6 +41,15 @@ export const defaultFlagArgs: ITBConfig = {
   url: 'http://localhost:8000/?tracing',
   iterations: 1
 };
+
+interface ICpuProfileNode {
+  id: number;
+  children?: number[];
+  positionTicks?: {
+    line: number;
+    ticks: number;
+  };
+}
 
 export const iterations = flags.build({
   default: () => getConfigDefault('iterations', defaultFlagArgs.iterations),

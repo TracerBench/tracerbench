@@ -1,6 +1,6 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
-import { loadTrace } from 'parse-profile';
+import { loadTrace } from 'tracerbench';
 import { traceJSONOutput, locations } from '../flags';
 import { normalizeFnName } from '../utils';
 

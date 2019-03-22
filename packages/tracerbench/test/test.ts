@@ -1,28 +1,28 @@
-import * as fs from "fs";
-import * as mkdirp from "mkdirp";
-import { resolve } from "path";
-import { InitialRenderBenchmark, Runner } from "tracerbench";
+import * as fs from 'fs';
+import * as mkdirp from 'mkdirp';
+import { resolve } from 'path';
+import { InitialRenderBenchmark, Runner } from 'tracerbench';
 
 /* tslint:disable:no-var-requires */
-const globSync: (glob: string) => string[] = require("glob").sync;
+const globSync: (glob: string) => string[] = require('glob').sync;
 /* tslint:enable:no-var-requires */
 
 const browserOpts = {
   additionalArguments: [
-    "--headless",
-    "--disable-gpu",
-    "--hide-scrollbars",
-    "--mute-audio",
-    "--v8-cache-options=none",
-    "--disable-cache",
-    "--disable-v8-idle-tasks",
-    "--crash-dumps-dir=./tmp"
+    '--headless',
+    '--disable-gpu',
+    '--hide-scrollbars',
+    '--mute-audio',
+    '--v8-cache-options=none',
+    '--disable-cache',
+    '--disable-v8-idle-tasks',
+    '--crash-dumps-dir=./tmp'
   ]
 };
 
-const tests = globSync("dist/test/*/index.html");
+const tests = globSync('dist/test/*/index.html');
 
-mkdirp.sync("test/results");
+mkdirp.sync('test/results');
 
 const benchmarks: InitialRenderBenchmark[] = [];
 
@@ -39,17 +39,17 @@ tests.forEach((indexFile: string) => {
       cpuThrottleRate: 4,
       delay: 100,
       markers: [
-        { start: "fetchStart", label: "jquery" },
-        { start: "jqueryLoaded", label: "ember" },
-        { start: "emberLoaded", label: "application" },
-        { start: "startRouting", label: "routing" },
-        { start: "willTransition", label: "transition" },
-        { start: "didTransition", label: "render" },
-        { start: "renderEnd", label: "afterRender" }
+        { start: 'fetchStart', label: 'jquery' },
+        { start: 'jqueryLoaded', label: 'ember' },
+        { start: 'emberLoaded', label: 'application' },
+        { start: 'startRouting', label: 'routing' },
+        { start: 'willTransition', label: 'transition' },
+        { start: 'didTransition', label: 'render' },
+        { start: 'renderEnd', label: 'afterRender' }
       ],
       name: version,
       runtimeStats: true,
-      saveTraces: i => `test/results/trace-${version}-${i}.json`,
+      saveTraces: (i: any) => `test/results/trace-${version}-${i}.json`,
       url
     })
   );
@@ -59,14 +59,14 @@ const runner = new Runner(benchmarks);
 
 /*tslint:disable:no-console*/
 runner
-  .run(20)
-  .then(results => {
+  .run(4)
+  .then((results: any) => {
     fs.writeFileSync(
-      "test/results/results.json",
+      'test/results/results.json',
       JSON.stringify(results, null, 2)
     );
   })
-  .catch(err => {
+  .catch((err: any) => {
     console.error(err.stack);
     process.exit(1);
   });
