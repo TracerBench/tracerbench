@@ -1,4 +1,4 @@
---require ts-node/register
+--require ts-node/register/transpile-only
 --watch-extensions ts
 --recursive
 --reporter spec
