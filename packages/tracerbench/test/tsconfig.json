@@ -4,5 +4,6 @@
     "outDir": "../dist/test",
     "importHelpers": true,
   },
+  "includes": ["**/*.ts"],
   "exclude": ["fixtures", "vendor", "results", "pp"]
 }
