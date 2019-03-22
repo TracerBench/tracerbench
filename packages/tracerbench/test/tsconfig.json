@@ -4,8 +4,5 @@
     "outDir": "../dist/test",
     "importHelpers": true,
   },
-  "exclude": ["fixtures", "vendor", "results", "pp"],
-  "references": [{
-    "path": ".."
-  }]
+  "exclude": ["fixtures", "vendor", "results", "pp"]
 }

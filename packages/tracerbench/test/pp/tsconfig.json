@@ -4,8 +4,5 @@
     "outDir": "../../dist/test/pp",
     "importHelpers": true,
     "sourceMap": false
-  },
-  "references": [{
-    "path": ".."
-  }]
+  }
 }
