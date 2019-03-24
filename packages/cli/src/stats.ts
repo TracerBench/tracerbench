@@ -1,4 +1,4 @@
-import { quantile } from 'd3-array';
+import { quantile, sum, median, mean } from 'd3-array';
 import { test, significant } from './mann-whitney';
 import { chalkScheme } from './utils';
 
@@ -14,6 +14,8 @@ interface IStatDisplayClass {
   name: string;
   deltaQ: number;
   significance: string;
+  varianceControl: number;
+  varianceExperiment: number;
 }
 
 export class StatDisplay implements IStatDisplayClass {
@@ -25,6 +27,14 @@ export class StatDisplay implements IStatDisplayClass {
   public name: string;
   public deltaQ: number;
   public significance: string;
+  public standardDeviationControl: number;
+  public standardDeviationExperiment: number;
+  public varianceControl: number;
+  public varianceExperiment: number;
+  public meanControl: number;
+  public meanExperiment: number;
+  public medianControl: number;
+  public medianExperiment: number;
   constructor(options: IStatDisplayOptions) {
     const { control, experiment, name } = options;
 
@@ -35,6 +45,18 @@ export class StatDisplay implements IStatDisplayClass {
     this.experimentQ = this.setQuantile(this.experiment) as number;
     this.deltaQ = this.setDelta(this.controlQ, this.experimentQ);
     this.significance = this.setSignificance(this.deltaQ);
+    this.standardDeviationControl = this.setStandardDeviation(control);
+    this.standardDeviationExperiment = this.setStandardDeviation(experiment);
+    this.varianceControl = Math.ceil(
+      this.setVariance(this.standardDeviationControl)
+    );
+    this.varianceExperiment = Math.ceil(
+      this.setVariance(this.standardDeviationExperiment)
+    );
+    this.meanControl = mean(control) as number;
+    this.meanExperiment = mean(experiment) as number;
+    this.medianControl = median(control) as number;
+    this.medianExperiment = median(experiment) as number;
   }
   private setQuantile(a: number[]): number | undefined {
     const n = a.sort((a: number, b: number) => a - b);
@@ -51,6 +73,17 @@ export class StatDisplay implements IStatDisplayClass {
     return delta > 0
       ? chalkScheme.imprv('Improvement')
       : chalkScheme.regress('Regression');
+  }
+  private setStandardDeviation(a: number[]) {
+    const dev: number[] = [];
+    const m = mean(a) as number;
+    a.sort().forEach(n => {
+      dev.push(Math.pow(n - m, 2));
+    });
+    return sum(dev) / (a.length - 1);
+  }
+  private setVariance(deviation: number) {
+    return Math.sqrt(deviation);
   }
   // TODO: using mann-whitney need to verify results
   private setIsSignificant(control: any[], experiment: any[]): boolean {
