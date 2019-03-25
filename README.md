@@ -32,7 +32,7 @@ As a general rule of thumb to "zero-out" your environment its recommended you cl
 
 ### Testing Ambient Noise
 
-Assuming the pre-req mitigations above are complete, to test the ambient noise of your environment you can run and measure a few A/A tests. For example the control against the control. The results of which should all be near identical with no significant result.
+Assuming the pre-req mitigations above are complete, to test the ambient noise of your environment you can run and measure a few A/A tests. For example the control against the control. The results of which should all be near identical with no significant result and low variance.
 
 # CLI Workflow
 
@@ -137,9 +137,13 @@ import { InitialRenderBenchmark, Runner } from 'tracerbench';
 // the number of samples TracerBench will run. Higher sample count = more accurate. 
 // However the duration of the test will increase. The recommendation is somewhere between 30-60 samples.
 const samplesCount = 40;
+
 // the markers leveraged tuning your web application. additionally this assumes you have tuned 
 // your web application with the following marker "renderEnd" (see "Instrument your web application" above)
-const markers = [{ start: 'renderEnd', label: 'renderEnd' }];
+// the full list of available markers is robust, especially as it pertains to web application frameworks (ember, react etc)
+// some common framework agnostic examples would be "domComplete", "fetchStart" , "domainLookupStart", "requestStart", "domLoading"
+const markers = [{ start: 'domComplete', label: 'domComplete' }];
+
 // the interface for optional chrome browser options is robust. typings available here:
 // https://github.com/TracerBench/chrome-debugging-client/blob/ce0cdf3341fbbff2164a1d46bac16885d39deb15/lib/types.ts#L114-L128
 const browser = {
@@ -155,6 +159,7 @@ const browser = {
     '--crash-dumps-dir=./tmp'
   ]
 };
+
 // name, url, markers and browser are all required options
 const control = new InitialRenderBenchmark({
   // some name for your control app
