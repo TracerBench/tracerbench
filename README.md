@@ -139,9 +139,11 @@ import { InitialRenderBenchmark, Runner } from 'tracerbench';
 const samplesCount = 40;
 
 // the markers leveraged tuning your web application. additionally this assumes you have tuned 
-// your web application with the following marker "renderEnd" (see "Instrument your web application" above)
-// the full list of available markers is robust, especially as it pertains to web application frameworks (ember, react etc)
-// some common framework agnostic examples would be "domComplete", "fetchStart" , "domainLookupStart", "requestStart", "domLoading"
+// your web application with the following marker "renderEnd" 
+// (see "Instrument your web application" above). the full list of available markers is robust, 
+// especially as it pertains to web application frameworks (ember, react etc). 
+// some common framework agnostic examples would be "domComplete", "fetchStart", 
+// "domainLookupStart", "requestStart", "domLoading"
 const markers = [{ start: 'domComplete', label: 'domComplete' }];
 
 // the interface for optional chrome browser options is robust. typings available here:
