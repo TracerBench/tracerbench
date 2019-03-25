@@ -96,6 +96,13 @@ $ tracerbench timeline:show --urlOrFrame http://localhost:8000
 In your app you must place a marker to let TracerBench know that you are done rendering to the DOM, it searches forward from this to find the next paint event. This is done by using a `performance.mark` function call.
 
 ```js
+function renderMyApp() {
+  // basic "web application"
+  // literally an app with a single empty p tag
+  const p = document.createElement("p");
+  document.body.appendChild(p);
+}
+
 function endTrace() {
   // just before paint
   requestAnimationFrame(() => {
@@ -106,8 +113,14 @@ function endTrace() {
   });
 }
 
+// render the app
 renderMyApp();
+
+// marker renderEnd
 performance.mark('renderEnd');
+
+// end trace and transition to blank page
+// internally cue tracerbench for another sample
 endTrace();
 ```
 
