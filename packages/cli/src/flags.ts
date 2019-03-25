@@ -42,15 +42,6 @@ export const defaultFlagArgs: ITBConfig = {
   iterations: 1
 };
 
-interface ICpuProfileNode {
-  id: number;
-  children?: number[];
-  positionTicks?: {
-    line: number;
-    ticks: number;
-  };
-}
-
 export const iterations = flags.build({
   default: () => getConfigDefault('iterations', defaultFlagArgs.iterations),
   description: `Number of runs`,
