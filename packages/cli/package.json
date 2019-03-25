@@ -1,7 +1,7 @@
 {
   "name": "tracerbench-cli",
   "description": "CLI for Tracerbench",
-  "version": "1.0.0-alpha.9",
+  "version": "1.0.0-alpha.10",
   "author": "Kris Selden @krisselden",
   "bin": {
     "tracerbench": "./bin/run"
@@ -19,7 +19,7 @@
     "json-query": "^2.2.2",
     "listr": "^0.14.3",
     "path": "0.12.7",
-    "tracerbench": "file:../tracerbench",
+    "tracerbench": "^1.0.0-alpha.10",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
@@ -75,5 +75,5 @@
     "version": "oclif-dev readme && git add README.md"
   },
   "types": "dist/index.d.ts",
-  "gitHead": "6fe758f18fa80b9a1617b10771adca8c061ef381"
+  "gitHead": "2c9278a98b205aa1305dacd8870055d2c87202a1"
 }

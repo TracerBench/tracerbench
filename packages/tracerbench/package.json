@@ -1,6 +1,6 @@
 {
   "name": "tracerbench",
-  "version": "1.0.0-alpha.9",
+  "version": "1.0.0-alpha.10",
   "description": "Benchmark runner for trace metrics",
   "keywords": [
     "chrome",
@@ -40,31 +40,31 @@
     "report": "Rscript bin/report.R test/results/results.json"
   },
   "dependencies": {
+    "@types/d3": "^5.7.0",
     "@types/node": "*",
     "array-binsearch": "^1.0.1",
-    "chrome-debugging-client": "^0.6.8",
-    "@types/d3": "^5.7.0",
     "chalk": "^2.4.2",
+    "chrome-debugging-client": "^0.6.8",
     "d3": "^5.7.0",
     "silent-error": "^1.1.1",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
-    "@types/glob": "^7.1.1",
-    "@types/tar": "^4.0.0",
-    "jquery": "^3.3.1",
-    "mkdirp": "^0.5.1",
-    "tar": "^4.4.8",
-    "tslint": "^5.14.0",
-    "typescript": "^3.3.4000",
     "@types/chai": "^4.1.7",
+    "@types/glob": "^7.1.1",
     "@types/mocha": "^5.2.6",
+    "@types/tar": "^4.0.0",
     "chai": "^4.2.0",
     "finalhandler": "^1.1.1",
+    "jquery": "^3.3.1",
+    "mkdirp": "^0.5.1",
     "mocha": "^6.0.2",
     "nyc": "^13.1.0",
-    "ts-node": "^8.0.3"
+    "tar": "^4.4.8",
+    "ts-node": "^8.0.3",
+    "tslint": "^5.14.0",
+    "typescript": "^3.3.4000"
   },
   "engine": "node >= 8",
-  "gitHead": "6fe758f18fa80b9a1617b10771adca8c061ef381"
+  "gitHead": "2c9278a98b205aa1305dacd8870055d2c87202a1"
 }
