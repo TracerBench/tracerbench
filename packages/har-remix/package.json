@@ -22,7 +22,7 @@
     "build": "tsc",
     "generate-har": "node scripts/generate_har_interfaces.js",
     "prepare": "tsc",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"TODO add tests for har-remix\""
   },
   "dependencies": {
     "mime-types": "^2.1.20"
