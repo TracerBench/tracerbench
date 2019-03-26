@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/TracerBench/tracerbench.svg?branch=master)](https://travis-ci.org/TracerBench/tracerbench)
 
-TracerBench: a web application benchmarking tool providing clear, usable insights for performance regressions with continuous integration hooks. This includes Response, Animation, Idle, and Load analysis, among others by automating chrome traces, controlling that each sample is independent and extracting metrics from them. TracerBench is focused on getting a low variance for a metric across many samples versus getting a hard to replicate performance report. At its core, TracerBench is framework agnostic, though it will have tight Ember.js integrations out-of-the-box.
+TracerBench: a web application benchmarking tool providing clear, usable insights for performance regressions with continuous integration hooks. This includes Response, Animation, Idle, and Load analysis, among others by automating chrome traces, controlling that each sample is independent and extracting metrics from them. TracerBench is focused on getting a low variance for a metric across many samples versus getting a hard to replicate performance report.
 
 # Motivation
 
@@ -16,7 +16,7 @@ When comparing TracerBench to [Lighthouse](https://github.com/GoogleChrome/light
 
 # CLI
 
-The recommended way of consuming TracerBench is via the (TracerBench-CLI)[https://github.com/TracerBench/tracerbench/tree/master/packages/cli]
+The recommended way of consuming TracerBench is via the [TracerBench-CLI](https://github.com/TracerBench/tracerbench/tree/master/packages/cli)
 
 # Ambient Noise
 
@@ -32,7 +32,7 @@ As a general rule of thumb to "zero-out" your environment its recommended you cl
 
 ### Testing Ambient Noise
 
-Assuming the pre-req mitigations above are complete, to test the ambient noise of your environment you can run and measure a few A/A tests. For example the control against the control. The results of which should all be near identical with no significant result.
+Assuming the pre-req mitigations above are complete, to test the ambient noise of your environment you can run and measure a few A/A tests. For example the control against the control. The results of which should all be near identical with no significant result and low variance.
 
 # CLI Workflow
 
@@ -42,7 +42,7 @@ Assuming the TracerBench-CLI is globally [installed](https://github.com/TracerBe
 
 1. Start by having TracerBench record a HAR:
 
-```s
+```console
 $ tracerbench create-archive --url http://localhost:8000
 ...
 
@@ -54,7 +54,7 @@ $ tracerbench create-archive --url http://localhost:8000
 
 2. Now have TracerBench record a Trace of that HAR:
 
-```s
+```console
 $ tracerbench trace --url http://localhost:8000 --har ./trace.har
 ...
 
@@ -69,7 +69,7 @@ $ tracerbench trace --url http://localhost:8000 --har ./trace.har
 
 3. Now that you have "trace.har" and "trace.json" files you can benchmark for the list of timings:
 
-```s
+```console
 $ tracerbench timeline:show --urlOrFrame http://localhost:8000
 ...
 
@@ -89,13 +89,20 @@ $ tracerbench timeline:show --urlOrFrame http://localhost:8000
 ✔ Timings:     410.85 ms firstLayout
 ```
 
-# Manual Workflow
+# TracerBench Compare: Manual Workflow
 
 ### Instrument your web application
 
 In your app you must place a marker to let TracerBench know that you are done rendering to the DOM, it searches forward from this to find the next paint event. This is done by using a `performance.mark` function call.
 
 ```js
+function renderMyApp() {
+  // basic "web application"
+  // literally an app with a single empty p tag
+  const p = document.createElement("p");
+  document.body.appendChild(p);
+}
+
 function endTrace() {
   // just before paint
   requestAnimationFrame(() => {
@@ -106,8 +113,14 @@ function endTrace() {
   });
 }
 
+// render the app
 renderMyApp();
+
+// marker renderEnd
 performance.mark('renderEnd');
+
+// end trace and transition to blank page
+// internally cue tracerbench for another sample
 endTrace();
 ```
 
@@ -115,17 +128,26 @@ In the example above we would mark right after we render the app and then call a
 
 ### Init Benchmark & Runner
 
-The most common and recommended consumption of TracerBench is via the [TracerBench-CLI](https://github.com/TracerBench/tracerbench/tree/master/packages/cli). Optionally, TracerBench does however expose an API directly. The most basic consumption of this is via the `InitialRenderBenchmark` and `Runner` with the option to leverage[HAR-Remix](https://github.com/TracerBench/har-remix) to serve recorded HARs.
+The most common and recommended consumption of TracerBench is via the [TracerBench-CLI](https://github.com/TracerBench/tracerbench/tree/master/packages/cli). Optionally, TracerBench does however expose an API directly. The most basic consumption of this is via the `InitialRenderBenchmark` and `Runner` with the option to leverage [HAR-Remix](https://github.com/TracerBench/har-remix) to serve recorded HARs.
 
 ```js
 import * as fs from 'fs-extra';
 import { InitialRenderBenchmark, Runner } from 'tracerbench';
 
-// the number of samples TracerBench will run. Higher sample count = more accurate. However the duration of the test will increase. The recommendation is somewhere between 30-60 samples.
+// the number of samples TracerBench will run. Higher sample count = more accurate. 
+// However the duration of the test will increase. The recommendation is somewhere between 30-60 samples.
 const samplesCount = 40;
-// the markers leveraged tuning your web application. additionally this assumes you have tuned your web application with the following marker "renderEnd" (see "Instrument your web application" above)
-const markers = [{ start: 'renderEnd', label: 'renderEnd' }];
-// the interface for optional chrome browser options is robust. typings available here: https://github.com/TracerBench/chrome-debugging-client/blob/ce0cdf3341fbbff2164a1d46bac16885d39deb15/lib/types.ts#L114-L128
+
+// the markers leveraged tuning your web application. additionally this assumes you have tuned 
+// your web application with the following marker "renderEnd" 
+// (see "Instrument your web application" above). the full list of available markers is robust, 
+// especially as it pertains to web application frameworks (ember, react etc). 
+// some common framework agnostic examples would be "domComplete", "fetchStart", 
+// "domainLookupStart", "requestStart", "domLoading"
+const markers = [{ start: 'domComplete', label: 'domComplete' }];
+
+// the interface for optional chrome browser options is robust. typings available here:
+// https://github.com/TracerBench/chrome-debugging-client/blob/ce0cdf3341fbbff2164a1d46bac16885d39deb15/lib/types.ts#L114-L128
 const browser = {
   type: 'canary',
   additionalArguments: [
@@ -139,6 +161,7 @@ const browser = {
     '--crash-dumps-dir=./tmp'
   ]
 };
+
 // name, url, markers and browser are all required options
 const control = new InitialRenderBenchmark({
   // some name for your control app
@@ -178,7 +201,7 @@ runner
   });
 ```
 
-# Trace-Results
+### Trace-Results
 
 The typings for "trace-results.json" is as follows:
 
@@ -206,8 +229,8 @@ The typings for "trace-results.json" is as follows:
 }]
 ```
 
-# Statistical Analysis
+### Statistical Analysis
 
 Assuming you have the output results ("trace-results.json") from your TracerBench run, its time to perform statistical analysis on the [Trace-Results](#Trace-Results) JSON file.
 
-TracerBench does not currently expose an API to manually handle stat-analysis, however an industry standard is leveraging [SciPy](http://www.numpy.org/).
+TracerBench does not currently expose an API to manually handle stat-analysis, however an industry standard is leveraging [SciPy](http://www.scipy.org/).
