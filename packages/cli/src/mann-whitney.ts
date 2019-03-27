@@ -1,5 +1,7 @@
 // all props and credit to:
 // npm package "mann-whitney-utest"
+// credit: @lukem512
+// MIT License
 
 const kk = 'val';
 
