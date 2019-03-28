@@ -6,7 +6,7 @@ import { traceJSONOutput } from '../helpers/flags';
 export default class CSSParse extends Command {
   public static description = 'Aggregates CSS parsing time from a trace.';
   public static flags = {
-    traceJSONOutput: traceJSONOutput({ required: true })
+    traceJSONOutput: traceJSONOutput({ required: true }),
   };
 
   public async run() {

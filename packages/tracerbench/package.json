@@ -22,22 +22,22 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
+    "ResultSets": "./bin/ResultSets.R",
     "plot": "./bin/plot.R",
     "report": "./bin/report.R",
-    "runtime-stats": "./bin/runtime-stats.R",
-    "ResultSets": "./bin/ResultSets.R"
+    "runtime-stats": "./bin/runtime-stats.R"
   },
   "scripts": {
     "build": "tsc -b",
     "lint": "node scripts/lint",
     "lint:opt": "tslint -p test -t stylish",
     "prepare": "yarn build",
+    "report": "Rscript bin/report.R test/results/results.json",
     "test": "yarn lint && yarn test:build && yarn test:only && yarn test:pp",
     "test:build": "node dist/test/build.js",
     "test:only": "node dist/test/test.js",
     "test:pp": "nyc --extension .ts mocha --forbid-only \"test/pp/*.test.ts\"",
-    "watch": "tsc -b -w",
-    "report": "Rscript bin/report.R test/results/results.json"
+    "watch": "tsc -b -w"
   },
   "dependencies": {
     "@types/d3": "^5.7.0",
@@ -60,9 +60,12 @@
     "mkdirp": "^0.5.1",
     "mocha": "^6.0.2",
     "nyc": "^13.1.0",
+    "prettier": "^1.16.4",
     "tar": "^4.4.8",
     "ts-node": "^8.0.3",
     "tslint": "^5.14.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.0.1",
     "typescript": "^3.3.4000"
   },
   "engine": "node >= 8",

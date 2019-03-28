@@ -6,7 +6,7 @@ export default class CreateArchive extends Command {
   public static description = 'Creates an automated HAR file from a URL.';
   public static flags = {
     archiveOutput: archiveOutput({ required: true }),
-    url: url({ required: true })
+    url: url({ required: true }),
   };
 
   public async run() {

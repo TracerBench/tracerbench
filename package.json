@@ -5,6 +5,7 @@
     "packages/*"
   ],
   "scripts": {
+    "lint": "lerna run lint --stream",
     "prepare": "lerna run prepare --stream",
     "test": "lerna run test --stream"
   },

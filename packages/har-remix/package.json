@@ -21,6 +21,7 @@
   "scripts": {
     "build": "tsc",
     "generate-har": "node scripts/generate_har_interfaces.js",
+    "lint": "tslint -p tsconfig.json",
     "prepare": "tsc",
     "test": "echo \"TODO add tests for har-remix\""
   },
@@ -32,7 +33,10 @@
     "@types/mime-types": "^2.1.0",
     "@types/node": "^10.12.18",
     "json-schema-to-typescript": "^5.5.0",
+    "prettier": "^1.16.4",
     "tslint": "^5.14.0",
+    "tslint-config-prettier": "^1.18.0",
+    "tslint-plugin-prettier": "^2.0.1",
     "typescript": "^3.3.4000"
   },
   "publishConfig": {

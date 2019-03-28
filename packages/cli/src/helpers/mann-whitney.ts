@@ -5,7 +5,7 @@
 
 const kk = 'val';
 
-const rank = (list: any) => {
+const rankArray = (list: any) => {
   list.sort((a: any, b: any) => {
     return a[kk] - b[kk];
   });
@@ -126,7 +126,7 @@ export const test = (samples: any): number[] => {
     return result;
   });
 
-  const ranked = rank(unranked);
+  const ranked = rankArray(unranked);
   const ranks = [];
   for (let i = 0; i < 2; i++) {
     ranks[i] = sampleRank(ranked, samples[i]);

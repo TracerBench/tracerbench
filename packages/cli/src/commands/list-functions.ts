@@ -1,7 +1,7 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
 import { loadTrace } from 'tracerbench';
-import { traceJSONOutput, locations } from '../helpers/flags';
+import { locations, traceJSONOutput } from '../helpers/flags';
 import { normalizeFnName } from '../helpers/utils';
 
 export default class ListFunctions extends Command {
@@ -9,7 +9,7 @@ export default class ListFunctions extends Command {
     'Lists all the functions and source locations from a trace.';
   public static flags = {
     traceJSONOutput: traceJSONOutput({ required: true }),
-    locations: locations()
+    locations: locations(),
   };
 
   public async run() {

@@ -5,13 +5,13 @@ import * as fs from 'fs-extra';
 import * as inquirer from 'inquirer';
 import { liveTrace } from 'tracerbench';
 import {
+  archiveOutput,
   cpuThrottleRate,
   har,
+  iterations,
   network,
   traceJSONOutput,
   url,
-  archiveOutput,
-  iterations
 } from '../helpers/flags';
 import { getCookiesFromHAR } from '../helpers/utils';
 
@@ -24,7 +24,7 @@ export default class Trace extends Command {
     network: network(),
     traceJSONOutput: traceJSONOutput({ required: true }),
     url: url({ required: true }),
-    iterations: iterations({ required: true })
+    iterations: iterations({ required: true }),
   };
 
   public async run() {
@@ -34,7 +34,7 @@ export default class Trace extends Command {
       cpuThrottleRate,
       traceJSONOutput,
       archiveOutput,
-      iterations
+      iterations,
     } = flags;
     const network = 'none';
     const cpu = cpuThrottleRate;
@@ -49,8 +49,8 @@ export default class Trace extends Command {
           choices: [{ name: 'yes' }, { name: 'no' }],
           message: `A HAR file was not found. Would you like TracerBench to record one now for you from ${url}?`,
           name: 'createArchive',
-          type: 'list'
-        }
+          type: 'list',
+        },
       ]);
       shouldCreateArchive = userResponse.createArchive;
 
@@ -59,7 +59,7 @@ export default class Trace extends Command {
           '--url',
           url,
           '--archiveOutput',
-          archiveOutput
+          archiveOutput,
         ]);
         har = archiveOutput;
       } else {
@@ -86,7 +86,7 @@ export default class Trace extends Command {
 
     await liveTrace(url, traceJSONOutput, cookies, {
       cpu,
-      network
+      network,
     });
     return this.log(
       `Trace JSON file successfully generated and available here: ${traceJSONOutput}`

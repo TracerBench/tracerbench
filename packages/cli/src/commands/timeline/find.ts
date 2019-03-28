@@ -8,7 +8,7 @@ export default class Find extends Command {
   public static description = 'Get frame id from trace JSON file and url.';
   public static flags = {
     traceJSONOutput: traceJSONOutput({ required: true }),
-    url: url({ required: true })
+    url: url({ required: true }),
   };
 
   public async run() {
@@ -20,24 +20,24 @@ export default class Find extends Command {
 
     const tasks = new Listr([
       {
-        title: 'Extract Trace Events',
         task: () => {
           traceFile = JSON.parse(fs.readFileSync(traceJSONOutput, 'utf8'));
-        }
+        },
+        title: 'Extract Trace Events',
       },
       {
-        title: 'Load Trace File',
         task: () => {
           trace = loadTraceFile(traceFile);
-        }
+        },
+        title: 'Load Trace File',
       },
       {
-        title: 'Find Frame',
         task: () => {
           frame = findFrame(trace, url);
           this.log(`FRAME: ${frame}`);
-        }
-      }
+        },
+        title: 'Find Frame',
+      },
     ]);
 
     tasks.run().catch((err: any) => {
