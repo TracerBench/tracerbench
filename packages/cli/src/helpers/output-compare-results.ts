@@ -5,12 +5,10 @@ import { chalkScheme } from './utils';
 import { IMarker } from 'tracerbench';
 
 const benchmarkTableConfig: Table.TableConstructorOptions = {
-  colWidths: [20, 15, 20, 20, 20],
+  colWidths: [20, 20, 20],
   head: [
     chalkScheme.header('Initial Render'),
-    chalkScheme.header('Estimator'),
-    chalkScheme.header('Control Distribution'),
-    chalkScheme.header('Experiment Distribution'),
+    chalkScheme.header('Estimator Delta'),
     chalkScheme.header('Is Significant')
   ],
   style: {
@@ -20,12 +18,10 @@ const benchmarkTableConfig: Table.TableConstructorOptions = {
 };
 
 const phaseTableConfig: Table.TableConstructorOptions = {
-  colWidths: [20, 15, 20, 20, 20],
+  colWidths: [20, 20, 20],
   head: [
     chalkScheme.header('Phase'),
-    chalkScheme.header('Estimator'),
-    chalkScheme.header('Control Distribution'),
-    chalkScheme.header('Experiment Distribution'),
+    chalkScheme.header('Estimator Delta'),
     chalkScheme.header('Is Significant')
   ],
   style: {
@@ -110,8 +106,6 @@ function setTableData(display: StatDisplay[], table: Table.HorizontalTable) {
     table.push([
       chalkScheme.phase(`${stat.name}`),
       chalkScheme.neutral(`${stat.estimator}μs`),
-      chalkScheme.neutral(`${stat.controlDistribution}μs`),
-      chalkScheme.neutral(`${stat.experimentDistribution}μs`),
       `${stat.significance}`
     ]);
   });

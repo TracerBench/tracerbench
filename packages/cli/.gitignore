@@ -1,8 +1,7 @@
 oclif.manifest.json
 *trace-processed.json
 cookies.json
-*tracerbench-results-trace.json
-*tracerbench-results.json
+*tracerbench-results*
 *trace.json
 *trace.har
 *tsconfig.tsbuildinfo

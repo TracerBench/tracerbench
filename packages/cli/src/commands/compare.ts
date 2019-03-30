@@ -49,6 +49,10 @@ export default class Compare extends Command {
       fidelity = parseInt((fidelityLookup as any)[fidelity], 10);
     }
 
+    if (!fs.existsSync(output)) {
+      fs.mkdirSync(output);
+    }
+
     const delay = 100;
     const runtimeStats = true;
     const browser = {
