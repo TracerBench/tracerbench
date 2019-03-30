@@ -1,7 +1,9 @@
 --require ts-node/register
 --watch-extensions ts
 --recursive
+--forbid-only
 --reporter spec
 --timeout 20000
---file ./setup/create-archive.test.ts
---file ./setup/trace.test.ts
+--file ./test/setup.ts
+--file ./test/commands/create-archive.ts
+--file ./test/commands/trace.ts

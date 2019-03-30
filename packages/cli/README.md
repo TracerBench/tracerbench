@@ -167,7 +167,7 @@ OPTIONS
       Simulated network conditions.
 
   -o, --output=output
-      (required) [default: tracerbench-results] The output filename for compare results
+      (required) [default: ./tracerbench-results] The output filepath for compare results
 
   -u, --url=url
       (required) [default: http://localhost:8000/?tracing] URL to visit

@@ -15,6 +15,7 @@ interface IStatDisplayClass {
   estimator: number;
   // based on alpha of 5%
   significance: string;
+  // todo: convert these to output histograms
   controlDistribution: any[];
   experimentDistribution: any[];
   // todo: add locationShift as +/- μs

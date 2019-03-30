@@ -36,7 +36,7 @@ export const defaultFlagArgs: ITBConfig = {
   traceJSONOutput: './trace.json',
   methods: '""',
   fidelity: 'low',
-  output: 'tracerbench-results',
+  output: './tracerbench-results',
   url: 'http://localhost:8000/?tracing',
   iterations: 1
 };
@@ -172,7 +172,7 @@ export const network = flags.build({
 export const output = flags.build({
   char: 'o',
   default: () => getConfigDefault('output', defaultFlagArgs.output),
-  description: 'The output filename for compare results'
+  description: 'The output filepath for compare results'
 });
 
 export const url = flags.build({

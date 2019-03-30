@@ -79,7 +79,7 @@ export function outputCompareResults(
   setTableData(displayedStats, phaseTable);
 
   const message = {
-    output: `Success! A detailed report and JSON file are available at ${output}.json`,
+    output: `Success! A detailed report and JSON file are available at ${output}/compare.json`,
     whichMsg: () => {
       return isSigStat ? message.nope : message.yup;
     },

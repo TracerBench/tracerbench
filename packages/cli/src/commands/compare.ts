@@ -63,7 +63,7 @@ export default class Compare extends Command {
         markers,
         name: 'control',
         runtimeStats,
-        saveTraces: () => `control-${output}-trace.json`,
+        saveTraces: () => `${output}/control.json`,
         url
       }),
       experiment: new InitialRenderBenchmark({
@@ -72,7 +72,7 @@ export default class Compare extends Command {
         markers,
         name: 'experiment',
         runtimeStats,
-        saveTraces: () => `experiment-${output}-trace.json`,
+        saveTraces: () => `${output}/experiment.json`,
         url
       })
     };
@@ -85,7 +85,10 @@ export default class Compare extends Command {
           this.error(`Could not sample from provided url: ${url}.`);
         }
 
-        fs.writeFileSync(`${output}.json`, JSON.stringify(results, null, 2));
+        fs.writeFileSync(
+          `${output}/compare.json`,
+          JSON.stringify(results, null, 2)
+        );
 
         outputCompareResults(results, markers, fidelity, output, this);
       })
