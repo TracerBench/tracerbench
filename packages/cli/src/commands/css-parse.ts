@@ -1,7 +1,7 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
 import { loadTrace } from 'tracerbench';
-import { traceJSONOutput } from '../flags';
+import { traceJSONOutput } from '../helpers/flags';
 
 export default class CSSParse extends Command {
   public static description = 'Aggregates CSS parsing time from a trace.';

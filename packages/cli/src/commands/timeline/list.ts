@@ -1,7 +1,7 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
-import { traceJSONOutput } from '../../flags';
-import { isCommitLoad, loadTraceFile } from '../../utils';
+import { traceJSONOutput } from '../../helpers/flags';
+import { isCommitLoad, loadTraceFile } from '../../helpers/utils';
 
 interface ITrace {
   args: {

@@ -2,7 +2,7 @@ import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
 import * as Listr from 'listr';
 import { loadTrace } from 'tracerbench';
-import { traceJSONOutput } from '../flags';
+import { traceJSONOutput } from '../helpers/flags';
 
 export default class JSEvalTime extends Command {
   public static description = 'Aggregates JS Eval time from a trace.';

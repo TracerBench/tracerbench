@@ -1,6 +1,11 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
-import { traceJSONOutput, filter, marks, urlOrFrame } from '../../flags';
+import {
+  traceJSONOutput,
+  filter,
+  marks,
+  urlOrFrame
+} from '../../helpers/flags';
 import {
   byTime,
   collect,
@@ -12,7 +17,7 @@ import {
   isMark,
   isUserMark,
   loadTraceFile
-} from '../../utils';
+} from '../../helpers/utils';
 
 export default class Show extends Command {
   public static description = 'show tracefile with user timings';

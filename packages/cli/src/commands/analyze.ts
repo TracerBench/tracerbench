@@ -2,7 +2,13 @@ import * as fs from 'fs-extra';
 
 import { Command } from '@oclif/command';
 import { analyze } from 'tracerbench';
-import { archive, event, traceJSONOutput, methods, report } from '../flags';
+import {
+  archive,
+  event,
+  traceJSONOutput,
+  methods,
+  report
+} from '../helpers/flags';
 
 export default class Analyze extends Command {
   public static description =

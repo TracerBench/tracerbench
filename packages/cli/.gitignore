@@ -3,3 +3,5 @@ oclif.manifest.json
 cookies.json
 *tracerbench-results-trace.json
 *tracerbench-results.json
+*trace.json
+*trace.har

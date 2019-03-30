@@ -13,7 +13,6 @@ export const defaultFlagArgs: ITBConfig = {
   cpuThrottleRate: 1,
   markers: [
     { start: 'fetchStart', label: 'fetchStart' },
-    { start: 'jqueryLoaded', label: 'jqueryLoaded' },
     { start: 'emberLoaded', label: 'emberLoaded' },
     { start: 'startRouting', label: 'startRouting' },
     { start: 'willTransition', label: 'willTransition' },

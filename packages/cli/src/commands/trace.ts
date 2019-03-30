@@ -12,8 +12,8 @@ import {
   url,
   archiveOutput,
   iterations
-} from '../flags';
-import { getCookiesFromHAR } from '../utils';
+} from '../helpers/flags';
+import { getCookiesFromHAR } from '../helpers/utils';
 
 export default class Trace extends Command {
   public static description = `Creates an automated trace JSON file. Also takes network conditioner and CPU throttling options.`;

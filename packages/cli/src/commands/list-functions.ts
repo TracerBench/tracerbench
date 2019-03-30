@@ -1,8 +1,8 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
 import { loadTrace } from 'tracerbench';
-import { traceJSONOutput, locations } from '../flags';
-import { normalizeFnName } from '../utils';
+import { traceJSONOutput, locations } from '../helpers/flags';
+import { normalizeFnName } from '../helpers/utils';
 
 export default class ListFunctions extends Command {
   public static description =

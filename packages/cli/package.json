@@ -20,7 +20,8 @@
     "listr": "^0.14.3",
     "path": "0.12.7",
     "tracerbench": "^1.0.0-alpha.10",
-    "tslib": "^1.9.3"
+    "tslib": "^1.9.3",
+    "wilson-interval": "^4.0.2"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.21.0",
@@ -37,13 +38,15 @@
     "@types/listr": "^0.13.0",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.12.18",
+    "@types/tmp": "^0.0.34",
     "chai": "^4.2.0",
     "chai-fs": "^2.0.0",
     "mocha": "^5.2.0",
     "nyc": "^13.1.0",
     "ts-node": "^8.0.3",
     "tslint": "^5.14.0",
-    "typescript": "^3.3.4000"
+    "typescript": "^3.3.4000",
+    "tmp": "^0.1.0"
   },
   "engines": {
     "node": ">=8.0.0"
@@ -71,7 +74,7 @@
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "tslint -p test -t stylish",
     "prepack": "rm -rf dist && tsc -b && oclif-dev manifest && oclif-dev readme",
-    "test": "nyc --extension .ts mocha --forbid-only \"test/**/*.test.ts\"",
+    "test": "nyc --extension .ts mocha --forbid-only \"test/commands/*.test.ts\" \"test/commands/timeline/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md"
   },
   "types": "dist/index.d.ts",

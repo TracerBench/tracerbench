@@ -1,8 +1,8 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
 import * as Listr from 'listr';
-import { traceJSONOutput, url } from '../../flags';
-import { findFrame, loadTraceFile } from '../../utils';
+import { traceJSONOutput, url } from '../../helpers/flags';
+import { findFrame, loadTraceFile } from '../../helpers/utils';
 
 export default class Find extends Command {
   public static description = 'Get frame id from trace JSON file and url.';

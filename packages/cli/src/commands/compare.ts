@@ -1,7 +1,7 @@
 import * as fs from 'fs-extra';
 
-import { outputCompareResults } from '../output-compare-results';
-import { fidelityLookup } from '../flags';
+import { outputCompareResults } from '../helpers/output-compare-results';
+import { fidelityLookup } from '../helpers/flags';
 import { Command } from '@oclif/command';
 import { InitialRenderBenchmark, Runner } from 'tracerbench';
 import {
@@ -14,7 +14,7 @@ import {
   network,
   output,
   url
-} from '../flags';
+} from '../helpers/flags';
 
 export default class Compare extends Command {
   public static description =

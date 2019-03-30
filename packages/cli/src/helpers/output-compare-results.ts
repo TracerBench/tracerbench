@@ -5,13 +5,13 @@ import { chalkScheme } from './utils';
 import { IMarker } from 'tracerbench';
 
 const benchmarkTableConfig: Table.TableConstructorOptions = {
-  colWidths: [25, 30, 30, 15, 15],
+  colWidths: [20, 15, 20, 20, 20],
   head: [
     chalkScheme.header('Initial Render'),
-    chalkScheme.header('Control p50, Variance'),
-    chalkScheme.header('Experiment p50, Variance'),
-    chalkScheme.header('Delta p50'),
-    chalkScheme.header('Significance')
+    chalkScheme.header('Estimator'),
+    chalkScheme.header('Control Distribution'),
+    chalkScheme.header('Experiment Distribution'),
+    chalkScheme.header('Is Significant')
   ],
   style: {
     head: [],
@@ -20,13 +20,13 @@ const benchmarkTableConfig: Table.TableConstructorOptions = {
 };
 
 const phaseTableConfig: Table.TableConstructorOptions = {
-  colWidths: [25, 30, 30, 15, 15],
+  colWidths: [20, 15, 20, 20, 20],
   head: [
     chalkScheme.header('Phase'),
-    chalkScheme.header('Control p50, Variance'),
-    chalkScheme.header('Experiment p50, Variance'),
-    chalkScheme.header('Delta p50'),
-    chalkScheme.header('Significance')
+    chalkScheme.header('Estimator'),
+    chalkScheme.header('Control Distribution'),
+    chalkScheme.header('Experiment Distribution'),
+    chalkScheme.header('Is Significant')
   ],
   style: {
     head: [],
@@ -38,7 +38,7 @@ const benchmarkTable = new Table(benchmarkTableConfig) as Table.HorizontalTable;
 const phaseTable = new Table(phaseTableConfig) as Table.HorizontalTable;
 const displayedBenchmarks: StatDisplay[] = [];
 const displayedStats: StatDisplay[] = [];
-let isSigStat: StatDisplay | null = null;
+let isSigStat: boolean = false;
 
 export function outputCompareResults(
   results: any,
@@ -75,58 +75,44 @@ export function outputCompareResults(
     displayedStats.push(new StatDisplay(o));
   });
 
-  // ITERATE OVER BENCHMARKS ARRAY OF STATDISPLAY AND OUTPUT
-  displayedBenchmarks.forEach(stat => {
-    if (stat.significance !== 'Neutral') {
-      isSigStat = stat;
-    }
-    benchmarkTable.push([
-      chalkScheme.phase(`${stat.name}`),
-      chalkScheme.neutral(`${stat.controlQ}μs, ${stat.varianceControl}μs`),
-      chalkScheme.neutral(
-        `${stat.experimentQ}μs, ${stat.varianceExperiment}μs`
-      ),
-      chalkScheme.neutral(`${stat.deltaQ}μs`),
-      chalkScheme.neutral(`${stat.significance}`)
-    ]);
-  });
+  setTableData(displayedBenchmarks, benchmarkTable);
+  setTableData(displayedStats, phaseTable);
 
-  // ITERATE OVER PHASETABLE ARRAY OF STATDISPLAY AND OUTPUT
-  displayedStats.forEach(stat => {
-    if (stat.significance !== 'Neutral') {
-      isSigStat = stat;
-    }
-    phaseTable.push([
-      chalkScheme.phase(`${stat.name}`),
-      chalkScheme.neutral(`${stat.controlQ}μs, ${stat.varianceControl}μs`),
-      chalkScheme.neutral(
-        `${stat.experimentQ}μs, ${stat.varianceExperiment}μs`
-      ),
-      chalkScheme.neutral(`${stat.deltaQ}μs`),
-      chalkScheme.neutral(`${stat.significance}`)
-    ]);
-  });
+  const message = {
+    output: `Success! A detailed report and JSON file are available at ${output}.json`,
+    whichMsg: () => {
+      return isSigStat ? message.nope : message.yup;
+    },
+    yup: `${fidelity} test samples were run and the results are significant in ${
+      results[0].meta.browserVersion
+    }. A recommended high-fidelity analysis should be performed.`,
+    nope: `${fidelity} test samples were run and the results are *not* significant in ${
+      results[0].meta.browserVersion
+    }.`
+  };
 
   // LOG JS, DURATION
   // LOG PHASES
   cli.log(`\n\n${benchmarkTable.toString()}`);
   cli.log(`\n\n${phaseTable.toString()}`);
-
-  const message = {
-    output: `Success! A detailed report and JSON file are available at ${output}.json`,
-    whichMsg: () => {
-      return isSigStat ? message.neutral : message.results;
-    },
-    results: `${fidelity} test samples were run and the results are significant in ${
-      results[0].meta.browserVersion
-    }. A recommended high-fidelity analysis should be performed.`,
-    neutral: `${fidelity} test samples were run and the results are neutral in ${
-      results[0].meta.browserVersion
-    }.`
-  };
-
   // LOG MESSAGE
   cli.log(
     chalkScheme.neutral(`\n\n${message.output}\n\n${message.whichMsg()}\n\n`)
   );
+}
+
+function setTableData(display: StatDisplay[], table: Table.HorizontalTable) {
+  // ITERATE OVER DISPLAY ARRAY OF STATDISPLAY AND OUTPUT
+  display.forEach(stat => {
+    if (stat.significance === 'Yes') {
+      isSigStat = true;
+    }
+    table.push([
+      chalkScheme.phase(`${stat.name}`),
+      chalkScheme.neutral(`${stat.estimator}μs`),
+      chalkScheme.neutral(`${stat.controlDistribution}μs`),
+      chalkScheme.neutral(`${stat.experimentDistribution}μs`),
+      `${stat.significance}`
+    ]);
+  });
 }

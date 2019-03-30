@@ -3,3 +3,5 @@
 --recursive
 --reporter spec
 --timeout 20000
+--file ./setup/create-archive.test.ts
+--file ./setup/trace.test.ts

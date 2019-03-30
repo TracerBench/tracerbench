@@ -185,7 +185,7 @@ OPTIONS
 
   --markers=markers
       (required) [default: [object Object],[object Object],[object Object],[object Object],[object Object],[object 
-      Object],[object Object]] DOM markers
+      Object]] DOM markers
 ```
 
 ## `tracerbench create-archive`

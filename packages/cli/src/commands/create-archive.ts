@@ -1,6 +1,6 @@
 import { Command } from '@oclif/command';
 import { harTrace } from 'tracerbench';
-import { archiveOutput, url } from '../flags';
+import { archiveOutput, url } from '../helpers/flags';
 
 export default class CreateArchive extends Command {
   public static description = 'Creates an automated HAR file from a URL.';

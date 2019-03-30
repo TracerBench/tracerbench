@@ -60,8 +60,7 @@ const uValue = (rank: any, observations: any) => {
   return rank - (k * (k + 1)) / 2;
 };
 
-const criticalValue = (u: any, samples: any) => {
-  const uVal = Math.min(u[0], u[1]);
+const criticalValue = (uVal: number, samples: [number[], number[]]) => {
   const prod = samples[0].length * samples[1].length;
   const n = samples[0].length + samples[1].length;
   const mean = prod / 2;
@@ -98,8 +97,8 @@ const criticalValue = (u: any, samples: any) => {
   return z;
 };
 
-export const significant = (u: any, samples: any) => {
-  return Math.min(u[0], u[1]) < criticalValue(u, samples);
+export const significant = (ustat: number, samples: [number[], number[]]) => {
+  return ustat < criticalValue(ustat, samples);
 };
 
 export const test = (samples: any): number[] => {
