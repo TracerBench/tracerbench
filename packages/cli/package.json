@@ -38,15 +38,13 @@
     "@types/listr": "^0.13.0",
     "@types/mocha": "^5.2.5",
     "@types/node": "^10.12.18",
-    "@types/tmp": "^0.0.34",
     "chai": "^4.2.0",
     "chai-fs": "^2.0.0",
     "mocha": "^5.2.0",
     "nyc": "^13.1.0",
     "ts-node": "^8.0.3",
     "tslint": "^5.14.0",
-    "typescript": "^3.3.4000",
-    "tmp": "^0.1.0"
+    "typescript": "^3.3.4000"
   },
   "engines": {
     "node": ">=8.0.0"
