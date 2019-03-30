@@ -5,3 +5,5 @@ cookies.json
 *tracerbench-results.json
 *trace.json
 *trace.har
+*tsconfig.tsbuildinfo
+*tb-tmp*
