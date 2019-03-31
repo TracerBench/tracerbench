@@ -8,9 +8,7 @@ export interface ITBConfig {
   archive?: string;
   traceJSONOutput?: string;
   methods?: string;
-  control?: string;
   cpuThrottleRate?: number | string;
-  experiment?: string;
   fidelity?: 'test' | 'low' | 'med' | 'high';
   report?: string;
   event?: string;
@@ -18,6 +16,8 @@ export interface ITBConfig {
   network?: string;
   output?: string;
   url?: string;
+  controlURL?: string;
+  experimentURL?: string;
   archiveOutput?: string;
   harOutput?: string;
   locations?: string;

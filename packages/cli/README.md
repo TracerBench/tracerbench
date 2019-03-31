@@ -157,28 +157,25 @@ USAGE
   $ tracerbench compare
 
 OPTIONS
-  -c, --control=control
-      The path to the control SHA
-
-  -e, --experiment=experiment
-      The path to the experiment SHA
-
   -n, --network=none|offline|dialup|2g|edge|slow-3g|em-3g|dsl|3g|fast-3g|4g|cable|LTE|FIOS
       Simulated network conditions.
 
   -o, --output=output
       (required) [default: ./tracerbench-results] The output filepath for compare results
 
-  -u, --url=url
-      (required) [default: http://localhost:8000/?tracing] URL to visit
-
   --browserArgs=browserArgs
       (required) [default: 
       --headless,--disable-gpu,--hide-scrollbars,--mute-audio,--v8-cache-options=none,--disable-cache,--disable-v8-idle-ta
       sks,--crash-dumps-dir=./tmp] (Default Recommended) Browser additional options for the TracerBench render benchmark
 
+  --controlURL=controlURL
+      (required) [default: http://localhost:8000/?tracing] Control URL to visit
+
   --cpuThrottleRate=cpuThrottleRate
       (required) [default: 1] CPU throttle multiplier
+
+  --experimentURL=experimentURL
+      (required) [default: http://localhost:8001/?tracing] Experiment URL to visit
 
   --fidelity=test|low|medium|high
       (required) [default: low] Directly correlates to the number of samples per trace. High means a longer trace time.
@@ -197,8 +194,8 @@ USAGE
   $ tracerbench create-archive
 
 OPTIONS
-  -u, --url=url                  (required) [default: http://localhost:8000/?tracing] URL to visit
   --archiveOutput=archiveOutput  (required) [default: ./trace.har] The output filepath/name to save the HAR to
+  --url=url                      (required) [default: http://localhost:8000/?tracing] URL to visit
 ```
 
 ## `tracerbench css-parse`
@@ -265,7 +262,7 @@ USAGE
 
 OPTIONS
   -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
-  -u, --url=url                          (required) [default: http://localhost:8000/?tracing] URL to visit
+  --url=url                              (required) [default: http://localhost:8000/?tracing] URL to visit
 ```
 
 ## `tracerbench timeline:list`
@@ -314,10 +311,6 @@ OPTIONS
   -n, --network=none|offline|dialup|2g|edge|slow-3g|em-3g|dsl|3g|fast-3g|4g|cable|LTE|FIOS  Simulated network
                                                                                             conditions.
 
-  -u, --url=url                                                                             (required) [default:
-                                                                                            http://localhost:8000/?traci
-                                                                                            ng] URL to visit
-
   --archiveOutput=archiveOutput                                                             (required) [default:
                                                                                             ./trace.har] The output
                                                                                             filepath/name to save the
@@ -328,5 +321,9 @@ OPTIONS
 
   --iterations=iterations                                                                   (required) [default: 1]
                                                                                             Number of runs
+
+  --url=url                                                                                 (required) [default:
+                                                                                            http://localhost:8000/?traci
+                                                                                            ng] URL to visit
 ```
 <!-- commandsstop -->

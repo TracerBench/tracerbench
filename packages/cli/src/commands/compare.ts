@@ -6,14 +6,13 @@ import { Command } from '@oclif/command';
 import { InitialRenderBenchmark, Runner } from 'tracerbench';
 import {
   browserArgs,
-  control,
   cpuThrottleRate,
-  experiment,
   fidelity,
   markers,
   network,
   output,
-  url
+  controlURL,
+  experimentURL
 } from '../helpers/flags';
 
 export default class Compare extends Command {
@@ -21,14 +20,13 @@ export default class Compare extends Command {
     'Compare the performance delta between an experiment and control';
   public static flags = {
     browserArgs: browserArgs({ required: true }),
-    control: control(),
     cpuThrottleRate: cpuThrottleRate({ required: true }),
-    experiment: experiment(),
     fidelity: fidelity({ required: true }),
     markers: markers({ required: true }),
     network: network(),
     output: output({ required: true }),
-    url: url({ required: true })
+    controlURL: controlURL({ required: true }),
+    experimentURL: experimentURL({ required: true })
   };
 
   public async run() {
@@ -38,10 +36,9 @@ export default class Compare extends Command {
       cpuThrottleRate,
       output,
       network,
-      experiment,
-      control,
       markers,
-      url
+      controlURL,
+      experimentURL
     } = flags;
     let { fidelity } = flags;
 
@@ -68,7 +65,7 @@ export default class Compare extends Command {
         name: 'control',
         runtimeStats,
         saveTraces: () => `${output}/control.json`,
-        url
+        url: controlURL
       }),
       experiment: new InitialRenderBenchmark({
         browser,
@@ -77,7 +74,7 @@ export default class Compare extends Command {
         name: 'experiment',
         runtimeStats,
         saveTraces: () => `${output}/experiment.json`,
-        url
+        url: experimentURL
       })
     };
 
@@ -86,7 +83,9 @@ export default class Compare extends Command {
       .run(fidelity)
       .then((results: any) => {
         if (!results[0].samples[0]) {
-          this.error(`Could not sample from provided url: ${url}.`);
+          this.error(
+            `Could not sample from provided urls\nCONTROL: ${controlURL}\nEXPERIMENT: ${experimentURL}.`
+          );
         }
 
         fs.writeFileSync(

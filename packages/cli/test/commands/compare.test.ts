@@ -13,14 +13,16 @@ const fixture = `file://${indexFile}?tracing`;
 const fidelity = 'test';
 const output = path.join(`${process.cwd()}/${tmpDir}`);
 
-describe('compare: fixture', () => {
+describe('compare: fixture: A/A', () => {
   test
     .stdout()
     .it(
-      `runs compare --url ${fixture} --fidelity ${fidelity} --output ${output}`,
+      `runs compare --controlURL ${fixture} --experimentURL ${fixture} --fidelity ${fidelity} --output ${output}`,
       async ctx => {
         await Compare.run([
-          '--url',
+          '--controlURL',
+          fixture,
+          '--experimentURL',
           fixture,
           '--fidelity',
           fidelity,

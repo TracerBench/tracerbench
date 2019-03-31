@@ -38,6 +38,8 @@ export const defaultFlagArgs: ITBConfig = {
   fidelity: 'low',
   output: './tracerbench-results',
   url: 'http://localhost:8000/?tracing',
+  controlURL: 'http://localhost:8000/?tracing',
+  experimentURL: 'http://localhost:8001/?tracing',
   iterations: 1
 };
 
@@ -124,18 +126,6 @@ export const cpuThrottleRate = flags.build({
   }
 });
 
-export const control = flags.build({
-  char: 'c',
-  default: () => getConfigDefault('control'),
-  description: 'The path to the control SHA'
-});
-
-export const experiment = flags.build({
-  char: 'e',
-  default: () => getConfigDefault('experiment'),
-  description: 'The path to the experiment SHA'
-});
-
 export const fidelity = flags.build({
   default: () => getConfigDefault('fidelity', defaultFlagArgs.fidelity),
   description: `Directly correlates to the number of samples per trace. High means a longer trace time.`,
@@ -176,9 +166,19 @@ export const output = flags.build({
 });
 
 export const url = flags.build({
-  char: 'u',
   default: () => getConfigDefault('url', defaultFlagArgs.url),
   description: 'URL to visit'
+});
+
+export const controlURL = flags.build({
+  default: () => getConfigDefault('controlURL', defaultFlagArgs.controlURL),
+  description: 'Control URL to visit'
+});
+
+export const experimentURL = flags.build({
+  default: () =>
+    getConfigDefault('experimentURL', defaultFlagArgs.experimentURL),
+  description: 'Experiment URL to visit'
 });
 
 export const locations = flags.build({
