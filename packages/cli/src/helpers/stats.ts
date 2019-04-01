@@ -1,8 +1,6 @@
 import { quantile, histogram, cross } from 'd3-array';
 import { test, significant } from './mann-whitney';
 import { chalkScheme } from './utils';
-// todo include confidence interval @95%
-// import { wilson } from 'wilson-interval';
 
 export interface IStatDisplayOptions {
   control: number[];
