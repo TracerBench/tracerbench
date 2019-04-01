@@ -19,7 +19,7 @@
     "json-query": "^2.2.2",
     "listr": "^0.14.3",
     "path": "0.12.7",
-    "tracerbench": "^1.0.0-alpha.11",
+    "tracerbench": "^1.0.0",
     "tslib": "^1.9.3",
     "wilson-interval": "^4.0.2"
   },
@@ -76,5 +76,5 @@
     "version": "oclif-dev readme && git add README.md"
   },
   "types": "dist/index.d.ts",
-  "gitHead": "f636dd59445053722a8573b2c5e8c15d5f61ff0e"
+  "gitHead": "95ab52895412d32c451c211463521dda5ac782e3"
 }
