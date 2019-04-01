@@ -21,7 +21,7 @@ $ npm install -g tracerbench-cli
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench-cli/1.0.0-alpha.10 darwin-x64 node-v8.14.0
+tracerbench-cli/1.0.0-alpha.11 darwin-x64 node-v8.14.0
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
