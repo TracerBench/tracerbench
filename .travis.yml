@@ -24,6 +24,7 @@ install:
   - Rscript --version
 script:
   - yarn test
+  - yarn lint
 after_script:
   - yarn lerna run report
 before_install:

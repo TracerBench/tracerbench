@@ -1,20 +1,20 @@
-import * as jsonQuery from 'json-query';
 import * as Table from 'cli-table2';
-import { StatDisplay, IStatDisplayOptions } from './stats';
-import { chalkScheme } from './utils';
+import * as jsonQuery from 'json-query';
 import { IMarker } from 'tracerbench';
+import { IStatDisplayOptions, StatDisplay } from './stats';
+import { chalkScheme } from './utils';
 
 const benchmarkTableConfig: Table.TableConstructorOptions = {
   colWidths: [20, 20, 20],
   head: [
     chalkScheme.header('Initial Render'),
     chalkScheme.header('Estimator Delta'),
-    chalkScheme.header('Is Significant')
+    chalkScheme.header('Is Significant'),
   ],
   style: {
     head: [],
-    border: []
-  }
+    border: [],
+  },
 };
 
 const phaseTableConfig: Table.TableConstructorOptions = {
@@ -22,12 +22,12 @@ const phaseTableConfig: Table.TableConstructorOptions = {
   head: [
     chalkScheme.header('Phase'),
     chalkScheme.header('Estimator Delta'),
-    chalkScheme.header('Is Significant')
+    chalkScheme.header('Is Significant'),
   ],
   style: {
     head: [],
-    border: []
-  }
+    border: [],
+  },
 };
 
 const benchmarkTable = new Table(benchmarkTableConfig) as Table.HorizontalTable;
@@ -50,12 +50,12 @@ export function outputCompareResults(
     const name = !marker ? id : marker.start;
     return {
       control: jsonQuery(`[*set=control]${query}`, {
-        data: results
+        data: results,
       }).value,
       experiment: jsonQuery(`[*set=experiment]${query}`, {
-        data: results
+        data: results,
       }).value,
-      name
+      name,
     };
   }
 
@@ -84,7 +84,7 @@ export function outputCompareResults(
     }. A recommended high-fidelity analysis should be performed.`,
     nope: `${fidelity} test samples were run and the results are *not* significant in ${
       results[0].meta.browserVersion
-    }.`
+    }.`,
   };
 
   // LOG JS, DURATION
@@ -106,7 +106,7 @@ function setTableData(display: StatDisplay[], table: Table.HorizontalTable) {
     table.push([
       chalkScheme.phase(`${stat.name}`),
       chalkScheme.neutral(`${stat.estimator}μs`),
-      `${stat.significance}`
+      `${stat.significance}`,
     ]);
   });
 }

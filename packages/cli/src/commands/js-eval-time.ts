@@ -7,7 +7,7 @@ import { traceJSONOutput } from '../helpers/flags';
 export default class JSEvalTime extends Command {
   public static description = 'Aggregates JS Eval time from a trace.';
   public static flags = {
-    traceJSONOutput: traceJSONOutput({ required: true })
+    traceJSONOutput: traceJSONOutput({ required: true }),
   };
 
   public async run() {
@@ -20,19 +20,18 @@ export default class JSEvalTime extends Command {
 
     const tasks = new Listr([
       {
-        title: 'Extract Trace Events',
         task: () => {
           events = JSON.parse(fs.readFileSync(traceJSONOutput, 'utf8'));
-        }
+        },
+        title: 'Extract Trace Events',
       },
       {
-        title: 'Loading Trace',
         task: () => {
           trace = loadTrace(events.traceEvents);
-        }
+        },
+        title: 'Loading Trace',
       },
       {
-        title: 'Filtering Events',
         task: () => {
           trace.events
             .filter((event: any) => event.name === 'EvaluateScript')
@@ -45,8 +44,9 @@ export default class JSEvalTime extends Command {
             });
 
           this.log(`Total Duration = ${totalDuration.toFixed(2)}ms`);
-        }
-      }
+        },
+        title: 'Filtering Events',
+      },
     ]);
 
     tasks.run().catch((err: any) => {

@@ -5,9 +5,9 @@ import { analyze } from 'tracerbench';
 import {
   archive,
   event,
-  traceJSONOutput,
   methods,
-  report
+  report,
+  traceJSONOutput,
 } from '../helpers/flags';
 
 export default class Analyze extends Command {
@@ -18,7 +18,7 @@ export default class Analyze extends Command {
     event: event(),
     traceJSONOutput: traceJSONOutput({ required: true }),
     methods: methods({ required: true }),
-    report: report()
+    report: report(),
   };
 
   public async run() {
@@ -46,7 +46,7 @@ export default class Analyze extends Command {
       file,
       methods,
       rawTraceData,
-      report
+      report,
     });
   }
 }

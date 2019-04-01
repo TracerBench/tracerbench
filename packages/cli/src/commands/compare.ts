@@ -1,19 +1,19 @@
 import * as fs from 'fs-extra';
 
-import { outputCompareResults } from '../helpers/output-compare-results';
-import { fidelityLookup } from '../helpers/flags';
 import { Command } from '@oclif/command';
 import { InitialRenderBenchmark, Runner } from 'tracerbench';
 import {
   browserArgs,
+  controlURL,
   cpuThrottleRate,
+  experimentURL,
   fidelity,
+  fidelityLookup,
   markers,
   network,
   output,
-  controlURL,
-  experimentURL
 } from '../helpers/flags';
+import { outputCompareResults } from '../helpers/output-compare-results';
 
 export default class Compare extends Command {
   public static description =
@@ -26,7 +26,7 @@ export default class Compare extends Command {
     network: network(),
     output: output({ required: true }),
     controlURL: controlURL({ required: true }),
-    experimentURL: experimentURL({ required: true })
+    experimentURL: experimentURL({ required: true }),
   };
 
   public async run() {
@@ -38,7 +38,7 @@ export default class Compare extends Command {
       network,
       markers,
       controlURL,
-      experimentURL
+      experimentURL,
     } = flags;
     let { fidelity } = flags;
 
@@ -53,7 +53,7 @@ export default class Compare extends Command {
     const delay = 100;
     const runtimeStats = true;
     const browser = {
-      additionalArguments: browserArgs
+      additionalArguments: browserArgs,
     };
 
     const benchmarks = {
@@ -65,7 +65,7 @@ export default class Compare extends Command {
         name: 'control',
         runtimeStats,
         saveTraces: () => `${output}/control.json`,
-        url: controlURL
+        url: controlURL,
       }),
       experiment: new InitialRenderBenchmark({
         browser,
@@ -74,8 +74,8 @@ export default class Compare extends Command {
         name: 'experiment',
         runtimeStats,
         saveTraces: () => `${output}/experiment.json`,
-        url: experimentURL
-      })
+        url: experimentURL,
+      }),
     };
 
     const runner = new Runner([benchmarks.control, benchmarks.experiment]);

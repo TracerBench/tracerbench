@@ -1,8 +1,8 @@
-import * as http from "http";
-import * as zlib from "zlib";
-import * as fs from "fs";
-import * as mimeTypes from "mime-types";
-import * as HAR from "./har";
+import * as fs from 'fs';
+import * as http from 'http';
+import * as mimeTypes from 'mime-types';
+import * as zlib from 'zlib';
+import * as HAR from './har';
 export { HAR };
 
 /**
@@ -76,7 +76,7 @@ export default class ArchiveServer {
   constructor(private delegate: ServerDelegate) {}
 
   public loadArchive(path: string) {
-    this.addArchive(JSON.parse(fs.readFileSync(path, "utf8")));
+    this.addArchive(JSON.parse(fs.readFileSync(path, 'utf8')));
   }
 
   public addArchive(har: HAR.Archive) {
@@ -84,18 +84,21 @@ export default class ArchiveServer {
   }
 
   public addArchiveEntries(entries: HAR.Entry[]) {
-    for (let i = 0; i < entries.length; i++) {
-      this.addArchiveEntry(entries[i]);
+    for (const entry of entries) {
+      this.addArchiveEntry(entry);
     }
   }
 
   public addArchiveEntry(entry: HAR.Entry) {
-    let key = this.delegate.keyForArchiveEntry(entry);
-    if (!key) return;
-    let response = this.buildResponseForArchiveEntry(entry, key);
+    const key = this.delegate.keyForArchiveEntry(entry);
+    if (!key) {
+      return;
+    }
+    const response = this.buildResponseForArchiveEntry(entry, key);
     if (response) {
       this.addResponse(key, response);
     } else {
+      // tslint:disable-next-line: no-console
       console.error(`unable to build response for key: ${key}`);
     }
   }
@@ -104,9 +107,10 @@ export default class ArchiveServer {
     entry: HAR.Entry,
     key: string
   ): Response | undefined {
-    let { status, content } = entry.response;
+    const { status, content } = entry.response;
     if (content && status >= 200 && status < 300) {
-      let { text, encoding, mimeType } = content;
+      let { text } = content;
+      const { encoding, mimeType } = content;
       let body: Buffer | undefined;
 
       if (text === undefined) {
@@ -123,7 +127,7 @@ export default class ArchiveServer {
         body = new Buffer(text, encoding);
       }
 
-      let compress =
+      const compress =
         content.compression !== undefined && content.compression > 0;
       let response = this.buildResponse(status, mimeType, body, compress);
       if (this.delegate.finalizeResponse) {
@@ -159,17 +163,18 @@ export default class ArchiveServer {
     body: Buffer | undefined,
     compressed: boolean
   ): MapLike<string> {
-    let headers: MapLike<string> = {
-      "Content-Length": "" + (body ? body.byteLength : 0),
-      "Content-Type": mimeType
+    const headers: MapLike<string> = {
+      'Content-Length': '' + (body ? body.byteLength : 0),
+      'Content-Type': mimeType
     };
     if (compressed) {
-      headers["Content-Encoding"] = "gzip";
+      headers['Content-Encoding'] = 'gzip';
     }
     return headers;
   }
 
   public addResponse(key: string, response: Response) {
+    // tslint:disable-next-line: no-console
     console.log(`add:  ${key}`);
     let res = this.responses[key];
     if (res) {
@@ -183,12 +188,13 @@ export default class ArchiveServer {
   }
 
   public setResponse(key: string, response: Response) {
+    // tslint:disable-next-line: no-console
     console.log(`set:  ${key}`);
     this.responses[key] = response;
   }
 
   public responseFor(key: string): Response | undefined {
-    let res = this.responses[key];
+    const res = this.responses[key];
     if (res && res.next) {
       this.responses[key] = res.next;
     }
@@ -199,14 +205,18 @@ export default class ArchiveServer {
     request: http.IncomingMessage,
     response: http.ServerResponse
   ) {
-    let key = await Promise.resolve(this.delegate.keyForServerRequest(request));
+    const key = await Promise.resolve(
+      this.delegate.keyForServerRequest(request)
+    );
     if (key) {
-      let res = this.responseFor(key);
+      const res = this.responseFor(key);
       if (res) {
+        // tslint:disable-next-line: no-console
         console.log(`hit:  ${key}`);
         response.writeHead(res.statusCode, res.headers);
         response.end(res.body);
       } else {
+        // tslint:disable-next-line: no-console
         console.log(`miss: ${key}`);
       }
     }
@@ -220,6 +230,7 @@ export default class ArchiveServer {
       response.end();
     }
 
+    // tslint:disable-next-line: no-console
     console.log(response.statusCode, request.method, request.url);
   }
 
@@ -233,8 +244,5 @@ export interface MapLike<T> {
 }
 
 function createMap<T>(): MapLike<T> {
-  let map: MapLike<T> = Object.create(null);
-  map["__"] = undefined;
-  delete map["__"];
-  return map;
+  return Object.create(null);
 }

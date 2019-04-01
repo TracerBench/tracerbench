@@ -1,10 +1,10 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
 import {
-  traceJSONOutput,
   filter,
   marks,
-  urlOrFrame
+  traceJSONOutput,
+  urlOrFrame,
 } from '../../helpers/flags';
 import {
   byTime,
@@ -16,7 +16,7 @@ import {
   isFrameNavigationStart,
   isMark,
   isUserMark,
-  loadTraceFile
+  loadTraceFile,
 } from '../../helpers/utils';
 
 export default class Show extends Command {
@@ -26,7 +26,7 @@ export default class Show extends Command {
     traceJSONOutput: traceJSONOutput({ required: true }),
     filter: filter(),
     marks: marks(),
-    urlOrFrame: urlOrFrame({ required: true })
+    urlOrFrame: urlOrFrame({ required: true }),
   };
 
   public async run() {

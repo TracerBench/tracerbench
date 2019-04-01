@@ -1,5 +1,5 @@
-import { quantile, histogram, cross } from 'd3-array';
-import { test, significant } from './mann-whitney';
+import { cross, histogram, quantile } from 'd3-array';
+import { significant, test } from './mann-whitney';
 import { chalkScheme } from './utils';
 
 export interface IStatDisplayOptions {

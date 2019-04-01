@@ -53,10 +53,10 @@ export function getConfigDefault(id: ITBConfigKeys, defaultValue?: any) {
 
 export const chalkScheme = {
   header: chalk.rgb(255, 255, 255),
-  regress: chalk.rgb(239, 100, 107),
-  neutral: chalk.rgb(165, 173, 186),
   imprv: chalk.rgb(135, 197, 113),
-  phase: chalk.rgb(165, 173, 186)
+  neutral: chalk.rgb(165, 173, 186),
+  phase: chalk.rgb(165, 173, 186),
+  regress: chalk.rgb(239, 100, 107),
 };
 
 export function getCookiesFromHAR(har: any) {

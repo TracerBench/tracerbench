@@ -15,7 +15,7 @@ interface ITrace {
 export default class List extends Command {
   public static description = 'list main frame loads';
   public static flags = {
-    traceJSONOutput: traceJSONOutput({ required: true })
+    traceJSONOutput: traceJSONOutput({ required: true }),
   };
 
   public async run() {
