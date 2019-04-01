@@ -1,7 +1,7 @@
 {
   "name": "tracerbench-cli",
   "description": "CLI for Tracerbench",
-  "version": "1.0.0-alpha.10",
+  "version": "1.0.0-alpha.11",
   "author": "Kris Selden @krisselden",
   "bin": {
     "tracerbench": "./bin/run"
