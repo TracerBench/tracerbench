@@ -102,7 +102,7 @@ export const traceJSONOutput = flags.build({
   char: 'f',
   default: () =>
     getConfigDefault('traceJSONOutput', defaultFlagArgs.traceJSONOutput),
-  description: 'Path to the existing trace JSON file'
+  description: 'Output path for the trace JSON file'
 });
 
 export const methods = flags.build({
