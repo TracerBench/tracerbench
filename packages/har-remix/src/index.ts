@@ -3,13 +3,34 @@ import * as fs from 'fs';
 import * as http from 'http';
 import * as mimeTypes from 'mime-types';
 import * as zlib from 'zlib';
+import { ResponseMap } from '../proto';
 import { MapLike, Response, ServerDelegate } from '../types';
 export * from '../types';
 
 export default class ArchiveServer {
-  private responses = createMap<Response>();
+  public static fromBuffer(
+    delegate: ServerDelegate,
+    buffer: Uint8Array
+  ): ArchiveServer {
+    return new ArchiveServer(delegate, loadResponses(buffer));
+  }
 
-  constructor(private delegate: ServerDelegate) {}
+  public static fromFile(delegate: ServerDelegate, filename: string) {
+    return this.fromBuffer(delegate, fs.readFileSync(filename));
+  }
+
+  constructor(
+    private delegate: ServerDelegate,
+    private responses = createMap<Response>()
+  ) {}
+
+  public toBuffer(): Uint8Array {
+    return saveResponses(this.responses);
+  }
+
+  public toFile(filename: string) {
+    fs.writeFileSync(filename, this.toBuffer());
+  }
 
   public loadArchive(path: string) {
     this.addArchive(JSON.parse(fs.readFileSync(path, 'utf8')));
@@ -137,7 +158,10 @@ export default class ArchiveServer {
       if (res) {
         // tslint:disable-next-line: no-console
         console.log(`hit:  ${key}`);
-        response.writeHead(res.statusCode, res.headers);
+        response.writeHead(
+          res.statusCode,
+          res.headers == null ? undefined : res.headers
+        );
         response.end(res.body);
       } else {
         // tslint:disable-next-line: no-console
@@ -165,4 +189,13 @@ export default class ArchiveServer {
 
 function createMap<T>(): MapLike<T> {
   return Object.create(null);
+}
+
+export function saveResponses(responses: MapLike<Response>): Uint8Array {
+  return ResponseMap.encode({ responses }).finish();
+}
+
+export function loadResponses(buffer: Uint8Array): MapLike<Response> {
+  const { responses } = ResponseMap.decode(buffer);
+  return responses == null ? createMap<Response>() : responses;
 }

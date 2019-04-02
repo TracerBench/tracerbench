@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+message ResponseMap {
+    map<string, Response> responses = 1;
+}
+
+message Response {
+    required int32 statusCode = 1;
+    map<string, string> headers = 2;
+    bytes body = 3;
+}

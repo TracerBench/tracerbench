@@ -1,14 +1,14 @@
-import * as HAR from "@tracerbench/har";
+import * as HAR from '@tracerbench/har';
 import { IncomingMessage, ServerResponse } from 'http';
 
 export interface Response {
   statusCode: number;
-  headers: MapLike<string>;
-  body: Buffer | undefined;
+  headers?: MapLike<string> | null;
+  body?: Uint8Array | null;
 }
 
 export interface MapLike<T> {
-  [key: string]: T | undefined;
+  [key: string]: T;
 }
 
 /**
