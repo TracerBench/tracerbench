@@ -9,3 +9,4 @@ tmp/
 *.tgz
 *.tmp
 .nyc_output
+/packages/har/index.d.ts

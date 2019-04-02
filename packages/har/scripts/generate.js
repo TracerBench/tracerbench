@@ -1,10 +1,14 @@
-const fs = require("fs");
-const json2ts = require("json-schema-to-typescript");
-const schemas = require("@krisselden/har-schema");
+#!/usr/bin/env node
+const fs = require('fs');
+const path = require('path');
+const json2ts = require('json-schema-to-typescript');
+const schemas = require('@krisselden/har-schema');
+
+const outfile = path.resolve(__dirname, '..', 'index.d.ts');
 
 json2ts
-  .compile(makeRefsLocal("har", schemas), "Archive")
-  .then(ts => fs.writeFileSync("src/har.ts", ts));
+  .compile(makeRefsLocal('har', schemas), 'Archive')
+  .then(ts => fs.writeFileSync(outfile, ts));
 
 function makeRefsLocal(rootKey, schemas) {
   let keys = Object.keys(schemas);
@@ -20,9 +24,9 @@ function makeRefsLocal(rootKey, schemas) {
   keys.forEach(key => {
     let schema = JSON.parse(
       JSON.stringify(schemas[key], (key, value) => {
-        if (key === "$ref") {
+        if (key === '$ref') {
           return newRefByOld.get(value);
-        } else if (key === "$id") {
+        } else if (key === '$id') {
           return;
         }
         return value;

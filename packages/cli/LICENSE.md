@@ -1,6 +1,6 @@
 BSD 2-CLAUSE LICENSE
 
-Copyright 2018 LinkedIn Corporation and Contributors. All Rights Reserved.
+Copyright 2019 LinkedIn Corporation and Contributors. All Rights Reserved.
 
 Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
