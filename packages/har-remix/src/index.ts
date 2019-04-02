@@ -1,74 +1,10 @@
+import * as HAR from '@tracerbench/har';
 import * as fs from 'fs';
 import * as http from 'http';
 import * as mimeTypes from 'mime-types';
 import * as zlib from 'zlib';
-import * as HAR from './har';
-export { HAR };
-
-/**
- * Delegate for archive server
- */
-export interface ServerDelegate {
-  /**
-   * Create a key for the request that will be used to match
-   * the server request to the archived response.
-   *
-   * Return undefined if you do not want to serve this request.
-   */
-  keyForArchiveEntry(entry: HAR.Entry): string | undefined;
-
-  /**
-   * Create a key from the request to match against the archived requests.
-   */
-  keyForServerRequest(
-    req: http.IncomingMessage
-  ): PromiseLike<string | undefined> | string | undefined;
-
-  /**
-   * Allows simple text content to be transformed.
-   *
-   * Not called if entry.response.content.encoding == "base64"
-   */
-  textFor?(entry: HAR.Entry, key: string, text: string): string;
-
-  /**
-   * By default, only 2xx requests with content are responded to.
-   *
-   * To be more specific "with content" means the HAR was recorded with content.
-   * 204 requests still have a content entry with the mimeType but no text key.
-   */
-  responseFor?(entry: HAR.Entry, key: string): Response | undefined;
-
-  /**
-   * Finalize the response before adding it, by default no headers are copied.
-   *
-   * This hook allows you to set headers (like cache-control, authorization, set-cookie),
-   * or return a different Response.
-   */
-  finalizeResponse?(
-    entry: HAR.Entry,
-    key: string,
-    response: Response
-  ): Response;
-
-  /**
-   * Called if no response found.
-   *
-   * Allows fallback, will 404 if headers aren't sent, so you must writeHead if you
-   * intend to handle the request.
-   */
-  missingResponse?(
-    request: http.IncomingMessage,
-    response: http.ServerResponse
-  ): PromiseLike<void> | undefined;
-}
-
-export interface Response {
-  statusCode: number;
-  headers: MapLike<string>;
-  body: Buffer | undefined;
-  next: Response | undefined;
-}
+import { MapLike, Response, ServerDelegate } from '../types';
+export * from '../types';
 
 export default class ArchiveServer {
   private responses = createMap<Response>();
@@ -149,13 +85,13 @@ export default class ArchiveServer {
     let headers: MapLike<string>;
     if (body && compress) {
       body = zlib.gzipSync(body, {
-        level: 9
+        level: 9,
       });
       headers = this.buildHeaders(mimeType, body, true);
     } else {
       headers = this.buildHeaders(mimeType, body, false);
     }
-    return { statusCode, headers, body, next: undefined };
+    return { statusCode, headers, body };
   }
 
   public buildHeaders(
@@ -165,7 +101,7 @@ export default class ArchiveServer {
   ): MapLike<string> {
     const headers: MapLike<string> = {
       'Content-Length': '' + (body ? body.byteLength : 0),
-      'Content-Type': mimeType
+      'Content-Type': mimeType,
     };
     if (compressed) {
       headers['Content-Encoding'] = 'gzip';
@@ -176,15 +112,7 @@ export default class ArchiveServer {
   public addResponse(key: string, response: Response) {
     // tslint:disable-next-line: no-console
     console.log(`add:  ${key}`);
-    let res = this.responses[key];
-    if (res) {
-      while (res.next) {
-        res = res.next;
-      }
-      res.next = response;
-    } else {
-      this.responses[key] = response;
-    }
+    this.responses[key] = response;
   }
 
   public setResponse(key: string, response: Response) {
@@ -194,11 +122,7 @@ export default class ArchiveServer {
   }
 
   public responseFor(key: string): Response | undefined {
-    const res = this.responses[key];
-    if (res && res.next) {
-      this.responses[key] = res.next;
-    }
-    return res;
+    return this.responses[key];
   }
 
   public async handle(
@@ -237,10 +161,6 @@ export default class ArchiveServer {
   public createServer(): http.Server {
     return http.createServer((req, res) => this.handle(req, res));
   }
-}
-
-export interface MapLike<T> {
-  [key: string]: T | undefined;
 }
 
 function createMap<T>(): MapLike<T> {

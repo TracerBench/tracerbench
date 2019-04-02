@@ -10,5 +10,5 @@
     "sourceMap": true,
     "newLine": "LF"
   },
-  "files": ["src/har.ts", "src/index.ts"]
+  "files": ["src/index.ts"]
 }

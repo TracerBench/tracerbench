@@ -1,0 +1,27 @@
+{
+  "name": "@tracerbench/har",
+  "version": "2.0.0-beta.3",
+  "description": "HAR json typescript interfaces",
+  "keywords": [
+    "har",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TracerBench/tracerbench.git"
+  },
+  "license": "BSD-2-Clause",
+  "author": "Kris Selden <kris.selden@gmail.com>",
+  "files": [
+    "index.d.ts"
+  ],
+  "types": "index.d.ts",
+  "scripts": {
+    "prepare": "node scripts/generate.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@krisselden/har-schema": "^0.1.0",
+    "json-schema-to-typescript": "^6.1.3"
+  }
+}
