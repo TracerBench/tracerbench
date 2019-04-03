@@ -9,7 +9,7 @@
     "module": "commonjs",
     "outDir": "dist",
     "rootDir": "src",
-    "target": "es2017",
+    "target": "es2017"
   },
   "include": [
     "src/**/*"

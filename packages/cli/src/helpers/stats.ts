@@ -28,14 +28,26 @@ export class StatDisplay implements IStatDisplayClass {
   public ustat: number;
   public controlDistribution: string;
   public experimentDistribution: string;
+  public range: { min: number; max: number };
   constructor(options: IStatDisplayOptions) {
     const { control, experiment, name } = options;
     this.name = name;
     this.ustat = this.getUSTAT(control, experiment);
     this.significance = this.setIsSignificant(this.ustat, control, experiment);
     this.estimator = this.getHodgesLehmann(control, experiment) as number;
-    this.controlDistribution = sparkline(this.getHistogram(control));
-    this.experimentDistribution = sparkline(this.getHistogram(experiment));
+    this.range = this.getRange(control, experiment);
+    this.controlDistribution = sparkline(this.getHistogram(control), {
+      min: this.range.min,
+      max: this.range.max,
+    });
+    this.experimentDistribution = sparkline(this.getHistogram(experiment), {
+      min: this.range.min,
+      max: this.range.max,
+    });
+  }
+  private getRange(control: number[], experiment: number[]) {
+    const a = control.concat(experiment);
+    return { min: Math.min(...a), max: Math.max(...a) };
   }
   private getHistogram(a: number[]) {
     return histogram()(a).map(i => {

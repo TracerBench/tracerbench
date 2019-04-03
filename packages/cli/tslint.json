@@ -12,7 +12,8 @@
     "no-duplicate-imports": true,
     "no-import-side-effect": true,
     "no-shadowed-variable": false,
-    "object-literal-sort-keys": false
+    "object-literal-sort-keys": false,
+    "ordered-imports": false
   },
   "rulesDirectory": []
 }

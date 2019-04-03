@@ -6,18 +6,18 @@ export const fidelityLookup = {
   test: 2,
   low: 25,
   medium: 35,
-  high: 50
+  high: 50,
 };
 
 export const defaultFlagArgs: ITBConfig = {
-  cpuThrottleRate: 1,
+  cpuThrottleRate: 4,
   markers: [
     { start: 'fetchStart', label: 'fetchStart' },
     { start: 'emberLoaded', label: 'emberLoaded' },
     { start: 'startRouting', label: 'startRouting' },
     { start: 'willTransition', label: 'willTransition' },
     { start: 'didTransition', label: 'didTransition' },
-    { start: 'renderEnd', label: 'renderEnd' }
+    { start: 'renderEnd', label: 'renderEnd' },
   ],
   browserArgs: [
     '--headless',
@@ -27,7 +27,7 @@ export const defaultFlagArgs: ITBConfig = {
     '--v8-cache-options=none',
     '--disable-cache',
     '--disable-v8-idle-tasks',
-    '--crash-dumps-dir=./tmp'
+    '--crash-dumps-dir=./tmp',
   ],
   harsPath: './hars',
   archive: './trace.har',
@@ -40,7 +40,7 @@ export const defaultFlagArgs: ITBConfig = {
   url: 'http://localhost:8000/?tracing',
   controlURL: 'http://localhost:8000/?tracing',
   experimentURL: 'http://localhost:8001/?tracing',
-  iterations: 1
+  iterations: 1,
 };
 
 export const iterations = flags.build({
@@ -48,7 +48,7 @@ export const iterations = flags.build({
   description: `Number of runs`,
   parse: iterations => {
     parseInt(iterations, 10);
-  }
+  },
 });
 
 export const browserArgs = flags.build({
@@ -58,63 +58,63 @@ export const browserArgs = flags.build({
     if (typeof browserArgs === 'string') {
       return browserArgs.split(',');
     }
-  }
+  },
 });
 
 export const routes = flags.build({
   default: () => getConfigDefault('routes'),
-  description: `All routes to be analyzed by TracerBench. A HAR will be created for each route.`
+  description: `All routes to be analyzed by TracerBench. A HAR will be created for each route.`,
 });
 
 export const appName = flags.build({
   default: () => getConfigDefault('appName'),
-  description: 'The name of your application'
+  description: 'The name of your application',
 });
 
 export const harsPath = flags.build({
   default: () => getConfigDefault('harsPath', defaultFlagArgs.harsPath),
-  description: 'The output directory for recorded har files'
+  description: 'The output directory for recorded har files',
 });
 
 export const archiveOutput = flags.build({
   default: () =>
     getConfigDefault('archiveOutput', defaultFlagArgs.archiveOutput),
-  description: 'The output filepath/name to save the HAR to'
+  description: 'The output filepath/name to save the HAR to',
 });
 
 export const harOutput = flags.build({
   default: () => getConfigDefault('harOutput', defaultFlagArgs.harOutput),
-  description: 'The output filepath/name to save the HAR to'
+  description: 'The output filepath/name to save the HAR to',
 });
 
 export const archive = flags.build({
   char: 'a',
   default: () => getConfigDefault('archive', defaultFlagArgs.archive),
-  description: 'Path to the existing HAR file'
+  description: 'Path to the existing HAR file',
 });
 
 export const event = flags.build({
   default: () => getConfigDefault('event'),
-  description: 'Slice time and see the events before and after the time slice'
+  description: 'Slice time and see the events before and after the time slice',
 });
 
 export const traceJSONOutput = flags.build({
   char: 'f',
   default: () =>
     getConfigDefault('traceJSONOutput', defaultFlagArgs.traceJSONOutput),
-  description: 'Output path for the trace JSON file'
+  description: 'Output path for the trace JSON file',
 });
 
 export const methods = flags.build({
   char: 'm',
   default: () => getConfigDefault('methods', defaultFlagArgs.methods),
-  description: 'List of methods to aggregate'
+  description: 'List of methods to aggregate',
 });
 
 export const report = flags.build({
   char: 'r',
   default: () => getConfigDefault('report'),
-  description: `Directory path to generate a report with aggregated sums for each heuristic category and aggregated sum across all heuristics`
+  description: `Directory path to generate a report with aggregated sums for each heuristic category and aggregated sum across all heuristics`,
 });
 
 export const cpuThrottleRate = flags.build({
@@ -123,7 +123,7 @@ export const cpuThrottleRate = flags.build({
   description: 'CPU throttle multiplier',
   parse: (cpuThrottleRate): number => {
     return parseInt(cpuThrottleRate, 10);
-  }
+  },
 });
 
 export const fidelity = flags.build({
@@ -132,7 +132,7 @@ export const fidelity = flags.build({
   options: Object.keys(fidelityLookup),
   parse: (fidelity: string): number => {
     return parseInt((fidelityLookup as any)[fidelity], 10);
-  }
+  },
 });
 
 export const markers = flags.build({
@@ -145,65 +145,65 @@ export const markers = flags.build({
     m.forEach(marker => {
       a.push({
         label: marker,
-        start: marker
+        start: marker,
       });
     });
     return a;
-  }
+  },
 });
 
 export const network = flags.build({
   char: 'n',
   default: () => getConfigDefault('network'),
   description: 'Simulated network conditions.',
-  options: [`${Object.keys(networkConditions).join('|')}`]
+  options: [`${Object.keys(networkConditions).join('|')}`],
 });
 
 export const output = flags.build({
   char: 'o',
   default: () => getConfigDefault('output', defaultFlagArgs.output),
-  description: 'The output filepath for compare results'
+  description: 'The output filepath for compare results',
 });
 
 export const url = flags.build({
   default: () => getConfigDefault('url', defaultFlagArgs.url),
-  description: 'URL to visit'
+  description: 'URL to visit',
 });
 
 export const controlURL = flags.build({
   default: () => getConfigDefault('controlURL', defaultFlagArgs.controlURL),
-  description: 'Control URL to visit'
+  description: 'Control URL to visit',
 });
 
 export const experimentURL = flags.build({
   default: () =>
     getConfigDefault('experimentURL', defaultFlagArgs.experimentURL),
-  description: 'Experiment URL to visit'
+  description: 'Experiment URL to visit',
 });
 
 export const locations = flags.build({
   char: 'l',
   default: () => getConfigDefault('locations'),
-  description: 'include locations in names'
+  description: 'include locations in names',
 });
 
 export const har = flags.build({
   char: 'h',
   default: () => getConfigDefault('har', null) || null,
-  description: 'Filepath to the existing HAR file'
+  description: 'Filepath to the existing HAR file',
 });
 
 export const filter = flags.build({
   default: () => getConfigDefault('filter'),
-  description: 'User timing marks start with'
+  description: 'User timing marks start with',
 });
 
 export const marks = flags.build({
   default: () => getConfigDefault('marks'),
-  description: 'Show user timing marks'
+  description: 'Show user timing marks',
 });
 
 export const urlOrFrame = flags.build({
   default: () => getConfigDefault('urlOrFrame'),
-  description: 'URL or Frame'
+  description: 'URL or Frame',
 });
