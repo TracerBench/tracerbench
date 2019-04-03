@@ -13,9 +13,8 @@ interface IStatDisplayClass {
   estimator: number;
   // based on alpha of 5%
   significance: string;
-  // todo: convert these to output histograms
-  controlDistribution: any[];
-  experimentDistribution: any[];
+  controlDistribution: string;
+  experimentDistribution: string;
   // todo: add locationShift as +/- μs
   // locationShift: number;
   // todo: add observation probability as %
@@ -27,20 +26,31 @@ export class StatDisplay implements IStatDisplayClass {
   public significance: string;
   public estimator: number;
   public ustat: number;
-  public controlDistribution: any[];
-  public experimentDistribution: any[];
+  public controlDistribution: string;
+  public experimentDistribution: string;
   constructor(options: IStatDisplayOptions) {
     const { control, experiment, name } = options;
     this.name = name;
     this.ustat = this.getUSTAT(control, experiment);
     this.significance = this.setIsSignificant(this.ustat, control, experiment);
     this.estimator = this.getHodgesLehmann(control, experiment) as number;
-    this.controlDistribution = this.getDistribution(control);
-    this.experimentDistribution = this.getDistribution(experiment);
+    this.controlDistribution = sparkline(this.getHistogram(control));
+    this.experimentDistribution = sparkline(this.getHistogram(experiment));
   }
-  private getDistribution(a: number[], threshold: number = 7) {
-    // todo handle threshold
-    return histogram()(a);
+  private getHistogram(a: number[]) {
+    return histogram()(a).map(i => {
+      return i.length;
+    });
+  }
+  private getQuantiles(a: any[]) {
+    let p: any = 0;
+    const q = [];
+    while (p <= 1) {
+      p = parseFloat(p.toFixed(1));
+      q.push({ p, val: quantile(a, p) });
+      p += 0.1;
+    }
+    return q;
   }
   private getUSTAT(control: any[], experiment: any[]): number {
     return Math.min(...test([control, experiment]));
@@ -54,7 +64,37 @@ export class StatDisplay implements IStatDisplayClass {
     experiment: any[]
   ): string {
     return significant(ustat, [control, experiment])
-      ? chalkScheme.regress('Yes')
+      ? chalkScheme.significant('Yes')
       : chalkScheme.neutral('No');
   }
+}
+
+function sparkline(numbers: any, options: any = {}) {
+  function lshift(n: number, bits: number) {
+    return Math.floor(n) * Math.pow(2, bits);
+  }
+
+  const ticks: string[] = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
+
+  const max =
+    typeof options.max === 'number'
+      ? options.max
+      : Math.max.apply(null, numbers);
+  const min =
+    typeof options.min === 'number'
+      ? options.min
+      : Math.min.apply(null, numbers);
+  const results: string[] = [];
+  let f: number = Math.floor(lshift(max - min, 8) / (ticks.length - 1));
+  if (f < 1) {
+    f = 1;
+  }
+
+  numbers.forEach((n: number) => {
+    const value: string = ticks[Math.floor(lshift(n - min, 8) / f)];
+
+    results.push(value);
+  });
+
+  return `${min} ${results.join('')} ${max}`;
 }

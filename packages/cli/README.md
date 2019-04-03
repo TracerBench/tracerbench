@@ -139,7 +139,7 @@ USAGE
 
 OPTIONS
   -a, --archive=archive                  (required) [default: ./trace.har] Path to the existing HAR file
-  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Output path for the trace JSON file
   -m, --methods=methods                  (required) [default: ""] List of methods to aggregate
 
   -r, --report=report                    Directory path to generate a report with aggregated sums for each heuristic
@@ -207,7 +207,7 @@ USAGE
   $ tracerbench css-parse
 
 OPTIONS
-  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Output path for the trace JSON file
 ```
 
 ## `tracerbench help [COMMAND]`
@@ -236,7 +236,7 @@ USAGE
   $ tracerbench js-eval-time
 
 OPTIONS
-  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Output path for the trace JSON file
 ```
 
 ## `tracerbench list-functions`
@@ -248,7 +248,7 @@ USAGE
   $ tracerbench list-functions
 
 OPTIONS
-  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Output path for the trace JSON file
   -l, --locations=locations              include locations in names
 ```
 
@@ -261,7 +261,7 @@ USAGE
   $ tracerbench timeline:find
 
 OPTIONS
-  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Output path for the trace JSON file
   --url=url                              (required) [default: http://localhost:8000/?tracing] URL to visit
 ```
 
@@ -274,7 +274,7 @@ USAGE
   $ tracerbench timeline:list
 
 OPTIONS
-  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Output path for the trace JSON file
 ```
 
 ## `tracerbench timeline:show`
@@ -286,7 +286,7 @@ USAGE
   $ tracerbench timeline:show
 
 OPTIONS
-  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Path to the existing trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Output path for the trace JSON file
   --filter=filter                        User timing marks start with
   --marks=marks                          Show user timing marks
   --urlOrFrame=urlOrFrame                (required) URL or Frame
@@ -302,8 +302,8 @@ USAGE
 
 OPTIONS
   -f, --traceJSONOutput=traceJSONOutput                                                     (required) [default:
-                                                                                            ./trace.json] Path to the
-                                                                                            existing trace JSON file
+                                                                                            ./trace.json] Output path
+                                                                                            for the trace JSON file
 
   -h, --har=har                                                                             Filepath to the existing HAR
                                                                                             file

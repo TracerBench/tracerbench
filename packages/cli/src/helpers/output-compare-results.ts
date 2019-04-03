@@ -5,11 +5,12 @@ import { IStatDisplayOptions, StatDisplay } from './stats';
 import { chalkScheme } from './utils';
 
 const benchmarkTableConfig: Table.TableConstructorOptions = {
-  colWidths: [20, 20, 20],
+  colWidths: [20, 20, 20, 20],
   head: [
     chalkScheme.header('Initial Render'),
-    chalkScheme.header('Estimator Delta'),
+    chalkScheme.header('Estimator Δ'),
     chalkScheme.header('Is Significant'),
+    chalkScheme.header('Distribution'),
   ],
   style: {
     head: [],
@@ -18,11 +19,12 @@ const benchmarkTableConfig: Table.TableConstructorOptions = {
 };
 
 const phaseTableConfig: Table.TableConstructorOptions = {
-  colWidths: [20, 20, 20],
+  colWidths: [20, 20, 20, 20],
   head: [
     chalkScheme.header('Phase'),
-    chalkScheme.header('Estimator Delta'),
+    chalkScheme.header('Estimator Δ'),
     chalkScheme.header('Is Significant'),
+    chalkScheme.header('Distribution'),
   ],
   style: {
     head: [],
@@ -34,7 +36,6 @@ const benchmarkTable = new Table(benchmarkTableConfig) as Table.HorizontalTable;
 const phaseTable = new Table(phaseTableConfig) as Table.HorizontalTable;
 const displayedBenchmarks: StatDisplay[] = [];
 const displayedStats: StatDisplay[] = [];
-let isSigStat: boolean = false;
 
 export function outputCompareResults(
   results: any,
@@ -74,39 +75,28 @@ export function outputCompareResults(
   setTableData(displayedBenchmarks, benchmarkTable);
   setTableData(displayedStats, phaseTable);
 
-  const message = {
-    output: `Success! A detailed report and JSON file are available at ${output}/compare.json`,
-    whichMsg: () => {
-      return isSigStat ? message.nope : message.yup;
-    },
-    yup: `${fidelity} test samples were run and the results are significant in ${
-      results[0].meta.browserVersion
-    }. A recommended high-fidelity analysis should be performed.`,
-    nope: `${fidelity} test samples were run and the results are *not* significant in ${
-      results[0].meta.browserVersion
-    }.`,
-  };
+  const message = `Success! ${fidelity} test samples were run in ${
+    results[0].meta.browserVersion
+  }.\n\nA detailed report and JSON file are available at ${output}/compare.json`;
 
   // LOG JS, DURATION
   // LOG PHASES
   cli.log(`\n\n${benchmarkTable.toString()}`);
   cli.log(`\n\n${phaseTable.toString()}`);
   // LOG MESSAGE
-  cli.log(
-    chalkScheme.neutral(`\n\n${message.output}\n\n${message.whichMsg()}\n\n`)
-  );
+  cli.log(`\n\n${message}\n\n`);
 }
 
 function setTableData(display: StatDisplay[], table: Table.HorizontalTable) {
   // ITERATE OVER DISPLAY ARRAY OF STATDISPLAY AND OUTPUT
   display.forEach(stat => {
-    if (stat.significance === 'Yes') {
-      isSigStat = true;
-    }
     table.push([
       chalkScheme.phase(`${stat.name}`),
       chalkScheme.neutral(`${stat.estimator}μs`),
       `${stat.significance}`,
+      chalkScheme.neutral(
+        `${stat.controlDistribution}\n\n${stat.experimentDistribution}`
+      ),
     ]);
   });
 }

@@ -56,6 +56,8 @@ export default class Compare extends Command {
       additionalArguments: browserArgs,
     };
 
+    // todo: leverage har-remix
+
     const benchmarks = {
       control: new InitialRenderBenchmark({
         browser,
