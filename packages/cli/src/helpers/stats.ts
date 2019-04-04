@@ -1,4 +1,5 @@
 import { cross, histogram, quantile } from 'd3-array';
+import { scaleLinear } from 'd3-scale';
 import { significant, test } from './mann-whitney';
 import { chalkScheme } from './utils';
 
@@ -36,21 +37,30 @@ export class StatDisplay implements IStatDisplayClass {
     this.significance = this.setIsSignificant(this.ustat, control, experiment);
     this.estimator = this.getHodgesLehmann(control, experiment) as number;
     this.range = this.getRange(control, experiment);
-    this.controlDistribution = sparkline(this.getHistogram(control), {
-      min: this.range.min,
-      max: this.range.max,
-    });
-    this.experimentDistribution = sparkline(this.getHistogram(experiment), {
-      min: this.range.min,
-      max: this.range.max,
-    });
+    this.controlDistribution = sparkline(
+      this.getHistogram(this.range, control)
+    );
+    this.experimentDistribution = sparkline(
+      this.getHistogram(this.range, experiment)
+    );
   }
   private getRange(control: number[], experiment: number[]) {
     const a = control.concat(experiment);
     return { min: Math.min(...a), max: Math.max(...a) };
   }
-  private getHistogram(a: number[]) {
-    return histogram()(a).map(i => {
+  private getHistogram(range: any, a: number[], bins: number = 20) {
+    a.sort((a, b) => a - b);
+    const x: any = scaleLinear()
+      .domain([range.min, range.max])
+      .range([range.min, range.max]);
+    const h = histogram()
+      .value(d => {
+        return d;
+      })
+      .domain(x.domain())
+      .thresholds(x.ticks(bins));
+
+    return h(a).map(i => {
       return i.length;
     });
   }
@@ -81,12 +91,21 @@ export class StatDisplay implements IStatDisplayClass {
   }
 }
 
-function sparkline(numbers: any, options: any = {}) {
+export function sparkline(numbers: any, options: any = {}) {
   function lshift(n: number, bits: number) {
     return Math.floor(n) * Math.pow(2, bits);
   }
 
-  const ticks: string[] = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
+  const ticks: string[] = [
+    `${chalkScheme.imprv('▁')}`,
+    '▂',
+    '▃',
+    '▄',
+    '▅',
+    '▆',
+    '▇',
+    '█',
+  ];
 
   const max =
     typeof options.max === 'number'
@@ -108,5 +127,5 @@ function sparkline(numbers: any, options: any = {}) {
     results.push(value);
   });
 
-  return `${min} ${results.join('')} ${max}`;
+  return `${results.join('')}`;
 }

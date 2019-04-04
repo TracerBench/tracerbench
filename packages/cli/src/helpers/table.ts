@@ -44,7 +44,7 @@ export default class TBTable {
   }
   private initConfig() {
     return {
-      colWidths: [20, 20],
+      colWidths: [20, 30],
       chars: {
         top: '═',
         'top-mid': '─',
