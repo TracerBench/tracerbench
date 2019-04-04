@@ -3,6 +3,7 @@ import * as path from 'path';
 
 import chalk from 'chalk';
 import { IMarker } from 'tracerbench';
+import { PerformanceTimingMark } from './default-flag-args';
 
 export interface ITBConfig {
   archive?: string;
@@ -12,7 +13,7 @@ export interface ITBConfig {
   fidelity?: 'test' | 'low' | 'med' | 'high';
   report?: string;
   event?: string;
-  markers?: string | IMarker[];
+  markers?: string | string[] | IMarker[] | PerformanceTimingMark[];
   network?: string;
   output?: string;
   url?: string;
@@ -138,4 +139,19 @@ export function findFrame(events: any, url: any) {
     return event.args.data.frame;
   }
   return null;
+}
+
+export function parseMarkers(m: string | string[]): IMarker[] {
+  const a: IMarker[] = [];
+  if (typeof m === 'string') {
+    m = m.split(',');
+  }
+
+  m.forEach(marker => {
+    a.push({
+      label: marker,
+      start: marker,
+    });
+  });
+  return a;
 }

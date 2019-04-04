@@ -1,47 +1,7 @@
 import { flags } from '@oclif/command';
-import { IMarker, networkConditions } from 'tracerbench';
-import { getConfigDefault, ITBConfig } from './utils';
-
-export const fidelityLookup = {
-  test: 2,
-  low: 25,
-  medium: 35,
-  high: 50,
-};
-
-export const defaultFlagArgs: ITBConfig = {
-  cpuThrottleRate: 4,
-  markers: [
-    { start: 'fetchStart', label: 'fetchStart' },
-    { start: 'emberLoaded', label: 'emberLoaded' },
-    { start: 'startRouting', label: 'startRouting' },
-    { start: 'willTransition', label: 'willTransition' },
-    { start: 'didTransition', label: 'didTransition' },
-    { start: 'renderEnd', label: 'renderEnd' },
-  ],
-  browserArgs: [
-    '--headless',
-    '--disable-gpu',
-    '--hide-scrollbars',
-    '--mute-audio',
-    '--v8-cache-options=none',
-    '--disable-cache',
-    '--disable-v8-idle-tasks',
-    '--crash-dumps-dir=./tmp',
-  ],
-  harsPath: './hars',
-  archive: './trace.har',
-  harOutput: './trace.har',
-  archiveOutput: './trace.har',
-  traceJSONOutput: './trace.json',
-  methods: '""',
-  fidelity: 'low',
-  output: './tracerbench-results',
-  url: 'http://localhost:8000/?tracing',
-  controlURL: 'http://localhost:8000/?tracing',
-  experimentURL: 'http://localhost:8001/?tracing',
-  iterations: 1,
-};
+import { networkConditions } from 'tracerbench';
+import { defaultFlagArgs, fidelityLookup } from './default-flag-args';
+import { getConfigDefault, parseMarkers } from './utils';
 
 export const iterations = flags.build({
   default: () => getConfigDefault('iterations', defaultFlagArgs.iterations),
@@ -138,18 +98,7 @@ export const fidelity = flags.build({
 export const markers = flags.build({
   default: () => getConfigDefault('markers', defaultFlagArgs.markers),
   description: 'DOM markers',
-  parse: (markers: string): IMarker[] => {
-    const a: IMarker[] = [];
-    const m = markers.split(',');
-
-    m.forEach(marker => {
-      a.push({
-        label: marker,
-        start: marker,
-      });
-    });
-    return a;
-  },
+  parse: parseMarkers,
 });
 
 export const network = flags.build({
