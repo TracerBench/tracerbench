@@ -5,7 +5,9 @@ import * as mimeTypes from 'mime-types';
 import * as zlib from 'zlib';
 import { ResponseMap } from '../proto';
 import { MapLike, Response, ServerDelegate } from '../types';
+
 export * from '../types';
+export { default as getCertificateInfo } from './getCertificateInfo';
 
 export default class ArchiveServer {
   public static fromBuffer(

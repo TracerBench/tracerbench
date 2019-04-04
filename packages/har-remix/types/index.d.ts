@@ -68,3 +68,21 @@ export interface ServerDelegate {
     response: ServerResponse
   ): PromiseLike<void> | undefined;
 }
+
+export interface CertificateInfo {
+  /**
+   * Private key in PEM format
+   */
+  key: string;
+
+  /**
+   * Certificate in PEM format
+   */
+  cert: string;
+
+  /**
+   * SPKI Fingerprint
+   * base64( sha256( Public key in DER format ) )
+   */
+  fingerprint: string;
+}
