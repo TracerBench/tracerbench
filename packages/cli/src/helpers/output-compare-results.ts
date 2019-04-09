@@ -3,8 +3,10 @@ import { IMarker } from 'tracerbench';
 import { IStatDisplayOptions, StatDisplay } from './stats';
 import TBTable from './table';
 
-const benchmarkTable = new TBTable('/benchmark');
-const phaseTable = new TBTable('/phase');
+// todo: remove these placeholders for routes
+// with a different table per route
+const benchmarkTable = new TBTable('/foo');
+const phaseTable = new TBTable('/buzz');
 
 const displayedBenchmarks: StatDisplay[] = [];
 const displayedStats: StatDisplay[] = [];
@@ -16,10 +18,11 @@ export function outputCompareResults(
   output: string,
   cli: any
 ) {
+  // fn to get the marker data from tracerbench-results/compare.json
   function getQueryData(id: string, marker?: any): IStatDisplayOptions {
     const query = !marker
       ? `[samples][**][*${id}]`
-      : `[samples][**][${id}][*phase=${marker.start}]`;
+      : `[samples][**][${id}][*phase=${marker.start}].duration`;
     const name = !marker ? id : marker.start;
     return {
       control: jsonQuery(`[*set=control]${query}`, {
@@ -32,16 +35,16 @@ export function outputCompareResults(
     };
   }
 
+  // build the table for duration
   displayedBenchmarks.push(new StatDisplay(getQueryData('duration')));
+  // build the table for js
   displayedBenchmarks.push(new StatDisplay(getQueryData('js')));
 
-  // TODO this is coming off a default set of markers
-  // this might not be ideal
+  // iterate over the markers passed into the output command
   markers.forEach(marker => {
-    const o = getQueryData('phases', marker);
-    o.control = jsonQuery(`duration`, { data: o.control }).value;
-    o.experiment = jsonQuery(`duration`, { data: o.experiment }).value;
-    displayedStats.push(new StatDisplay(o));
+    // get the marker data for each phase
+    const phase = getQueryData('phases', marker);
+    displayedStats.push(new StatDisplay(phase));
   });
 
   benchmarkTable.setTableData(displayedBenchmarks);
@@ -49,7 +52,7 @@ export function outputCompareResults(
 
   const message = `Success! ${fidelity} test samples were run in ${
     results[0].meta.browserVersion
-  }.\n\nA detailed report and JSON file are available at ${output}/compare.json`;
+  }. A detailed report and JSON file are available at ${output}/compare.json`;
 
   // LOG JS, DURATION
   // LOG PHASES

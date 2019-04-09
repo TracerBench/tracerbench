@@ -96,16 +96,7 @@ export function sparkline(numbers: any, options: any = {}) {
     return Math.floor(n) * Math.pow(2, bits);
   }
 
-  const ticks: string[] = [
-    `${chalkScheme.imprv('▁')}`,
-    '▂',
-    '▃',
-    '▄',
-    '▅',
-    '▆',
-    '▇',
-    '█',
-  ];
+  const ticks: string[] = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
 
   const max =
     typeof options.max === 'number'

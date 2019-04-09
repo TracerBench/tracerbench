@@ -38,7 +38,8 @@ export default class TBTable {
         [
           'Experiment',
           { hAlign: 'right', content: `${stat.experimentDistribution}` },
-        ]
+        ],
+        []
       );
     });
   }
