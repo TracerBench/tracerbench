@@ -2,7 +2,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 
 import chalk from 'chalk';
-import { IMarker } from 'tracerbench';
+import { IMarker, networkConditions } from 'tracerbench';
 import { PerformanceTimingMark } from './default-flag-args';
 
 export interface ITBConfig {
@@ -14,7 +14,7 @@ export interface ITBConfig {
   report?: string;
   event?: string;
   markers?: string | string[] | IMarker[] | PerformanceTimingMark[];
-  network?: string;
+  network?: keyof typeof networkConditions;
   output?: string;
   url?: string;
   controlURL?: string;
@@ -31,6 +31,7 @@ export interface ITBConfig {
   appName?: string;
   browserArgs?: string[];
   iterations?: number | string;
+  tracingLocationSearch?: string;
 }
 
 type ITBConfigKeys = keyof ITBConfig;

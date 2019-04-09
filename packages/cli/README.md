@@ -21,7 +21,7 @@ $ npm install -g tracerbench-cli
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench-cli/2.0.0-beta.3 darwin-x64 node-v8.14.0
+tracerbench-cli/2.0.0-beta.3 darwin-x64 node-v10.15.2
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
@@ -157,8 +157,8 @@ USAGE
   $ tracerbench compare
 
 OPTIONS
-  -n, --network=none|offline|dialup|2g|edge|slow-3g|em-3g|dsl|3g|fast-3g|4g|cable|LTE|FIOS
-      Simulated network conditions.
+  -n, --network=none | offline | dialup | 2g | edge | slow-3g | em-3g | dsl | 3g | fast-3g | 4g | cable | LTE | FIOS
+      (required) [default: none] Simulated network conditions.
 
   -o, --output=output
       (required) [default: ./tracerbench-results] The output filepath for compare results
@@ -169,20 +169,22 @@ OPTIONS
       sks,--crash-dumps-dir=./tmp] (Default Recommended) Browser additional options for the TracerBench render benchmark
 
   --controlURL=controlURL
-      (required) [default: http://localhost:8000/?tracing] Control URL to visit
+      (required) [default: http://localhost:8000/] Control URL to visit
 
   --cpuThrottleRate=cpuThrottleRate
-      (required) [default: 1] CPU throttle multiplier
+      (required) [default: 4] CPU throttle multiplier
 
   --experimentURL=experimentURL
-      (required) [default: http://localhost:8001/?tracing] Experiment URL to visit
+      (required) [default: http://localhost:8001/] Experiment URL to visit
 
   --fidelity=test|low|medium|high
       (required) [default: low] Directly correlates to the number of samples per trace. High means a longer trace time.
 
   --markers=markers
-      (required) [default: [object Object],[object Object],[object Object],[object Object],[object Object],[object 
-      Object]] DOM markers
+      (required) [default: domComplete] User Timing Markers
+
+  --tracingLocationSearch=tracingLocationSearch
+      (required) [default: ?tracing] The document location search param.
 ```
 
 ## `tracerbench create-archive`
@@ -195,7 +197,7 @@ USAGE
 
 OPTIONS
   --archiveOutput=archiveOutput  (required) [default: ./trace.har] The output filepath/name to save the HAR to
-  --url=url                      (required) [default: http://localhost:8000/?tracing] URL to visit
+  --url=url                      (required) [default: http://localhost:8000/] URL to visit
 ```
 
 ## `tracerbench css-parse`
@@ -262,7 +264,7 @@ USAGE
 
 OPTIONS
   -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Output path for the trace JSON file
-  --url=url                              (required) [default: http://localhost:8000/?tracing] URL to visit
+  --url=url                              (required) [default: http://localhost:8000/] URL to visit
 ```
 
 ## `tracerbench timeline:list`
@@ -301,29 +303,25 @@ USAGE
   $ tracerbench trace
 
 OPTIONS
-  -f, --traceJSONOutput=traceJSONOutput                                                     (required) [default:
-                                                                                            ./trace.json] Output path
-                                                                                            for the trace JSON file
+  -f, --traceJSONOutput=traceJSONOutput
+      (required) [default: ./trace.json] Output path for the trace JSON file
 
-  -h, --har=har                                                                             Filepath to the existing HAR
-                                                                                            file
+  -h, --har=har
+      Filepath to the existing HAR file
 
-  -n, --network=none|offline|dialup|2g|edge|slow-3g|em-3g|dsl|3g|fast-3g|4g|cable|LTE|FIOS  Simulated network
-                                                                                            conditions.
+  -n, --network=none | offline | dialup | 2g | edge | slow-3g | em-3g | dsl | 3g | fast-3g | 4g | cable | LTE | FIOS
+      [default: none] Simulated network conditions.
 
-  --archiveOutput=archiveOutput                                                             (required) [default:
-                                                                                            ./trace.har] The output
-                                                                                            filepath/name to save the
-                                                                                            HAR to
+  --archiveOutput=archiveOutput
+      (required) [default: ./trace.har] The output filepath/name to save the HAR to
 
-  --cpuThrottleRate=cpuThrottleRate                                                         (required) [default: 1] CPU
-                                                                                            throttle multiplier
+  --cpuThrottleRate=cpuThrottleRate
+      (required) [default: 4] CPU throttle multiplier
 
-  --iterations=iterations                                                                   (required) [default: 1]
-                                                                                            Number of runs
+  --iterations=iterations
+      (required) [default: 1] Number of runs
 
-  --url=url                                                                                 (required) [default:
-                                                                                            http://localhost:8000/?traci
-                                                                                            ng] URL to visit
+  --url=url
+      (required) [default: http://localhost:8000/] URL to visit
 ```
 <!-- commandsstop -->

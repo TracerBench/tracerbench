@@ -1,19 +1,22 @@
 import * as fs from 'fs-extra';
+import * as path from 'path';
 
 import { Command } from '@oclif/command';
-import { InitialRenderBenchmark, Runner } from 'tracerbench';
+import { InitialRenderBenchmark, Runner, networkConditions } from 'tracerbench';
 import {
   browserArgs,
   controlURL,
   cpuThrottleRate,
   experimentURL,
   fidelity,
-  fidelityLookup,
   markers,
   network,
   output,
+  tracingLocationSearch,
 } from '../helpers/flags';
+import { fidelityLookup } from '../helpers/default-flag-args';
 import { outputCompareResults } from '../helpers/output-compare-results';
+import { parseMarkers } from '../helpers/utils';
 
 export default class Compare extends Command {
   public static description =
@@ -23,10 +26,11 @@ export default class Compare extends Command {
     cpuThrottleRate: cpuThrottleRate({ required: true }),
     fidelity: fidelity({ required: true }),
     markers: markers({ required: true }),
-    network: network(),
+    network: network({ required: true }),
     output: output({ required: true }),
     controlURL: controlURL({ required: true }),
     experimentURL: experimentURL({ required: true }),
+    tracingLocationSearch: tracingLocationSearch({ required: true }),
   };
 
   public async run() {
@@ -35,15 +39,22 @@ export default class Compare extends Command {
       browserArgs,
       cpuThrottleRate,
       output,
-      network,
-      markers,
       controlURL,
       experimentURL,
+      tracingLocationSearch,
     } = flags;
-    let { fidelity } = flags;
+    let { markers, fidelity, network } = flags;
 
     if (typeof fidelity === 'string') {
       fidelity = parseInt((fidelityLookup as any)[fidelity], 10);
+    }
+
+    if (typeof network === 'string') {
+      network = networkConditions[network];
+    }
+
+    if (typeof markers === 'string') {
+      markers = parseMarkers(markers);
     }
 
     if (!fs.existsSync(output)) {
@@ -64,19 +75,21 @@ export default class Compare extends Command {
         cpuThrottleRate,
         delay,
         markers,
+        networkConditions: network,
         name: 'control',
         runtimeStats,
         saveTraces: () => `${output}/control.json`,
-        url: controlURL,
+        url: path.join(controlURL + tracingLocationSearch),
       }),
       experiment: new InitialRenderBenchmark({
         browser,
         delay,
         markers,
+        networkConditions: network,
         name: 'experiment',
         runtimeStats,
         saveTraces: () => `${output}/experiment.json`,
-        url: experimentURL,
+        url: path.join(experimentURL + tracingLocationSearch),
       }),
     };
 

@@ -77,9 +77,10 @@
     "lint": "tslint -p tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "tslint -p test -t stylish",
-    "prepack": "rm -rf dist && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "prepack": "yarn build && oclif-dev manifest && oclif-dev readme",
     "test": "nyc --extension .ts mocha \"test/commands/**/*.test.ts\"",
-    "version": "oclif-dev readme && git add README.md"
+    "version": "oclif-dev readme && git add README.md",
+    "build": "rm -rf dist && tsc -b"
   },
   "gitHead": "95ab52895412d32c451c211463521dda5ac782e3"
 }

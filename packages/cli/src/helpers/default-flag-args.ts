@@ -14,6 +14,7 @@ interface IMarkerSets {
   performanceTiming: PerformanceTimingMark[];
 }
 
+// todo: flesh these out
 export const markerSets: IMarkerSets = {
   ember: [
     'fetchStart',
@@ -28,7 +29,7 @@ export const markerSets: IMarkerSets = {
 
 export const defaultFlagArgs: ITBConfig = {
   cpuThrottleRate: 4,
-  markers: parseMarkers(markerSets.ember),
+  markers: 'domComplete',
   browserArgs: [
     '--headless',
     '--disable-gpu',
@@ -47,8 +48,11 @@ export const defaultFlagArgs: ITBConfig = {
   methods: '""',
   fidelity: 'low',
   output: './tracerbench-results',
-  url: 'http://localhost:8000/?tracing',
-  controlURL: 'http://localhost:8000/?tracing',
-  experimentURL: 'http://localhost:8001/?tracing',
+  url: 'http://localhost:8000/',
+  controlURL: 'http://localhost:8000/',
+  experimentURL: 'http://localhost:8001/',
   iterations: 1,
+  tracingLocationSearch: '?tracing',
+  network: 'none',
+  routes: ['/'],
 };

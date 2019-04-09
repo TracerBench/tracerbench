@@ -1,5 +1,6 @@
 import { flags } from '@oclif/command';
 import { networkConditions } from 'tracerbench';
+import { Network } from 'chrome-debugging-client/dist/protocol/tot';
 import { defaultFlagArgs, fidelityLookup } from './default-flag-args';
 import { getConfigDefault, parseMarkers } from './utils';
 
@@ -19,6 +20,15 @@ export const browserArgs = flags.build({
       return browserArgs.split(',');
     }
   },
+});
+
+export const tracingLocationSearch = flags.build({
+  default: () =>
+    getConfigDefault(
+      'tracingLocationSearch',
+      defaultFlagArgs.tracingLocationSearch
+    ),
+  description: `The document location search param.`,
 });
 
 export const routes = flags.build({
@@ -97,15 +107,18 @@ export const fidelity = flags.build({
 
 export const markers = flags.build({
   default: () => getConfigDefault('markers', defaultFlagArgs.markers),
-  description: 'DOM markers',
+  description: 'User Timing Markers',
   parse: parseMarkers,
 });
 
 export const network = flags.build({
   char: 'n',
-  default: () => getConfigDefault('network'),
+  default: () => getConfigDefault('network', defaultFlagArgs.network),
   description: 'Simulated network conditions.',
-  options: [`${Object.keys(networkConditions).join('|')}`],
+  options: [`${Object.keys(networkConditions).join(' | ')}`],
+  parse: (n: string): Network.EmulateNetworkConditionsParameters => {
+    return (networkConditions as any)[n];
+  },
 });
 
 export const output = flags.build({
