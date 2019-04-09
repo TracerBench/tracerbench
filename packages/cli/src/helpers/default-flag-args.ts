@@ -27,6 +27,8 @@ export const markerSets: IMarkerSets = {
   performanceTiming: ['domComplete'],
 };
 
+// these default flag args are
+// **auto documented** in the README.md
 export const defaultFlagArgs: ITBConfig = {
   cpuThrottleRate: 4,
   markers: 'domComplete',

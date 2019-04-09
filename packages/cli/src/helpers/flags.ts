@@ -4,6 +4,14 @@ import { Network } from 'chrome-debugging-client/dist/protocol/tot';
 import { defaultFlagArgs, fidelityLookup } from './default-flag-args';
 import { getConfigDefault, parseMarkers } from './utils';
 
+/*
+! oclif flags.build#parse will only execute when the flag:string is passed directly
+! from the cli. thus when passed via the tbconfig.json or the defaultFlagArgs 
+! the parse method will never execute
+! todo: mitigate above by either extending the flags oclif command calling parse
+! and type checking in all circumstances
+*/
+
 export const iterations = flags.build({
   default: () => getConfigDefault('iterations', defaultFlagArgs.iterations),
   description: `Number of runs`,
