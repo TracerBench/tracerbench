@@ -11,18 +11,22 @@ export interface IStatsOptions {
 
 export class Stats {
   public name: string;
-  public significance: string;
   public estimator: number;
   public ustat: number;
   public controlDistribution: string;
   public experimentDistribution: string;
   public range: { min: number; max: number };
-  public isSigWilcoxonSignedRankTest: boolean;
+  public isSigWilcoxonRankSumTest: string;
+  public isSigWilcoxonSignedRankTest: string;
   constructor(options: IStatsOptions) {
     const { control, experiment, name } = options;
     this.name = name;
     this.ustat = this.getUSTAT(control, experiment);
-    this.significance = this.setIsSignificant(this.ustat, control, experiment);
+    this.isSigWilcoxonRankSumTest = this.setIsSignificant(
+      this.ustat,
+      control,
+      experiment
+    );
     this.estimator = this.getHodgesLehmann(control, experiment) as number;
     this.range = this.getRange(control, experiment);
     this.controlDistribution = sparkline(
@@ -36,11 +40,12 @@ export class Stats {
       experiment
     );
   }
+  // todo: currently not displaying this in terminal results
   private getWilcoxonSignedRankTest(
     control: number[],
     experiment: number[]
-  ): boolean {
-    // two-tailed test alpha 0.05 critical values
+  ): string {
+    // paired two-tailed test alpha 0.05 critical values
     const samples = control.map((c, i) => {
       return Object.assign({
         c,
@@ -79,7 +84,9 @@ export class Stats {
     try {
       const wCrit = wilcoxonSignedRanksTable[N];
       // !! important this is lt not gt
-      return wStat < wCrit;
+      return wStat < wCrit
+        ? chalkScheme.significant('Yes')
+        : chalkScheme.neutral('No');
     } catch (e) {
       throw new Error(
         `Sample sizes greater than 50 are not supported. Your sample size is ${N}`

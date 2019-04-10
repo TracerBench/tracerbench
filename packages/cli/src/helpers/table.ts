@@ -21,11 +21,15 @@ export default class TBTable {
     this.display.forEach(stat => {
       this.table.push(
         [{ colSpan: 2, content: `${this.heading}` }],
+        [{ colSpan: 2, content: `${stat.name}` }],
         [
-          `${stat.name}`,
-          { hAlign: 'right', content: `${chalkScheme.imprv('✔')}` },
+          'Rank-Sum Significant',
+          { hAlign: 'right', content: `${stat.isSigWilcoxonRankSumTest}` },
         ],
-        ['Significant', { hAlign: 'right', content: `${stat.significance}` }],
+        [
+          'Signed-Rank Significant',
+          { hAlign: 'right', content: `${stat.isSigWilcoxonSignedRankTest}` },
+        ],
         ['Estimator Δ', { hAlign: 'right', content: `${stat.estimator}μs` }],
         [
           'Distribution',
@@ -48,7 +52,7 @@ export default class TBTable {
   }
   private initConfig() {
     return {
-      colWidths: [20, 30],
+      colWidths: [30, 30],
       chars: {
         top: '═',
         'top-mid': '─',
