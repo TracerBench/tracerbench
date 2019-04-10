@@ -1,23 +1,26 @@
 import * as Table from 'cli-table3';
 import { chalkScheme } from './utils';
-import { StatDisplay } from './stats';
+import { Stats } from './stats';
 
 export default class TBTable {
   public config: Table.TableConstructorOptions;
   public table: any;
-  private route: string;
-  constructor(route: string) {
-    this.route = route;
+  public display: Stats[];
+  private heading: string;
+  constructor(heading: string) {
+    this.heading = heading;
     this.config = this.initConfig();
     this.table = new Table(this.config) as Table.HorizontalTable;
+    this.display = [];
   }
   public render(): string {
+    this.setTableData();
     return this.table.toString();
   }
-  public setTableData(display: StatDisplay[]) {
-    display.forEach(stat => {
+  private setTableData() {
+    this.display.forEach(stat => {
       this.table.push(
-        [{ colSpan: 2, content: `${this.route}` }],
+        [{ colSpan: 2, content: `${this.heading}` }],
         [
           `${stat.name}`,
           { hAlign: 'right', content: `${chalkScheme.imprv('✔')}` },

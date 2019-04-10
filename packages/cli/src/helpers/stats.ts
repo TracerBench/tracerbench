@@ -2,27 +2,14 @@ import { cross, histogram, quantile } from 'd3-array';
 import { scaleLinear } from 'd3-scale';
 import { significant, test } from './mann-whitney';
 import { chalkScheme } from './utils';
-
-export interface IStatDisplayOptions {
+import { wilcoxonSignedRanksTable } from './critical-values';
+export interface IStatsOptions {
   control: number[];
   experiment: number[];
   name: string;
 }
 
-interface IStatDisplayClass {
-  name: string;
-  estimator: number;
-  // based on alpha of 5%
-  significance: string;
-  controlDistribution: string;
-  experimentDistribution: string;
-  // todo: add locationShift as +/- μs
-  // locationShift: number;
-  // todo: add observation probability as %
-  // probablity: number;
-}
-
-export class StatDisplay implements IStatDisplayClass {
+export class Stats {
   public name: string;
   public significance: string;
   public estimator: number;
@@ -30,7 +17,8 @@ export class StatDisplay implements IStatDisplayClass {
   public controlDistribution: string;
   public experimentDistribution: string;
   public range: { min: number; max: number };
-  constructor(options: IStatDisplayOptions) {
+  public isSigWilcoxonSignedRankTest: boolean;
+  constructor(options: IStatsOptions) {
     const { control, experiment, name } = options;
     this.name = name;
     this.ustat = this.getUSTAT(control, experiment);
@@ -43,6 +31,60 @@ export class StatDisplay implements IStatDisplayClass {
     this.experimentDistribution = sparkline(
       this.getHistogram(this.range, experiment)
     );
+    this.isSigWilcoxonSignedRankTest = this.getWilcoxonSignedRankTest(
+      control,
+      experiment
+    );
+  }
+  private getWilcoxonSignedRankTest(
+    control: number[],
+    experiment: number[]
+  ): boolean {
+    // two-tailed test alpha 0.05 critical values
+    const samples = control.map((c, i) => {
+      return Object.assign({
+        c,
+        e: experiment[i],
+        diff: c - experiment[i],
+        absDiff: Math.abs(c - experiment[i]),
+        rank: 0,
+      });
+    });
+
+    // sort by absolute difference & rank
+    const sorted = samples.sort((a, b) => {
+      return a.absDiff - b.absDiff;
+    });
+    samples.slice().map(s => {
+      s.rank = sorted.indexOf(s) + 1;
+    });
+
+    const N = control.length;
+    const tMinusVal = samples.reduce((currentSum, sample) => {
+      if (Math.sign(sample.diff) === -1) {
+        return currentSum + sample.rank;
+      }
+      return currentSum;
+    }, 0);
+
+    const tPlusVal = samples.reduce((currentSum, sample) => {
+      if (Math.sign(sample.diff) === 1 || Math.sign(sample.diff) === 0) {
+        return currentSum + sample.rank;
+      }
+      return currentSum;
+    }, 0);
+
+    const wStat = Math.min(tMinusVal, tPlusVal);
+
+    try {
+      const wCrit = wilcoxonSignedRanksTable[N];
+      // !! important this is lt not gt
+      return wStat < wCrit;
+    } catch (e) {
+      throw new Error(
+        `Sample sizes greater than 50 are not supported. Your sample size is ${N}`
+      );
+    }
   }
   private getRange(control: number[], experiment: number[]) {
     const a = control.concat(experiment);
