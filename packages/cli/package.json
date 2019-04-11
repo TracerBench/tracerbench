@@ -78,7 +78,8 @@
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "tslint -p test -t stylish",
     "prepack": "yarn build && oclif-dev manifest && oclif-dev readme",
-    "test": "nyc --extension .ts mocha \"test/commands/**/*.test.ts\"",
+    "test": "nyc --extension .ts mocha \"test/commands/**/*.test.ts\" \"test/helpers/**/*.test.ts\"",
+    "test:helpers": "nyc --extension .ts mocha \"test/helpers/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md",
     "build": "rm -rf dist && tsc -b"
   },

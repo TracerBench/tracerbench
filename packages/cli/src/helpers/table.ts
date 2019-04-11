@@ -26,10 +26,6 @@ export default class TBTable {
           'Rank-Sum Significant',
           { hAlign: 'right', content: `${stat.isSigWilcoxonRankSumTest}` },
         ],
-        [
-          'Signed-Rank Significant',
-          { hAlign: 'right', content: `${stat.isSigWilcoxonSignedRankTest}` },
-        ],
         ['Estimator Δ', { hAlign: 'right', content: `${stat.estimator}μs` }],
         [
           'Distribution',

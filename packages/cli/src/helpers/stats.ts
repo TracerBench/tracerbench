@@ -1,8 +1,8 @@
 import { cross, histogram, quantile } from 'd3-array';
 import { scaleLinear } from 'd3-scale';
 import { significant, test } from './mann-whitney';
+import { getWilcoxonSignedRankTest } from './wilcoxon-signed-rank';
 import { chalkScheme } from './utils';
-import { wilcoxonSignedRanksTable } from './critical-values';
 export interface IStatsOptions {
   control: number[];
   experiment: number[];
@@ -35,64 +35,12 @@ export class Stats {
     this.experimentDistribution = sparkline(
       this.getHistogram(this.range, experiment)
     );
-    this.isSigWilcoxonSignedRankTest = this.getWilcoxonSignedRankTest(
+    this.isSigWilcoxonSignedRankTest = getWilcoxonSignedRankTest(
       control,
       experiment
     );
   }
   // todo: currently not displaying this in terminal results
-  private getWilcoxonSignedRankTest(
-    control: number[],
-    experiment: number[]
-  ): string {
-    // paired two-tailed test alpha 0.05 critical values
-    const samples = control.map((c, i) => {
-      return Object.assign({
-        c,
-        e: experiment[i],
-        diff: c - experiment[i],
-        absDiff: Math.abs(c - experiment[i]),
-        rank: 0,
-      });
-    });
-
-    // sort by absolute difference & rank
-    const sorted = samples.sort((a, b) => {
-      return a.absDiff - b.absDiff;
-    });
-    samples.slice().map(s => {
-      s.rank = sorted.indexOf(s) + 1;
-    });
-
-    const N = control.length;
-    const tMinusVal = samples.reduce((currentSum, sample) => {
-      if (Math.sign(sample.diff) === -1) {
-        return currentSum + sample.rank;
-      }
-      return currentSum;
-    }, 0);
-
-    const tPlusVal = samples.reduce((currentSum, sample) => {
-      if (Math.sign(sample.diff) === 1 || Math.sign(sample.diff) === 0) {
-        return currentSum + sample.rank;
-      }
-      return currentSum;
-    }, 0);
-
-    const wStat = Math.min(tMinusVal, tPlusVal);
-
-    try {
-      const wCrit = wilcoxonSignedRanksTable[N];
-      // !! important this is lt not gt
-      return wStat < wCrit
-        ? chalkScheme.significant('Yes')
-        : chalkScheme.neutral('No');
-    } catch (e) {
-      throw new Error(
-        `Sample sizes greater than 50 are not supported. Your sample size is ${N}`
-      );
-    }
-  }
   private getRange(control: number[], experiment: number[]) {
     const a = control.concat(experiment);
     return { min: Math.min(...a), max: Math.max(...a) };
