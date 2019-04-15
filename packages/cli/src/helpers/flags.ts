@@ -106,7 +106,7 @@ export const cpuThrottleRate = flags.build({
 
 export const fidelity = flags.build({
   default: () => getConfigDefault('fidelity', defaultFlagArgs.fidelity),
-  description: `Directly correlates to the number of samples per trace. High means a longer trace time.`,
+  description: `Directly correlates to the number of samples per trace. "T-shirt sizing" High means a longer trace time.`,
   options: Object.keys(fidelityLookup),
   parse: (fidelity: string): number => {
     return parseInt((fidelityLookup as any)[fidelity], 10);

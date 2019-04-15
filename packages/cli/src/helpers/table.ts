@@ -1,5 +1,4 @@
 import * as Table from 'cli-table3';
-import { chalkScheme } from './utils';
 import { Stats } from './stats';
 
 export default class TBTable {

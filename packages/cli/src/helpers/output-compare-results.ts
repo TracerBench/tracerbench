@@ -32,6 +32,7 @@ export function outputCompareResults(
     };
   }
 
+  // duration === fetchStart
   benchmarkTable.display.push(new Stats(getQueryData('duration')));
   benchmarkTable.display.push(new Stats(getQueryData('js')));
 
