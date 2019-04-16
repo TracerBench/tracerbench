@@ -1,6 +1,6 @@
 {
   "name": "tracerbench-cli",
-  "version": "2.0.0-beta.3",
+  "version": "2.0.0-beta.4",
   "description": "CLI for Tracerbench",
   "keywords": [
     "oclif"
@@ -27,8 +27,8 @@
     "chalk": "^2.4.2",
     "cli-table3": "^0.5.1",
     "d3-array": "^2.0.3",
-    "d3-scale": "^3.0.0",
     "d3-color": "^1.2.3",
+    "d3-scale": "^3.0.0",
     "fs-extra": "^7.0.1",
     "inquirer": "^6.2.2",
     "json-query": "^2.2.2",
@@ -44,10 +44,10 @@
     "@oclif/tslint": "^3.1.1",
     "@types/chai": "^4.1.7",
     "@types/chai-fs": "^2.0.1",
-    "@types/d3-scale": "^2.1.1",
-    "@types/d3-color": "^1.2.2",
     "@types/chalk": "^2.2.0",
     "@types/d3-array": "^1.2.6",
+    "@types/d3-color": "^1.2.2",
+    "@types/d3-scale": "^2.1.1",
     "@types/fs-extra": "^5.0.4",
     "@types/inquirer": "^0.0.44",
     "@types/json-query": "^2.2.0",
@@ -85,5 +85,5 @@
     "version": "oclif-dev readme && git add README.md",
     "build": "rm -rf dist && tsc -b"
   },
-  "gitHead": "95ab52895412d32c451c211463521dda5ac782e3"
+  "gitHead": "cb661242cc37da21084dcc75ebf247c10ecb03c2"
 }

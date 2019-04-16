@@ -21,7 +21,7 @@ $ npm install -g tracerbench-cli
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench-cli/2.0.0-beta.3 darwin-x64 node-v10.15.2
+tracerbench-cli/2.0.0-beta.4 darwin-x64 node-v10.15.2
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
@@ -178,7 +178,8 @@ OPTIONS
       (required) [default: http://localhost:8001/] Experiment URL to visit
 
   --fidelity=test|low|medium|high
-      (required) [default: low] Directly correlates to the number of samples per trace. High means a longer trace time.
+      (required) [default: low] Directly correlates to the number of samples per trace. "T-shirt sizing" High means a 
+      longer trace time.
 
   --markers=markers
       (required) [default: domComplete] User Timing Markers
