@@ -1,5 +1,3 @@
-import { removeDuplicates } from './utils';
-
 // all exports are alpha of 0.05 for two-tailed tests
 // using (array length) as N value up to 50
 // prettier-ignore
@@ -39,7 +37,7 @@ export function rankSamples(samples: ISample[]): ISample[] {
     });
   });
 
-  function countDuplicates(obj: any, num: any){
+  function countDuplicates(obj: any, num: number){
     obj[num] = (++obj[num] || 1);
     return obj;
   }

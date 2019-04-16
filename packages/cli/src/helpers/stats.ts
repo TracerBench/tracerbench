@@ -1,8 +1,7 @@
 import { cross, histogram, quantile } from 'd3-array';
 import { scaleLinear } from 'd3-scale';
-import { significant, test } from './mann-whitney';
+import { getWilcoxonRankSumTest } from './wilcoxon-rank-sum';
 import { getWilcoxonSignedRankTest } from './wilcoxon-signed-rank';
-import { chalkScheme } from './utils';
 export interface IStatsOptions {
   control: number[];
   experiment: number[];
@@ -12,7 +11,6 @@ export interface IStatsOptions {
 export class Stats {
   public name: string;
   public estimator: number;
-  public ustat: number;
   public controlDistribution: string;
   public experimentDistribution: string;
   public range: { min: number; max: number };
@@ -21,12 +19,6 @@ export class Stats {
   constructor(options: IStatsOptions) {
     const { control, experiment, name } = options;
     this.name = name;
-    this.ustat = this.getUSTAT(control, experiment);
-    this.isSigWilcoxonRankSumTest = this.setIsSignificant(
-      this.ustat,
-      control,
-      experiment
-    );
     this.estimator = this.getHodgesLehmann(control, experiment) as number;
     this.range = this.getRange(control, experiment);
     this.controlDistribution = sparkline(
@@ -35,6 +27,7 @@ export class Stats {
     this.experimentDistribution = sparkline(
       this.getHistogram(this.range, experiment)
     );
+    this.isSigWilcoxonRankSumTest = getWilcoxonRankSumTest(control, experiment);
     this.isSigWilcoxonSignedRankTest = getWilcoxonSignedRankTest(
       control,
       experiment
@@ -71,20 +64,8 @@ export class Stats {
     }
     return q;
   }
-  private getUSTAT(control: any[], experiment: any[]): number {
-    return Math.min(...test([control, experiment]));
-  }
   private getHodgesLehmann(control: any[], experiment: any[]) {
     return quantile(cross(control, experiment, (a, b) => a - b), 0.5);
-  }
-  private setIsSignificant(
-    ustat: number,
-    control: any[],
-    experiment: any[]
-  ): string {
-    return significant(ustat, [control, experiment])
-      ? chalkScheme.significant('Yes')
-      : chalkScheme.neutral('No');
   }
 }
 
