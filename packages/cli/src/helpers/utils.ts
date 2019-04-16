@@ -156,3 +156,7 @@ export function parseMarkers(m: string | string[]): IMarker[] {
   });
   return a;
 }
+
+export function removeDuplicates<T>(collection: T[]) {
+  return [...new Set(collection)];
+}
