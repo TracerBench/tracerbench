@@ -1,6 +1,6 @@
 {
   "name": "tracerbench-cli",
-  "version": "2.0.0-beta.4",
+  "version": "2.0.0-beta.5",
   "description": "CLI for Tracerbench",
   "keywords": [
     "oclif"
@@ -34,7 +34,7 @@
     "json-query": "^2.2.2",
     "listr": "^0.14.3",
     "path": "0.12.7",
-    "tracerbench": "^2.0.0-beta.4",
+    "tracerbench": "^2.0.0-beta.5",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
