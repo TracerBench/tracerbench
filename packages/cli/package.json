@@ -1,6 +1,6 @@
 {
   "name": "tracerbench-cli",
-  "version": "2.0.0-beta.4",
+  "version": "2.0.0-beta.5",
   "description": "CLI for Tracerbench",
   "keywords": [
     "oclif"
@@ -34,7 +34,7 @@
     "json-query": "^2.2.2",
     "listr": "^0.14.3",
     "path": "0.12.7",
-    "tracerbench": "^2.0.0-beta.4",
+    "tracerbench": "^2.0.0-beta.5",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
@@ -84,5 +84,5 @@
     "version": "oclif-dev readme && git add README.md",
     "build": "rm -rf dist && tsc -b"
   },
-  "gitHead": "cb661242cc37da21084dcc75ebf247c10ecb03c2"
+  "gitHead": "e9e301b7d4a75ac252fe69cf533668e42432ea8d"
 }
