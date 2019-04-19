@@ -54,16 +54,16 @@ export class Stats {
       return i.length;
     });
   }
-  private getQuantiles(a: any[]) {
-    let p: any = 0;
-    const q = [];
-    while (p <= 1) {
-      p = parseFloat(p.toFixed(1));
-      q.push({ p, val: quantile(a, p) });
-      p += 0.1;
-    }
-    return q;
-  }
+  // private getQuantiles(a: any[]) {
+  //   let p: any = 0;
+  //   const q = [];
+  //   while (p <= 1) {
+  //     p = parseFloat(p.toFixed(1));
+  //     q.push({ p, val: quantile(a, p) });
+  //     p += 0.1;
+  //   }
+  //   return q;
+  // }
   private getHodgesLehmann(control: any[], experiment: any[]) {
     return quantile(cross(control, experiment, (a, b) => a - b), 0.5);
   }

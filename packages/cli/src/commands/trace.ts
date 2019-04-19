@@ -29,13 +29,7 @@ export default class Trace extends Command {
 
   public async run() {
     const { flags } = this.parse(Trace);
-    const {
-      url,
-      cpuThrottleRate,
-      traceJSONOutput,
-      archiveOutput,
-      iterations,
-    } = flags;
+    const { url, cpuThrottleRate, traceJSONOutput, archiveOutput } = flags;
     const network = 'none';
     const cpu = cpuThrottleRate;
 

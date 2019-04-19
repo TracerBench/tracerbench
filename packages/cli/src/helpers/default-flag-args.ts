@@ -1,4 +1,4 @@
-import { ITBConfig, parseMarkers } from './utils';
+import { ITBConfig } from './utils';
 
 export const fidelityLookup = {
   test: 2,

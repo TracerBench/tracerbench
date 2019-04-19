@@ -3,15 +3,18 @@
   "compilerOptions": {
     "composite": true,
     "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+
     "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+
+    "newLine": "LF",
+
     "moduleResolution": "node",
-    "importHelpers": true,
     "module": "commonjs",
-    "outDir": "dist",
-    "rootDir": "src",
-    "target": "es2017"
-  },
-  "include": [
-    "src/**/*"
-  ]
+    "target": "es2017",
+    "outDir": "./dist"
+  }
 }
