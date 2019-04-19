@@ -15,8 +15,8 @@
     "src",
     "oclif.manifest.json"
   ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "bin": {
     "tracerbench": "./bin/run"
   },
@@ -68,7 +68,7 @@
     "node": ">=8.0.0"
   },
   "oclif": {
-    "commands": "./dist/commands",
+    "commands": "./dist/src/commands",
     "bin": "tracerbench",
     "plugins": [
       "@oclif/plugin-help"
@@ -82,7 +82,7 @@
     "test": "nyc --extension .ts mocha \"test/commands/**/*.test.ts\" \"test/helpers/**/*.test.ts\"",
     "test:helpers": "nyc --extension .ts mocha \"test/helpers/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md",
-    "build": "tsc -b"
+    "build": "rm -rf ./dist && tsc -b"
   },
   "gitHead": "e9e301b7d4a75ac252fe69cf533668e42432ea8d"
 }
