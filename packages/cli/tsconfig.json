@@ -14,9 +14,13 @@
 
     "moduleResolution": "node",
     "module": "commonjs",
+    "resolveJsonModule": true,
     "target": "es2017",
     "outDir": "./dist"
   },
+  "include": [
+    "src"
+  ],
   "exclude": [
     "node_modules",
     "test"

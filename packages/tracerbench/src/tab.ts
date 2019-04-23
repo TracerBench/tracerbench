@@ -35,6 +35,12 @@ export interface ITab {
     conditions: Network.EmulateNetworkConditionsParameters
   ): Promise<void>;
   disableNetworkEmulation(): Promise<void>;
+
+  /** Configure tab to take on the device emulation settings */
+  emulateDevice(deviceSettings: Emulation.SetDeviceMetricsOverrideParameters): Promise<void>;
+
+  /** Cofigure tabe to send the specified user agent */
+  setUserAgent(userAgentSettings: Emulation.SetUserAgentOverrideParameters): Promise<void>;
 }
 
 export default function createTab(
@@ -232,5 +238,13 @@ class Tab implements ITab {
     await heapProfiler.enable();
     await heapProfiler.collectGarbage();
     await heapProfiler.disable();
+  }
+
+  public async emulateDevice(deviceSettings: Emulation.SetDeviceMetricsOverrideParameters): Promise<void> {
+    await this.emulation.setDeviceMetricsOverride(deviceSettings);
+  }
+
+  public async setUserAgent(userAgentSettings: Emulation.SetUserAgentOverrideParameters): Promise<void> {
+    await this.emulation.setUserAgentOverride(userAgentSettings);
   }
 }
