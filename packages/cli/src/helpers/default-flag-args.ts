@@ -1,4 +1,4 @@
-import { ITBConfig } from './utils';
+import { ITBConfig } from './tb-config';
 
 export const fidelityLookup = {
   test: 2,

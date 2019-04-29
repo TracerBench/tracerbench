@@ -2,7 +2,8 @@ import { flags } from '@oclif/command';
 import { networkConditions } from 'tracerbench';
 import { Network } from 'chrome-debugging-client/dist/protocol/tot';
 import { defaultFlagArgs, fidelityLookup } from './default-flag-args';
-import { getConfigDefault, parseMarkers } from './utils';
+import { parseMarkers } from './utils';
+import { getConfigDefault } from './tb-config';
 
 /*
 ! oclif flags.build#parse will only execute when the flag:string is passed directly

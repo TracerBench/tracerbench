@@ -1,57 +1,5 @@
-import * as fs from 'fs-extra';
-import * as path from 'path';
-
 import chalk from 'chalk';
-import { IMarker, networkConditions } from 'tracerbench';
-import { PerformanceTimingMark } from './default-flag-args';
-
-export interface ITBConfig {
-  archive?: string;
-  traceJSONOutput?: string;
-  methods?: string;
-  cpuThrottleRate?: number | string;
-  fidelity?: 'test' | 'low' | 'med' | 'high';
-  report?: string;
-  event?: string;
-  markers?: string | string[] | IMarker[] | PerformanceTimingMark[];
-  network?: keyof typeof networkConditions;
-  output?: string;
-  url?: string;
-  controlURL?: string;
-  experimentURL?: string;
-  archiveOutput?: string;
-  harOutput?: string;
-  locations?: string;
-  har?: string;
-  filter?: string;
-  marks?: string;
-  urlOrFrame?: string;
-  harsPath?: string;
-  routes?: string[];
-  appName?: string;
-  browserArgs?: string[];
-  iterations?: number | string;
-  tracingLocationSearch?: string;
-}
-
-type ITBConfigKeys = keyof ITBConfig;
-
-export function getConfigDefault(id: ITBConfigKeys, defaultValue?: any) {
-  let file;
-  let tbconfig;
-
-  try {
-    file = path.join(process.cwd(), 'tbconfig.json');
-    tbconfig = JSON.parse(fs.readFileSync(file, 'utf8'));
-    return tbconfig[id] || defaultValue || undefined;
-  } catch (error) {
-    try {
-      return defaultValue || undefined;
-    } catch (error) {
-      // throw new CLIError(error);
-    }
-  }
-}
+import { IMarker } from 'tracerbench';
 
 export const chalkScheme = {
   header: chalk.rgb(255, 255, 255),

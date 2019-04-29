@@ -1,0 +1,180 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "definitions": {
+        "IMarker": {
+            "properties": {
+                "label": {
+                    "description": "Label of phase",
+                    "type": "string"
+                },
+                "start": {
+                    "description": "performance.mark name",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        }
+    },
+    "properties": {
+        "appName": {
+            "type": "string"
+        },
+        "archive": {
+            "type": "string"
+        },
+        "archiveOutput": {
+            "type": "string"
+        },
+        "browserArgs": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "controlURL": {
+            "type": "string"
+        },
+        "cpuThrottleRate": {
+            "type": [
+                "string",
+                "number"
+            ]
+        },
+        "event": {
+            "type": "string"
+        },
+        "experimentURL": {
+            "type": "string"
+        },
+        "fidelity": {
+            "enum": [
+                "high",
+                "low",
+                "med",
+                "test"
+            ],
+            "type": "string"
+        },
+        "filter": {
+            "type": "string"
+        },
+        "har": {
+            "type": "string"
+        },
+        "harOutput": {
+            "type": "string"
+        },
+        "harsPath": {
+            "type": "string"
+        },
+        "iterations": {
+            "type": [
+                "string",
+                "number"
+            ]
+        },
+        "locations": {
+            "type": "string"
+        },
+        "markers": {
+            "anyOf": [
+                {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                {
+                    "items": {
+                        "$ref": "#/definitions/IMarker"
+                    },
+                    "type": "array"
+                },
+                {
+                    "items": {
+                        "enum": [
+                            "connectEnd",
+                            "connectStart",
+                            "domComplete",
+                            "domContentLoadedEventEnd",
+                            "domContentLoadedEventStart",
+                            "domInteractive",
+                            "domLoading",
+                            "domainLookupEnd",
+                            "domainLookupStart",
+                            "fetchStart",
+                            "loadEventEnd",
+                            "loadEventStart",
+                            "navigationStart",
+                            "redirectEnd",
+                            "redirectStart",
+                            "requestStart",
+                            "responseEnd",
+                            "responseStart",
+                            "secureConnectionStart",
+                            "toJSON",
+                            "unloadEventEnd",
+                            "unloadEventStart"
+                        ],
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "marks": {
+            "type": "string"
+        },
+        "methods": {
+            "type": "string"
+        },
+        "network": {
+            "enum": [
+                "2g",
+                "3g",
+                "4g",
+                "FIOS",
+                "LTE",
+                "cable",
+                "dialup",
+                "dsl",
+                "edge",
+                "em-3g",
+                "fast-3g",
+                "none",
+                "offline",
+                "slow-3g"
+            ],
+            "type": "string"
+        },
+        "output": {
+            "type": "string"
+        },
+        "report": {
+            "type": "string"
+        },
+        "routes": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "traceJSONOutput": {
+            "type": "string"
+        },
+        "tracingLocationSearch": {
+            "type": "string"
+        },
+        "url": {
+            "type": "string"
+        },
+        "urlOrFrame": {
+            "type": "string"
+        }
+    },
+    "type": "object"
+}
+

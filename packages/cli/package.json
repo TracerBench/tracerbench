@@ -13,7 +13,8 @@
     "bin",
     "dist",
     "src",
-    "oclif.manifest.json"
+    "oclif.manifest.json",
+    "tb-schema.json"
   ],
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
@@ -62,7 +63,8 @@
     "tslint": "^5.14.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.0.1",
-    "typescript": "^3.3.4000"
+    "typescript": "^3.3.4000",
+    "typescript-json-schema": "^0.37.0"
   },
   "engines": {
     "node": ">=8.0.0"
@@ -78,11 +80,12 @@
     "lint": "tslint -p tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
     "posttest": "tslint -p test -t stylish",
-    "prepack": "yarn build && oclif-dev manifest && oclif-dev readme",
+    "prepack": "yarn build && yarn build:schema && oclif-dev manifest && oclif-dev readme",
     "test": "nyc --extension .ts mocha \"test/commands/**/*.test.ts\" \"test/helpers/**/*.test.ts\"",
     "test:helpers": "nyc --extension .ts mocha \"test/helpers/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md",
-    "build": "rm -rf ./dist && tsc -b"
+    "build": "rm -rf ./dist && tsc -b",
+    "build:schema": "typescript-json-schema \"src/helpers/tb-config.ts\" ITBConfig --out ./tb-schema.json"
   },
   "gitHead": "e9e301b7d4a75ac252fe69cf533668e42432ea8d"
 }

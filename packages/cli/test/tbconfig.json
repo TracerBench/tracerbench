@@ -1,4 +1,5 @@
 {
+  "$schema": "../tb-schema.json",
   "file": "./trace.json",
   "fidelity": "low",
   "methods": "''",
