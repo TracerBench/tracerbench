@@ -1,6 +1,7 @@
 {
   "$schema": "../tb-schema.json",
-  "file": "./trace.json",
+  "outputFolderPath": "./tracerbench-results",
+  "file": "./tracerbench-results/trace.json",
   "fidelity": "low",
   "methods": "''",
   "cpuThrottleRate": 2,
@@ -9,6 +10,7 @@
   "controlURL": "https://www.tracerbench.com/",
   "experimentURL": "https://www.tracerbench.com/",
   "url": "https://www.tracerbench.com/",
+  "archiveOutput": "trace.har",
   "harsPath": "./hars",
   "routes": ["/", "/foo", "/baz", "/buzz"],
   "tracingLocationSearch": "?tracing",
