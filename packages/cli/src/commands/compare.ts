@@ -13,6 +13,8 @@ import {
   network,
   output,
   tracingLocationSearch,
+  runtimeStats,
+  debug,
 } from '../helpers/flags';
 import { fidelityLookup } from '../helpers/default-flag-args';
 import { outputCompareResults } from '../helpers/output-compare-results';
@@ -31,6 +33,8 @@ export default class Compare extends Command {
     controlURL: controlURL({ required: true }),
     experimentURL: experimentURL({ required: true }),
     tracingLocationSearch: tracingLocationSearch({ required: true }),
+    runtimeStats: runtimeStats({ required: true }),
+    debug: debug(),
   };
 
   public async run() {
@@ -42,9 +46,13 @@ export default class Compare extends Command {
       controlURL,
       experimentURL,
       tracingLocationSearch,
+      runtimeStats,
     } = flags;
     let { markers, fidelity, network } = flags;
 
+    if (debug) {
+      this.log(`\n FLAGS: ${JSON.stringify(flags)}`);
+    }
     if (typeof fidelity === 'string') {
       fidelity = parseInt((fidelityLookup as any)[fidelity], 10);
     }
@@ -62,7 +70,6 @@ export default class Compare extends Command {
     }
 
     const delay = 100;
-    const runtimeStats = true;
     const browser = {
       additionalArguments: browserArgs,
     };

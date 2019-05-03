@@ -3,6 +3,7 @@ import * as path from 'path';
 import { IMarker } from 'tracerbench';
 import { PerformanceTimingMark } from './default-flag-args';
 import { Network } from 'chrome-debugging-client/dist/protocol/tot';
+import { chalkScheme } from './utils';
 
 export interface ITBConfig {
   archive?: string;
@@ -31,6 +32,8 @@ export interface ITBConfig {
   browserArgs?: string[];
   iterations?: number | string;
   tracingLocationSearch?: string;
+  runtimeStats?: 'true' | 'false';
+  debug?: 'true' | 'false';
 }
 
 type ITBConfigKeys = keyof ITBConfig;
@@ -42,7 +45,23 @@ export function getConfigDefault(id: ITBConfigKeys, defaultValue?: any) {
   try {
     file = path.join(process.cwd(), 'tbconfig.json');
     tbconfig = JSON.parse(fs.readFileSync(file, 'utf8'));
-    return tbconfig[id] || defaultValue || undefined;
+    if (tbconfig[id]) {
+      console.log(
+        `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON.stringify(
+          tbconfig[id]
+        )} from tbconfig.json`
+      );
+      return tbconfig[id];
+    } else if (defaultValue) {
+      console.log(
+        `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON.stringify(
+          defaultValue
+        )} from defaults`
+      );
+      return defaultValue;
+    } else {
+      return undefined;
+    }
   } catch (error) {
     try {
       return defaultValue || undefined;

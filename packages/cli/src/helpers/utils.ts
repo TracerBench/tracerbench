@@ -8,6 +8,8 @@ export const chalkScheme = {
   significant: chalk.rgb(0, 191, 255),
   imprv: chalk.rgb(135, 197, 113),
   phase: chalk.rgb(225, 225, 225),
+  faint: chalk.rgb(80, 80, 80),
+  checkmark: chalk.rgb(135, 197, 113)('✓'),
 };
 
 export function getCookiesFromHAR(har: any) {

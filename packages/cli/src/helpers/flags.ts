@@ -13,6 +13,22 @@ import { getConfigDefault } from './tb-config';
 ! and type checking in all circumstances
 */
 
+export const debug = flags.build({
+  default: () => getConfigDefault('debug', defaultFlagArgs.debug),
+  description: `Debug flag per command. Will output noisy command`,
+  parse: debug => {
+    return debug === 'true';
+  },
+});
+
+export const runtimeStats = flags.build({
+  default: () => getConfigDefault('runtimeStats', defaultFlagArgs.runtimeStats),
+  description: `Compare command output stats during run`,
+  parse: runtimeStats => {
+    return runtimeStats === 'true';
+  },
+});
+
 export const iterations = flags.build({
   default: () => getConfigDefault('iterations', defaultFlagArgs.iterations),
   description: `Number of runs`,
@@ -107,7 +123,7 @@ export const cpuThrottleRate = flags.build({
 
 export const fidelity = flags.build({
   default: () => getConfigDefault('fidelity', defaultFlagArgs.fidelity),
-  description: `Directly correlates to the number of samples per trace. "T-shirt sizing" High means a longer trace time.`,
+  description: `Directly correlates to the number of samples per trace. High means a longer trace time.`,
   options: Object.keys(fidelityLookup),
   parse: (fidelity: string): number => {
     return parseInt((fidelityLookup as any)[fidelity], 10);
