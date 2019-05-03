@@ -12,6 +12,22 @@ export default class TBTable {
     this.table = new Table(this.config) as Table.HorizontalTable;
     this.display = [];
   }
+  public getData(): string {
+    const a: object[] = [];
+    this.display.forEach(stat => {
+      a.push({
+        heading: this.heading,
+        statName: stat.name,
+        rankSumSignificant: stat.isSigWilcoxonRankSumTest,
+        estimatorDelta: `${stat.estimator}μs`,
+        distributionMin: `${stat.range.min}μs`,
+        distributionMax: `${stat.range.max}μs`,
+        controlDistributionHistogram: stat.controlDistributionHistogram,
+        experimentDistributionHistogram: stat.experimentDistributionHistogram,
+      });
+    });
+    return JSON.stringify(a);
+  }
   public render(): string {
     this.setTableData();
     return this.table.toString();
@@ -35,11 +51,14 @@ export default class TBTable {
         ],
         [
           'Control',
-          { hAlign: 'right', content: `${stat.controlDistribution}` },
+          { hAlign: 'right', content: `${stat.controlDistributionSparkline}` },
         ],
         [
           'Experiment',
-          { hAlign: 'right', content: `${stat.experimentDistribution}` },
+          {
+            hAlign: 'right',
+            content: `${stat.experimentDistributionSparkline}`,
+          },
         ],
         []
       );

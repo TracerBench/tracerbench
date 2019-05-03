@@ -8,12 +8,13 @@ import TBTable from './table';
 const benchmarkTable = new TBTable('Initial Render');
 const phaseTable = new TBTable('Phases');
 
-export function outputCompareResults(
+export function logCompareResults(
   results: any,
   markers: IMarker[],
   fidelity: any,
   output: string,
-  cli: any
+  cli: any,
+  json: boolean = false
 ) {
   // fn to get the marker data from tracerbench-results/compare.json
   function getQueryData(id: string, marker?: any): IStatsOptions {
@@ -43,12 +44,19 @@ export function outputCompareResults(
     phaseTable.display.push(new Stats(phase));
   });
 
-  const message = `Success! ${fidelity} test samples were run in ${
-    results[0].meta.browserVersion
-  }. A detailed report and JSON file are available at ${output}/compare.json`;
+  const message = `Success! ${fidelity} test samples were run with Chrome. A detailed report and JSON file are available at ${output}/compare.json`;
 
-  // LOG THE TABLES AND MESSAGE
-  cli.log(`\n\n${benchmarkTable.render()}`);
-  cli.log(`\n\n${phaseTable.render()}`);
-  cli.log(`\n\n${message}\n\n`);
+  if (!json) {
+    // LOG THE TABLES AND MESSAGE
+    cli.log(`\n\n${benchmarkTable.render()}`);
+    cli.log(`\n\n${phaseTable.render()}`);
+    cli.log(`\n\n${message}\n\n`);
+  } else {
+    // RETURN JSON STRING
+    return JSON.stringify({
+      benchmarkTable: benchmarkTable.getData(),
+      phaseTable: phaseTable.getData(),
+      message,
+    });
+  }
 }

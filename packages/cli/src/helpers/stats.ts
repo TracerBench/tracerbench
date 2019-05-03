@@ -11,8 +11,10 @@ export interface IStatsOptions {
 export class Stats {
   public name: string;
   public estimator: number;
-  public controlDistribution: string;
-  public experimentDistribution: string;
+  public controlDistributionSparkline: string;
+  public experimentDistributionSparkline: string;
+  public controlDistributionHistogram: number[];
+  public experimentDistributionHistogram: number[];
   public range: { min: number; max: number };
   public isSigWilcoxonRankSumTest: string;
   public isSigWilcoxonSignedRankTest: string;
@@ -21,10 +23,15 @@ export class Stats {
     this.name = name;
     this.estimator = this.getHodgesLehmann(control, experiment) as number;
     this.range = this.getRange(control, experiment);
-    this.controlDistribution = sparkline(
+    this.controlDistributionHistogram = this.getHistogram(this.range, control);
+    this.experimentDistributionHistogram = this.getHistogram(
+      this.range,
+      experiment
+    );
+    this.controlDistributionSparkline = sparkline(
       this.getHistogram(this.range, control)
     );
-    this.experimentDistribution = sparkline(
+    this.experimentDistributionSparkline = sparkline(
       this.getHistogram(this.range, experiment)
     );
     this.isSigWilcoxonRankSumTest = getWilcoxonRankSumTest(control, experiment);

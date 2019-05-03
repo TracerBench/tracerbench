@@ -58,5 +58,4 @@ export const defaultFlagArgs: ITBConfig = {
   network: 'none',
   runtimeStats: 'false',
   routes: ['/'],
-  debug: 'false',
 };

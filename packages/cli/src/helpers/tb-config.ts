@@ -33,7 +33,6 @@ export interface ITBConfig {
   iterations?: number | string;
   tracingLocationSearch?: string;
   runtimeStats?: 'true' | 'false';
-  debug?: 'true' | 'false';
 }
 
 type ITBConfigKeys = keyof ITBConfig;

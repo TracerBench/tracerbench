@@ -5,8 +5,6 @@ import Compare from '../../src/commands/compare';
 import { tmpDir } from '../setup';
 import { defaultFlagArgs } from '../../src/helpers/default-flag-args';
 
-chai.use(require('chai-fs'));
-
 const fidelity = 'test';
 const output = path.join(`${process.cwd()}/${tmpDir}`);
 

@@ -13,12 +13,12 @@ import { getConfigDefault } from './tb-config';
 ! and type checking in all circumstances
 */
 
-export const debug = flags.build({
-  default: () => getConfigDefault('debug', defaultFlagArgs.debug),
+export const json = flags.boolean({
+  description: `compare command will stdout json rather than formatted results`,
+});
+
+export const debug = flags.boolean({
   description: `Debug flag per command. Will output noisy command`,
-  parse: debug => {
-    return debug === 'true';
-  },
 });
 
 export const runtimeStats = flags.build({

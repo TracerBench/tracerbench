@@ -14,10 +14,11 @@ import {
   output,
   tracingLocationSearch,
   runtimeStats,
+  json,
   debug,
 } from '../helpers/flags';
 import { fidelityLookup } from '../helpers/default-flag-args';
-import { outputCompareResults } from '../helpers/output-compare-results';
+import { logCompareResults } from '../helpers/log-compare-results';
 import { parseMarkers } from '../helpers/utils';
 
 export default class Compare extends Command {
@@ -34,7 +35,8 @@ export default class Compare extends Command {
     experimentURL: experimentURL({ required: true }),
     tracingLocationSearch: tracingLocationSearch({ required: true }),
     runtimeStats: runtimeStats({ required: true }),
-    debug: debug(),
+    json,
+    debug,
   };
 
   public async run() {
@@ -47,12 +49,15 @@ export default class Compare extends Command {
       experimentURL,
       tracingLocationSearch,
       runtimeStats,
+      json,
+      debug,
     } = flags;
     let { markers, fidelity, network } = flags;
 
     if (debug) {
       this.log(`\n FLAGS: ${JSON.stringify(flags)}`);
     }
+
     if (typeof fidelity === 'string') {
       fidelity = parseInt((fidelityLookup as any)[fidelity], 10);
     }
@@ -115,7 +120,7 @@ export default class Compare extends Command {
           JSON.stringify(results, null, 2)
         );
 
-        outputCompareResults(results, markers, fidelity, output, this);
+        logCompareResults(results, markers, fidelity, output, this, json);
       })
       .catch((err: any) => {
         this.error(err);
