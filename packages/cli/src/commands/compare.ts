@@ -120,7 +120,14 @@ export default class Compare extends Command {
           JSON.stringify(results, null, 2)
         );
 
-        logCompareResults(results, markers, fidelity, output, this, json);
+        fs.writeFileSync(
+          `${output}/compare-stat-results.json`,
+          JSON.stringify(
+            logCompareResults(results, markers, fidelity, output, this, json),
+            null,
+            2
+          )
+        );
       })
       .catch((err: any) => {
         this.error(err);

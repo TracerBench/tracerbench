@@ -1,3 +1,5 @@
+/* tslint:disable:no-console*/
+
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { IMarker } from 'tracerbench';
@@ -63,7 +65,15 @@ export function getConfigDefault(id: ITBConfigKeys, defaultValue?: any) {
     }
   } catch (error) {
     try {
-      return defaultValue || undefined;
+      if (defaultValue) {
+        console.log(
+          `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON.stringify(
+            defaultValue
+          )} from defaults`
+        );
+        return defaultValue;
+      }
+      return undefined;
     } catch (error) {
       // throw new CLIError(error);
     }

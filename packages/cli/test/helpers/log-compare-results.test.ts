@@ -33,8 +33,7 @@ describe('log-compare-results', () => {
       output,
       scope,
       true
-    ) as string;
-    const j = JSON.parse(l);
-    expect(j.message).to.contain('Success!');
+    ) as any;
+    expect(l.message).to.contain('Success!');
   });
 });

@@ -12,7 +12,7 @@ export default class TBTable {
     this.table = new Table(this.config) as Table.HorizontalTable;
     this.display = [];
   }
-  public getData(): string {
+  public getData(): object[] {
     const a: object[] = [];
     this.display.forEach(stat => {
       a.push({
@@ -26,7 +26,7 @@ export default class TBTable {
         experimentDistributionHistogram: stat.experimentDistributionHistogram,
       });
     });
-    return JSON.stringify(a);
+    return a;
   }
   public render(): string {
     this.setTableData();

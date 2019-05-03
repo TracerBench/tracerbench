@@ -45,6 +45,11 @@ export function logCompareResults(
   });
 
   const message = `Success! ${fidelity} test samples were run with Chrome. A detailed report and JSON file are available at ${output}/compare.json`;
+  const j = {
+    benchmarkTable: benchmarkTable.getData(),
+    phaseTable: phaseTable.getData(),
+    message,
+  };
 
   if (!json) {
     // LOG THE TABLES AND MESSAGE
@@ -52,11 +57,9 @@ export function logCompareResults(
     cli.log(`\n\n${phaseTable.render()}`);
     cli.log(`\n\n${message}\n\n`);
   } else {
-    // RETURN JSON STRING
-    return JSON.stringify({
-      benchmarkTable: benchmarkTable.getData(),
-      phaseTable: phaseTable.getData(),
-      message,
-    });
+    // WILL ONLY STDOUT JSON. NO TABLES OR SPARKLINE
+    cli.log(j);
   }
+  // RETURN JSON FOR ONLY FILE OUTPUT
+  return j;
 }

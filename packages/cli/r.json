@@ -1,0 +1,35 @@
+✓ Fetching flag browserArgs as ["--headless","--disable-gpu","--hide-scrollbars","--mute-audio","--v8-cache-options=none","--disable-cache","--disable-v8-idle-tasks","--crash-dumps-dir=./tmp"] from defaults
+✓ Fetching flag cpuThrottleRate as 4 from defaults
+✓ Fetching flag markers as "domComplete" from defaults
+✓ Fetching flag network as "none" from defaults
+✓ Fetching flag output as "./tracerbench-results" from defaults
+✓ Fetching flag tracingLocationSearch as "?tracing" from defaults
+✓ Fetching flag runtimeStats as "false" from defaults
+{ benchmarkTable:
+   [ { heading: 'Initial Render',
+       statName: 'duration',
+       rankSumSignificant: 'No',
+       estimatorDelta: '34609μs',
+       distributionMin: '11646μs',
+       distributionMax: '47122μs',
+       controlDistributionHistogram: [Array],
+       experimentDistributionHistogram: [Array] },
+     { heading: 'Initial Render',
+       statName: 'js',
+       rankSumSignificant: 'No',
+       estimatorDelta: '0μs',
+       distributionMin: '0μs',
+       distributionMax: '0μs',
+       controlDistributionHistogram: [Array],
+       experimentDistributionHistogram: [Array] } ],
+  phaseTable:
+   [ { heading: 'Phases',
+       statName: 'domComplete',
+       rankSumSignificant: 'No',
+       estimatorDelta: '34609μs',
+       distributionMin: '11646μs',
+       distributionMax: '47122μs',
+       controlDistributionHistogram: [Array],
+       experimentDistributionHistogram: [Array] } ],
+  message:
+   'Success! 2 test samples were run with Chrome. A detailed report and JSON file are available at ./tracerbench-results/compare.json' }
