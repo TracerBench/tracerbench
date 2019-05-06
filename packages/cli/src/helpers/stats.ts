@@ -2,6 +2,12 @@ import { cross, histogram, quantile } from 'd3-array';
 import { scaleLinear } from 'd3-scale';
 import { getWilcoxonRankSumTest } from './wilcoxon-rank-sum';
 import { getWilcoxonSignedRankTest } from './wilcoxon-signed-rank';
+
+interface IQuantile {
+  p: number;
+  val: number | undefined;
+}
+
 export interface IStatsOptions {
   control: number[];
   experiment: number[];
@@ -18,8 +24,13 @@ export class Stats {
   public range: { min: number; max: number };
   public isSigWilcoxonRankSumTest: string;
   public isSigWilcoxonSignedRankTest: string;
+  public controlQuantiles: IQuantile[];
+  public experimentQuantiles: IQuantile[];
   constructor(options: IStatsOptions) {
-    const { control, experiment, name } = options;
+    const { name } = options;
+    let { control, experiment } = options;
+    control = control.sort((a, b) => a - b);
+    experiment = experiment.sort((a, b) => a - b);
     this.name = name;
     this.estimator = this.getHodgesLehmann(control, experiment) as number;
     this.range = this.getRange(control, experiment);
@@ -28,10 +39,10 @@ export class Stats {
       this.range,
       experiment
     );
-    this.controlDistributionSparkline = sparkline(
+    this.controlDistributionSparkline = this.getSparkline(
       this.getHistogram(this.range, control)
     );
-    this.experimentDistributionSparkline = sparkline(
+    this.experimentDistributionSparkline = this.getSparkline(
       this.getHistogram(this.range, experiment)
     );
     this.isSigWilcoxonRankSumTest = getWilcoxonRankSumTest(control, experiment);
@@ -39,13 +50,15 @@ export class Stats {
       control,
       experiment
     );
+    this.controlQuantiles = this.getQuantiles(control);
+    this.experimentQuantiles = this.getQuantiles(experiment);
   }
   // todo: currently not displaying this in terminal results
   private getRange(control: number[], experiment: number[]) {
     const a = control.concat(experiment);
     return { min: Math.min(...a), max: Math.max(...a) };
   }
-  private getHistogram(range: any, a: number[], bins: number = 20) {
+  private getHistogram(range: { min: number; max: number }, a: number[]) {
     a.sort((a, b) => a - b);
     const x: any = scaleLinear()
       .domain([range.min, range.max])
@@ -55,53 +68,48 @@ export class Stats {
         return d;
       })
       .domain(x.domain())
-      .thresholds(x.ticks(bins));
+      .thresholds(x.ticks());
 
     return h(a).map(i => {
       return i.length;
     });
   }
-  // private getQuantiles(a: any[]) {
-  //   let p: any = 0;
-  //   const q = [];
-  //   while (p <= 1) {
-  //     p = parseFloat(p.toFixed(1));
-  //     q.push({ p, val: quantile(a, p) });
-  //     p += 0.1;
-  //   }
-  //   return q;
-  // }
+  private getQuantiles(a: number[]): IQuantile[] {
+    let p: number = 0;
+    const q = [];
+    while (p <= 1) {
+      p = parseFloat(p.toFixed(1));
+      q.push({ p, val: quantile(a, p) });
+      p += 0.1;
+    }
+    return q;
+  }
   private getHodgesLehmann(control: any[], experiment: any[]) {
     return quantile(cross(control, experiment, (a, b) => a - b), 0.5);
   }
-}
+  private getSparkline(
+    numbers: number[],
+    min: number = Math.min.apply(null, numbers),
+    max: number = Math.max.apply(null, numbers)
+  ) {
+    function lshift(n: number, bits: number) {
+      return Math.floor(n) * Math.pow(2, bits);
+    }
 
-export function sparkline(numbers: any, options: any = {}) {
-  function lshift(n: number, bits: number) {
-    return Math.floor(n) * Math.pow(2, bits);
+    const ticks: string[] = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
+    const results: string[] = [];
+    let f: number = Math.floor(lshift(max - min, 8) / (ticks.length - 1));
+
+    if (f < 1) {
+      f = 1;
+    }
+
+    numbers.forEach((n: number) => {
+      const value: string = ticks[Math.floor(lshift(n - min, 8) / f)];
+
+      results.push(value);
+    });
+
+    return `${results.join('')}`;
   }
-
-  const ticks: string[] = ['▁', '▂', '▃', '▄', '▅', '▆', '▇', '█'];
-
-  const max =
-    typeof options.max === 'number'
-      ? options.max
-      : Math.max.apply(null, numbers);
-  const min =
-    typeof options.min === 'number'
-      ? options.min
-      : Math.min.apply(null, numbers);
-  const results: string[] = [];
-  let f: number = Math.floor(lshift(max - min, 8) / (ticks.length - 1));
-  if (f < 1) {
-    f = 1;
-  }
-
-  numbers.forEach((n: number) => {
-    const value: string = ticks[Math.floor(lshift(n - min, 8) / f)];
-
-    results.push(value);
-  });
-
-  return `${results.join('')}`;
 }

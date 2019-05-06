@@ -110,3 +110,19 @@ export function parseMarkers(m: string | string[]): IMarker[] {
 export function removeDuplicates<T>(collection: T[]) {
   return [...new Set(collection)];
 }
+
+export function fillArray(
+  arrLngth: number,
+  incr: number = 1,
+  strt: number = 0
+): number[] {
+  const a = [];
+  while (a.length < arrLngth) {
+    if (a.length < 1) {
+      a.push(strt);
+    }
+    a.push(strt + incr);
+    strt = strt + incr;
+  }
+  return a;
+}

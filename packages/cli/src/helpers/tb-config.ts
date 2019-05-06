@@ -47,14 +47,14 @@ export function getConfigDefault(id: ITBConfigKeys, defaultValue?: any) {
     file = path.join(process.cwd(), 'tbconfig.json');
     tbconfig = JSON.parse(fs.readFileSync(file, 'utf8'));
     if (tbconfig[id]) {
-      console.log(
+      console.warn(
         `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON.stringify(
           tbconfig[id]
         )} from tbconfig.json`
       );
       return tbconfig[id];
     } else if (defaultValue) {
-      console.log(
+      console.warn(
         `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON.stringify(
           defaultValue
         )} from defaults`
@@ -66,7 +66,7 @@ export function getConfigDefault(id: ITBConfigKeys, defaultValue?: any) {
   } catch (error) {
     try {
       if (defaultValue) {
-        console.log(
+        console.warn(
           `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON.stringify(
             defaultValue
           )} from defaults`
