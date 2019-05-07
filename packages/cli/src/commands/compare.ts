@@ -16,6 +16,7 @@ import {
   runtimeStats,
   json,
   debug,
+  emulateDevice
 } from '../helpers/flags';
 import { fidelityLookup } from '../helpers/default-flag-args';
 import { logCompareResults } from '../helpers/log-compare-results';
@@ -37,6 +38,7 @@ export default class Compare extends Command {
     runtimeStats: runtimeStats({ required: true }),
     json,
     debug,
+    emulateDevice: emulateDevice({ required: false })
   };
 
   public async run() {
@@ -51,6 +53,7 @@ export default class Compare extends Command {
       runtimeStats,
       json,
       debug,
+      emulateDevice
     } = flags;
     let { markers, fidelity, network } = flags;
 
@@ -76,7 +79,7 @@ export default class Compare extends Command {
 
     const delay = 100;
     const browser = {
-      additionalArguments: browserArgs,
+      additionalArguments: browserArgs
     };
 
     // todo: leverage har-remix
@@ -86,6 +89,7 @@ export default class Compare extends Command {
         browser,
         cpuThrottleRate,
         delay,
+        emulateDeviceSettings: emulateDevice,
         markers,
         networkConditions: network,
         name: 'control',
@@ -96,6 +100,7 @@ export default class Compare extends Command {
       experiment: new InitialRenderBenchmark({
         browser,
         delay,
+        emulateDeviceSettings: emulateDevice,
         markers,
         networkConditions: network,
         name: 'experiment',

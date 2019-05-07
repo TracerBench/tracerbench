@@ -2,8 +2,9 @@ import { flags } from '@oclif/command';
 import { networkConditions } from 'tracerbench';
 import { Network } from 'chrome-debugging-client/dist/protocol/tot';
 import { defaultFlagArgs, fidelityLookup } from './default-flag-args';
-import { parseMarkers } from './utils';
 import { getConfigDefault } from './tb-config';
+import { parseMarkers } from './utils';
+import deviceSettings, { EmulateDeviceSetting } from './simulate-device-options';
 
 /*
 ! oclif flags.build#parse will only execute when the flag:string is passed directly
@@ -193,4 +194,18 @@ export const marks = flags.build({
 export const urlOrFrame = flags.build({
   default: () => getConfigDefault('urlOrFrame'),
   description: 'URL or Frame',
+});
+
+export const emulateDevice = flags.build({
+  char: 'e',
+  default: () => getConfigDefault('emulateDevice', defaultFlagArgs.emulateDevice),
+  description: 'Simulate a device\'s screen size.',
+  options: deviceSettings.map(setting => `${setting.typeable}`),
+  parse: (s: string): EmulateDeviceSetting | undefined => {
+    for(const option of deviceSettings) {
+      if (s === option.typeable) {
+        return option;
+      }
+    }
+  },
 });

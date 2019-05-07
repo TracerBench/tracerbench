@@ -35,6 +35,7 @@ export interface ITBConfig {
   iterations?: number | string;
   tracingLocationSearch?: string;
   runtimeStats?: 'true' | 'false';
+  emulateDevice?: string | null;
 }
 
 type ITBConfigKeys = keyof ITBConfig;

@@ -57,5 +57,6 @@ export const defaultFlagArgs: ITBConfig = {
   tracingLocationSearch: '?tracing',
   network: 'none',
   runtimeStats: 'false',
+  emulateDevice: null,
   routes: ['/'],
 };
