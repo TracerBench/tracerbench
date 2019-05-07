@@ -1,8 +1,7 @@
 import { Command } from '@oclif/command';
 import CreateArchive from './create-archive';
-
+import * as Listr from 'listr';
 import * as fs from 'fs-extra';
-import * as inquirer from 'inquirer';
 import { liveTrace } from 'tracerbench';
 import {
   archiveOutput,
@@ -12,6 +11,7 @@ import {
   network,
   traceJSONOutput,
   url,
+  analyze,
 } from '../helpers/flags';
 import { getCookiesFromHAR } from '../helpers/utils';
 
@@ -25,6 +25,7 @@ export default class Trace extends Command {
     traceJSONOutput: traceJSONOutput({ required: true }),
     url: url({ required: true }),
     iterations: iterations({ required: true }),
+    analyze,
   };
 
   public async run() {
@@ -35,55 +36,79 @@ export default class Trace extends Command {
 
     let { har } = flags;
     let cookies: any = '';
-    let shouldCreateArchive: string = '';
 
-    if (!har) {
-      const userResponse: any = await inquirer.prompt([
-        {
-          choices: [{ name: 'yes' }, { name: 'no' }],
-          message: `A HAR file was not found. Would you like TracerBench to record one now for you from ${url}?`,
-          name: 'createArchive',
-          type: 'list',
+    const tasks = new Listr([
+      {
+        title: 'HAR Setup',
+        task: () => {
+          return new Listr([
+            {
+              title: `Creating HAR file from ${url}`,
+              task: () =>
+                new Promise(resolve => {
+                  CreateArchive.run([
+                    '--url',
+                    url,
+                    '--archiveOutput',
+                    archiveOutput,
+                  ]).then(() => {
+                    har = archiveOutput;
+                    resolve();
+                  });
+                }),
+            },
+          ]);
         },
-      ]);
-      shouldCreateArchive = userResponse.createArchive;
+        skip: () => {
+          if (har) {
+            return 'HAR file found.';
+          }
+        },
+      },
+      {
+        title: 'Extracting Cookies',
+        task: (ctx, task) =>
+          new Promise((resolve, reject) => {
+            try {
+              cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf8'));
+              task.title = `Extracting cookies from cookies.json`;
+              ctx.cookies = true;
+              resolve();
+            } catch (error) {
+              try {
+                if (har) {
+                  cookies = getCookiesFromHAR(
+                    JSON.parse(fs.readFileSync(har, 'utf8'))
+                  );
+                  task.title = `Extracting cookies from HAR ${har}`;
+                  resolve();
+                }
+              } catch (error) {
+                this.error(
+                  `Could not extract cookies from cookies.json or HAR file at path ${har}, ${error}`
+                );
+                cookies = null;
+                reject();
+              }
+            }
+          }),
+      },
+      {
+        title: 'Running Live Trace',
+        task: () =>
+          new Promise(resolve => {
+            liveTrace(url, traceJSONOutput, cookies, {
+              cpu,
+              network,
+            }).then(() => {
+              resolve();
+            });
+          }),
+      },
+    ]);
 
-      if (shouldCreateArchive === 'yes') {
-        await CreateArchive.run([
-          '--url',
-          url,
-          '--archiveOutput',
-          archiveOutput,
-        ]);
-        har = archiveOutput;
-      } else {
-        this.error(
-          `A HAR is required to run a trace. Either pass via tracerbench trace --har flag or have TracerBench record one for you.`
-        );
-      }
-    }
-
-    try {
-      cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf8'));
-    } catch (error) {
-      try {
-        if (har) {
-          cookies = getCookiesFromHAR(JSON.parse(fs.readFileSync(har, 'utf8')));
-        }
-      } catch (error) {
-        this.log(
-          `Could not extract cookies from cookies.json or HAR file at path ${har}, ${error}`
-        );
-        cookies = null;
-      }
-    }
-
-    await liveTrace(url, traceJSONOutput, cookies, {
-      cpu,
-      network,
+    tasks.run().catch((err: any) => {
+      this.error(err);
     });
-    return this.log(
-      `Trace JSON file successfully generated and available here: ${traceJSONOutput}`
-    );
   }
 }

@@ -13,8 +13,12 @@ import { getConfigDefault } from './tb-config';
 ! and type checking in all circumstances
 */
 
+export const analyze = flags.boolean({
+  description: `Parses a CPU profile and aggregates time across heuristics. Can be vertically sliced with event names.`,
+});
+
 export const json = flags.boolean({
-  description: `compare command will stdout json rather than formatted results`,
+  description: `Compare command will stdout json rather than formatted results`,
 });
 
 export const debug = flags.boolean({
