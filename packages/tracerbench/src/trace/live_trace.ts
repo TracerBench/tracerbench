@@ -50,7 +50,7 @@ export async function liveTrace(
 
     await page.enable();
     const pageLoad = new Promise(resolve => {
-      page.loadEventFired = evt => {
+      page.loadEventFired = () => {
         // console.log(evt);
         resolve();
       };

@@ -3,7 +3,7 @@
 import { createSession } from 'chrome-debugging-client';
 import { Network, Page } from 'chrome-debugging-client/dist/protocol/tot';
 import * as fs from 'fs';
-
+import * as path from 'path';
 import { createClient, setCookies } from './trace-utils';
 
 // Represents a subset of a HAR
@@ -34,14 +34,15 @@ export interface IEntry {
 
 export async function harTrace(
   url: string,
-  outputPath: string = './trace.har',
+  outputPath: string,
   cookies: any = null
 ) {
   return await createSession(async session => {
     const client = await createClient(session);
     const page = new Page(client);
     const network = new Network(client);
-    const cookiesPath = './cookies.json';
+    const traceHAR = path.join(outputPath, 'trace.har');
+    const cookiesJSON = path.join(outputPath, 'cookies.json');
 
     const requestIds: string[] = [];
     const responses: Network.Response[] = [];
@@ -72,7 +73,7 @@ export async function harTrace(
     await page.enable();
 
     const pageLoad = new Promise(resolve => {
-      page.loadEventFired = evt => {
+      page.loadEventFired = () => {
         // console.log(evt);
         resolve();
       };
@@ -95,7 +96,7 @@ export async function harTrace(
       archive.log.entries.push(entry);
     }
 
-    fs.writeFileSync(cookiesPath, JSON.stringify(cookies));
-    fs.writeFileSync(outputPath, JSON.stringify(archive));
+    fs.writeFileSync(cookiesJSON, JSON.stringify(cookies));
+    fs.writeFileSync(traceHAR, JSON.stringify(archive));
   });
 }
