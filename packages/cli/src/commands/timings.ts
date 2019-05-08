@@ -1,12 +1,7 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
-import {
-  filter,
-  marks,
-  traceJSONOutput,
-  url,
-  traceFrame,
-} from '../helpers/flags';
+import * as path from 'path';
+import { filter, tbResultsFile, url, traceFrame } from '../helpers/flags';
 import {
   byTime,
   collect,
@@ -24,36 +19,33 @@ export default class Timings extends Command {
   public static description = 'Get list of all user-timings from trace';
 
   public static flags = {
-    traceJSONOutput: traceJSONOutput({ required: true }),
+    tbResultsFile: tbResultsFile({ required: true }),
     filter: filter(),
-    marks: marks(),
-    url: url(),
+    url: url({ required: true }),
     traceFrame: traceFrame(),
   };
 
-  public async init() {
-    const { flags } = this.parse(Timings);
-    if (flags.url || flags.traceFrame) {
-      this.error(
-        `You must pass either a url or traceFrame to the Timings command`
-      );
-    }
-  }
   public async run() {
     const { flags } = this.parse(Timings);
-    const { marks, traceJSONOutput } = flags;
+    const { tbResultsFile } = flags;
     const filter = collect(flags.filter, []);
-    const traceFrame: any = !flags.url ? flags.traceFrame : flags.url;
+    const traceFrame: any = flags.traceFrame ? flags.traceFrame : flags.url;
+    const traceJSON = path.join(tbResultsFile, 'trace.json');
+
     let frame: any = null;
     let startTime = -1;
     let traceFile: any = null;
     let trace: any = null;
 
+    if (!traceFrame) {
+      this.error(`Either a traceFrame or url are required flags.`);
+    }
+
     try {
-      traceFile = JSON.parse(fs.readFileSync(traceJSONOutput, 'utf8'));
+      traceFile = JSON.parse(fs.readFileSync(traceJSON, 'utf8'));
     } catch (error) {
       this.error(
-        `Could not extract trace events from trace JSON file at path ${traceJSONOutput}, ${error}`
+        `Could not extract trace events from '${traceJSON}', ${error}`
       );
     }
 
@@ -84,7 +76,7 @@ export default class Timings extends Command {
             startTime = event.ts;
           }
           this.log(`Timings: ${format(event.ts, startTime)} ${event.name}`);
-        } else if (isUserMark(event) && marks) {
+        } else if (isUserMark(event)) {
           if (
             filter.length === 0 ||
             filter.some((f: any) => event.name.indexOf(f) !== -1)

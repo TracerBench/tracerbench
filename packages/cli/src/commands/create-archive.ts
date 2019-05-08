@@ -1,21 +1,24 @@
 import { Command } from '@oclif/command';
 import { harTrace } from 'tracerbench';
-import { archiveOutput, url } from '../helpers/flags';
+import { tbResultsFile, url } from '../helpers/flags';
+import * as path from 'path';
 
 export default class CreateArchive extends Command {
   public static description = 'Creates an automated HAR file from a URL.';
   public static flags = {
-    archiveOutput: archiveOutput({ required: true }),
+    tbResultsFile: tbResultsFile({ required: true }),
     url: url({ required: true }),
   };
 
   public async run() {
     const { flags } = this.parse(CreateArchive);
-    const { url, archiveOutput } = flags;
+    const { url, tbResultsFile } = flags;
+    const archiveOutput = path.join(tbResultsFile, 'trace.har');
+    const cookiesJSON = path.join(tbResultsFile, 'cookies.json');
 
-    await harTrace(url, archiveOutput);
+    await harTrace(url, tbResultsFile);
     return this.log(
-      `HAR successfully generated from ${url} and available here: ${archiveOutput}. Cookies successfully generated and available here: "./cookies.json"`
+      `HAR & cookies.json successfully generated from ${url} and available here: ${archiveOutput} and ${cookiesJSON}`
     );
   }
 }

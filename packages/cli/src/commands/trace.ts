@@ -1,20 +1,16 @@
 import { Command } from '@oclif/command';
-import * as ora from 'ora';
 import * as fs from 'fs-extra';
+import * as path from 'path';
 import { liveTrace, harTrace, analyze, loadTrace } from 'tracerbench';
 import {
-  archiveOutput,
+  tbResultsFile,
   cpuThrottleRate,
-  har,
   iterations,
   network,
-  traceJSONOutput,
   url,
   insights,
   json,
   locations,
-  insightsFindFrame,
-  insightsListFrames,
 } from '../helpers/flags';
 import {
   getCookiesFromHAR,
@@ -28,17 +24,13 @@ export default class Trace extends Command {
   public static description = `Parses a CPU profile and aggregates time across heuristics. Can optinally be vertically sliced with event names.`;
   public static flags = {
     cpuThrottleRate: cpuThrottleRate({ required: true }),
-    archiveOutput: archiveOutput({ required: true }),
-    har: har(),
+    tbResultsFile: tbResultsFile({ required: true }),
     network: network(),
-    traceJSONOutput: traceJSONOutput({ required: true }),
     url: url({ required: true }),
     iterations: iterations({ required: true }),
     locations: locations(),
     insights,
     json,
-    insightsFindFrame,
-    insightsListFrames,
   };
 
   public async run() {
@@ -46,63 +38,62 @@ export default class Trace extends Command {
     const {
       url,
       cpuThrottleRate,
-      traceJSONOutput,
-      archiveOutput,
+      tbResultsFile,
       insights,
       json,
       locations,
-      insightsFindFrame,
-      insightsListFrames,
     } = flags;
     const network = 'none';
     const cpu = cpuThrottleRate;
-    const spinner = ora().start(`Running Trace...\n`);
-    let archiveFile;
-    let rawTraceData;
-    let { har } = flags;
-    let cookies: any = '';
-
-    // analyze flag variables
+    const file = tbResultsFile;
     const event = undefined;
     const report = undefined;
-    const file = traceJSONOutput;
     const methods = [''];
+    const traceJSON = path.join(tbResultsFile, 'trace.json');
+    const traceHAR = path.join(tbResultsFile, 'trace.har');
+    const cookiesJSON = path.join(tbResultsFile, 'cookies.json');
 
-    if (!har) {
-      await harTrace(url, archiveOutput);
-      har = archiveOutput;
+    let archiveFile;
+    let rawTraceData;
+    let cookies: any = '';
+
+    // if trace can't find a HAR then go and record one
+    if (!fs.existsSync(traceHAR)) {
+      await harTrace(url, tbResultsFile);
     }
 
     try {
-      cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf8'));
+      cookies = JSON.parse(fs.readFileSync(cookiesJSON, 'utf8'));
     } catch (error) {
       try {
-        if (har) {
-          cookies = getCookiesFromHAR(JSON.parse(fs.readFileSync(har, 'utf8')));
-        }
+        cookies = getCookiesFromHAR(
+          JSON.parse(fs.readFileSync(traceHAR, 'utf8'))
+        );
       } catch (error) {
-        spinner.fail(
-          `Could not extract cookies from cookies.json or HAR file at path ${har}, ${error}`
+        log.error(
+          `Could not extract cookies from cookies.json or HAR file at path ${traceHAR}, ${error}`
         );
         cookies = null;
       }
     }
 
-    await liveTrace(url, traceJSONOutput, cookies, {
+    await liveTrace(url, traceJSON, cookies, {
       cpu,
       network,
     });
 
     try {
-      rawTraceData = JSON.parse(fs.readFileSync(traceJSONOutput, 'utf8'));
+      rawTraceData = JSON.parse(fs.readFileSync(traceJSON, 'utf8'));
     } catch (error) {
-      spinner.fail(`Could not find file: ${traceJSONOutput}, ${error}`);
+      log.error(
+        `Could not find trace.json file at path: ${traceJSON}, ${error}`
+      );
     }
 
     try {
-      archiveFile = JSON.parse(fs.readFileSync(archiveOutput, 'utf8'));
+      archiveFile = JSON.parse(fs.readFileSync(traceHAR, 'utf8'));
     } catch (error) {
-      spinner.fail(`Could not find archive file: ${archiveOutput}, ${error}`);
+      log.error(`Could not find trace har file at path: ${traceHAR}, ${error}`);
     }
 
     await analyze({
@@ -122,7 +113,6 @@ export default class Trace extends Command {
 
     if (insights) {
       // js-eval-time
-      let events;
       let trace: any;
       let totalJSDuration: number = 0;
       let totalCSSDuration: number = 0;
@@ -130,15 +120,7 @@ export default class Trace extends Command {
       const methods = new Set();
 
       try {
-        events = JSON.parse(fs.readFileSync(traceJSONOutput, 'utf8'));
-      } catch (error) {
-        this.error(
-          `Could not extract trace events from trace JSON file at path ${traceJSONOutput}, ${error}`
-        );
-      }
-
-      try {
-        trace = loadTrace(events.traceEvents);
+        trace = loadTrace(rawTraceData.traceEvents);
       } catch (error) {
         this.error(error);
       }
@@ -150,8 +132,13 @@ export default class Trace extends Command {
           const url = event.args.data.url;
           const durationInMs = event.dur / 1000;
           totalJSDuration += durationInMs;
-          this.log(`${url}: ${durationInMs.toFixed(2)}`);
+          this.log(`JS: ${url}: ${durationInMs.toFixed(2)}`);
         });
+
+      // log js-eval-time
+      this.log(
+        `JS Evaluation Total Duration: ${totalJSDuration.toFixed(2)}ms \n\n`
+      );
 
       // css-parse
       trace.events
@@ -163,6 +150,11 @@ export default class Trace extends Command {
           totalCSSDuration += durationInMs;
           this.log(`CSS: ${url}: ${durationInMs.toFixed(2)}`);
         });
+
+      // log css-parse-time
+      this.log(
+        `CSS Evaluation Total Duration: ${totalCSSDuration.toFixed(2)}ms \n\n`
+      );
 
       // list-functions
       try {
@@ -191,47 +183,33 @@ export default class Trace extends Command {
         this.error(error);
       }
 
-      // log js-eval-time
-      this.log(`JS Evaluation Total Duration: ${totalJSDuration.toFixed(2)}ms`);
-      // log css-parse-time
-      this.log(
-        `CSS Evaluation Total Duration: ${totalCSSDuration.toFixed(2)}ms`
-      );
-      // list-functions
-      methods.forEach(method =>
-        this.log(`Successfully listed method: ${method}`)
-      );
+      // // list-functions
+      // methods.forEach(method =>
+      //   this.log(`Successfully listed method: ${method}`)
+      // );
 
-      if (insightsFindFrame) {
-        const frame = findFrame(trace, url);
-        this.log(`Frame-ID: ${frame}`);
-      }
+      const frame = findFrame(trace, url);
+      this.log(`Frame-ID: ${frame} \n\n`);
 
-      if (insightsListFrames) {
-        try {
-          trace = loadTraceFile(events);
-          const traceLoad = trace.filter(isCommitLoad);
-          traceLoad.forEach(
-            ({
-              args: {
-                data: { frame, url },
-              },
-            }: {
-              args: { data: { frame: any; url: any } };
-            }) => {
-              this.log(`Frame-ID: ${frame} - Frame-URL: ${url}`);
-            }
-          );
-        } catch (error) {
-          this.error(`${error}`);
-        }
+      try {
+        trace = loadTraceFile(rawTraceData);
+        const traceLoad = trace.filter(isCommitLoad);
+        traceLoad.forEach(
+          ({
+            args: {
+              data: { frame, url },
+            },
+          }: {
+            args: { data: { frame: any; url: any } };
+          }) => {
+            this.log(`Frame-ID: ${frame} - Frame-URL: ${url}`);
+          }
+        );
+      } catch (error) {
+        this.error(`${error}`);
       }
     }
 
-    spinner.stop();
-
-    return this.log(
-      `Trace JSON file successfully generated and available here: ${traceJSONOutput}`
-    );
+    return this.log(`Trace file successfully generated: ${traceJSON}`);
   }
 }

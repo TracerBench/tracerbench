@@ -132,19 +132,13 @@ USAGE
   $ tracerbench compare
 
 OPTIONS
-  -n, --network=none | offline | dialup | 2g | edge | slow-3g | em-3g | dsl | 3g | fast-3g | 4g | cable | LTE | FIOS
-      (required) [default: none] Simulated network conditions.
-
-  -o, --output=output
-      (required) [default: ./tracerbench-results] The output filepath for compare results
-
   --browserArgs=browserArgs
       (required) [default: 
       --headless,--disable-gpu,--hide-scrollbars,--mute-audio,--v8-cache-options=none,--disable-cache,--disable-v8-idle-ta
       sks,--crash-dumps-dir=./tmp] (Default Recommended) Browser additional options for the TracerBench render benchmark
 
   --controlURL=controlURL
-      (required) [default: http://localhost:8000/] Control URL to visit
+      (required) [default: http://localhost:8000/] Control URL to visit for compare command
 
   --cpuThrottleRate=cpuThrottleRate
       (required) [default: 4] CPU throttle multiplier
@@ -153,7 +147,7 @@ OPTIONS
       Debug flag per command. Will output noisy command
 
   --experimentURL=experimentURL
-      (required) [default: http://localhost:8001/] Experiment URL to visit
+      (required) [default: http://localhost:8001/] Experiment URL to visit for compare command
 
   --fidelity=test|low|medium|high
       (required) [default: low] Directly correlates to the number of samples per trace. High means a longer trace time.
@@ -164,8 +158,14 @@ OPTIONS
   --markers=markers
       (required) [default: domComplete] User Timing Markers
 
+  --network=none | offline | dialup | 2g | edge | slow-3g | em-3g | dsl | 3g | fast-3g | 4g | cable | LTE | FIOS
+      (required) [default: none] Simulated network conditions.
+
   --runtimeStats=runtimeStats
       (required) [default: false] Compare command output stats during run
+
+  --tbResultsFile=tbResultsFile
+      (required) [default: ./tracerbench-results] The output filepath for all tracerbench results
 
   --tracingLocationSearch=tracingLocationSearch
       (required) [default: ?tracing] The document location search param.
@@ -180,8 +180,11 @@ USAGE
   $ tracerbench create-archive
 
 OPTIONS
-  --archiveOutput=archiveOutput  (required) [default: ./trace.har] The output filepath/name to save the HAR to
-  --url=url                      (required) [default: http://localhost:8000/] URL to visit
+  --tbResultsFile=tbResultsFile  (required) [default: ./tracerbench-results] The output filepath for all tracerbench
+                                 results
+
+  --url=url                      (required) [default: http://localhost:8000/] URL to visit for create-archive, timings &
+                                 trace commands
 ```
 
 ## `tracerbench help [COMMAND]`
@@ -210,48 +213,31 @@ USAGE
   $ tracerbench timings
 
 OPTIONS
-  -f, --traceJSONOutput=traceJSONOutput  (required) [default: ./trace.json] Output path for the trace JSON file
-  --filter=filter                        User timing marks start with
-  --marks=marks                          Show user timing marks
-  --traceFrame=traceFrame                Specifiy a trace insights frame
-  --url=url                              [default: http://localhost:8000/] URL to visit
+  --filter=filter                User timing marks start with
+
+  --tbResultsFile=tbResultsFile  (required) [default: ./tracerbench-results] The output filepath for all tracerbench
+                                 results
+
+  --traceFrame=traceFrame        Specifiy a trace insights frame
+
+  --url=url                      (required) [default: http://localhost:8000/] URL to visit for create-archive, timings &
+                                 trace commands
 ```
 
 ## `tracerbench trace`
 
-Creates an automated trace JSON file. Also takes network conditioner and CPU throttling options. Parses a CPU profile and aggregates time across heuristics. Can be vertically sliced with event names.
+Parses a CPU profile and aggregates time across heuristics. Can optinally be vertically sliced with event names.
 
 ```
 USAGE
   $ tracerbench trace
 
 OPTIONS
-  -f, --traceJSONOutput=traceJSONOutput
-      (required) [default: ./trace.json] Output path for the trace JSON file
-
-  -h, --har=har
-      Filepath to the existing HAR file
-
-  -l, --locations=locations
-      include locations in names
-
-  -n, --network=none | offline | dialup | 2g | edge | slow-3g | em-3g | dsl | 3g | fast-3g | 4g | cable | LTE | FIOS
-      [default: none] Simulated network conditions.
-
-  --archiveOutput=archiveOutput
-      (required) [default: ./trace.har] The output filepath/name to save the HAR to
-
   --cpuThrottleRate=cpuThrottleRate
       (required) [default: 4] CPU throttle multiplier
 
   --insights
       Analyze insights from command.
-
-  --insightsFindFrame
-      Get frame-id from trace insights
-
-  --insightsListFrames
-      Get list of all main frame-id loads from trace insights
 
   --iterations=iterations
       (required) [default: 1] Number of runs
@@ -259,7 +245,16 @@ OPTIONS
   --json
       If supported output the command stdout with json rather than formatted results
 
+  --locations=locations
+      include locations in names
+
+  --network=none | offline | dialup | 2g | edge | slow-3g | em-3g | dsl | 3g | fast-3g | 4g | cable | LTE | FIOS
+      [default: none] Simulated network conditions.
+
+  --tbResultsFile=tbResultsFile
+      (required) [default: ./tracerbench-results] The output filepath for all tracerbench results
+
   --url=url
-      (required) [default: http://localhost:8000/] URL to visit
+      (required) [default: http://localhost:8000/] URL to visit for create-archive, timings & trace commands
 ```
 <!-- commandsstop -->

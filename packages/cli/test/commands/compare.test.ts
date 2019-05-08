@@ -6,7 +6,7 @@ import { tmpDir } from '../setup';
 import { defaultFlagArgs } from '../../src/helpers/default-flag-args';
 
 const fidelity = 'test';
-const output = path.join(`${process.cwd()}/${tmpDir}`);
+const tbResultsFile = path.join(`${process.cwd()}/${tmpDir}`);
 
 const app = {
   control: `file://${path.join(
@@ -23,7 +23,7 @@ describe('compare: fixture: A/A', () => {
     .it(
       `runs compare --controlURL ${app.control +
         defaultFlagArgs.tracingLocationSearch} --experimentURL ${app.control +
-        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --output ${output}`,
+        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFile ${tbResultsFile}`,
       async ctx => {
         await Compare.run([
           '--controlURL',
@@ -32,8 +32,8 @@ describe('compare: fixture: A/A', () => {
           app.control,
           '--fidelity',
           fidelity,
-          '--output',
-          output,
+          '--tbResultsFile',
+          tbResultsFile,
         ]);
 
         chai.expect(ctx.stdout).to.contain(`Success`);
@@ -47,7 +47,7 @@ describe('compare: fixture: A/B', () => {
     .it(
       `runs compare --controlURL ${app.control +
         defaultFlagArgs.tracingLocationSearch} --experimentURL ${app.experiment +
-        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --output ${output}`,
+        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFile ${tbResultsFile}`,
       async ctx => {
         await Compare.run([
           '--controlURL',
@@ -56,8 +56,8 @@ describe('compare: fixture: A/B', () => {
           app.experiment,
           '--fidelity',
           fidelity,
-          '--output',
-          output,
+          '--tbResultsFile',
+          tbResultsFile,
         ]);
 
         chai.expect(ctx.stdout).to.contain(`Success`);

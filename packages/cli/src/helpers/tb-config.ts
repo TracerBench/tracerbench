@@ -3,8 +3,6 @@ import { PerformanceTimingMark } from './default-flag-args';
 import { Network } from 'chrome-debugging-client/dist/protocol/tot';
 
 export interface ITBConfig {
-  archive?: string;
-  traceJSONOutput?: string;
   methods?: string;
   cpuThrottleRate?: number | string;
   fidelity?: 'test' | 'low' | 'med' | 'high';
@@ -12,18 +10,13 @@ export interface ITBConfig {
   event?: string;
   markers?: string | string[] | IMarker[] | PerformanceTimingMark[];
   network?: keyof INetworkConditions;
-  output?: string;
+  tbResultsFile?: string;
   url?: string;
   controlURL?: string;
   experimentURL?: string;
-  archiveOutput?: string;
-  harOutput?: string;
   locations?: string;
-  har?: string;
   filter?: string;
-  marks?: string;
   traceFrame?: string;
-  harsPath?: string;
   routes?: string[];
   appName?: string;
   browserArgs?: string[];

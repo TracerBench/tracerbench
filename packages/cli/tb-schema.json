@@ -19,12 +19,6 @@
         "appName": {
             "type": "string"
         },
-        "archive": {
-            "type": "string"
-        },
-        "archiveOutput": {
-            "type": "string"
-        },
         "browserArgs": {
             "items": {
                 "type": "string"
@@ -56,15 +50,6 @@
             "type": "string"
         },
         "filter": {
-            "type": "string"
-        },
-        "har": {
-            "type": "string"
-        },
-        "harOutput": {
-            "type": "string"
-        },
-        "harsPath": {
             "type": "string"
         },
         "iterations": {
@@ -125,9 +110,6 @@
                 }
             ]
         },
-        "marks": {
-            "type": "string"
-        },
         "methods": {
             "type": "string"
         },
@@ -150,9 +132,6 @@
             ],
             "type": "string"
         },
-        "output": {
-            "type": "string"
-        },
         "report": {
             "type": "string"
         },
@@ -169,10 +148,10 @@
             ],
             "type": "string"
         },
-        "traceFrame": {
+        "tbResultsFile": {
             "type": "string"
         },
-        "traceJSONOutput": {
+        "traceFrame": {
             "type": "string"
         },
         "tracingLocationSearch": {

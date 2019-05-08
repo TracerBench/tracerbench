@@ -15,12 +15,12 @@ const markers = [
   },
 ];
 const fidelity = 2;
-const output = path.join(`${process.cwd()}/${tmpDir}`);
+const tbResultsFile = path.join(`${process.cwd()}/${tmpDir}`);
 const scope = console;
 
 describe('log-compare-results', () => {
   test.stdout().it(`stdout`, ctx => {
-    logCompareResults(results, markers, fidelity, output, scope, false);
+    logCompareResults(results, markers, fidelity, tbResultsFile, scope, false);
 
     expect(ctx.stdout).to.contain(`Success`);
   });
@@ -30,7 +30,7 @@ describe('log-compare-results', () => {
       results,
       markers,
       fidelity,
-      output,
+      tbResultsFile,
       scope,
       true
     ) as any;
