@@ -4,8 +4,9 @@ import {
   filter,
   marks,
   traceJSONOutput,
-  urlOrFrame,
-} from '../../helpers/flags';
+  url,
+  traceFrame,
+} from '../helpers/flags';
 import {
   byTime,
   collect,
@@ -17,22 +18,32 @@ import {
   isMark,
   isUserMark,
   loadTraceFile,
-} from '../../helpers/utils';
+} from '../helpers/utils';
 
-export default class Show extends Command {
-  public static description = 'show tracefile with user timings';
+export default class Timings extends Command {
+  public static description = 'Get list of all user-timings from trace';
 
   public static flags = {
     traceJSONOutput: traceJSONOutput({ required: true }),
     filter: filter(),
     marks: marks(),
-    urlOrFrame: urlOrFrame({ required: true }),
+    url: url(),
+    traceFrame: traceFrame(),
   };
 
+  public async init() {
+    const { flags } = this.parse(Timings);
+    if (flags.url || flags.traceFrame) {
+      this.error(
+        `You must pass either a url or traceFrame to the Timings command`
+      );
+    }
+  }
   public async run() {
-    const { flags } = this.parse(Show);
-    const { marks, traceJSONOutput, urlOrFrame } = flags;
+    const { flags } = this.parse(Timings);
+    const { marks, traceJSONOutput } = flags;
     const filter = collect(flags.filter, []);
+    const traceFrame: any = !flags.url ? flags.traceFrame : flags.url;
     let frame: any = null;
     let startTime = -1;
     let traceFile: any = null;
@@ -52,10 +63,10 @@ export default class Show extends Command {
       this.error(`${error}`);
     }
 
-    if (urlOrFrame.startsWith('http')) {
-      frame = findFrame(trace, urlOrFrame);
+    if (traceFrame.startsWith('http')) {
+      frame = findFrame(trace, traceFrame);
     } else {
-      frame = urlOrFrame;
+      frame = traceFrame;
     }
     if (!frame) {
       this.error(`frame not found`);

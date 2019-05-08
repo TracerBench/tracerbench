@@ -1,5 +1,13 @@
+/* tslint:disable:no-console*/
+
 import chalk from 'chalk';
+import * as logSymbols from 'log-symbols';
 import { IMarker } from 'tracerbench';
+import * as fs from 'fs-extra';
+import * as path from 'path';
+import { ITBConfig } from './tb-config';
+
+type ITBConfigKeys = keyof ITBConfig;
 
 export const chalkScheme = {
   header: chalk.rgb(255, 255, 255),
@@ -9,8 +17,49 @@ export const chalkScheme = {
   imprv: chalk.rgb(135, 197, 113),
   phase: chalk.rgb(225, 225, 225),
   faint: chalk.rgb(80, 80, 80),
-  checkmark: chalk.rgb(135, 197, 113)('✓'),
+  checkmark: chalk.rgb(133, 153, 36)(`${logSymbols.success}`),
 };
+
+export function getConfigDefault(id: ITBConfigKeys, defaultValue?: any) {
+  let file;
+  let tbconfig;
+
+  try {
+    file = path.join(process.cwd(), 'tbconfig.json');
+    tbconfig = JSON.parse(fs.readFileSync(file, 'utf8'));
+    if (tbconfig[id]) {
+      console.warn(
+        `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON.stringify(
+          tbconfig[id]
+        )} from tbconfig.json`
+      );
+      return tbconfig[id];
+    } else if (defaultValue) {
+      console.warn(
+        `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON.stringify(
+          defaultValue
+        )} from defaults`
+      );
+      return defaultValue;
+    } else {
+      return undefined;
+    }
+  } catch (error) {
+    try {
+      if (defaultValue) {
+        console.warn(
+          `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON.stringify(
+            defaultValue
+          )} from defaults`
+        );
+        return defaultValue;
+      }
+      return undefined;
+    } catch (error) {
+      // throw new CLIError(error);
+    }
+  }
+}
 
 export function getCookiesFromHAR(har: any) {
   let cookies: any = [];

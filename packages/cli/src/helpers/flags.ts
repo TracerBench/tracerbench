@@ -2,8 +2,7 @@ import { flags } from '@oclif/command';
 import { networkConditions } from 'tracerbench';
 import { Network } from 'chrome-debugging-client/dist/protocol/tot';
 import { defaultFlagArgs, fidelityLookup } from './default-flag-args';
-import { parseMarkers } from './utils';
-import { getConfigDefault } from './tb-config';
+import { parseMarkers, getConfigDefault } from './utils';
 
 /*
 ! oclif flags.build#parse will only execute when the flag:string is passed directly
@@ -13,16 +12,29 @@ import { getConfigDefault } from './tb-config';
 ! and type checking in all circumstances
 */
 
-export const analyze = flags.boolean({
-  description: `Parses a CPU profile and aggregates time across heuristics. Can be vertically sliced with event names.`,
+export const insightsFindFrame = flags.boolean({
+  description: `Get frame-id from trace insights`,
+  default: false,
+});
+
+export const insightsListFrames = flags.boolean({
+  description: `Get list of all main frame-id loads from trace insights`,
+  default: false,
+});
+
+export const insights = flags.boolean({
+  description: `Analyze insights from command.`,
+  default: false,
 });
 
 export const json = flags.boolean({
-  description: `Compare command will stdout json rather than formatted results`,
+  description: `If supported output the command stdout with json rather than formatted results`,
+  default: false,
 });
 
 export const debug = flags.boolean({
   description: `Debug flag per command. Will output noisy command`,
+  default: false,
 });
 
 export const runtimeStats = flags.build({
@@ -194,7 +206,7 @@ export const marks = flags.build({
   description: 'Show user timing marks',
 });
 
-export const urlOrFrame = flags.build({
-  default: () => getConfigDefault('urlOrFrame'),
-  description: 'URL or Frame',
+export const traceFrame = flags.build({
+  default: () => getConfigDefault('traceFrame'),
+  description: 'Specifiy a trace insights frame',
 });

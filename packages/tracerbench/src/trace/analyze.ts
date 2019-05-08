@@ -6,7 +6,7 @@ import {
   aggregate,
   categorizeAggregations,
   collapseCallFrames,
-  verifyMethods
+  verifyMethods,
 } from './aggregator';
 import { IArchive } from './archive_trace';
 import { ModuleMatcher } from './module_matcher';
@@ -16,7 +16,7 @@ import {
   computeMinMax,
   formatCategories,
   getRenderingNodes,
-  methodsFromCategories
+  methodsFromCategories,
 } from './utils';
 
 interface IAnalyze {
@@ -63,7 +63,7 @@ export async function analyze(options: IAnalyze) {
       renderCollapsed,
       categories
     );
-    console.log(`Render Node:${node.data.callFrame.functionName}`); // tslint:disable-line  no-console
+    // console.log(`Render Node:${node.data.callFrame.functionName}`); // tslint:disable-line  no-console
     reporter(renderCategorized);
   });
 }

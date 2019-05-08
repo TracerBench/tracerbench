@@ -6,7 +6,6 @@
   "methods": "''",
   "cpuThrottleRate": 2,
   "output": "tracerbench-results",
-  "urlOrFrame": "https://www.tracerbench.com/",
   "controlURL": "https://www.tracerbench.com/",
   "experimentURL": "https://www.tracerbench.com/",
   "url": "https://www.tracerbench.com/",

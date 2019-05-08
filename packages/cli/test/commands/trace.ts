@@ -25,10 +25,60 @@ describe('trace', () => {
           '--traceJSONOutput',
           traceJSONOutput,
           '--cpuThrottleRate',
-          cpuThrottleRate
+          cpuThrottleRate,
         ]);
         chai.expect(ctx.stdout).to.contain(`Trace`);
+        chai.expect(ctx.stdout).to.contain(`Subtotal`);
         chai.expect(traceJSONOutput).to.be.a.file();
+      }
+    );
+});
+
+describe('trace :: insights', () => {
+  test
+    .stdout()
+    .it(
+      `runs trace --url ${url} --har ${harFile} --traceJSONOutput ${traceJSONOutput} --cpuThrottleRate ${cpuThrottleRate} --insights`,
+      async ctx => {
+        await Trace.run([
+          '--url',
+          url,
+          '--har',
+          harFile,
+          '--traceJSONOutput',
+          traceJSONOutput,
+          '--cpuThrottleRate',
+          cpuThrottleRate,
+          '--insights',
+        ]);
+        chai.expect(ctx.stdout).to.contain(`.js`);
+        chai.expect(ctx.stdout).to.contain(`.css`);
+        chai.expect(ctx.stdout).to.contain(`Successfully listed method`);
+      }
+    );
+});
+
+describe('trace :: insightsFindFrame :: insightsListFrames', () => {
+  test
+    .stdout()
+    .it(
+      `runs trace --url ${url} --har ${harFile} --traceJSONOutput ${traceJSONOutput} --cpuThrottleRate ${cpuThrottleRate} --insights`,
+      async ctx => {
+        await Trace.run([
+          '--url',
+          url,
+          '--har',
+          harFile,
+          '--traceJSONOutput',
+          traceJSONOutput,
+          '--cpuThrottleRate',
+          cpuThrottleRate,
+          '--insights',
+          '--insightsFindFrame',
+          '--insightsListFrames',
+        ]);
+        chai.expect(ctx.stdout).to.contain(`Frame-ID:`);
+        chai.expect(ctx.stdout).to.contain(`Frame-URL:`);
       }
     );
 });

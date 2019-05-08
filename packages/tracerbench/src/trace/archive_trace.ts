@@ -60,8 +60,8 @@ export async function harTrace(
 
     const archive: IArchive = {
       log: {
-        entries: []
-      }
+        entries: [],
+      },
     };
 
     await network.enable({});
@@ -73,13 +73,13 @@ export async function harTrace(
 
     const pageLoad = new Promise(resolve => {
       page.loadEventFired = evt => {
-        console.log(evt);
+        // console.log(evt);
         resolve();
       };
     });
 
     await page.navigate({
-      url
+      url,
     });
 
     await pageLoad;
@@ -90,7 +90,7 @@ export async function harTrace(
       const responseBody = await network.getResponseBody({ requestId });
       const entry: IEntry = {
         request: { url: response.url },
-        response: { content: { text: responseBody.body } }
+        response: { content: { text: responseBody.body } },
       };
       archive.log.entries.push(entry);
     }

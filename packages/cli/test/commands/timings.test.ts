@@ -1,25 +1,25 @@
 import { test } from '@oclif/test';
 import * as chai from 'chai';
 import * as path from 'path';
-import Show from '../../../src/commands/timeline/show';
-import { tmpDir } from '../../setup';
+import Timings from '../../src/commands/timings';
+import { tmpDir } from '../setup';
 
 chai.use(require('chai-fs'));
 
 const traceJSONOutput = path.join(`${process.cwd()}/${tmpDir}/trace.json`);
 const url = 'https://www.tracerbench.com';
 
-describe('timeline:show', () => {
+describe('timings', () => {
   test
     .stdout()
     .it(
-      `runs timeline:show --urlOrFrame ${url} --traceJSONOutput ${traceJSONOutput}`,
+      `runs timings --urlOrFrame ${url} --traceJSONOutput ${traceJSONOutput}`,
       async ctx => {
-        await Show.run([
+        await Timings.run([
           '--urlOrFrame',
           url,
           '--traceJSONOutput',
-          traceJSONOutput
+          traceJSONOutput,
         ]);
         chai.expect(ctx.stdout).to.contain(`Timings`);
       }

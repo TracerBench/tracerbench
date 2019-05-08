@@ -14,9 +14,8 @@ export default class CreateArchive extends Command {
     const { url, archiveOutput } = flags;
 
     await harTrace(url, archiveOutput);
-    return this.log(`
-      HAR successfully generated from ${url} and available here: ${archiveOutput}
-      Cookies successfully generated and available here: "./cookies.json"
-    `);
+    return this.log(
+      `HAR successfully generated from ${url} and available here: ${archiveOutput}. Cookies successfully generated and available here: "./cookies.json"`
+    );
   }
 }

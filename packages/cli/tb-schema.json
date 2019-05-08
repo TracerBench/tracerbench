@@ -162,6 +162,16 @@
             },
             "type": "array"
         },
+        "runtimeStats": {
+            "enum": [
+                "false",
+                "true"
+            ],
+            "type": "string"
+        },
+        "traceFrame": {
+            "type": "string"
+        },
         "traceJSONOutput": {
             "type": "string"
         },
@@ -169,9 +179,6 @@
             "type": "string"
         },
         "url": {
-            "type": "string"
-        },
-        "urlOrFrame": {
             "type": "string"
         }
     },
