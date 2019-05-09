@@ -16,11 +16,12 @@ import {
   runtimeStats,
   json,
   debug,
-  emulateDevice
+  emulateDevice,
 } from '../helpers/flags';
 import { fidelityLookup } from '../helpers/default-flag-args';
 import { logCompareResults } from '../helpers/log-compare-results';
 import { parseMarkers } from '../helpers/utils';
+import deviceSettings from '../helpers/simulate-device-options';
 
 export default class Compare extends Command {
   public static description =
@@ -36,9 +37,9 @@ export default class Compare extends Command {
     experimentURL: experimentURL({ required: true }),
     tracingLocationSearch: tracingLocationSearch({ required: true }),
     runtimeStats: runtimeStats({ required: true }),
+    emulateDevice: emulateDevice({ required: false }),
     json,
     debug,
-    emulateDevice: emulateDevice({ required: false })
   };
 
   public async run() {
@@ -53,9 +54,8 @@ export default class Compare extends Command {
       runtimeStats,
       json,
       debug,
-      emulateDevice
     } = flags;
-    let { markers, fidelity, network } = flags;
+    let { markers, fidelity, network, emulateDevice } = flags;
 
     if (debug) {
       this.log(`\n FLAGS: ${JSON.stringify(flags)}`);
@@ -73,13 +73,22 @@ export default class Compare extends Command {
       markers = parseMarkers(markers);
     }
 
+    if (typeof emulateDevice === 'string') {
+      for (const option of deviceSettings) {
+        if (emulateDevice === option.typeable) {
+          emulateDevice = option;
+          break;
+        }
+      }
+    }
+
     if (!fs.existsSync(tbResultsFile)) {
       fs.mkdirSync(tbResultsFile);
     }
 
     const delay = 100;
     const browser = {
-      additionalArguments: browserArgs
+      additionalArguments: browserArgs,
     };
 
     // todo: leverage har-remix

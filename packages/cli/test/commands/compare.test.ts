@@ -7,6 +7,7 @@ import { defaultFlagArgs } from '../../src/helpers/default-flag-args';
 
 const fidelity = 'test';
 const tbResultsFile = path.join(`${process.cwd()}/${tmpDir}`);
+const emulateDevice = 'iphone-4';
 
 const app = {
   control: `file://${path.join(
@@ -58,6 +59,32 @@ describe('compare: fixture: A/B', () => {
           fidelity,
           '--tbResultsFile',
           tbResultsFile,
+        ]);
+
+        chai.expect(ctx.stdout).to.contain(`Success`);
+      }
+    );
+});
+
+describe('compare mobile: fixture: A/A', () => {
+  test
+    .stdout()
+    .it(
+      `runs compare --controlURL ${app.control +
+        defaultFlagArgs.tracingLocationSearch} --experimentURL ${app.experiment +
+        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFile ${tbResultsFile} --emulateDevice ${emulateDevice} `,
+      async ctx => {
+        await Compare.run([
+          '--controlURL',
+          app.control,
+          '--experimentURL',
+          app.experiment,
+          '--fidelity',
+          fidelity,
+          '--tbResultsFile',
+          tbResultsFile,
+          '--emulateDevice',
+          emulateDevice,
         ]);
 
         chai.expect(ctx.stdout).to.contain(`Success`);

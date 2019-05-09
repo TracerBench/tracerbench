@@ -3,7 +3,9 @@ import { networkConditions } from 'tracerbench';
 import { Network } from 'chrome-debugging-client/dist/protocol/tot';
 import { defaultFlagArgs, fidelityLookup } from './default-flag-args';
 import { parseMarkers, getConfigDefault } from './utils';
-import deviceSettings, { EmulateDeviceSetting } from './simulate-device-options';
+import deviceSettings, {
+  EmulateDeviceSetting,
+} from './simulate-device-options';
 
 /*
 ! oclif flags.build#parse will only execute when the flag:string is passed directly
@@ -159,12 +161,12 @@ export const traceFrame = flags.build({
 });
 
 export const emulateDevice = flags.build({
-  char: 'e',
-  default: () => getConfigDefault('emulateDevice', defaultFlagArgs.emulateDevice),
-  description: 'Simulate a device\'s screen size.',
+  default: () =>
+    getConfigDefault('emulateDevice', defaultFlagArgs.emulateDevice),
+  description: `Emulate a mobile device.`,
   options: deviceSettings.map(setting => `${setting.typeable}`),
   parse: (s: string): EmulateDeviceSetting | undefined => {
-    for(const option of deviceSettings) {
+    for (const option of deviceSettings) {
       if (s === option.typeable) {
         return option;
       }

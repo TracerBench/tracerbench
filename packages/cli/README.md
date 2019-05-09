@@ -146,6 +146,12 @@ OPTIONS
   --debug
       Debug flag per command. Will output noisy command
 
+  --emulateDevice=iphone-4|iphone-5se|iphone-678|iphone-678-plus|iphone-x|blackberry-z30|nexus-4|nexus-5|nexus-5x|nexus-
+  6|nexus-6p|pixel-2|pixel-2-xl|lg-optimus-l70|nokia-n9|nokia-lumia-520|microsoft-lumia-550|microsoft-lumia-950|galaxy-s
+  -iii|galaxy-s5|kindle-fire-hdx|ipad-mini|ipad|ipad-pro|blackberry-playbook|nexus-10|nexus-7|galaxy-note-3|galaxy-note-
+  ii|laptop-with-touch|laptop-with-hidpi-screen|laptop-with-mdpi-screen
+      Emulate a mobile device.
+
   --experimentURL=experimentURL
       (required) [default: http://localhost:8001/] Experiment URL to visit for compare command
 
