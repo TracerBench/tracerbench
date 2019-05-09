@@ -120,7 +120,7 @@ s?: TRACE_EVENT_SCOPE;
 * [`tracerbench compare`](#tracerbench-compare)
 * [`tracerbench create-archive`](#tracerbench-create-archive)
 * [`tracerbench help [COMMAND]`](#tracerbench-help-command)
-* [`tracerbench timings`](#tracerbench-timings)
+* [`tracerbench marker-timings`](#tracerbench-marker-timings)
 * [`tracerbench trace`](#tracerbench-trace)
 
 ## `tracerbench compare`
@@ -204,13 +204,13 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.6/src/commands/help.ts)_
 
-## `tracerbench timings`
+## `tracerbench marker-timings`
 
 Get list of all user-timings from trace
 
 ```
 USAGE
-  $ tracerbench timings
+  $ tracerbench marker-timings
 
 OPTIONS
   --filter=filter                User timing marks start with

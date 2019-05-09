@@ -1,6 +1,7 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
 import * as path from 'path';
+import { ITraceEvent } from 'tracerbench';
 import { filter, tbResultsFile, url, traceFrame } from '../helpers/flags';
 import {
   byTime,
@@ -15,7 +16,7 @@ import {
   loadTraceFile,
 } from '../helpers/utils';
 
-export default class Timings extends Command {
+export default class MarkerTimings extends Command {
   public static description = 'Get list of all user-timings from trace';
 
   public static flags = {
@@ -26,7 +27,7 @@ export default class Timings extends Command {
   };
 
   public async run() {
-    const { flags } = this.parse(Timings);
+    const { flags } = this.parse(MarkerTimings);
     const { tbResultsFile } = flags;
     const filter = collect(flags.filter, []);
     const traceFrame: any = flags.traceFrame ? flags.traceFrame : flags.url;
@@ -34,7 +35,7 @@ export default class Timings extends Command {
 
     let frame: any = null;
     let startTime = -1;
-    let traceFile: any = null;
+    let rawTraceData: any = null;
     let trace: any = null;
 
     if (!traceFrame) {
@@ -42,7 +43,7 @@ export default class Timings extends Command {
     }
 
     try {
-      traceFile = JSON.parse(fs.readFileSync(traceJSON, 'utf8'));
+      rawTraceData = JSON.parse(fs.readFileSync(traceJSON, 'utf8'));
     } catch (error) {
       this.error(
         `Could not extract trace events from '${traceJSON}', ${error}`
@@ -50,7 +51,7 @@ export default class Timings extends Command {
     }
 
     try {
-      trace = loadTraceFile(traceFile);
+      trace = loadTraceFile(rawTraceData);
     } catch (error) {
       this.error(`${error}`);
     }
@@ -65,29 +66,35 @@ export default class Timings extends Command {
     }
 
     trace
-      .filter((event: any) => isMark(event) || isCommitLoad(event))
+      .filter((event: ITraceEvent) => isMark(event) || isCommitLoad(event))
       .sort(byTime)
       .forEach((event: any) => {
         if (isFrameNavigationStart(frame, event)) {
           startTime = event.ts;
-          this.log(`Timings: ${format(event.ts, startTime)} ${event.name}`);
+          this.log(
+            `Marker Timings: ${format(event.ts, startTime)} ${event.name}`
+          );
         } else if (isFrameMark(frame, event)) {
           if (startTime === -1) {
             startTime = event.ts;
           }
-          this.log(`Timings: ${format(event.ts, startTime)} ${event.name}`);
+          this.log(
+            `Marker Timings: ${format(event.ts, startTime)} ${event.name}`
+          );
         } else if (isUserMark(event)) {
           if (
             filter.length === 0 ||
             filter.some((f: any) => event.name.indexOf(f) !== -1)
           ) {
-            this.log(`Timings: ${format(event.ts, startTime)} ${event.name}`);
+            this.log(
+              `Marker Timings: ${format(event.ts, startTime)} ${event.name}`
+            );
           }
         } else if (isCommitLoad(event)) {
           const { data } = event.args;
           if (data.frame === frame) {
             this.log(
-              `Timings: ${format(event.ts, startTime)} ${event.name} ${
+              `Marker Timings: ${format(event.ts, startTime)} ${event.name} ${
                 data.frame
               } ${data.url}`
             );

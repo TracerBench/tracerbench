@@ -20,7 +20,9 @@ describe('create-archive', () => {
           '--tbResultsFile',
           tbResultsFile,
         ]);
-        chai.expect(ctx.stdout).to.contain(`HAR successfully generated`);
+        chai
+          .expect(ctx.stdout)
+          .to.contain(`HAR & cookies.json successfully generated`);
         chai.expect(`${tbResultsFile}/trace.har`).to.be.a.file();
       }
     );

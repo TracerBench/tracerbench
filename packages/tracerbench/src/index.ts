@@ -8,18 +8,18 @@ export {
   IIterationSample,
   IMarker,
   IPhaseSample,
-  IRuntimeCallStat
+  IRuntimeCallStat,
 } from './benchmarks/initial-render-metric';
 export {
   InitialRenderBenchmark,
-  IInitialRenderBenchmarkParams
+  IInitialRenderBenchmarkParams,
 } from './benchmarks/initial-render';
 export {
   Benchmark,
   IBenchmarkMeta,
   IBenchmarkParams,
   IBenchmarkState,
-  BrowserOptions
+  BrowserOptions,
 } from './benchmark';
 export { Runner, IBenchmark } from './runner';
 export { ITab } from './tab';
@@ -28,6 +28,7 @@ export {
   harTrace,
   loadTrace,
   liveTrace,
-  networkConditions
+  networkConditions,
+  ITraceEvent,
 } from './trace';
 export * from './util';

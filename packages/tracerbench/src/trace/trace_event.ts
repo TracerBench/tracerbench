@@ -97,13 +97,13 @@ export const enum TRACE_EVENT_NAME {
   PROFILE = 'Profile',
   PROFILE_CHUNK = 'ProfileChunk',
   CPU_PROFILE = 'CpuProfile',
-  V8_EXECUTE = 'V8.Execute'
+  V8_EXECUTE = 'V8.Execute',
 }
 
 export const enum PROCESS_NAME {
   BROWSER = 'Browser',
   RENDERER = 'Renderer',
-  GPU = 'GPU Process'
+  GPU = 'GPU Process',
 }
 
 export const enum TRACE_METADATA_NAME {
@@ -114,7 +114,7 @@ export const enum TRACE_METADATA_NAME {
   THREAD_NAME = 'thread_name',
   THREAD_SORT_INDEX = 'thread_sort_index',
   NUM_CPUS = 'num_cpus',
-  TRACE_BUFFER_OVERFLOWED = 'trace_buffer_overflowed'
+  TRACE_BUFFER_OVERFLOWED = 'trace_buffer_overflowed',
 }
 
 /*
@@ -347,7 +347,7 @@ export const enum FUNCTION_NAME {
   ROOT = '(root)',
   PROGRAM = '(program)',
   IDLE = '(idle)',
-  GC = '(garbage collector)'
+  GC = '(garbage collector)',
 }
 
 export interface ICpuProfileNode {

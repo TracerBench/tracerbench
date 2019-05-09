@@ -1,7 +1,13 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { liveTrace, harTrace, analyze, loadTrace } from 'tracerbench';
+import {
+  liveTrace,
+  harTrace,
+  analyze,
+  loadTrace,
+  ITraceEvent,
+} from 'tracerbench';
 import {
   tbResultsFile,
   cpuThrottleRate,
@@ -15,7 +21,6 @@ import {
 import {
   getCookiesFromHAR,
   normalizeFnName,
-  findFrame,
   isCommitLoad,
   loadTraceFile,
 } from '../helpers/utils';
@@ -85,8 +90,8 @@ export default class Trace extends Command {
     try {
       rawTraceData = JSON.parse(fs.readFileSync(traceJSON, 'utf8'));
     } catch (error) {
-      log.error(
-        `Could not find trace.json file at path: ${traceJSON}, ${error}`
+      this.error(
+        `Could not extract trace events from '${traceJSON}', ${error}`
       );
     }
 
@@ -120,29 +125,29 @@ export default class Trace extends Command {
       const methods = new Set();
 
       try {
-        trace = loadTrace(rawTraceData.traceEvents);
+        trace = loadTraceFile(rawTraceData);
       } catch (error) {
-        this.error(error);
+        this.error(`${error}`);
       }
 
-      trace.events
-        .filter((event: any) => event.name === 'EvaluateScript')
+      trace
+        .filter((event: ITraceEvent) => event.name === 'EvaluateScript')
         .filter((event: any) => event.args.data.url)
         .forEach((event: any) => {
           const url = event.args.data.url;
-          const durationInMs = event.dur / 1000;
+          const durationInMs = (event.dur as number) / 1000;
           totalJSDuration += durationInMs;
           this.log(`JS: ${url}: ${durationInMs.toFixed(2)}`);
         });
 
       // log js-eval-time
       this.log(
-        `JS Evaluation Total Duration: ${totalJSDuration.toFixed(2)}ms \n\n`
+        `JS: Evaluation Total Duration: ${totalJSDuration.toFixed(2)}ms \n\n`
       );
 
       // css-parse
-      trace.events
-        .filter((event: any) => event.name === 'ParseAuthorStyleSheet')
+      trace
+        .filter((event: ITraceEvent) => event.name === 'ParseAuthorStyleSheet')
         .filter((event: any) => event.args.data.styleSheetUrl)
         .forEach((event: any) => {
           const url = event.args.data.styleSheetUrl;
@@ -153,12 +158,12 @@ export default class Trace extends Command {
 
       // log css-parse-time
       this.log(
-        `CSS Evaluation Total Duration: ${totalCSSDuration.toFixed(2)}ms \n\n`
+        `CSS: Evaluation Total Duration: ${totalCSSDuration.toFixed(2)}ms \n\n`
       );
 
       // list-functions
       try {
-        const profile = trace.cpuProfile(-1, -1);
+        const profile = loadTrace(trace).cpuProfile(-1, -1);
         if (locations) {
           profile.nodeMap.forEach((node: any) => {
             const {
@@ -188,9 +193,6 @@ export default class Trace extends Command {
       //   this.log(`Successfully listed method: ${method}`)
       // );
 
-      const frame = findFrame(trace, url);
-      this.log(`Frame-ID: ${frame} \n\n`);
-
       try {
         trace = loadTraceFile(rawTraceData);
         const traceLoad = trace.filter(isCommitLoad);
@@ -202,7 +204,7 @@ export default class Trace extends Command {
           }: {
             args: { data: { frame: any; url: any } };
           }) => {
-            this.log(`Frame-ID: ${frame} - Frame-URL: ${url}`);
+            this.log(`Frame-URL: ${url} | Frame-ID: ${frame}`);
           }
         );
       } catch (error) {

@@ -2,7 +2,7 @@
 
 import chalk from 'chalk';
 import * as logSymbols from 'log-symbols';
-import { IMarker } from 'tracerbench';
+import { IMarker, ITraceEvent } from 'tracerbench';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ITBConfig } from './tb-config';
@@ -98,7 +98,7 @@ export function format(ts: number, start: number) {
   return `${ms} ms`;
 }
 
-export function isMark(event: any) {
+export function isMark(event: ITraceEvent) {
   return event.ph === 'R';
 }
 
@@ -106,11 +106,11 @@ export function isFrameMark(frame: any, event: any) {
   return event.ph === 'R' && event.args.frame === frame;
 }
 
-export function isFrameNavigationStart(frame: any, event: any) {
+export function isFrameNavigationStart(frame: any, event: ITraceEvent) {
   return isFrameMark(frame, event) && event.name === 'navigationStart';
 }
 
-export function isUserMark(event: any) {
+export function isUserMark(event: ITraceEvent) {
   return (
     event.ph === 'R' &&
     event.cat === 'blink.user_timing' &&
@@ -131,7 +131,7 @@ export function byTime(a: any, b: any) {
   return a.ts - b.ts;
 }
 
-export function findFrame(events: any, url: any) {
+export function findFrame(events: any[], url: any) {
   const event = events
     .filter(isCommitLoad)
     .find((e: any) => e.args.data.url.startsWith(url));

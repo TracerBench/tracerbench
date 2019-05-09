@@ -48,8 +48,8 @@ describe('trace :: insights', () => {
         ]);
         chai.expect(ctx.stdout).to.contain(`.js`);
         chai.expect(ctx.stdout).to.contain(`.css`);
-        chai.expect(ctx.stdout).to.contain(`Frame-ID:`);
         chai.expect(ctx.stdout).to.contain(`Frame-URL:`);
+        chai.expect(ctx.stdout).to.contain(`Frame-ID:`);
       }
     );
 });
