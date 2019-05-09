@@ -1,89 +1,217 @@
 import { Command } from '@oclif/command';
-import CreateArchive from './create-archive';
-
 import * as fs from 'fs-extra';
-import * as inquirer from 'inquirer';
-import { liveTrace } from 'tracerbench';
+import * as path from 'path';
 import {
-  archiveOutput,
+  liveTrace,
+  harTrace,
+  analyze,
+  loadTrace,
+  ITraceEvent,
+} from 'tracerbench';
+import {
+  tbResultsFile,
   cpuThrottleRate,
-  har,
   iterations,
   network,
-  traceJSONOutput,
   url,
+  insights,
+  json,
+  locations,
 } from '../helpers/flags';
-import { getCookiesFromHAR } from '../helpers/utils';
+import {
+  getCookiesFromHAR,
+  normalizeFnName,
+  isCommitLoad,
+  loadTraceFile,
+} from '../helpers/utils';
 
 export default class Trace extends Command {
-  public static description = `Creates an automated trace JSON file. Also takes network conditioner and CPU throttling options.`;
+  public static description = `Parses a CPU profile and aggregates time across heuristics. Can optinally be vertically sliced with event names.`;
   public static flags = {
     cpuThrottleRate: cpuThrottleRate({ required: true }),
-    archiveOutput: archiveOutput({ required: true }),
-    har: har(),
+    tbResultsFile: tbResultsFile({ required: true }),
     network: network(),
-    traceJSONOutput: traceJSONOutput({ required: true }),
     url: url({ required: true }),
     iterations: iterations({ required: true }),
+    locations: locations(),
+    insights,
+    json,
   };
 
   public async run() {
     const { flags } = this.parse(Trace);
-    const { url, cpuThrottleRate, traceJSONOutput, archiveOutput } = flags;
+    const {
+      url,
+      cpuThrottleRate,
+      tbResultsFile,
+      insights,
+      json,
+      locations,
+    } = flags;
     const network = 'none';
     const cpu = cpuThrottleRate;
+    const file = tbResultsFile;
+    const event = undefined;
+    const report = undefined;
+    const methods = [''];
+    const traceJSON = path.join(tbResultsFile, 'trace.json');
+    const traceHAR = path.join(tbResultsFile, 'trace.har');
+    const cookiesJSON = path.join(tbResultsFile, 'cookies.json');
 
-    let { har } = flags;
+    let archiveFile;
+    let rawTraceData;
     let cookies: any = '';
-    let shouldCreateArchive: string = '';
 
-    if (!har) {
-      const userResponse: any = await inquirer.prompt([
-        {
-          choices: [{ name: 'yes' }, { name: 'no' }],
-          message: `A HAR file was not found. Would you like TracerBench to record one now for you from ${url}?`,
-          name: 'createArchive',
-          type: 'list',
-        },
-      ]);
-      shouldCreateArchive = userResponse.createArchive;
-
-      if (shouldCreateArchive === 'yes') {
-        await CreateArchive.run([
-          '--url',
-          url,
-          '--archiveOutput',
-          archiveOutput,
-        ]);
-        har = archiveOutput;
-      } else {
-        this.error(
-          `A HAR is required to run a trace. Either pass via tracerbench trace --har flag or have TracerBench record one for you.`
-        );
-      }
+    // if trace can't find a HAR then go and record one
+    if (!fs.existsSync(traceHAR)) {
+      await harTrace(url, tbResultsFile);
     }
 
     try {
-      cookies = JSON.parse(fs.readFileSync('cookies.json', 'utf8'));
+      cookies = JSON.parse(fs.readFileSync(cookiesJSON, 'utf8'));
     } catch (error) {
       try {
-        if (har) {
-          cookies = getCookiesFromHAR(JSON.parse(fs.readFileSync(har, 'utf8')));
-        }
+        cookies = getCookiesFromHAR(
+          JSON.parse(fs.readFileSync(traceHAR, 'utf8'))
+        );
       } catch (error) {
-        this.log(
-          `Could not extract cookies from cookies.json or HAR file at path ${har}, ${error}`
+        log.error(
+          `Could not extract cookies from cookies.json or HAR file at path ${traceHAR}, ${error}`
         );
         cookies = null;
       }
     }
 
-    await liveTrace(url, traceJSONOutput, cookies, {
+    await liveTrace(url, traceJSON, cookies, {
       cpu,
       network,
     });
-    return this.log(
-      `Trace JSON file successfully generated and available here: ${traceJSONOutput}`
-    );
+
+    try {
+      rawTraceData = JSON.parse(fs.readFileSync(traceJSON, 'utf8'));
+    } catch (error) {
+      this.error(
+        `Could not extract trace events from '${traceJSON}', ${error}`
+      );
+    }
+
+    try {
+      archiveFile = JSON.parse(fs.readFileSync(traceHAR, 'utf8'));
+    } catch (error) {
+      log.error(`Could not find trace har file at path: ${traceHAR}, ${error}`);
+    }
+
+    await analyze({
+      archiveFile,
+      event,
+      file,
+      methods,
+      rawTraceData,
+      report,
+    });
+
+    if (json) {
+      return {
+        // handle json response
+      };
+    }
+
+    if (insights) {
+      // js-eval-time
+      let trace: any;
+      let totalJSDuration: number = 0;
+      let totalCSSDuration: number = 0;
+
+      const methods = new Set();
+
+      try {
+        trace = loadTraceFile(rawTraceData);
+      } catch (error) {
+        this.error(`${error}`);
+      }
+
+      trace
+        .filter((event: ITraceEvent) => event.name === 'EvaluateScript')
+        .filter((event: any) => event.args.data.url)
+        .forEach((event: any) => {
+          const url = event.args.data.url;
+          const durationInMs = (event.dur as number) / 1000;
+          totalJSDuration += durationInMs;
+          this.log(`JS: ${url}: ${durationInMs.toFixed(2)}`);
+        });
+
+      // log js-eval-time
+      this.log(
+        `JS: Evaluation Total Duration: ${totalJSDuration.toFixed(2)}ms \n\n`
+      );
+
+      // css-parse
+      trace
+        .filter((event: ITraceEvent) => event.name === 'ParseAuthorStyleSheet')
+        .filter((event: any) => event.args.data.styleSheetUrl)
+        .forEach((event: any) => {
+          const url = event.args.data.styleSheetUrl;
+          const durationInMs = event.dur / 1000;
+          totalCSSDuration += durationInMs;
+          this.log(`CSS: ${url}: ${durationInMs.toFixed(2)}`);
+        });
+
+      // log css-parse-time
+      this.log(
+        `CSS: Evaluation Total Duration: ${totalCSSDuration.toFixed(2)}ms \n\n`
+      );
+
+      // list-functions
+      try {
+        const profile = loadTrace(trace).cpuProfile(-1, -1);
+        if (locations) {
+          profile.nodeMap.forEach((node: any) => {
+            const {
+              functionName,
+              url,
+              lineNumber,
+              columnNumber,
+            } = node.callFrame;
+
+            methods.add(
+              `${url}:${lineNumber}:${columnNumber}.${normalizeFnName(
+                functionName
+              )}`
+            );
+          });
+        } else {
+          profile.nodeMap.forEach((node: any) => {
+            methods.add(normalizeFnName(node.callFrame.functionName));
+          });
+        }
+      } catch (error) {
+        this.error(error);
+      }
+
+      // // list-functions
+      // methods.forEach(method =>
+      //   this.log(`Successfully listed method: ${method}`)
+      // );
+
+      try {
+        trace = loadTraceFile(rawTraceData);
+        const traceLoad = trace.filter(isCommitLoad);
+        traceLoad.forEach(
+          ({
+            args: {
+              data: { frame, url },
+            },
+          }: {
+            args: { data: { frame: any; url: any } };
+          }) => {
+            this.log(`Frame-URL: ${url} | Frame-ID: ${frame}`);
+          }
+        );
+      } catch (error) {
+        this.error(`${error}`);
+      }
+    }
+
+    return this.log(`Trace file successfully generated: ${traceJSON}`);
   }
 }

@@ -81,7 +81,7 @@ export function report(categorized: ICategorized) {
   totalRow.empty();
   totalRow.addCell(`${toMS(totalAggregatedTime)}`).pad(2, 'left');
 
-  console.log(table.toString());
+  console.log(`${table.toString()} \n\n`);
 }
 
 function round(num: number) {

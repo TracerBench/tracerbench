@@ -11,7 +11,7 @@ import {
   fidelity,
   markers,
   network,
-  output,
+  tbResultsFile,
   tracingLocationSearch,
   runtimeStats,
   json,
@@ -31,7 +31,7 @@ export default class Compare extends Command {
     fidelity: fidelity({ required: true }),
     markers: markers({ required: true }),
     network: network({ required: true }),
-    output: output({ required: true }),
+    tbResultsFile: tbResultsFile({ required: true }),
     controlURL: controlURL({ required: true }),
     experimentURL: experimentURL({ required: true }),
     tracingLocationSearch: tracingLocationSearch({ required: true }),
@@ -46,7 +46,7 @@ export default class Compare extends Command {
     const {
       browserArgs,
       cpuThrottleRate,
-      output,
+      tbResultsFile,
       controlURL,
       experimentURL,
       tracingLocationSearch,
@@ -73,8 +73,8 @@ export default class Compare extends Command {
       markers = parseMarkers(markers);
     }
 
-    if (!fs.existsSync(output)) {
-      fs.mkdirSync(output);
+    if (!fs.existsSync(tbResultsFile)) {
+      fs.mkdirSync(tbResultsFile);
     }
 
     const delay = 100;
@@ -94,7 +94,7 @@ export default class Compare extends Command {
         networkConditions: network,
         name: 'control',
         runtimeStats,
-        saveTraces: () => `${output}/control.json`,
+        saveTraces: () => `${tbResultsFile}/control.json`,
         url: path.join(controlURL + tracingLocationSearch),
       }),
       experiment: new InitialRenderBenchmark({
@@ -105,7 +105,7 @@ export default class Compare extends Command {
         networkConditions: network,
         name: 'experiment',
         runtimeStats,
-        saveTraces: () => `${output}/experiment.json`,
+        saveTraces: () => `${tbResultsFile}/experiment.json`,
         url: path.join(experimentURL + tracingLocationSearch),
       }),
     };
@@ -121,14 +121,21 @@ export default class Compare extends Command {
         }
 
         fs.writeFileSync(
-          `${output}/compare.json`,
+          `${tbResultsFile}/compare.json`,
           JSON.stringify(results, null, 2)
         );
 
         fs.writeFileSync(
-          `${output}/compare-stat-results.json`,
+          `${tbResultsFile}/compare-stat-results.json`,
           JSON.stringify(
-            logCompareResults(results, markers, fidelity, output, this, json),
+            logCompareResults(
+              results,
+              markers,
+              fidelity,
+              tbResultsFile,
+              this,
+              json
+            ),
             null,
             2
           )

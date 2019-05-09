@@ -2,8 +2,7 @@ import { flags } from '@oclif/command';
 import { networkConditions } from 'tracerbench';
 import { Network } from 'chrome-debugging-client/dist/protocol/tot';
 import { defaultFlagArgs, fidelityLookup } from './default-flag-args';
-import { getConfigDefault } from './tb-config';
-import { parseMarkers } from './utils';
+import { parseMarkers, getConfigDefault } from './utils';
 import deviceSettings, { EmulateDeviceSetting } from './simulate-device-options';
 
 /*
@@ -14,12 +13,19 @@ import deviceSettings, { EmulateDeviceSetting } from './simulate-device-options'
 ! and type checking in all circumstances
 */
 
+export const insights = flags.boolean({
+  description: `Analyze insights from command.`,
+  default: false,
+});
+
 export const json = flags.boolean({
-  description: `compare command will stdout json rather than formatted results`,
+  description: `If supported output the command stdout with json rather than formatted results`,
+  default: false,
 });
 
 export const debug = flags.boolean({
   description: `Debug flag per command. Will output noisy command`,
+  default: false,
 });
 
 export const runtimeStats = flags.build({
@@ -67,48 +73,17 @@ export const appName = flags.build({
   description: 'The name of your application',
 });
 
-export const harsPath = flags.build({
-  default: () => getConfigDefault('harsPath', defaultFlagArgs.harsPath),
-  description: 'The output directory for recorded har files',
-});
-
-export const archiveOutput = flags.build({
-  default: () =>
-    getConfigDefault('archiveOutput', defaultFlagArgs.archiveOutput),
-  description: 'The output filepath/name to save the HAR to',
-});
-
-export const harOutput = flags.build({
-  default: () => getConfigDefault('harOutput', defaultFlagArgs.harOutput),
-  description: 'The output filepath/name to save the HAR to',
-});
-
-export const archive = flags.build({
-  char: 'a',
-  default: () => getConfigDefault('archive', defaultFlagArgs.archive),
-  description: 'Path to the existing HAR file',
-});
-
 export const event = flags.build({
   default: () => getConfigDefault('event'),
   description: 'Slice time and see the events before and after the time slice',
 });
 
-export const traceJSONOutput = flags.build({
-  char: 'f',
-  default: () =>
-    getConfigDefault('traceJSONOutput', defaultFlagArgs.traceJSONOutput),
-  description: 'Output path for the trace JSON file',
-});
-
 export const methods = flags.build({
-  char: 'm',
   default: () => getConfigDefault('methods', defaultFlagArgs.methods),
   description: 'List of methods to aggregate',
 });
 
 export const report = flags.build({
-  char: 'r',
   default: () => getConfigDefault('report'),
   description: `Directory path to generate a report with aggregated sums for each heuristic category and aggregated sum across all heuristics`,
 });
@@ -138,7 +113,6 @@ export const markers = flags.build({
 });
 
 export const network = flags.build({
-  char: 'n',
   default: () => getConfigDefault('network', defaultFlagArgs.network),
   description: 'Simulated network conditions.',
   options: [`${Object.keys(networkConditions).join(' | ')}`],
@@ -147,38 +121,31 @@ export const network = flags.build({
   },
 });
 
-export const output = flags.build({
-  char: 'o',
-  default: () => getConfigDefault('output', defaultFlagArgs.output),
-  description: 'The output filepath for compare results',
+export const tbResultsFile = flags.build({
+  default: () =>
+    getConfigDefault('tbResultsFile', defaultFlagArgs.tbResultsFile),
+  description: 'The output filepath for all tracerbench results',
 });
 
 export const url = flags.build({
   default: () => getConfigDefault('url', defaultFlagArgs.url),
-  description: 'URL to visit',
+  description: 'URL to visit for create-archive, timings & trace commands',
 });
 
 export const controlURL = flags.build({
   default: () => getConfigDefault('controlURL', defaultFlagArgs.controlURL),
-  description: 'Control URL to visit',
+  description: 'Control URL to visit for compare command',
 });
 
 export const experimentURL = flags.build({
   default: () =>
     getConfigDefault('experimentURL', defaultFlagArgs.experimentURL),
-  description: 'Experiment URL to visit',
+  description: 'Experiment URL to visit for compare command',
 });
 
 export const locations = flags.build({
-  char: 'l',
   default: () => getConfigDefault('locations'),
   description: 'include locations in names',
-});
-
-export const har = flags.build({
-  char: 'h',
-  default: () => getConfigDefault('har', null) || null,
-  description: 'Filepath to the existing HAR file',
 });
 
 export const filter = flags.build({
@@ -186,14 +153,9 @@ export const filter = flags.build({
   description: 'User timing marks start with',
 });
 
-export const marks = flags.build({
-  default: () => getConfigDefault('marks'),
-  description: 'Show user timing marks',
-});
-
-export const urlOrFrame = flags.build({
-  default: () => getConfigDefault('urlOrFrame'),
-  description: 'URL or Frame',
+export const traceFrame = flags.build({
+  default: () => getConfigDefault('traceFrame'),
+  description: 'Specifiy a trace insights frame',
 });
 
 export const emulateDevice = flags.build({

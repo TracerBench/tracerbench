@@ -12,7 +12,7 @@ export function logCompareResults(
   results: any,
   markers: IMarker[],
   fidelity: any,
-  output: string,
+  tbResultsFile: string,
   cli: any,
   json: boolean = false
 ) {
@@ -37,14 +37,14 @@ export function logCompareResults(
   benchmarkTable.display.push(new Stats(getQueryData('duration')));
   benchmarkTable.display.push(new Stats(getQueryData('js')));
 
-  // iterate over the markers passed into the output command
+  // iterate over the markers passed into the tbResultsFile command
   markers.forEach(marker => {
     // get the marker data for each phase
     const phase = getQueryData('phases', marker);
     phaseTable.display.push(new Stats(phase));
   });
 
-  const message = `Success! ${fidelity} test samples were run with Chrome. A detailed report and JSON file are available at ${output}/compare.json`;
+  const message = `Success! ${fidelity} test samples were run with Chrome. A detailed report and JSON file are available at ${tbResultsFile}/compare.json`;
   const j = {
     benchmarkTable: benchmarkTable.getData(),
     phaseTable: phaseTable.getData(),

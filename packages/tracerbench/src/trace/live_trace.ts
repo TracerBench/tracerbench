@@ -5,7 +5,7 @@ import {
   IO,
   Network,
   Page,
-  Tracing
+  Tracing,
 } from 'chrome-debugging-client/dist/protocol/tot';
 import * as fs from 'fs';
 
@@ -25,7 +25,7 @@ const DEVTOOLS_CATEGORIES = [
   'latencyInfo',
   'disabled-by-default-devtools.timeline.stack',
   'disabled-by-default-v8.cpu_profiler',
-  'disabled-by-default-v8.cpu_profiler.hires'
+  'disabled-by-default-v8.cpu_profiler.hires',
 ];
 
 export async function liveTrace(
@@ -46,31 +46,31 @@ export async function liveTrace(
 
     const tree = await page.getFrameTree();
     const mainFrameId = tree.frameTree.frame.id;
-    console.log('frame tree', tree);
+    // console.log('frame tree', tree);
 
     await page.enable();
     const pageLoad = new Promise(resolve => {
-      page.loadEventFired = evt => {
-        console.log(evt);
+      page.loadEventFired = () => {
+        // console.log(evt);
         resolve();
       };
     });
 
     page.frameStartedLoading = evt => {
       if (mainFrameId === evt.frameId) {
-        console.log('frameStartedLoading', evt);
+        // console.log('frameStartedLoading', evt);
       }
     };
 
     page.frameScheduledNavigation = evt => {
       if (mainFrameId === evt.frameId) {
-        console.log('frameScheduledNavigation', evt);
+        // console.log('frameScheduledNavigation', evt);
       }
     };
 
     page.frameNavigated = evt => {
       if (mainFrameId === evt.frame.id) {
-        console.log('frameNavigated', evt);
+        // console.log('frameNavigated', evt);
       }
     };
 
@@ -80,21 +80,21 @@ export async function liveTrace(
       }
     );
 
-    console.log(`starting trace`);
+    // console.log(`starting trace`);
     await tracing.start({
       categories: DEVTOOLS_CATEGORIES.join(','),
       transferMode: 'ReturnAsStream',
-      streamCompression: 'none'
+      streamCompression: 'none',
     });
-    console.log(`navigating to ${url}`);
+    // console.log(`navigating to ${url}`);
     await page.navigate({
-      url
+      url,
     });
 
-    console.log(`waiting for load event`);
+    // console.log(`waiting for load event`);
     await pageLoad;
 
-    console.log(`stopping trace`);
+    // console.log(`stopping trace`);
     await tracing.end();
 
     const result = await tracingComplete;
