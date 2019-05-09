@@ -7,11 +7,11 @@
   "scripts": {
     "lint": "lerna run lint --stream",
     "prepare": "lerna run prepare --stream",
-    "test": "lerna run test --stream"
+    "test": "lerna run test --stream",
+    "prepack": "lerna run prepack --stream"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn lint",
       "pre-push": "yarn prepack"
     }
   },
