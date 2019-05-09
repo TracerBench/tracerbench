@@ -23,6 +23,7 @@ export interface ITBConfig {
   iterations?: number | string;
   tracingLocationSearch?: string;
   runtimeStats?: 'true' | 'false';
+  emulateDevice?: string | null;
 }
 
 export interface INetworkConditions {

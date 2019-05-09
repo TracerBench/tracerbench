@@ -175,3 +175,14 @@ export function fillArray(
   }
   return a;
 }
+/**
+ * "name" is expected to be a titlecased string. We want something the user can type easily so the passed string
+ * is converted into lowercased words dasherized. Any extra "/" will also be removed.
+ *
+ * @param str - String to be converted to dasherized case
+ */
+export function convertToTypable (name: string): string {
+  const split = name.split(' ');
+  const lowercasedWords = split.map(word => word.toLowerCase().replace(/\//g, ''));
+  return lowercasedWords.join('-');
+};

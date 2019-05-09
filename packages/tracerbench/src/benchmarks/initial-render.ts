@@ -1,4 +1,4 @@
-import { Network } from 'chrome-debugging-client/dist/protocol/tot';
+import { Emulation, Network } from 'chrome-debugging-client/dist/protocol/tot';
 import * as fs from 'fs';
 import { Benchmark, IBenchmarkMeta, IBenchmarkParams } from '../benchmark';
 import { ITab } from '../tab';
@@ -52,6 +52,11 @@ export interface IInitialRenderBenchmarkParams extends IBenchmarkParams {
    * Save trace for each iteration, useful for debugging outliers in data.
    */
   saveTraces?: (iteration: number) => string;
+
+  /**
+   * Settings to emulate a device.
+   */
+  emulateDeviceSettings?: Emulation.SetDeviceMetricsOverrideParameters & Emulation.SetUserAgentOverrideParameters;
 }
 
 /**
@@ -97,6 +102,11 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
 
     if (this.params.networkConditions !== undefined) {
       await t.emulateNetworkConditions(this.params.networkConditions);
+    }
+
+    if (this.params.emulateDeviceSettings !== undefined) {
+      await t.emulateDevice(this.params.emulateDeviceSettings);
+      await t.setUserAgent(this.params.emulateDeviceSettings);
     }
 
     const tracing = await t.startTracing(categories);
