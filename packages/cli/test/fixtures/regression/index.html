@@ -1,0 +1,25 @@
+<html>
+
+<head>
+  <title>Test Initial Render</title>
+  <script src="./jquery.min.js"></script>
+  <script>
+    if ($) performance.mark("jqueryLoaded");
+  </script>
+
+  <script src="./ember.prod.js"></script>
+  <script>
+    if (Ember) performance.mark("emberLoaded");
+  </script>
+
+</head>
+
+<body>
+  <script>
+    setTimeout(() => {}, 500);
+  </script>
+
+  <script src="./app.js"></script>
+</body>
+
+</html>

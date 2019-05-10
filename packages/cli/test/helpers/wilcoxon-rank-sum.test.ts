@@ -26,6 +26,10 @@ const uStatControl = getSampleUStat(controlRankSum, N);
 const uStatExperiment = getSampleUStat(experimentRankSum, N);
 const uStat = Math.min(uStatControl, uStatExperiment);
 const isSigWilcoxonRankSumTest = getWilcoxonRankSumTest(control, experiment);
+const isSigWilcoxonRankSumTestAA = getWilcoxonRankSumTest(
+  [1, 1, 1, 1, 1, 2],
+  [1, 1, 1, 1, 1, 2]
+);
 
 describe('wilcoxon rank sum', () => {
   it(`wilcoxonRankSumTable`, () => {
@@ -68,5 +72,6 @@ describe('wilcoxon rank sum', () => {
 
   it(`getWilcoxonRankSumTest()`, () => {
     expect(isSigWilcoxonRankSumTest).to.equal('Yes');
+    expect(isSigWilcoxonRankSumTestAA).to.equal('No');
   });
 });

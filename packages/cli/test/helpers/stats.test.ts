@@ -2,11 +2,11 @@ import { Stats } from '../../src/helpers/stats';
 import { expect } from 'chai';
 import { fillArray } from '../../src/helpers/utils';
 
-// 1, 2, 3, 4...30
-const control = fillArray(30, 1, 1);
+// 1, 2, 3, 4...25
+const control = fillArray(25, 1, 1);
 
-// 31, 32, 33, 34...60
-const experiment = fillArray(30, 1, 31);
+// 25, 26, 27, 28...50
+const experiment = fillArray(25, 1, 26);
 
 const name = 'stats-test';
 const stats = new Stats({ control, experiment, name });
@@ -14,7 +14,7 @@ const stats = new Stats({ control, experiment, name });
 describe('stats', () => {
   it(`getRange()`, () => {
     expect(stats.range.min).to.equal(1);
-    expect(stats.range.max).to.equal(60);
+    expect(stats.range.max).to.equal(50);
   });
 
   it(`getHistogram()`, () => {
@@ -25,10 +25,10 @@ describe('stats', () => {
 
     expect(cHistogram[0]).to.equal(4);
     expect(cHistogram[cLength - 1]).to.equal(0);
-    expect(cHistogram.length).to.equal(13);
+    expect(cHistogram.length).to.equal(11);
     expect(eHistogram[0]).to.equal(0);
     expect(eHistogram[eLength - 1]).to.equal(1);
-    expect(eHistogram.length).to.equal(13);
+    expect(eHistogram.length).to.equal(11);
   });
 
   it(`getQuantiles()`, () => {
@@ -41,9 +41,9 @@ describe('stats', () => {
 
     // median
     expect(cQuantiles[5].p).to.equal(0.5);
-    expect(cQuantiles[5].val).to.equal(15.5);
+    expect(cQuantiles[5].val).to.equal(13);
     expect(eQuantiles[5].p).to.equal(0.5);
-    expect(eQuantiles[5].val).to.equal(45.5);
+    expect(eQuantiles[5].val).to.equal(38);
 
     // 3rd decile
     expect(cQuantiles[3].val).to.equal(9.7);
@@ -55,7 +55,7 @@ describe('stats', () => {
   });
 
   it(`getHodgesLehmann()`, () => {
-    expect(stats.estimator).to.equal(-30);
+    expect(stats.estimator).to.equal(-25);
   });
 
   it(`getSparkline()`, () => {

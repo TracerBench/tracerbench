@@ -3,7 +3,7 @@
 --recursive
 --forbid-only
 --reporter spec
---timeout 20000
+--timeout 30000
 --file ./test/setup.ts
 --file ./test/commands/create-archive.ts
 --file ./test/commands/trace.ts

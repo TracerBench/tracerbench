@@ -2,9 +2,8 @@ import { ITBConfig } from './tb-config';
 
 export const fidelityLookup = {
   test: 2,
-  low: 25,
-  medium: 35,
-  high: 50,
+  low: 15,
+  medium: 20,
 };
 
 export type PerformanceTimingMark = keyof PerformanceTiming;

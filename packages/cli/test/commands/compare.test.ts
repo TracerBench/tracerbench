@@ -16,6 +16,9 @@ const app = {
   experiment: `file://${path.join(
     process.cwd() + '/test/fixtures/experiment/index.html'
   )}`,
+  regression: `file://${path.join(
+    process.cwd() + '/test/fixtures/regression/index.html'
+  )}`,
 };
 
 describe('compare: fixture: A/A', () => {
@@ -42,26 +45,27 @@ describe('compare: fixture: A/A', () => {
     );
 });
 
-describe('compare: fixture: A/B', () => {
+describe('compare regression: fixture: A/B', () => {
   test
     .stdout()
     .it(
       `runs compare --controlURL ${app.control +
-        defaultFlagArgs.tracingLocationSearch} --experimentURL ${app.experiment +
-        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFile ${tbResultsFile}`,
+        defaultFlagArgs.tracingLocationSearch} --experimentURL ${app.regression +
+        defaultFlagArgs.tracingLocationSearch} --fidelity low --tbResultsFile ${tbResultsFile}`,
       async ctx => {
         await Compare.run([
           '--controlURL',
           app.control,
           '--experimentURL',
           app.experiment,
-          '--fidelity',
-          fidelity,
+          '--fidelity=low',
           '--tbResultsFile',
           tbResultsFile,
         ]);
 
-        chai.expect(ctx.stdout).to.contain(`Success`);
+        chai
+          .expect(ctx.stdout)
+          .to.contain(`Statistically significant results were found`);
       }
     );
 });

@@ -45,6 +45,7 @@ export function logCompareResults(
   });
 
   const message = `Success! ${fidelity} test samples were run with Chrome. A detailed report and JSON file are available at ${tbResultsFile}/compare.json`;
+  const sigMessage = `Statistically significant results were found. A recommended "fidelity=medium" compare test should be run to rule out false negatives.`;
   const j = {
     benchmarkTable: benchmarkTable.getData(),
     phaseTable: phaseTable.getData(),
@@ -56,6 +57,14 @@ export function logCompareResults(
     cli.log(`\n\n${benchmarkTable.render()}`);
     cli.log(`\n\n${phaseTable.render()}`);
     cli.log(`\n\n${message}\n\n`);
+    if (fidelity > 2 && fidelity < 25) {
+      if (
+        benchmarkTable.isSigWilcoxonRankSumTestArray.includes('Yes') ||
+        phaseTable.isSigWilcoxonRankSumTestArray.includes('Yes')
+      ) {
+        cli.log(`\n\n${sigMessage}\n\n`);
+      }
+    }
   } else {
     // WILL ONLY STDOUT JSON. NO TABLES OR SPARKLINE
     cli.log(j);

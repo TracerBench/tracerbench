@@ -1,7 +1,9 @@
 // all exports are alpha of 0.05 for two-tailed tests
-// using (array length) as N value up to 50
+// using (array length) as N value up to 25 anything over uses normal approximation
 // prettier-ignore
-export const wilcoxonRankSumTable = [0,0,0,10,17,26,36,49,62,78,96,115,136,160,184,211,240,270,303,337];
+
+// todo need to write logic for normal approximation for samples over 25 (high fidelity)
+export const wilcoxonRankSumTable = [0,0,0,10,17,26,36,49,62,78,96,115,136,160,184,211,240,270,303,337,373,411,451,491,536];
 
 interface ISample {
   val: number;
@@ -79,13 +81,14 @@ export function getWilcoxonRankSumTest(
   const uStatExperiment = getSampleUStat(experimentRankSum, N);
   const uStat = Math.min(uStatControl, uStatExperiment);
 
-  try {
-    const uCrit = wilcoxonRankSumTable[N];
-    // !! important this is lt not gt
-    return uStat < uCrit ? 'Yes' : 'No';
-  } catch (e) {
+  if (N > 25) {
     throw new Error(
-      `Sample sizes greater than 20 are not supported. Your sample size is ${N}`
+      `Sample sizes greater than 25 are not supported. Your sample size is ${N}`
     );
   }
+
+  const uCrit = wilcoxonRankSumTable[N];
+
+  // !! important this is lt not gt
+  return uStat < uCrit ? 'Yes' : 'No';
 }
