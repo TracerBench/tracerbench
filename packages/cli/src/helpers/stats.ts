@@ -85,6 +85,8 @@ export class Stats {
     return q;
   }
   private getHodgesLehmann(control: any[], experiment: any[]) {
+    // todo this need 1 more step with the u statistic to index
+    // into the sorted
     return quantile(cross(control, experiment, (a, b) => a - b), 0.5);
   }
   private getSparkline(

@@ -12,7 +12,7 @@
   "routes": ["/", "/foo", "/baz", "/buzz"],
   "tracingLocationSearch": "?tracing",
   "appName": "tracerbench",
-  "network": "none",
+  "network": "cable",
   "markers": [{
       "start": "fetchStart",
       "label": "jquery"
@@ -50,6 +50,7 @@
     "--v8-cache-options=none",
     "--disable-cache",
     "--disable-v8-idle-tasks",
-    "--crash-dumps-dir=./tmp"
+    "--crash-dumps-dir=./tmp",
+    "--disable-background-timer-throttling"
   ]
 }
