@@ -1,7 +1,6 @@
 import { Emulation } from 'chrome-debugging-client/dist/protocol/tot';
-import { readFileSync } from 'fs';
 import { convertToTypable } from './utils';
-import * as path from 'path';
+import { simulateDeviceOptions } from '../static/simulate-device-options';
 
 export interface EmulateDeviceSetting
   extends Emulation.SetDeviceMetricsOverrideParameters,
@@ -14,12 +13,7 @@ export interface EmulateDeviceSetting
   typeable: string;
 }
 
-const deviceOptionsJSON = path.join(
-  `${process.cwd()}`,
-  '/src/static/simulate-device-options.json'
-);
-const deviceSettingsJson = JSON.parse(readFileSync(deviceOptionsJSON, 'utf8'));
-const deviceSettings: EmulateDeviceSetting[] = deviceSettingsJson.map(
+const deviceSettings: EmulateDeviceSetting[] = simulateDeviceOptions.map(
   (item: any) => {
     return {
       width: item.device.screen.horizontal.width,
