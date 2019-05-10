@@ -46,12 +46,12 @@ describe('stats', () => {
     expect(eQuantiles[5].val).to.equal(38);
 
     // 3rd decile
-    expect(cQuantiles[3].val).to.equal(9.7);
-    expect(eQuantiles[3].val).to.equal(39.7);
+    expect(cQuantiles[3].val).to.equal(8.2);
+    expect(eQuantiles[3].val).to.equal(33.2);
 
     // 6th decile
-    expect(cQuantiles[6].val).to.equal(18.4);
-    expect(eQuantiles[6].val).to.equal(48.4);
+    expect(cQuantiles[6].val).to.equal(15.399999999999999);
+    expect(eQuantiles[6].val).to.equal(40.4);
   });
 
   it(`getHodgesLehmann()`, () => {
@@ -59,7 +59,7 @@ describe('stats', () => {
   });
 
   it(`getSparkline()`, () => {
-    expect(stats.controlDistributionSparkline).to.equal('▆█████▂▁▁▁▁▁▁');
-    expect(stats.experimentDistributionSparkline).to.equal('▁▁▁▁▁▁▆█████▂');
+    expect(stats.controlDistributionSparkline).to.equal('▆████▂▁▁▁▁▁');
+    expect(stats.experimentDistributionSparkline).to.equal('▁▁▁▁▁▆████▂');
   });
 });
