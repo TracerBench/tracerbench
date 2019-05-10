@@ -10,14 +10,23 @@ import {
 
 import { expect } from 'chai';
 
-// prettier-ignore
-const control = [3,4,2,6,2,5];
-// prettier-ignore
-const experiment = [9,7,5,10,6,8];
-const N = control.length;
-const samplePool = getMergedSortedSamples(control, experiment);
-const controlSamples = getSamples(control, samplePool);
-const experimentSamples = getSamples(experiment, samplePool);
+const data = {
+  significant: {
+    control: [3, 4, 2, 6, 2, 5],
+    experiment: [9, 7, 5, 10, 6, 8],
+  },
+  nonSignificant: {
+    control: [1, 1, 1, 1, 1, 2],
+    experiment: [2, 1, 1, 1, 1, 1],
+  },
+};
+
+const { control: controlSig, experiment: experimentSig } = data.significant;
+const { control: controlNon, experiment: experimentNon } = data.nonSignificant;
+const N = data.significant.control.length;
+const samplePool = getMergedSortedSamples(controlSig, experimentSig);
+const controlSamples = getSamples(controlSig, samplePool);
+const experimentSamples = getSamples(experimentSig, samplePool);
 const rankedControlSamples = rankSamples(controlSamples);
 const rankedExperimentSamples = rankSamples(experimentSamples);
 const controlRankSum = getRankSum(rankedControlSamples);
@@ -25,10 +34,13 @@ const experimentRankSum = getRankSum(rankedExperimentSamples);
 const uStatControl = getSampleUStat(controlRankSum, N);
 const uStatExperiment = getSampleUStat(experimentRankSum, N);
 const uStat = Math.min(uStatControl, uStatExperiment);
-const isSigWilcoxonRankSumTest = getWilcoxonRankSumTest(control, experiment);
-const isSigWilcoxonRankSumTestAA = getWilcoxonRankSumTest(
-  [1, 1, 1, 1, 1, 2],
-  [1, 1, 1, 1, 1, 2]
+const isSigWilcoxonRankSumTest = getWilcoxonRankSumTest(
+  controlSig,
+  experimentSig
+);
+const isSigWilcoxonRankSumTestNon = getWilcoxonRankSumTest(
+  controlNon,
+  experimentNon
 );
 
 describe('wilcoxon rank sum', () => {
@@ -52,7 +64,36 @@ describe('wilcoxon rank sum', () => {
     );
   });
 
-  it(`rankSamples()`, () => {
+  it(`rankSamples() :: val`, () => {
+    expect(rankedControlSamples[0].val).to.equal(2);
+    expect(rankedControlSamples[5].val).to.equal(6);
+    expect(rankedExperimentSamples[0].val).to.equal(5);
+    expect(rankedExperimentSamples[5].val).to.equal(10);
+  });
+
+  it(`rankSamples() :: pool`, () => {
+    // prettier-ignore
+    expect(rankedControlSamples[0].pool).to.eql([2,2,3,4,5,5,6,6,7,8,9,10]);
+    // prettier-ignore
+    expect(rankedControlSamples[5].pool).to.eql([2,2,3,4,5,5,6,6,7,8,9,10]);
+    // prettier-ignore
+    expect(rankedExperimentSamples[0].pool).to.eql([2,2,3,4,5,5,6,6,7,8,9,10]);
+    // prettier-ignore
+    expect(rankedExperimentSamples[5].pool).to.eql([2,2,3,4,5,5,6,6,7,8,9,10]);
+  });
+
+  it(`rankSamples() :: samples`, () => {
+    // prettier-ignore
+    expect(rankedControlSamples[0].samples).to.eql([2,2,3,4,5,6]);
+    // prettier-ignore
+    expect(rankedControlSamples[5].samples).to.eql([2,2,3,4,5,6]);
+    // prettier-ignore
+    expect(rankedExperimentSamples[0].samples).to.eql([5,6,7,8,9,10]);
+    // prettier-ignore
+    expect(rankedExperimentSamples[5].samples).to.eql([5,6,7,8,9,10]);
+  });
+
+  it(`rankSamples() :: rank`, () => {
     expect(rankedControlSamples[0].rank).to.equal(1.5);
     expect(rankedControlSamples[5].rank).to.equal(7.5);
     expect(rankedExperimentSamples[0].rank).to.equal(5.5);
@@ -72,6 +113,6 @@ describe('wilcoxon rank sum', () => {
 
   it(`getWilcoxonRankSumTest()`, () => {
     expect(isSigWilcoxonRankSumTest).to.equal('Yes');
-    expect(isSigWilcoxonRankSumTestAA).to.equal('No');
+    expect(isSigWilcoxonRankSumTestNon).to.equal('No');
   });
 });

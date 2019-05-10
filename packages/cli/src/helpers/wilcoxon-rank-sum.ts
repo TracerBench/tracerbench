@@ -1,5 +1,7 @@
 // all exports are alpha of 0.05 for two-tailed tests
 // using (array length) as N value up to 25 anything over uses normal approximation
+// unpaired data with two samples
+// also known as the mann-whitney-test
 // prettier-ignore
 
 // todo need to write logic for normal approximation for samples over 25 (high fidelity)
