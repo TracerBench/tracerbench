@@ -1,3 +1,5 @@
+/* tslint:disable:no-console*/
+
 import { flags } from '@oclif/command';
 import { networkConditions } from 'tracerbench';
 import { Network } from 'chrome-debugging-client/dist/protocol/tot';
