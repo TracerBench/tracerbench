@@ -101,7 +101,7 @@ export const cpuThrottleRate = flags.build({
 
 export const fidelity = flags.build({
   default: () => getConfigDefault('fidelity', defaultFlagArgs.fidelity),
-  description: `Directly correlates to the number of samples per trace. High means a longer trace time.`,
+  description: `Directly correlates to the number of samples per trace. Medium means a longer trace time.`,
   options: Object.keys(fidelityLookup),
   parse: (fidelity: string): number => {
     return parseInt((fidelityLookup as any)[fidelity], 10);
@@ -157,7 +157,22 @@ export const filter = flags.build({
 
 export const traceFrame = flags.build({
   default: () => getConfigDefault('traceFrame'),
-  description: 'Specifiy a trace insights frame',
+  description: 'Specify a trace insights frame',
+});
+
+export const socksPorts = flags.build({
+  default: () => getConfigDefault('socksPorts'),
+  description:
+    'Specify a socks proxy port as browser option for control and experiment',
+  parse: (s: string): [string, string] | undefined => {
+    if (typeof s === 'string') {
+      const a = s.split(',');
+      if (a.length > 2) {
+        console.error(`Maximium of two socks ports can be passed`);
+      }
+      return a as [string, string];
+    }
+  },
 });
 
 export const emulateDevice = flags.build({

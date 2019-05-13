@@ -17,6 +17,7 @@ import {
   json,
   debug,
   emulateDevice,
+  socksPorts,
 } from '../helpers/flags';
 import { fidelityLookup } from '../helpers/default-flag-args';
 import { logCompareResults } from '../helpers/log-compare-results';
@@ -37,7 +38,8 @@ export default class Compare extends Command {
     experimentURL: experimentURL({ required: true }),
     tracingLocationSearch: tracingLocationSearch({ required: true }),
     runtimeStats: runtimeStats({ required: true }),
-    emulateDevice: emulateDevice({ required: false }),
+    emulateDevice: emulateDevice(),
+    socksPorts: socksPorts(),
     json,
     debug,
   };
@@ -54,8 +56,10 @@ export default class Compare extends Command {
       runtimeStats,
       json,
       debug,
+      socksPorts,
     } = flags;
     let { markers, fidelity, network, emulateDevice } = flags;
+    const delay = 100;
 
     if (debug) {
       this.log(`\n FLAGS: ${JSON.stringify(flags)}`);
@@ -86,16 +90,27 @@ export default class Compare extends Command {
       fs.mkdirSync(tbResultsFile);
     }
 
-    const delay = 100;
-    const browser = {
-      additionalArguments: browserArgs,
+    const controlBrowser = {
+      additionalArguments: browserArgs as string[],
     };
+    const experimentBrowser = {
+      additionalArguments: browserArgs as string[],
+    };
+
+    if (socksPorts) {
+      controlBrowser.additionalArguments.push(
+        `--proxy-server=socks5://0.0.0.0:${socksPorts[0]}`
+      );
+      experimentBrowser.additionalArguments.push(
+        `--proxy-server=socks5://0.0.0.0:${socksPorts[1]}`
+      );
+    }
 
     // todo: leverage har-remix
 
     const benchmarks = {
       control: new InitialRenderBenchmark({
-        browser,
+        browser: controlBrowser,
         cpuThrottleRate,
         delay,
         emulateDeviceSettings: emulateDevice,
@@ -107,7 +122,7 @@ export default class Compare extends Command {
         url: path.join(controlURL + tracingLocationSearch),
       }),
       experiment: new InitialRenderBenchmark({
-        browser,
+        browser: experimentBrowser,
         delay,
         emulateDeviceSettings: emulateDevice,
         markers,

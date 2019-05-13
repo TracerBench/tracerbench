@@ -5,7 +5,7 @@ import { Network } from 'chrome-debugging-client/dist/protocol/tot';
 export interface ITBConfig {
   methods?: string;
   cpuThrottleRate?: number | string;
-  fidelity?: 'test' | 'low' | 'med' | 'high';
+  fidelity?: 'test' | 'low' | 'med';
   report?: string;
   event?: string;
   markers?: string | string[] | IMarker[] | PerformanceTimingMark[];
@@ -24,6 +24,7 @@ export interface ITBConfig {
   tracingLocationSearch?: string;
   runtimeStats?: 'true' | 'false';
   emulateDevice?: string | null;
+  socksPorts?: [string, string];
 }
 
 export interface INetworkConditions {
