@@ -89,7 +89,8 @@
     "test:helpers": "nyc --extension .ts mocha \"test/helpers/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md",
     "build": "rm -rf ./dist && tsc -b",
-    "build:schema": "typescript-json-schema \"src/helpers/tb-config.ts\" ITBConfig --out ./tb-schema.json"
+    "build:schema": "typescript-json-schema \"src/helpers/tb-config.ts\" ITBConfig --out ./tb-schema.json",
+    "plot": "./bin/plot.R \"tracerbench-results/compare.json\""
   },
   "gitHead": "e9e301b7d4a75ac252fe69cf533668e42432ea8d"
 }
