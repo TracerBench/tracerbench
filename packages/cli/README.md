@@ -21,7 +21,7 @@ $ npm install -g tracerbench-cli
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench-cli/2.0.0-beta.8 darwin-x64 node-v10.15.2
+tracerbench-cli/2.0.0-beta.9 darwin-x64 node-v10.15.2
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
@@ -156,7 +156,7 @@ OPTIONS
       (required) [default: http://localhost:8001/] Experiment URL to visit for compare command
 
   --fidelity=test|low|medium
-      (required) [default: low] Directly correlates to the number of samples per trace. High means a longer trace time.
+      (required) [default: low] Directly correlates to the number of samples per trace. Medium means a longer trace time.
 
   --json
       If supported output the command stdout with json rather than formatted results
@@ -169,6 +169,9 @@ OPTIONS
 
   --runtimeStats=runtimeStats
       (required) [default: false] Compare command output stats during run
+
+  --socksPorts=socksPorts
+      Specify a socks proxy port as browser option for control and experiment
 
   --tbResultsFile=tbResultsFile
       (required) [default: ./tracerbench-results] The output filepath for all tracerbench results
@@ -224,7 +227,7 @@ OPTIONS
   --tbResultsFile=tbResultsFile  (required) [default: ./tracerbench-results] The output filepath for all tracerbench
                                  results
 
-  --traceFrame=traceFrame        Specifiy a trace insights frame
+  --traceFrame=traceFrame        Specify a trace insights frame
 
   --url=url                      (required) [default: http://localhost:8000/] URL to visit for create-archive, timings &
                                  trace commands

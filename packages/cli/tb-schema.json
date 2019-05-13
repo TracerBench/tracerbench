@@ -45,7 +45,6 @@
         },
         "fidelity": {
             "enum": [
-                "high",
                 "low",
                 "med",
                 "test"
@@ -150,6 +149,28 @@
                 "true"
             ],
             "type": "string"
+        },
+        "socksPorts": {
+            "additionalItems": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "string"
+                    }
+                ]
+            },
+            "items": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "string"
+                }
+            ],
+            "minItems": 2,
+            "type": "array"
         },
         "tbResultsFile": {
             "type": "string"
