@@ -20,15 +20,7 @@ The recommended way of consuming TracerBench is via the [TracerBench-CLI](https:
 
 # Ambient Noise
 
-When running a TracerBench recording command its exceptionally important to reduce ambient noise that could negatively impact the reliability of the test results. TL;DR don't just jump into leveraging TracerBench without first performing below.
-
-### Mitigating Ambient Noise
-
-As a general rule of thumb to "zero-out" your environment its recommended you close/exit:
-
-- all running applications other than those strictly needed to run a test, (osx menu bar & dock)
-- software updates, file syncing, browser-tabs, (osx spotlight)
-- when manually running tests and _not_ using the default headless chrome. be sure to exit all browser extensions
+When running a TracerBench recording command its exceptionally important to reduce ambient noise that could negatively impact the reliability of the test results. TL;DR don't just jump into leveraging TracerBench without first performing [Mitigating Ambient Noise](https://github.com/TracerBench/tracerbench/blob/master/NOISE_MITIGATION.md)
 
 ### Testing Ambient Noise
 
