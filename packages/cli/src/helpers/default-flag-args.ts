@@ -40,6 +40,8 @@ export const defaultFlagArgs: ITBConfig = {
     '--disable-cache',
     '--disable-v8-idle-tasks',
     '--crash-dumps-dir=./tmp',
+    '--disable-background-timer-throttling',
+    '--setIgnoreCertificateErrors=true',
   ],
   methods: '""',
   fidelity: 'low',

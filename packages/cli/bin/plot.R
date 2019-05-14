@@ -1,4 +1,5 @@
 #!/usr/bin/env Rscript
+library(jsonlite)
 
 argv <- commandArgs()
 
@@ -10,6 +11,7 @@ m <- match("--args", argv, 0L)
 argv <- if (m) argv[-seq_len(m)] else character()
 
 json_filename <- if (length(argv) > 0) argv[1] else 'compare.json'
+config_JSON <- fromJSON(if (length(argv) > 0) argv[2] else 'config.json')
 pdf_filename <- paste0(sub("([^.]+)\\.[[:alnum:]]+$", "\\1", json_filename), '.pdf')
 
 library(ggplot2)
@@ -26,7 +28,7 @@ print(
   ggplot(r$samples, aes(type, ms, color=set)) +
     geom_boxplot(outlier.shape = NA) +
     geom_point(position = position_jitterdodge(), alpha=0.3) +
-    labs(x = NULL, title = 'Initial Render Benchmark')
+    labs(x = NULL, title = config_JSON$title)
 )
 
 print(
