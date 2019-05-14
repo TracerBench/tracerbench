@@ -135,7 +135,8 @@ OPTIONS
   --browserArgs=browserArgs
       (required) [default: 
       --headless,--disable-gpu,--hide-scrollbars,--mute-audio,--v8-cache-options=none,--disable-cache,--disable-v8-idle-ta
-      sks,--crash-dumps-dir=./tmp] (Default Recommended) Browser additional options for the TracerBench render benchmark
+      sks,--crash-dumps-dir=./tmp,--disable-background-timer-throttling,--setIgnoreCertificateErrors=true] (Default 
+      Recommended) Browser additional options for the TracerBench render benchmark
 
   --controlURL=controlURL
       (required) [default: http://localhost:8000/] Control URL to visit for compare command

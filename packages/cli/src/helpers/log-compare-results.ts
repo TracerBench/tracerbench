@@ -20,8 +20,8 @@ export function logCompareResults(
   function getQueryData(id: string, marker?: any): IStatsOptions {
     const query = !marker
       ? `[samples][**][*${id}]`
-      : `[samples][**][${id}][*phase=${marker.start}].duration`;
-    const name = !marker ? id : marker.start;
+      : `[samples][**][${id}][*phase=${marker.label}].duration`;
+    const name = !marker ? id : marker.label;
     return {
       control: jsonQuery(`[*set=control]${query}`, {
         data: results,
