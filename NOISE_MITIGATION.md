@@ -1,5 +1,11 @@
 # TracerBench: Noise Mitigation Techniques
 
+As a general rule of thumb to "zero-out" your environment its recommended you close/exit:
+
+- all running applications other than those strictly needed to run a test, (osx menu bar & dock)
+- software updates, file syncing, browser-tabs, (osx spotlight)
+- when manually running tests and _not_ using the default headless chrome. be sure to exit all browser extensions
+
 ## OSX
 ### Disable Spotlight
 In more recent versions of OSX you cannot disable spotlight without first disabling system integrity protection. This operation comes with risks, please read-up before continuing.
