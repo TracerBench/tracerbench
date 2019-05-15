@@ -46,7 +46,7 @@
         "fidelity": {
             "enum": [
                 "low",
-                "med",
+                "medium",
                 "test"
             ],
             "type": "string"
