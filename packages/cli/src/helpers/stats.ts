@@ -84,6 +84,7 @@ export class Stats {
     }
     return q;
   }
+  // estimator shift logic
   private getHodgesLehmann(control: any[], experiment: any[]) {
     // todo this need 1 more step with the u statistic to index
     // into the sorted
