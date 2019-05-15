@@ -123,6 +123,7 @@ export default class Compare extends Command {
       }),
       experiment: new InitialRenderBenchmark({
         browser: experimentBrowser,
+        cpuThrottleRate,
         delay,
         emulateDeviceSettings: emulateDevice,
         markers,

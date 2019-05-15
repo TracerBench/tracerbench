@@ -134,6 +134,9 @@
             ],
             "type": "string"
         },
+        "plotTitle": {
+            "type": "string"
+        },
         "report": {
             "type": "string"
         },

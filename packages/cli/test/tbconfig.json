@@ -1,5 +1,6 @@
 {
   "$schema": "../tb-schema.json",
+  "plotTitle": "TracerBench CLI A/A Fixture Text (2 cpu throttling, no emulation)",
   "outputFolderPath": "./tracerbench-results",
   "file": "./tracerbench-results/trace.json",
   "fidelity": "low",

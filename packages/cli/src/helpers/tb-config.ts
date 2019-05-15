@@ -3,6 +3,7 @@ import { PerformanceTimingMark } from './default-flag-args';
 import { Network } from 'chrome-debugging-client/dist/protocol/tot';
 
 export interface ITBConfig {
+  plotTitle?: string;
   methods?: string;
   cpuThrottleRate?: number | string;
   fidelity?: 'test' | 'low' | 'med';
