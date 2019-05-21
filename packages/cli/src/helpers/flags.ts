@@ -4,7 +4,11 @@ import { flags } from '@oclif/command';
 import { networkConditions } from 'tracerbench';
 import { Network } from 'chrome-debugging-client/dist/protocol/tot';
 import { defaultFlagArgs, fidelityLookup } from './default-flag-args';
-import { parseMarkers, getConfigDefault } from './utils';
+import {
+  parseMarkers,
+  getConfigDefault,
+  convertMSToMicroseconds,
+} from './utils';
 import deviceSettings, {
   EmulateDeviceSetting,
 } from './simulate-device-options';
@@ -32,6 +36,18 @@ export const debug = flags.boolean({
   default: false,
 });
 
+export const regressionThreshold = flags.build({
+  default: () =>
+    getConfigDefault(
+      'regressionThreshold',
+      defaultFlagArgs.regressionThreshold
+    ),
+  description: `Regression threshold in negative milliseconds. eg -100ms`,
+  parse: (ms): number => {
+    return convertMSToMicroseconds(ms);
+  },
+});
+
 export const runtimeStats = flags.build({
   default: () => getConfigDefault('runtimeStats', defaultFlagArgs.runtimeStats),
   description: `Compare command output stats during run`,
@@ -51,10 +67,8 @@ export const iterations = flags.build({
 export const browserArgs = flags.build({
   default: () => getConfigDefault('browserArgs', defaultFlagArgs.browserArgs),
   description: `(Default Recommended) Browser additional options for the TracerBench render benchmark`,
-  parse: browserArgs => {
-    if (typeof browserArgs === 'string') {
-      return browserArgs.split(',');
-    }
+  parse: (s): string[] => {
+    return s.split(',');
   },
 });
 
@@ -103,7 +117,7 @@ export const cpuThrottleRate = flags.build({
 
 export const fidelity = flags.build({
   default: () => getConfigDefault('fidelity', defaultFlagArgs.fidelity),
-  description: `Directly correlates to the number of samples per trace. Medium means a longer trace time.`,
+  description: `Directly correlates to the number of samples per trace. High is the longest trace time.`,
   options: Object.keys(fidelityLookup),
   parse: (fidelity: string): number => {
     return parseInt((fidelityLookup as any)[fidelity], 10);

@@ -14,26 +14,35 @@ const markers = [
     label: 'domComplete',
   },
 ];
-const fidelity = 2;
 const tbResultsFile = path.join(`${process.cwd()}/${tmpDir}`);
 const scope = console;
+const network = {
+  offline: false,
+  latency: 0,
+  downloadThroughput: 0,
+  uploadThroughput: 0,
+};
+
+const flags = {
+  browserArgs: [''],
+  cpuThrottleRate: 2,
+  fidelity: 2,
+  markers,
+  network,
+  tbResultsFile,
+  controlURL: '',
+  experimentURL: '',
+  tracingLocationSearch: '',
+  runtimeStats: false,
+  json: false,
+  debug: false,
+};
 
 describe('log-compare-results', () => {
   test.stdout().it(`stdout`, ctx => {
-    logCompareResults(results, markers, fidelity, tbResultsFile, scope, false);
+    const json = logCompareResults(results, flags, scope);
 
     expect(ctx.stdout).to.contain(`Success`);
-  });
-
-  it(`json`, () => {
-    const l = logCompareResults(
-      results,
-      markers,
-      fidelity,
-      tbResultsFile,
-      scope,
-      true
-    ) as any;
-    expect(l.message).to.contain('Success!');
+    expect(json.message).to.contain(`Success`);
   });
 });

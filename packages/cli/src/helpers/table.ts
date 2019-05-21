@@ -5,6 +5,7 @@ export default class TBTable {
   public config: Table.TableConstructorOptions;
   public table: any;
   public display: Stats[];
+  public estimatorDeltas: number[];
   public isSigWilcoxonRankSumTestArray: string[];
   private heading: string;
   constructor(heading: string) {
@@ -13,6 +14,7 @@ export default class TBTable {
     this.table = new Table(this.config) as Table.HorizontalTable;
     this.display = [];
     this.isSigWilcoxonRankSumTestArray = [];
+    this.estimatorDeltas = [];
   }
   public getData(): object[] {
     const a: object[] = [];
@@ -28,6 +30,7 @@ export default class TBTable {
         experimentDistributionHistogram: stat.experimentDistributionHistogram,
       });
       this.isSigWilcoxonRankSumTestArray.push(stat.isSigWilcoxonRankSumTest);
+      this.estimatorDeltas.push(stat.estimator);
     });
     return a;
   }

@@ -61,6 +61,11 @@ export function getConfigDefault(id: ITBConfigKeys, defaultValue?: any) {
   }
 }
 
+export function convertMSToMicroseconds(ms: string | number): number {
+  ms = typeof ms === 'string' ? parseInt(ms, 10) : ms;
+  return Math.floor(ms * 1000);
+}
+
 export function getCookiesFromHAR(har: any) {
   let cookies: any = [];
   har.log.entries.forEach((entry: any) => {
@@ -181,8 +186,10 @@ export function fillArray(
  *
  * @param str - String to be converted to dasherized case
  */
-export function convertToTypable (name: string): string {
+export function convertToTypable(name: string): string {
   const split = name.split(' ');
-  const lowercasedWords = split.map(word => word.toLowerCase().replace(/\//g, ''));
+  const lowercasedWords = split.map(word =>
+    word.toLowerCase().replace(/\//g, '')
+  );
   return lowercasedWords.join('-');
-};
+}

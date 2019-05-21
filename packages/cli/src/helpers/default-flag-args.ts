@@ -2,8 +2,9 @@ import { ITBConfig } from './tb-config';
 
 export const fidelityLookup = {
   test: 2,
-  low: 15,
-  medium: 20,
+  low: 11,
+  medium: 18,
+  high: 25,
 };
 
 export type PerformanceTimingMark = keyof PerformanceTiming;
@@ -55,4 +56,5 @@ export const defaultFlagArgs: ITBConfig = {
   runtimeStats: 'false',
   emulateDevice: null,
   routes: ['/'],
+  regressionThreshold: '0ms',
 };

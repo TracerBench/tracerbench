@@ -2,6 +2,7 @@ import {
   findFrame,
   isCommitLoad,
   isFrameNavigationStart,
+  convertMSToMicroseconds,
 } from '../../src/helpers/utils';
 import { expect } from 'chai';
 import { ITraceEvent } from 'tracerbench';
@@ -26,6 +27,7 @@ const url = 'https://www.tracerbench.com';
 const frame = findFrame(events, url);
 const isLoad = isCommitLoad(event);
 const isFrameMark = isFrameNavigationStart(frame, event);
+const micro = convertMSToMicroseconds(`-100ms`);
 
 describe('utils', () => {
   it(`findFrame()`, () => {
@@ -38,5 +40,9 @@ describe('utils', () => {
 
   it(`isFrameNavigationStart()`, () => {
     expect(isFrameMark).to.equal(false);
+  });
+
+  it(`convertMSToMicroseconds()`, () => {
+    expect(micro).to.equal(-100000);
   });
 });

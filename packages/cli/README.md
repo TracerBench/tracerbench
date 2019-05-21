@@ -156,8 +156,8 @@ OPTIONS
   --experimentURL=experimentURL
       (required) [default: http://localhost:8001/] Experiment URL to visit for compare command
 
-  --fidelity=test|low|medium
-      (required) [default: low] Directly correlates to the number of samples per trace. Medium means a longer trace time.
+  --fidelity=test|low|medium|high
+      (required) [default: low] Directly correlates to the number of samples per trace. High is the longest trace time.
 
   --json
       If supported output the command stdout with json rather than formatted results
@@ -167,6 +167,9 @@ OPTIONS
 
   --network=none | offline | dialup | 2g | edge | slow-3g | em-3g | dsl | 3g | fast-3g | 4g | cable | LTE | FIOS
       (required) [default: none] Simulated network conditions.
+
+  --regressionThreshold=regressionThreshold
+      [default: 0ms] Regression threshold in negative milliseconds. eg -100ms
 
   --runtimeStats=runtimeStats
       (required) [default: false] Compare command output stats during run

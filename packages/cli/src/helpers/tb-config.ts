@@ -6,7 +6,7 @@ export interface ITBConfig {
   plotTitle?: string;
   methods?: string;
   cpuThrottleRate?: number | string;
-  fidelity?: 'test' | 'low' | 'med';
+  fidelity?: 'test' | 'low' | 'medium' | 'high';
   report?: string;
   event?: string;
   markers?: string | string[] | IMarker[] | PerformanceTimingMark[];
@@ -26,6 +26,7 @@ export interface ITBConfig {
   runtimeStats?: 'true' | 'false';
   emulateDevice?: string | null;
   socksPorts?: [string, string];
+  regressionThreshold?: number | string;
 }
 
 export interface INetworkConditions {

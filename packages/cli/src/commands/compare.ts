@@ -1,8 +1,13 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-
+import { Emulation, Network } from 'chrome-debugging-client/dist/protocol/tot';
 import { Command } from '@oclif/command';
-import { InitialRenderBenchmark, Runner, networkConditions } from 'tracerbench';
+import {
+  InitialRenderBenchmark,
+  Runner,
+  networkConditions,
+  IMarker,
+} from 'tracerbench';
 import {
   browserArgs,
   controlURL,
@@ -18,11 +23,33 @@ import {
   debug,
   emulateDevice,
   socksPorts,
+  regressionThreshold,
 } from '../helpers/flags';
 import { fidelityLookup } from '../helpers/default-flag-args';
 import { logCompareResults } from '../helpers/log-compare-results';
-import { parseMarkers } from '../helpers/utils';
+import { parseMarkers, convertMSToMicroseconds } from '../helpers/utils';
 import deviceSettings from '../helpers/simulate-device-options';
+
+export interface ICompareFlags {
+  browserArgs: string[];
+  cpuThrottleRate: number;
+  fidelity: number;
+  markers: IMarker[];
+  network: Network.EmulateNetworkConditionsParameters;
+  tbResultsFile: string;
+  controlURL: string;
+  experimentURL: string;
+  tracingLocationSearch: string;
+  runtimeStats: boolean;
+  emulateDevice?:
+    | Emulation.SetDeviceMetricsOverrideParameters &
+        Emulation.SetUserAgentOverrideParameters
+    | undefined;
+  socksPorts?: [string, string] | undefined;
+  json: boolean;
+  debug: boolean;
+  regressionThreshold?: number;
+}
 
 export default class Compare extends Command {
   public static description =
@@ -40,6 +67,7 @@ export default class Compare extends Command {
     runtimeStats: runtimeStats({ required: true }),
     emulateDevice: emulateDevice(),
     socksPorts: socksPorts(),
+    regressionThreshold: regressionThreshold(),
     json,
     debug,
   };
@@ -47,123 +75,123 @@ export default class Compare extends Command {
   public async run() {
     const { flags } = this.parse(Compare);
     const {
-      browserArgs,
-      cpuThrottleRate,
       tbResultsFile,
-      controlURL,
-      experimentURL,
-      tracingLocationSearch,
-      runtimeStats,
-      json,
       debug,
-      socksPorts,
-    } = flags;
-    let { markers, fidelity, network, emulateDevice } = flags;
+      fidelity,
+      network,
+      markers,
+      emulateDevice,
+      regressionThreshold,
+    } = flags as ICompareFlags;
     const delay = 100;
 
-    if (debug) {
-      this.log(`\n FLAGS: ${JSON.stringify(flags)}`);
-    }
-
+    // modifies properties of flags that were not set
+    // during flag.parse(). these are intentionally
+    // not deconstructed as to maintain the mutable
+    // flags object state
     if (typeof fidelity === 'string') {
-      fidelity = parseInt((fidelityLookup as any)[fidelity], 10);
+      flags.fidelity = parseInt((fidelityLookup as any)[fidelity], 10);
     }
-
     if (typeof network === 'string') {
-      network = networkConditions[network];
+      flags.network = networkConditions[network];
     }
-
     if (typeof markers === 'string') {
-      markers = parseMarkers(markers);
+      flags.markers = parseMarkers(markers);
     }
-
+    if (typeof regressionThreshold === 'string') {
+      flags.regressionThreshold = convertMSToMicroseconds(regressionThreshold);
+    }
+    if (typeof regressionThreshold === 'number') {
+      flags.regressionThreshold =
+        regressionThreshold <= -1000
+          ? regressionThreshold
+          : convertMSToMicroseconds(regressionThreshold);
+    }
     if (typeof emulateDevice === 'string') {
       for (const option of deviceSettings) {
         if (emulateDevice === option.typeable) {
-          emulateDevice = option;
+          flags.emulateDevice = option;
           break;
         }
       }
     }
 
+    // if the folder for the tracerbench results file
+    // does not exist then create it
     if (!fs.existsSync(tbResultsFile)) {
       fs.mkdirSync(tbResultsFile);
     }
 
+    // config for the browsers
     const controlBrowser = {
-      additionalArguments: browserArgs as string[],
+      additionalArguments: flags.browserArgs,
     };
     const experimentBrowser = {
-      additionalArguments: browserArgs as string[],
+      additionalArguments: flags.browserArgs,
     };
-
-    if (socksPorts) {
+    // config for the browswers to leverage socks proxy
+    if (flags.socksPorts) {
       controlBrowser.additionalArguments.push(
-        `--proxy-server=socks5://0.0.0.0:${socksPorts[0]}`
+        `--proxy-server=socks5://0.0.0.0:${flags.socksPorts[0]}`
       );
       experimentBrowser.additionalArguments.push(
-        `--proxy-server=socks5://0.0.0.0:${socksPorts[1]}`
+        `--proxy-server=socks5://0.0.0.0:${flags.socksPorts[1]}`
       );
     }
 
-    // todo: leverage har-remix
+    // if debug flag then log X post mutations
+    if (debug) {
+      this.log(`\n FLAGS: ${JSON.stringify(flags)}`);
+    }
 
+    // todo: leverage har-remix?
     const benchmarks = {
       control: new InitialRenderBenchmark({
         browser: controlBrowser,
-        cpuThrottleRate,
+        cpuThrottleRate: flags.cpuThrottleRate,
         delay,
-        emulateDeviceSettings: emulateDevice,
-        markers,
-        networkConditions: network,
+        emulateDeviceSettings: flags.emulateDevice,
+        markers: flags.markers,
+        networkConditions: flags.network,
         name: 'control',
-        runtimeStats,
-        saveTraces: () => `${tbResultsFile}/control.json`,
-        url: path.join(controlURL + tracingLocationSearch),
+        runtimeStats: flags.runtimeStats,
+        saveTraces: () => `${flags.tbResultsFile}/control.json`,
+        url: path.join(flags.controlURL + flags.tracingLocationSearch),
       }),
       experiment: new InitialRenderBenchmark({
         browser: experimentBrowser,
-        cpuThrottleRate,
+        cpuThrottleRate: flags.cpuThrottleRate,
         delay,
-        emulateDeviceSettings: emulateDevice,
-        markers,
-        networkConditions: network,
+        emulateDeviceSettings: flags.emulateDevice,
+        markers: flags.markers,
+        networkConditions: flags.network,
         name: 'experiment',
-        runtimeStats,
-        saveTraces: () => `${tbResultsFile}/experiment.json`,
-        url: path.join(experimentURL + tracingLocationSearch),
+        runtimeStats: flags.runtimeStats,
+        saveTraces: () => `${flags.tbResultsFile}/experiment.json`,
+        url: path.join(flags.experimentURL + flags.tracingLocationSearch),
       }),
     };
 
     const runner = new Runner([benchmarks.control, benchmarks.experiment]);
     await runner
-      .run(fidelity)
+      .run(flags.fidelity)
       .then((results: any) => {
         if (!results[0].samples[0]) {
           this.error(
-            `Could not sample from provided urls\nCONTROL: ${controlURL}\nEXPERIMENT: ${experimentURL}.`
+            `Could not sample from provided urls\nCONTROL: ${
+              flags.controlURL
+            }\nEXPERIMENT: ${flags.experimentURL}.`
           );
         }
 
         fs.writeFileSync(
-          `${tbResultsFile}/compare.json`,
+          `${flags.tbResultsFile}/compare.json`,
           JSON.stringify(results, null, 2)
         );
 
         fs.writeFileSync(
-          `${tbResultsFile}/compare-stat-results.json`,
-          JSON.stringify(
-            logCompareResults(
-              results,
-              markers,
-              fidelity,
-              tbResultsFile,
-              this,
-              json
-            ),
-            null,
-            2
-          )
+          `${flags.tbResultsFile}/compare-stat-results.json`,
+          JSON.stringify(logCompareResults(results, flags, this), null, 2)
         );
       })
       .catch((err: any) => {

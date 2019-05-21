@@ -45,6 +45,7 @@
         },
         "fidelity": {
             "enum": [
+                "high",
                 "low",
                 "medium",
                 "test"
@@ -136,6 +137,12 @@
         },
         "plotTitle": {
             "type": "string"
+        },
+        "regressionThreshold": {
+            "type": [
+                "string",
+                "number"
+            ]
         },
         "report": {
             "type": "string"
