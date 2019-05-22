@@ -41,8 +41,8 @@ const flags = {
 describe('log-compare-results', () => {
   test.stdout().it(`stdout`, ctx => {
     const json = logCompareResults(results, flags, scope);
-
+    const pJSON = JSON.parse(json);
     expect(ctx.stdout).to.contain(`Success`);
-    expect(json.message).to.contain(`Success`);
+    expect(pJSON.message).to.contain(`Success`);
   });
 });

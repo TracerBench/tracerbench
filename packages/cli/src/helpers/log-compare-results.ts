@@ -108,8 +108,8 @@ export function logCompareResults(
     if (!jsonResults.isBelowRegressionThreshold) {
       jsonResults.message += ` ${regThresholdMessage}`;
     }
-    cli.log(jsonResults);
+    cli.log(JSON.stringify(jsonResults));
   }
   // RETURN JSON FOR ONLY FILE OUTPUT
-  return jsonResults;
+  return JSON.stringify(jsonResults);
 }
