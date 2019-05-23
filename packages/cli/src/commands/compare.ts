@@ -89,6 +89,16 @@ export default class Compare extends Command {
     // during flag.parse(). these are intentionally
     // not deconstructed as to maintain the mutable
     // flags object state
+    // if (controlURL.startsWith('file:/')) {
+    //   if (!fs.existsSync(controlURL)) {
+    //     this.error(`controlURL file not found: ${controlURL}`);
+    //   }
+    // }
+    // if (experimentURL.startsWith('file:/')) {
+    //   if (!fs.existsSync(controlURL)) {
+    //     this.error(`controlURL file not found: ${controlURL}`);
+    //   }
+    // }
     if (typeof fidelity === 'string') {
       flags.fidelity = parseInt((fidelityLookup as any)[fidelity], 10);
     }
@@ -115,7 +125,6 @@ export default class Compare extends Command {
         }
       }
     }
-
     // if the folder for the tracerbench results file
     // does not exist then create it
     if (!fs.existsSync(tbResultsFile)) {
