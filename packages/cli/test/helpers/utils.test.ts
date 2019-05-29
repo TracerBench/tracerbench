@@ -3,9 +3,11 @@ import {
   isCommitLoad,
   isFrameNavigationStart,
   convertMSToMicroseconds,
+  getConfigDefault,
 } from '../../src/helpers/utils';
 import { expect } from 'chai';
 import { ITraceEvent } from 'tracerbench';
+import * as path from 'path';
 
 const event: ITraceEvent = {
   ph: 'X',
@@ -28,8 +30,23 @@ const frame = findFrame(events, url);
 const isLoad = isCommitLoad(event);
 const isFrameMark = isFrameNavigationStart(frame, event);
 const micro = convertMSToMicroseconds(`-100ms`);
+const tbConfigPath = path.join(process.cwd(), '/test/tbconfig.json');
 
 describe('utils', () => {
+  it(`getConfigDefault() from tbconfig at alt path`, () => {
+    const regressionThreshold = getConfigDefault(
+      'regressionThreshold',
+      '50ms',
+      tbConfigPath
+    );
+    expect(regressionThreshold).to.equal('100ms');
+  });
+
+  it(`getConfigDefault() from default`, () => {
+    const regressionThreshold = getConfigDefault('regressionThreshold', '50ms');
+    expect(regressionThreshold).to.equal('50ms');
+  });
+
   it(`findFrame()`, () => {
     expect(frame).to.equal('FRAME');
   });

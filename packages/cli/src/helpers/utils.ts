@@ -6,6 +6,7 @@ import { IMarker, ITraceEvent } from 'tracerbench';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ITBConfig } from './tb-config';
+import * as JSON5 from 'json5';
 
 type ITBConfigKeys = keyof ITBConfig;
 
@@ -20,23 +21,28 @@ export const chalkScheme = {
   checkmark: chalk.rgb(133, 153, 36)(`${logSymbols.success}`),
 };
 
-export function getConfigDefault(id: ITBConfigKeys, defaultValue?: any) {
-  let file;
+export function getConfigDefault(
+  id: ITBConfigKeys,
+  defaultValue?: any,
+  altTBconfigPath?: string
+) {
   let tbconfig;
+  const tbConfigPath = altTBconfigPath
+    ? altTBconfigPath
+    : path.join(process.cwd(), 'tbconfig.json');
 
   try {
-    file = path.join(process.cwd(), 'tbconfig.json');
-    tbconfig = JSON.parse(fs.readFileSync(file, 'utf8'));
+    tbconfig = JSON5.parse(fs.readFileSync(tbConfigPath, 'utf8'));
     if (tbconfig[id]) {
       console.warn(
-        `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON.stringify(
+        `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON5.stringify(
           tbconfig[id]
-        )} from tbconfig.json`
+        )} from ${tbConfigPath}`
       );
       return tbconfig[id];
     } else if (defaultValue) {
       console.warn(
-        `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON.stringify(
+        `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON5.stringify(
           defaultValue
         )} from defaults`
       );
@@ -48,7 +54,7 @@ export function getConfigDefault(id: ITBConfigKeys, defaultValue?: any) {
     try {
       if (defaultValue) {
         console.warn(
-          `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON.stringify(
+          `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON5.stringify(
             defaultValue
           )} from defaults`
         );

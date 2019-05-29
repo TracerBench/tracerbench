@@ -1,6 +1,7 @@
 {
   "$schema": "../tb-schema.json",
-  "plotTitle": "TracerBench CLI A/A Fixture Text (2 cpu throttling, no emulation)",
+  // this comment is ok JSON5
+  "plotTitle": "TracerBench CLI",
   "outputFolderPath": "./tracerbench-results",
   "file": "./tracerbench-results/trace.json",
   "fidelity": "low",
@@ -12,6 +13,7 @@
   "url": "https://www.tracerbench.com/",
   "routes": ["/", "/foo", "/baz", "/buzz"],
   "tracingLocationSearch": "?tracing",
+  "regressionThreshold": "100ms",
   "appName": "tracerbench",
   "network": "cable",
   "markers": [{
