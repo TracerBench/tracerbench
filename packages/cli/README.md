@@ -33,7 +33,7 @@ USAGE
 
 The optional existance of a "tbconfig.json" file in the project root will be consumed by TracerBench and specifies default command flag options. Please note this file is optional, however is strongly recommended as this drastically speeds up running TracerBench tests succinctly. [Schema]("https://raw.githubusercontent.com/TracerBench/tracerbench/master/packages/cli/tb-schema.json") and Example:
 
-```json
+```json-c
 {
   "$schema": "https://raw.githubusercontent.com/TracerBench/tracerbench/master/packages/cli/tb-schema.json",
   // comments are ok with JSON5
