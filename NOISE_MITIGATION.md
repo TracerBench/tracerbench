@@ -3,7 +3,7 @@
 As a general rule of thumb to "zero-out" your environment its recommended you close/exit:
 
 - all running applications other than those strictly needed to run a test, (osx menu bar & dock)
-- software updates, file syncing, browser-tabs, (osx spotlight)
+- software updates, file syncing, browser-tabs, (osx spotlight & notification: do not disturb "on" )
 - when manually running tests and _not_ using the default headless chrome. be sure to exit all browser extensions
 
 ## OSX
