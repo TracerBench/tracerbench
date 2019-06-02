@@ -93,7 +93,7 @@ $ tracerbench timeline:show --urlOrFrame http://localhost:8000
 
 ### Instrument your web application
 
-In your app you must place a marker to let TracerBench know that you are done rendering to the DOM, it searches forward from this to find the next paint event. This is done by using a `performance.mark` function call.
+In your app you must place a marker to let TracerBench know that you are done rendering to the DOM, it searches forward from this to find the next paint event. This is done by using a `performance.mark` function call. Additionally the properties of the [NavigationTiming API](https://www.w3.org/TR/navigation-timing/#sec-navigation-timing-interface) can be passed a `markers` arguments array to the `InitialRenderBenchmark`.
 
 ```js
 function renderMyApp() {
