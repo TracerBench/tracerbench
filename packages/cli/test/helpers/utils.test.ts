@@ -39,7 +39,7 @@ describe('utils', () => {
       '50ms',
       tbConfigPath
     );
-    expect(regressionThreshold).to.equal('100ms');
+    expect(regressionThreshold).to.equal('-100ms');
   });
 
   it(`getConfigDefault() from default`, () => {
