@@ -144,9 +144,6 @@ const samplesCount = 40;
 // especially as it pertains to web application frameworks (ember, react etc). 
 // as a baseline the `PerformanceTiming` API is fully available
 const markers = [{ start: 'domComplete', label: 'domComplete' }];
-
-// the interface for optional chrome browser options is robust. typings available here:
-// https://github.com/TracerBench/chrome-debugging-client/blob/ce0cdf3341fbbff2164a1d46bac16885d39deb15/lib/types.ts#L114-L128
 const browser = {
   type: 'canary',
   additionalArguments: [
