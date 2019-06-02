@@ -1,4 +1,4 @@
-## TracerBench: Automated Chrome Tracing For Benchmarking
+# TracerBench: Automated Chrome Tracing For Benchmarking
 
 [![Build Status](https://travis-ci.org/TracerBench/tracerbench.svg?branch=master)](https://travis-ci.org/TracerBench/tracerbench)
 
@@ -224,4 +224,4 @@ The typings for "trace-results.json" is as follows:
 
 Assuming you have the output results ("trace-results.json") from your TracerBench run, its time to perform statistical analysis on the [Trace-Results](#Trace-Results) JSON file.
 
-TracerBench does not currently expose an API to manually handle stat-analysis, however an industry standard is leveraging [SciPy](http://www.scipy.org/).
+When running the TracerBench-CLI `compare` command, on a successful trace a stdout statistical summary report will be generated.
