@@ -13,7 +13,7 @@
   "url": "https://www.tracerbench.com/",
   "routes": ["/", "/foo", "/baz", "/buzz"],
   "tracingLocationSearch": "?tracing",
-  "regressionThreshold": "100ms",
+  "regressionThreshold": "-100ms",
   "appName": "tracerbench",
   "network": "cable",
   "markers": [{
