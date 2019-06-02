@@ -31,33 +31,64 @@ USAGE
 
 # Optional Config
 
-The optional existance of a "tbconfig.json" file in the project root will be consumed by TracerBench and specifies default command flag options. Please note this file is optional, however is strongly recommended as this drastically speeds up running TracerBench tests succinctly. [Typings]("https://github.com/TracerBench/tracerbench/blob/master/packages/cli/src/utils.ts#L7-L33") and Example:
+The optional existance of a "tbconfig.json" file in the project root will be consumed by TracerBench and specifies default command flag options. Please note this file is optional, however is strongly recommended as this drastically speeds up running TracerBench tests succinctly. [Schema]("https://raw.githubusercontent.com/TracerBench/tracerbench/master/packages/cli/tb-schema.json") and Example:
 
 ```json
 {
-  "file": "./trace.json",
-  "fidelity": "low",
-  "methods": "''",
+  "$schema": "https://raw.githubusercontent.com/TracerBench/tracerbench/master/packages/cli/tb-schema.json",
+  // comments are ok with JSON5
+  "plotTitle": "TracerBench.com",
+  "outputFolderPath": "./tracerbench-results",
+  "fidelity": "high",
   "cpuThrottleRate": 2,
-  "output": "tracerbench-results",
-  "urlOrFrame": "https://www.tracerbench.com",
-  "url": "https://www.tracerbench.com",
-  "harsPath": "./hars",
-  "routes": ["/about", "/contact"],
+  "tbResultsFile": "tracerbench-results",
+  "controlURL": "https://www.tracerbench.com/",
+  "experimentURL": "https://www.tracerbench.com/",
+  "url": "https://www.tracerbench.com/",
+  "routes": ["/", "/foo", "/baz", "/buzz"],
+  "tracingLocationSearch": "?tracing",
+  "regressionThreshold": "100ms",
   "appName": "tracerbench",
-  "markers": [
-    {
+  "network": "cable",
+  "markers": [{
       "start": "fetchStart",
-      "label": "fetchStart"
+      "label": "jquery"
     },
     {
       "start": "jqueryLoaded",
-      "label": "jqueryLoaded"
+      "label": "ember"
+    },
+    {
+      "start": "emberLoaded",
+      "label": "application"
+    },
+    {
+      "start": "startRouting",
+      "label": "routing"
+    },
+    {
+      "start": "willTransition",
+      "label": "transition"
+    },
+    {
+      "start": "didTransition",
+      "label": "render"
     },
     {
       "start": "renderEnd",
-      "label": "renderEnd"
+      "label": "afterRender"
     }
+  ],
+  "browserArgs": [
+    "--headless",
+    "--disable-gpu",
+    "--hide-scrollbars",
+    "--mute-audio",
+    "--v8-cache-options=none",
+    "--disable-cache",
+    "--disable-v8-idle-tasks",
+    "--crash-dumps-dir=./tmp",
+    "--disable-background-timer-throttling"
   ]
 }
 ```
