@@ -22,10 +22,6 @@ Chris leveraged TracerBench in some of his recent Ember.js work on including nat
 
 ---
 
-# CLI
-
-The recommended way of consuming TracerBench is via the [TracerBench-CLI](https://github.com/TracerBench/tracerbench/tree/master/packages/cli)
-
 # Ambient Noise
 
 When running a TracerBench recording command its exceptionally important to reduce ambient noise that could negatively impact the reliability of the test results. TL;DR don't just jump into leveraging TracerBench without first performing [Mitigating Ambient Noise](https://github.com/TracerBench/tracerbench/blob/master/NOISE_MITIGATION.md)
@@ -33,6 +29,12 @@ When running a TracerBench recording command its exceptionally important to redu
 ### Testing Ambient Noise
 
 Assuming the pre-req mitigations above are complete, to test the ambient noise of your environment you can run and measure a few A/A tests. For example the control against the control. The results of which should all be near identical with no significant result and low variance.
+
+---
+
+# CLI
+
+The recommended way of consuming TracerBench is via the [TracerBench-CLI](https://github.com/TracerBench/tracerbench/tree/master/packages/cli)
 
 # CLI Workflow
 
