@@ -16,7 +16,7 @@ When comparing TracerBench to [Lighthouse](https://github.com/GoogleChrome/light
 
 # User-Stories
 
-Chris leveraged TracerBench in some of his recent Ember.js work on including native accessor functions in "classic" JS classes.
+[Chris Garrett](https://github.com/pzuraq) leveraged TracerBench in some of his recent Ember.js work on including native accessor functions in "classic" JS classes.
 
 "This [TracerBench Stats Test](https://github.com/TracerBench/tracerbench/raw/master/docs/native-accessor-fn.pdf) showed us with some confidence that the changes we were making to add a new feature in Ember wouldn't cause significant regressions in existing applications. We knew that the new feature would require some amount of work on the critical path for class instantiation, and thus for application boot, so having a way to measure the overall impact was invaluable. Without this kind of test, microbenchmarks would only have given us context as to how much more or less this piece of work was in isolation, and we wouldn't have been able to know if cumulatively running the new code would have a measurable impact on end users." -- [Chris Garrett](https://github.com/pzuraq) / Ember.js Core Team Member
 
