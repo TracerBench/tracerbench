@@ -1,0 +1,24 @@
+language: node_js
+node_js:
+  - '10'
+services:
+  - mongodb
+sudo: false
+dist: trusty
+
+addons:
+  chrome: stable
+
+cache:
+  directories:
+    - $HOME/.npm
+
+env:
+  global:
+    - JOBS=1
+
+before_install:
+  - npm config set spin false
+
+script:
+  - yarn tracerbench:compare
