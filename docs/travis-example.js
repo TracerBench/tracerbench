@@ -8,6 +8,9 @@ const {
   spawn
 } = require('child_process');
 
+// for historical A/B tests you could connect to a DB
+// fetch the production compressed build as well as the saved HAR
+// and leverage that as the control build
 
 // as an example you could specify the control/experiment directly via file pathing
 const devAppFile = {
