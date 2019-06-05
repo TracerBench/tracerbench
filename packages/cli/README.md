@@ -93,6 +93,18 @@ The optional existance of a "tbconfig.json" file in the project root will be con
 }
 ```
 
+# Example Travis-CI Integration
+In this working example the `travis-script.js` would be called from the travis yml file `travis.yml` via `yarn run <script>` included within your applications package.json (not shown) eg: `yarn tracerbench:compare`.
+
+- [travis.yml](https://github.com/TracerBench/tracerbench/blob/master/docs/travis-example.yml)
+- [travis-script.js](https://github.com/TracerBench/tracerbench/blob/master/docs/travis-example.js)
+
+The results of this test would resolve in
+1. The results are statistically significant
+2. The results contained a regression, however the regression is below a set threshold from `tbconfig.json`. (For example to mitigate against false-positives).
+3. The results contained a regression and the delta was significant enough to cause concern. (Recommend running the test again with a higher sample size to confirm).
+4. The results are statistically insignificant. All is good.
+
 # FAQ
 
 _What exactly is contained within the `tracerbench compare` "tracerbench-results.json"?_  
