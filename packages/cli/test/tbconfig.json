@@ -2,10 +2,7 @@
   "$schema": "../tb-schema.json",
   // this comment is ok JSON5
   "plotTitle": "TracerBench CLI",
-  "outputFolderPath": "./tracerbench-results",
-  "file": "./tracerbench-results/trace.json",
   "fidelity": "low",
-  "methods": "''",
   "cpuThrottleRate": 2,
   "tbResultsFile": "tracerbench-results",
   "controlURL": "https://www.tracerbench.com/",
