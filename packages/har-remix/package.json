@@ -1,6 +1,6 @@
 {
   "name": "har-remix",
-  "version": "2.0.0-beta.6",
+  "version": "2.0.0-beta.15",
   "description": "Server HAR archive with loose matching and hooks to alter responses.",
   "keywords": [
     "benchmarking",
