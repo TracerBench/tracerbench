@@ -2,7 +2,7 @@ import { cross, histogram, quantile, deviation, mean } from 'd3-array';
 import { scaleLinear } from 'd3-scale';
 import { getWilcoxonRankSumTest } from './wilcoxon-rank-sum';
 import { getWilcoxonSignedRankTest } from './wilcoxon-signed-rank';
-import { toNearestHundreth } from './utils';
+import { toNearestHundreth } from '../utils';
 
 interface IQuantile {
   p: number;
@@ -53,19 +53,19 @@ export class Stats {
     this.range = this.getRange(control, experiment);
     this.controlDistributionHistogram = this.getHistogram(this.range, control);
     this.experimentDistributionHistogram = this.getHistogram(
-      this.range,
-      experiment
+        this.range,
+        experiment
     );
     this.controlDistributionSparkline = this.getSparkline(
-      this.getHistogram(this.range, control)
+        this.getHistogram(this.range, control)
     );
     this.experimentDistributionSparkline = this.getSparkline(
-      this.getHistogram(this.range, experiment)
+        this.getHistogram(this.range, experiment)
     );
     this.isSigWilcoxonRankSumTest = getWilcoxonRankSumTest(control, experiment);
     this.isSigWilcoxonSignedRankTest = getWilcoxonSignedRankTest(
-      control,
-      experiment
+        control,
+        experiment
     );
     this.controlQuantiles = this.getQuantiles(control);
     this.experimentQuantiles = this.getQuantiles(experiment);
@@ -100,6 +100,12 @@ export class Stats {
 
     return toNearestHundreth(ci);
   }
+  // estimator shift logic
+  private getHodgesLehmann(control: any[], experiment: any[]) {
+    // todo this need 1 more step with the u statistic to index
+    // into the sorted
+    return quantile(cross(control, experiment, (a, b) => a - b), 0.5);
+  }
   // todo: currently not displaying this in terminal results
   private getRange(control: number[], experiment: number[]) {
     const a = control.concat(experiment);
@@ -108,14 +114,14 @@ export class Stats {
   private getHistogram(range: { min: number; max: number }, a: number[]) {
     a.sort((a, b) => a - b);
     const x: any = scaleLinear()
-      .domain([range.min, range.max])
-      .range([range.min, range.max]);
+        .domain([range.min, range.max])
+        .range([range.min, range.max]);
     const h = histogram()
-      .value(d => {
-        return d;
-      })
-      .domain(x.domain())
-      .thresholds(x.ticks());
+        .value(d => {
+          return d;
+        })
+        .domain(x.domain())
+        .thresholds(x.ticks());
 
     return h(a).map(i => {
       return i.length;
@@ -131,16 +137,10 @@ export class Stats {
     }
     return q;
   }
-  // estimator shift logic
-  private getHodgesLehmann(control: any[], experiment: any[]) {
-    // todo this need 1 more step with the u statistic to index
-    // into the sorted
-    return quantile(cross(control, experiment, (a, b) => a - b), 0.5);
-  }
   private getSparkline(
-    numbers: number[],
-    min: number = Math.min.apply(null, numbers),
-    max: number = Math.max.apply(null, numbers)
+      numbers: number[],
+      min: number = Math.min.apply(null, numbers),
+      max: number = Math.max.apply(null, numbers)
   ) {
     function lshift(n: number, bits: number) {
       return Math.floor(n) * Math.pow(2, bits);

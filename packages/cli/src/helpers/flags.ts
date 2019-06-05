@@ -135,7 +135,7 @@ export const network = flags.build({
 export const tbResultsFolder = flags.build({
   default: () =>
     getConfigDefault('tbResultsFolder', defaultFlagArgs.tbResultsFolder),
-  description: 'The output filepath for all tracerbench results',
+  description: 'The output folder path for all tracerbench results',
 });
 
 export const url = flags.build({
@@ -199,4 +199,9 @@ export const emulateDeviceOrientation = flags.build({
     ),
   description: `Expected to be either "vertical" or "horizontal". Dictates orientation of device screen.`,
   options: ['horizontal', 'vertical'],
+});
+
+export const inputFilePath = flags.build({
+  default: () => getConfigDefault('inputFilePath', defaultFlagArgs.inputFilePath),
+  description: 'The json output filepath for tracerbench result',
 });

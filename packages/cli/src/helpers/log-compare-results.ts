@@ -1,5 +1,5 @@
 import * as jsonQuery from 'json-query';
-import { IStatsOptions, Stats } from './stats';
+import { IStatsOptions, Stats } from './statistics/stats';
 import TBTable from './table';
 import { ICompareFlags } from '../commands/compare';
 import { fidelityLookup } from './default-flag-args';

@@ -6,7 +6,7 @@ import {
   getRankSum,
   getSampleUStat,
   getWilcoxonRankSumTest,
-} from '../../src/helpers/wilcoxon-rank-sum';
+} from '../../src/helpers/statistics/wilcoxon-rank-sum';
 
 import { expect } from 'chai';
 
