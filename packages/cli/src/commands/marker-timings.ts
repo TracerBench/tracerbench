@@ -2,7 +2,7 @@ import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ITraceEvent } from 'tracerbench';
-import { filter, tbResultsFile, url, traceFrame } from '../helpers/flags';
+import { filter, tbResultsFolder, url, traceFrame } from '../helpers/flags';
 import {
   byTime,
   collect,
@@ -20,7 +20,7 @@ export default class MarkerTimings extends Command {
   public static description = 'Get list of all user-timings from trace';
 
   public static flags = {
-    tbResultsFile: tbResultsFile({ required: true }),
+    tbResultsFolder: tbResultsFolder({ required: true }),
     filter: filter(),
     url: url({ required: true }),
     traceFrame: traceFrame(),
@@ -28,10 +28,10 @@ export default class MarkerTimings extends Command {
 
   public async run() {
     const { flags } = this.parse(MarkerTimings);
-    const { tbResultsFile } = flags;
+    const { tbResultsFolder } = flags;
     const filter = collect(flags.filter, []);
     const traceFrame: any = flags.traceFrame ? flags.traceFrame : flags.url;
-    const traceJSON = path.join(tbResultsFile, 'trace.json');
+    const traceJSON = path.join(tbResultsFolder, 'trace.json');
 
     let frame: any = null;
     let startTime = -1;

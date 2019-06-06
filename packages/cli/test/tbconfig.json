@@ -4,7 +4,7 @@
   "plotTitle": "TracerBench CLI",
   "fidelity": "low",
   "cpuThrottleRate": 2,
-  "tbResultsFile": "tracerbench-results",
+  "tbResultsFolder": "tracerbench-results",
   "controlURL": "https://www.tracerbench.com/",
   "experimentURL": "https://www.tracerbench.com/",
   "url": "https://www.tracerbench.com/",

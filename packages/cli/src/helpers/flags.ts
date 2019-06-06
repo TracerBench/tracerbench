@@ -139,9 +139,9 @@ export const network = flags.build({
   },
 });
 
-export const tbResultsFile = flags.build({
+export const tbResultsFolder = flags.build({
   default: () =>
-    getConfigDefault('tbResultsFile', defaultFlagArgs.tbResultsFile),
+    getConfigDefault('tbResultsFolder', defaultFlagArgs.tbResultsFolder),
   description: 'The output filepath for all tracerbench results',
 });
 

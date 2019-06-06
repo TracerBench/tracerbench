@@ -182,7 +182,7 @@
             "minItems": 2,
             "type": "array"
         },
-        "tbResultsFile": {
+        "tbResultsFolder": {
             "type": "string"
         },
         "traceFrame": {

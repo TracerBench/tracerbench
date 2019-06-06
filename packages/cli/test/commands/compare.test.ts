@@ -6,7 +6,7 @@ import { tmpDir } from '../setup';
 import { defaultFlagArgs } from '../../src/helpers/default-flag-args';
 
 const fidelity = 'test';
-const tbResultsFile = path.join(`${process.cwd()}/${tmpDir}`);
+const tbResultsFolder = path.join(`${process.cwd()}/${tmpDir}`);
 const emulateDevice = 'iphone-4';
 const regressionThreshold = '-100ms';
 
@@ -28,7 +28,7 @@ describe('compare fixture: A/A', () => {
     .it(
       `runs compare --controlURL ${app.control +
         defaultFlagArgs.tracingLocationSearch} --experimentURL ${app.control +
-        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFile ${tbResultsFile} --cpuThrottleRate=1`,
+        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFolder ${tbResultsFolder} --cpuThrottleRate=1`,
       async ctx => {
         await Compare.run([
           '--controlURL',
@@ -37,8 +37,8 @@ describe('compare fixture: A/A', () => {
           app.control,
           '--fidelity',
           fidelity,
-          '--tbResultsFile',
-          tbResultsFile,
+          '--tbResultsFolder',
+          tbResultsFolder,
           '--cpuThrottleRate=1',
         ]);
 
@@ -53,7 +53,7 @@ describe('compare regression: fixture: A/B', () => {
     .it(
       `runs compare --controlURL ${app.control +
         defaultFlagArgs.tracingLocationSearch} --experimentURL ${app.regression +
-        defaultFlagArgs.tracingLocationSearch} --fidelity=medium --tbResultsFile ${tbResultsFile} --regressionThreshold ${regressionThreshold} --cpuThrottleRate=1`,
+        defaultFlagArgs.tracingLocationSearch} --fidelity=medium --tbResultsFolder ${tbResultsFolder} --regressionThreshold ${regressionThreshold} --cpuThrottleRate=1`,
       async ctx => {
         await Compare.run([
           '--controlURL',
@@ -64,8 +64,8 @@ describe('compare regression: fixture: A/B', () => {
           '--cpuThrottleRate=1',
           '--regressionThreshold',
           regressionThreshold,
-          '--tbResultsFile',
-          tbResultsFile,
+          '--tbResultsFolder',
+          tbResultsFolder,
           '--json',
         ]);
 
@@ -82,7 +82,7 @@ describe('compare mobile: fixture: A/A', () => {
     .it(
       `runs compare --controlURL ${app.control +
         defaultFlagArgs.tracingLocationSearch} --experimentURL ${app.experiment +
-        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFile ${tbResultsFile} --emulateDevice ${emulateDevice} --cpuThrottleRate=6`,
+        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFolder ${tbResultsFolder} --emulateDevice ${emulateDevice} --cpuThrottleRate=6`,
       async ctx => {
         await Compare.run([
           '--controlURL',
@@ -91,8 +91,8 @@ describe('compare mobile: fixture: A/A', () => {
           app.experiment,
           '--fidelity',
           fidelity,
-          '--tbResultsFile',
-          tbResultsFile,
+          '--tbResultsFolder',
+          tbResultsFolder,
           '--emulateDevice',
           emulateDevice,
           '--cpuThrottleRate=6',

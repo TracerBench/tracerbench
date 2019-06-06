@@ -14,7 +14,7 @@ const markers = [
     label: 'domComplete',
   },
 ];
-const tbResultsFile = path.join(`${process.cwd()}/${tmpDir}`);
+const tbResultsFolder = path.join(`${process.cwd()}/${tmpDir}`);
 const scope = console;
 const network = {
   offline: false,
@@ -29,7 +29,7 @@ const flags = {
   fidelity: 2,
   markers,
   network,
-  tbResultsFile,
+  tbResultsFolder,
   controlURL: '',
   experimentURL: '',
   tracingLocationSearch: '',

@@ -6,7 +6,7 @@ import { tmpDir } from '../setup';
 
 chai.use(require('chai-fs'));
 
-const tbResultsFile = path.join(`${process.cwd()}/${tmpDir}`);
+const tbResultsFolder = path.join(`${process.cwd()}/${tmpDir}`);
 const url = 'https://www.tracerbench.com';
 const cpuThrottleRate = '1';
 
@@ -14,19 +14,19 @@ describe('trace', () => {
   test
     .stdout()
     .it(
-      `runs trace --url ${url} --tbResultsFile ${tbResultsFile} --cpuThrottleRate ${cpuThrottleRate}`,
+      `runs trace --url ${url} --tbResultsFolder ${tbResultsFolder} --cpuThrottleRate ${cpuThrottleRate}`,
       async ctx => {
         await Trace.run([
           '--url',
           url,
-          '--tbResultsFile',
-          tbResultsFile,
+          '--tbResultsFolder',
+          tbResultsFolder,
           '--cpuThrottleRate',
           cpuThrottleRate,
         ]);
         chai.expect(ctx.stdout).to.contain(`Trace`);
         chai.expect(ctx.stdout).to.contain(`Subtotal`);
-        chai.expect(`${tbResultsFile}/trace.json`).to.be.a.file();
+        chai.expect(`${tbResultsFolder}/trace.json`).to.be.a.file();
       }
     );
 });
@@ -35,13 +35,13 @@ describe('trace :: insights', () => {
   test
     .stdout()
     .it(
-      `runs trace --url ${url} --tbResultsFile ${tbResultsFile} --cpuThrottleRate ${cpuThrottleRate} --insights`,
+      `runs trace --url ${url} --tbResultsFolder ${tbResultsFolder} --cpuThrottleRate ${cpuThrottleRate} --insights`,
       async ctx => {
         await Trace.run([
           '--url',
           url,
-          '--tbResultsFile',
-          tbResultsFile,
+          '--tbResultsFolder',
+          tbResultsFolder,
           '--cpuThrottleRate',
           cpuThrottleRate,
           '--insights',

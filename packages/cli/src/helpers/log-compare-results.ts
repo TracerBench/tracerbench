@@ -17,7 +17,7 @@ export function logCompareResults(
     markers,
     fidelity,
     json,
-    tbResultsFile,
+    tbResultsFolder,
     browserArgs,
     regressionThreshold,
   } = flags;
@@ -43,7 +43,7 @@ export function logCompareResults(
   benchmarkTable.display.push(new Stats(getQueryData('duration')));
   benchmarkTable.display.push(new Stats(getQueryData('js')));
 
-  // iterate over the markers passed into the tbResultsFile command
+  // iterate over the markers passed into the tbResultsFolder command
   markers.forEach(marker => {
     // get the marker data for each phase
     const phase = getQueryData('phases', marker);
@@ -53,7 +53,7 @@ export function logCompareResults(
   const browser = browserArgs.includes('--headless')
     ? 'Headless-Chrome'
     : 'Chrome';
-  const message = `Success! ${fidelity} test samples were run with ${browser}. The json file with results from the compare test are available here: ${tbResultsFile}/compare.json.`;
+  const message = `Success! ${fidelity} test samples were run with ${browser}. The json file with results from the compare test are available here: ${tbResultsFolder}/compare.json.`;
   const sigMessage = `Statistically significant results were found. A recommended "fidelity=high" compare test should be run to rule out false negatives.`;
   const regThresholdMessage = `A regression was found exceeding the set regression threshold of ${regressionThreshold}μs`;
   const jsonResults = {
