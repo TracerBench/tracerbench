@@ -9,7 +9,7 @@ import {
   ITraceEvent,
 } from 'tracerbench';
 import {
-  tbResultsFile,
+  tbResultsFolder,
   cpuThrottleRate,
   iterations,
   network,
@@ -29,7 +29,7 @@ export default class Trace extends Command {
   public static description = `Parses a CPU profile and aggregates time across heuristics. Can optinally be vertically sliced with event names.`;
   public static flags = {
     cpuThrottleRate: cpuThrottleRate({ required: true }),
-    tbResultsFile: tbResultsFile({ required: true }),
+    tbResultsFolder: tbResultsFolder({ required: true }),
     network: network(),
     url: url({ required: true }),
     iterations: iterations({ required: true }),
@@ -43,20 +43,20 @@ export default class Trace extends Command {
     const {
       url,
       cpuThrottleRate,
-      tbResultsFile,
+      tbResultsFolder,
       insights,
       json,
       locations,
     } = flags;
     const network = 'none';
     const cpu = cpuThrottleRate;
-    const file = tbResultsFile;
+    const file = tbResultsFolder;
     const event = undefined;
     const report = undefined;
     const methods = [''];
-    const traceJSON = path.join(tbResultsFile, 'trace.json');
-    const traceHAR = path.join(tbResultsFile, 'trace.har');
-    const cookiesJSON = path.join(tbResultsFile, 'cookies.json');
+    const traceJSON = path.join(tbResultsFolder, 'trace.json');
+    const traceHAR = path.join(tbResultsFolder, 'trace.har');
+    const cookiesJSON = path.join(tbResultsFolder, 'cookies.json');
 
     let archiveFile;
     let rawTraceData;
@@ -64,7 +64,7 @@ export default class Trace extends Command {
 
     // if trace can't find a HAR then go and record one
     if (!fs.existsSync(traceHAR)) {
-      await harTrace(url, tbResultsFile);
+      await harTrace(url, tbResultsFolder);
     }
 
     try {

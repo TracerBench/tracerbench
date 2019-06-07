@@ -10,3 +10,4 @@ tmp/
 *.tmp
 .nyc_output
 /packages/har/index.d.ts
+.idea/

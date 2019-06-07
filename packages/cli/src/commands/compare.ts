@@ -16,7 +16,7 @@ import {
   fidelity,
   markers,
   network,
-  tbResultsFile,
+  tbResultsFolder,
   tracingLocationSearch,
   runtimeStats,
   json,
@@ -36,7 +36,7 @@ export interface ICompareFlags {
   fidelity: number;
   markers: IMarker[];
   network: Network.EmulateNetworkConditionsParameters;
-  tbResultsFile: string;
+  tbResultsFolder: string;
   controlURL: string;
   experimentURL: string;
   tracingLocationSearch: string;
@@ -60,7 +60,7 @@ export default class Compare extends Command {
     fidelity: fidelity({ required: true }),
     markers: markers({ required: true }),
     network: network({ required: true }),
-    tbResultsFile: tbResultsFile({ required: true }),
+    tbResultsFolder: tbResultsFolder({ required: true }),
     controlURL: controlURL({ required: true }),
     experimentURL: experimentURL({ required: true }),
     tracingLocationSearch: tracingLocationSearch({ required: true }),
@@ -75,7 +75,7 @@ export default class Compare extends Command {
   public async run() {
     const { flags } = this.parse(Compare);
     const {
-      tbResultsFile,
+      tbResultsFolder,
       debug,
       fidelity,
       network,
@@ -127,8 +127,8 @@ export default class Compare extends Command {
     }
     // if the folder for the tracerbench results file
     // does not exist then create it
-    if (!fs.existsSync(tbResultsFile)) {
-      fs.mkdirSync(tbResultsFile);
+    if (!fs.existsSync(tbResultsFolder)) {
+      fs.mkdirSync(tbResultsFolder);
     }
 
     // config for the browsers
@@ -164,7 +164,7 @@ export default class Compare extends Command {
         networkConditions: flags.network,
         name: 'control',
         runtimeStats: flags.runtimeStats,
-        saveTraces: () => `${flags.tbResultsFile}/control.json`,
+        saveTraces: () => `${flags.tbResultsFolder}/control.json`,
         url: path.join(flags.controlURL + flags.tracingLocationSearch),
       }),
       experiment: new InitialRenderBenchmark({
@@ -176,7 +176,7 @@ export default class Compare extends Command {
         networkConditions: flags.network,
         name: 'experiment',
         runtimeStats: flags.runtimeStats,
-        saveTraces: () => `${flags.tbResultsFile}/experiment.json`,
+        saveTraces: () => `${flags.tbResultsFolder}/experiment.json`,
         url: path.join(flags.experimentURL + flags.tracingLocationSearch),
       }),
     };
@@ -194,12 +194,12 @@ export default class Compare extends Command {
         }
 
         fs.writeFileSync(
-          `${flags.tbResultsFile}/compare.json`,
+          `${flags.tbResultsFolder}/compare.json`,
           JSON.stringify(results, null, 2)
         );
 
         fs.writeFileSync(
-          `${flags.tbResultsFile}/compare-stat-results.json`,
+          `${flags.tbResultsFolder}/compare-stat-results.json`,
           JSON.stringify(logCompareResults(results, flags, this), null, 2)
         );
       })

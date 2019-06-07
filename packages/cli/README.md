@@ -22,7 +22,7 @@ $ npm install -g tracerbench-cli
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench-cli/2.0.0-beta.15 darwin-x64 node-v10.15.2
+tracerbench-cli/2.0.0-beta.15 darwin-x64 node-v10.15.3
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
@@ -224,7 +224,7 @@ OPTIONS
   --socksPorts=socksPorts
       Specify a socks proxy port as browser option for control and experiment
 
-  --tbResultsFile=tbResultsFile
+  --tbResultsFolder=tbResultsFolder
       (required) [default: ./tracerbench-results] The output filepath for all tracerbench results
 
   --tracingLocationSearch=tracingLocationSearch
@@ -240,11 +240,11 @@ USAGE
   $ tracerbench create-archive
 
 OPTIONS
-  --tbResultsFile=tbResultsFile  (required) [default: ./tracerbench-results] The output filepath for all tracerbench
-                                 results
+  --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output filepath for all tracerbench
+                                     results
 
-  --url=url                      (required) [default: http://localhost:8000/] URL to visit for create-archive, timings &
-                                 trace commands
+  --url=url                          (required) [default: http://localhost:8000/] URL to visit for create-archive,
+                                     timings & trace commands
 ```
 
 ## `tracerbench help [COMMAND]`
@@ -273,15 +273,15 @@ USAGE
   $ tracerbench marker-timings
 
 OPTIONS
-  --filter=filter                User timing marks start with
+  --filter=filter                    User timing marks start with
 
-  --tbResultsFile=tbResultsFile  (required) [default: ./tracerbench-results] The output filepath for all tracerbench
-                                 results
+  --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output filepath for all tracerbench
+                                     results
 
-  --traceFrame=traceFrame        Specify a trace insights frame
+  --traceFrame=traceFrame            Specify a trace insights frame
 
-  --url=url                      (required) [default: http://localhost:8000/] URL to visit for create-archive, timings &
-                                 trace commands
+  --url=url                          (required) [default: http://localhost:8000/] URL to visit for create-archive,
+                                     timings & trace commands
 ```
 
 ## `tracerbench trace`
@@ -311,7 +311,7 @@ OPTIONS
   --network=none | offline | dialup | 2g | edge | slow-3g | em-3g | dsl | 3g | fast-3g | 4g | cable | LTE | FIOS
       [default: none] Simulated network conditions.
 
-  --tbResultsFile=tbResultsFile
+  --tbResultsFolder=tbResultsFolder
       (required) [default: ./tracerbench-results] The output filepath for all tracerbench results
 
   --url=url

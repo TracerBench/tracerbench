@@ -6,20 +6,20 @@ import { tmpDir } from '../setup';
 
 chai.use(require('chai-fs'));
 
-const tbResultsFile = path.join(`${process.cwd()}/${tmpDir}`);
+const tbResultsFolder = path.join(`${process.cwd()}/${tmpDir}`);
 const url = 'https://www.tracerbench.com';
 
 describe('marker-timings', () => {
   test
     .stdout()
     .it(
-      `runs marker-timings --url ${url} --tbResultsFile ${tbResultsFile}`,
+      `runs marker-timings --url ${url} --tbResultsFolder ${tbResultsFolder}`,
       async ctx => {
         await MarkerTimings.run([
           '--url',
           url,
-          '--tbResultsFile',
-          tbResultsFile,
+          '--tbResultsFolder',
+          tbResultsFolder,
         ]);
         chai.expect(ctx.stdout).to.contain(`Marker Timings:`);
       }

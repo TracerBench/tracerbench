@@ -61,7 +61,7 @@ export const defaultFlagArgs: ITBConfig = {
   ],
   methods: '""',
   fidelity: 'low',
-  tbResultsFile: './tracerbench-results',
+  tbResultsFolder: './tracerbench-results',
   url: 'http://localhost:8000/',
   controlURL: 'http://localhost:8000/',
   experimentURL: 'http://localhost:8001/',
