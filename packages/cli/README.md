@@ -9,6 +9,7 @@
 <!-- toc -->
 * [Usage](#usage)
 * [Optional Config](#optional-config)
+* [Example Travis-CI Integration](#example-travis-ci-integration)
 * [FAQ](#faq)
 * [Commands](#commands)
 <!-- tocstop -->
