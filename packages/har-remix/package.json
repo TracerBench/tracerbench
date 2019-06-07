@@ -12,9 +12,8 @@
   "author": "Kris Selden <kris.selden@gmail.com>",
   "files": [
     "dist",
-    "!dist/test",
     "src",
-    "!src/test"
+    "types"
   ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
