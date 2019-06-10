@@ -239,7 +239,7 @@ When running the TracerBench-CLI `compare` command, on a successful trace a stdo
 
 Now that the tracing is complete and the data has been collected. The next step in analyzing it, is to leverage some descriptive statistics to get a feeling for the data.
 
-### Population vs Sample
+### Population & Sample
 
 Population and Sample are part of the foundation of statistical hypothesis testing.
 
