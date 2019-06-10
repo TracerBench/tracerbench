@@ -6,13 +6,15 @@ TracerBench: a web application benchmarking tool providing clear, usable insight
 
 # Motivation
 
-There’s currently a gap in performance analysis tooling for web applications, especially for Ember Applications. Developers today struggle to quickly find and analyze performance regressions which would empower them to make quick, iterative changes within their local development environment. Regressions need to be automatically uncovered, propagated and reported with both regression size and actionable data that explains the problem to maximize value and usefulness for the developer.
+There’s currently a gap in performance analysis tooling for web applications, especially for Ember Applications. Developers do not have a mechansim for quickly and easily understanding the performance consequences around code changes, and are not automatically alerted in the event of a performance regression. Regressions need to be automatically uncovered and reported, including the performance effect and actionable data that allows developers to dig deeper and address them.
 
-A single trace varies far too much to detect regressions in small changes to an app unless the effect size is very large. Additionally, most statistical tests assume sample independence which given caching like Chrome's v8 caching is quite difficult to meet.
+A single trace varies far too much to reliably and conclusively detect regressions around small changes to an app unless the effect size is very large. Multi-sample statistical tests require sample independence, which is difficult to obtain due to Chrome's v8 caching.
 
 TracerBench has been greatly inspired by the Chromium benchmark tool [Telemetry](https://github.com/catapult-project/catapult/blob/master/telemetry/docs/run_benchmarks_locally.md).
 
-When comparing TracerBench to [Lighthouse](https://github.com/GoogleChrome/lighthouse). The primary difference is TracerBench is focused on getting a low variance for a metric across many samples versus getting a hard to replicate performance report. Lighthouse enables many "disabled-by-default" tracing categories while TracerBench can be instrumented without any "disabled-by-default" and with minimal impact on your application; as such TracerBench instrumentation can be "check-in" and left in your application without worry of negative performance impacts.
+
+## How does TracerBench compare to [Lighthouse](https://github.com/GoogleChrome/lighthouse)?
+TracerBench focuses on getting a low-variance performance report across many samples, where Lighthouse provides a high-variance report based on a single sample. Lighthouse enables many "disabled-by-default" tracing categories while TracerBench can be instrumented without any "disabled-by-default" and with minimal impact on your application; as such TracerBench instrumentation can be "check-in" and left in your application without worry of negative performance impacts.
 
 # User-Stories
 
