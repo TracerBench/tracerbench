@@ -22,7 +22,7 @@ $ npm install -g tracerbench-cli
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench-cli/2.0.0-beta.17 darwin-x64 node-v10.15.2
+tracerbench-cli/2.0.0-beta.17 darwin-x64 node-v10.15.3
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
@@ -198,7 +198,10 @@ OPTIONS
   6|nexus-6p|pixel-2|pixel-2-xl|lg-optimus-l70|nokia-n9|nokia-lumia-520|microsoft-lumia-550|microsoft-lumia-950|galaxy-s
   -iii|galaxy-s5|kindle-fire-hdx|ipad-mini|ipad|ipad-pro|blackberry-playbook|nexus-10|nexus-7|galaxy-note-3|galaxy-note-
   ii|laptop-with-touch|laptop-with-hidpi-screen|laptop-with-mdpi-screen
-      Emulate a mobile device.
+      Emulate a mobile device screen size.
+
+  --emulateDeviceOrientation=horizontal|vertical
+      [default: vertical] Expected to be either "vertical" or "horizontal". Dictates orientation of device screen.
 
   --experimentURL=experimentURL
       (required) [default: http://localhost:8001/] Experiment URL to visit for compare command

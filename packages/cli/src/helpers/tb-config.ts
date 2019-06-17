@@ -24,7 +24,8 @@ export interface ITBConfig {
   iterations?: number | string;
   tracingLocationSearch?: string;
   runtimeStats?: 'true' | 'false';
-  emulateDevice?: string | null;
+  emulateDevice?: string;
+  emulateDeviceOrientation?: string;
   socksPorts?: [string, string];
   regressionThreshold?: number | string;
 }

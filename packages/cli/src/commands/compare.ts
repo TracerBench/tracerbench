@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { Emulation, Network } from 'chrome-debugging-client/dist/protocol/tot';
+import { Network } from 'chrome-debugging-client/dist/protocol/tot';
 import { Command } from '@oclif/command';
 import {
   InitialRenderBenchmark,
@@ -22,13 +22,14 @@ import {
   json,
   debug,
   emulateDevice,
+  emulateDeviceOrientation,
   socksPorts,
   regressionThreshold,
 } from '../helpers/flags';
 import { fidelityLookup } from '../helpers/default-flag-args';
 import { logCompareResults } from '../helpers/log-compare-results';
 import { parseMarkers, convertMSToMicroseconds } from '../helpers/utils';
-import deviceSettings from '../helpers/simulate-device-options';
+import deviceSettings, { EmulateDeviceSetting , EmulateDeviceSettingCliOption } from '../helpers/simulate-device-options';
 
 export interface ICompareFlags {
   browserArgs: string[];
@@ -41,10 +42,8 @@ export interface ICompareFlags {
   experimentURL: string;
   tracingLocationSearch: string;
   runtimeStats: boolean;
-  emulateDevice?:
-    | Emulation.SetDeviceMetricsOverrideParameters &
-        Emulation.SetUserAgentOverrideParameters
-    | undefined;
+  emulateDevice?: string;
+  emulateDeviceOrientation?: string;
   socksPorts?: [string, string] | undefined;
   json: boolean;
   debug: boolean;
@@ -66,6 +65,7 @@ export default class Compare extends Command {
     tracingLocationSearch: tracingLocationSearch({ required: true }),
     runtimeStats: runtimeStats({ required: true }),
     emulateDevice: emulateDevice(),
+    emulateDeviceOrientation: emulateDeviceOrientation(),
     socksPorts: socksPorts(),
     regressionThreshold: regressionThreshold(),
     json,
@@ -81,9 +81,11 @@ export default class Compare extends Command {
       network,
       markers,
       emulateDevice,
+      emulateDeviceOrientation,
       regressionThreshold,
     } = flags as ICompareFlags;
     const delay = 100;
+    let parsedEmulationDeviceSetting: EmulateDeviceSetting | undefined;
 
     // modifies properties of flags that were not set
     // during flag.parse(). these are intentionally
@@ -117,10 +119,22 @@ export default class Compare extends Command {
           ? regressionThreshold
           : convertMSToMicroseconds(regressionThreshold);
     }
-    if (typeof emulateDevice === 'string') {
-      for (const option of deviceSettings) {
+
+    if (emulateDevice) {
+      let option: EmulateDeviceSettingCliOption;
+      for (option of deviceSettings) {
         if (emulateDevice === option.typeable) {
-          flags.emulateDevice = option;
+          if (!option.screens[emulateDeviceOrientation!]) {
+            this.error(`${emulateDeviceOrientation} orientation for ${emulateDevice} does not exist.`);
+          }
+          parsedEmulationDeviceSetting = {
+            width: option.screens[emulateDeviceOrientation!].width,
+            height: option.screens[emulateDeviceOrientation!].height,
+            deviceScaleFactor: option.deviceScaleFactor,
+            mobile: option.mobile,
+            userAgent: option.userAgent,
+            typeable: option.typeable
+          };
           break;
         }
       }
@@ -159,7 +173,7 @@ export default class Compare extends Command {
         browser: controlBrowser,
         cpuThrottleRate: flags.cpuThrottleRate,
         delay,
-        emulateDeviceSettings: flags.emulateDevice,
+        emulateDeviceSettings: parsedEmulationDeviceSetting,
         markers: flags.markers,
         networkConditions: flags.network,
         name: 'control',
@@ -171,7 +185,7 @@ export default class Compare extends Command {
         browser: experimentBrowser,
         cpuThrottleRate: flags.cpuThrottleRate,
         delay,
-        emulateDeviceSettings: flags.emulateDevice,
+        emulateDeviceSettings: parsedEmulationDeviceSetting,
         markers: flags.markers,
         networkConditions: flags.network,
         name: 'experiment',

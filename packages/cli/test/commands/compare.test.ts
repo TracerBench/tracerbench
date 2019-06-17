@@ -76,13 +76,69 @@ describe('compare regression: fixture: A/B', () => {
     );
 });
 
-describe('compare mobile: fixture: A/A', () => {
+describe('compare mobile horizontal: fixture: A/A', () => {
   test
     .stdout()
     .it(
       `runs compare --controlURL ${app.control +
         defaultFlagArgs.tracingLocationSearch} --experimentURL ${app.experiment +
-        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFolder ${tbResultsFolder} --emulateDevice ${emulateDevice} --cpuThrottleRate=6`,
+        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFolder ${tbResultsFolder} --emulateDevice ${emulateDevice} --emulateDeviceOrientation horizontal --cpuThrottleRate=6`,
+      async ctx => {
+        await Compare.run([
+          '--controlURL',
+          app.control,
+          '--experimentURL',
+          app.experiment,
+          '--fidelity',
+          fidelity,
+          '--tbResultsFolder',
+          tbResultsFolder,
+          '--emulateDevice',
+          emulateDevice,
+          '--cpuThrottleRate=6',
+        ]);
+
+        chai.expect(ctx.stdout).to.contain(`Success`);
+      }
+    );
+});
+
+
+describe('compare mobile vertical: fixture: A/A', () => {
+  test
+    .stdout()
+    .it(
+      `runs compare --controlURL ${app.control +
+        defaultFlagArgs.tracingLocationSearch} --experimentURL ${app.experiment +
+        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFolder ${tbResultsFolder} --emulateDevice ${emulateDevice} --emulateDeviceOrientation vertical --cpuThrottleRate=6`,
+      async ctx => {
+        await Compare.run([
+          '--controlURL',
+          app.control,
+          '--experimentURL',
+          app.experiment,
+          '--fidelity',
+          fidelity,
+          '--tbResultsFolder',
+          tbResultsFolder,
+          '--emulateDevice',
+          emulateDevice,
+          '--cpuThrottleRate=6',
+        ]);
+
+        chai.expect(ctx.stdout).to.contain(`Success`);
+      }
+    );
+});
+
+
+describe('compare mobile vertical: fixture: A/A', () => {
+  test
+    .stdout()
+    .it(
+      `runs compare --controlURL ${app.control +
+        defaultFlagArgs.tracingLocationSearch} --experimentURL ${app.experiment +
+        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFolder ${tbResultsFolder} --emulateDevice ${emulateDevice} --emulateDeviceOrientation vertical --cpuThrottleRate=6`,
       async ctx => {
         await Compare.run([
           '--controlURL',
