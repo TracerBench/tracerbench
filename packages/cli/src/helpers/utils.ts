@@ -19,6 +19,13 @@ export const chalkScheme = {
   phase: chalk.rgb(225, 225, 225),
   faint: chalk.rgb(80, 80, 80),
   checkmark: chalk.rgb(133, 153, 36)(`${logSymbols.success}`),
+  tbBranding: {
+    lime: chalk.rgb(199, 241, 106),
+    blue: chalk.rgb(24, 132, 228),
+    aqua: chalk.rgb(56, 210, 211),
+    dkBlue: chalk.rgb(10, 45, 70),
+    grey: chalk.rgb(153, 153, 153)
+  }
 };
 
 export function getConfigDefault(
@@ -198,4 +205,8 @@ export function convertToTypable(name: string): string {
     word.toLowerCase().replace(/\//g, '')
   );
   return lowercasedWords.join('-');
+}
+
+export function toNearestHundreth(n: number): number {
+  return Math.round(n * 100) / 100;
 }

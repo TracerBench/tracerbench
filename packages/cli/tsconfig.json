@@ -5,13 +5,14 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-
+    "baseUrl": ".",
+    "paths": {
+      "*": ["types/*"]
+    },
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-
     "newLine": "LF",
-
     "moduleResolution": "node",
     "module": "commonjs",
     "resolveJsonModule": true,

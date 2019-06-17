@@ -1,7 +1,8 @@
-import { cross, histogram, quantile } from 'd3-array';
+import { cross, histogram, quantile, deviation, mean } from 'd3-array';
 import { scaleLinear } from 'd3-scale';
 import { getWilcoxonRankSumTest } from './wilcoxon-rank-sum';
 import { getWilcoxonSignedRankTest } from './wilcoxon-signed-rank';
+import { toNearestHundreth } from './utils';
 
 interface IQuantile {
   p: number;
@@ -26,12 +27,28 @@ export class Stats {
   public isSigWilcoxonSignedRankTest: string;
   public controlQuantiles: IQuantile[];
   public experimentQuantiles: IQuantile[];
+  public controlMean: number;
+  public experimentMean: number;
+  public experimentCInt: number;
+  public controlCInt: number;
+  public controlStandardDeviation: number;
+  public experimentStandardDeviation: number;
+  public controlInterquartileRange: number;
+  public experimentInterquartileRange: number;
+  public readonly controlSamplesCount: number;
+  public readonly experimentSamplesCount: number;
+  public readonly confidenceLevel: 90 | 95 | 99;
   constructor(options: IStatsOptions) {
     const { name } = options;
     let { control, experiment } = options;
     control = control.sort((a, b) => a - b);
     experiment = experiment.sort((a, b) => a - b);
     this.name = name;
+    this.confidenceLevel = 95;
+    this.controlSamplesCount = control.length;
+    this.experimentSamplesCount = experiment.length;
+    this.controlMean = toNearestHundreth(mean(control) as number);
+    this.experimentMean = toNearestHundreth(mean(experiment) as number);
     this.estimator = this.getHodgesLehmann(control, experiment) as number;
     this.range = this.getRange(control, experiment);
     this.controlDistributionHistogram = this.getHistogram(this.range, control);
@@ -52,6 +69,36 @@ export class Stats {
     );
     this.controlQuantiles = this.getQuantiles(control);
     this.experimentQuantiles = this.getQuantiles(experiment);
+    this.experimentCInt = this.getConfidenceInterval(experiment, this.confidenceLevel);
+    this.controlCInt = this.getConfidenceInterval(control, this.confidenceLevel);
+    this.controlStandardDeviation = toNearestHundreth(deviation(control) as number);
+    this.experimentStandardDeviation = toNearestHundreth(deviation(experiment) as number);
+
+    this.controlInterquartileRange = this.getInterquartileRange(control);
+    this.experimentInterquartileRange = this.getInterquartileRange(experiment);
+  }
+  private getInterquartileRange(a: any[]): number {
+    return (quantile(a, 0.75) as number) - (quantile(a, 0.25) as number);
+  }
+  // now get the cartesian product of the two confidence intervals
+  private getConfidenceInterval(a: any[], z: 90 | 95 | 99 = 95): number {
+    // default to 95
+    const zTable = {
+      90: 1.645,
+      95: 1.960,
+      99: 2.576
+    };
+    const sampleCount = a.length;
+    const sd = deviation(a) as number;
+    const ci = zTable[z] * (sd / Math.sqrt(sampleCount));
+
+    // for the confidence interval to return valuable data
+    // the sample size needs to be at the very least 25 ideally 30
+    if (sampleCount < 25) {
+      return 0;
+    } 
+
+    return toNearestHundreth(ci);
   }
   // todo: currently not displaying this in terminal results
   private getRange(control: number[], experiment: number[]) {
