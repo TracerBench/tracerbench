@@ -37,6 +37,9 @@
         "emulateDevice": {
             "type": "string"
         },
+        "emulateDeviceOrientation": {
+            "type": "string"
+        },
         "event": {
             "type": "string"
         },

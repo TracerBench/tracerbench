@@ -2,22 +2,38 @@ import { Emulation } from 'chrome-debugging-client/dist/protocol/tot';
 import { convertToTypable } from './utils';
 import { simulateDeviceOptions } from '../static/simulate-device-options';
 
-export interface EmulateDeviceSetting
-  extends Emulation.SetDeviceMetricsOverrideParameters,
-    Emulation.SetUserAgentOverrideParameters {
-  userAgent: string;
+interface ScreenDimensions {
   width: number;
   height: number;
+}
+
+export interface Screens {
+  horizontal: ScreenDimensions;
+  vertical?: ScreenDimensions;
+  [key: string]: any;
+}
+
+export interface EmulateDeviceSettingBase {
+  userAgent: string;
   deviceScaleFactor: number;
   mobile: boolean;
   typeable: string;
 }
 
-const deviceSettings: EmulateDeviceSetting[] = simulateDeviceOptions.map(
+export interface EmulateDeviceSetting extends EmulateDeviceSettingBase, Emulation.SetDeviceMetricsOverrideParameters,
+  Emulation.SetUserAgentOverrideParameters {
+  width: number;
+  height: number;
+}
+
+export interface EmulateDeviceSettingCliOption extends EmulateDeviceSettingBase {
+  screens: Screens;
+}
+
+const deviceSettings: EmulateDeviceSettingCliOption[] = simulateDeviceOptions.map(
   (item: any) => {
     return {
-      width: item.device.screen.horizontal.width,
-      height: item.device.screen.horizontal.height,
+      screens: item.device.screen,
       deviceScaleFactor: item.device.screen['device-pixel-ratio'] || 0,
       mobile: item.device.capabilities.indexOf('mobile') > -1,
       userAgent: item.device['user-agent'],

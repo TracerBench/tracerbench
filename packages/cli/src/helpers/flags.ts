@@ -9,9 +9,7 @@ import {
   getConfigDefault,
   convertMSToMicroseconds,
 } from './utils';
-import deviceSettings, {
-  EmulateDeviceSetting,
-} from './simulate-device-options';
+import deviceSettings from './simulate-device-options';
 
 /*
 ! oclif flags.build#parse will only execute when the flag:string is passed directly
@@ -194,13 +192,13 @@ export const socksPorts = flags.build({
 export const emulateDevice = flags.build({
   default: () =>
     getConfigDefault('emulateDevice', defaultFlagArgs.emulateDevice),
-  description: `Emulate a mobile device.`,
-  options: deviceSettings.map(setting => `${setting.typeable}`),
-  parse: (s: string): EmulateDeviceSetting | undefined => {
-    for (const option of deviceSettings) {
-      if (s === option.typeable) {
-        return option;
-      }
-    }
-  },
+  description: `Emulate a mobile device screen size.`,
+  options: deviceSettings.map(setting => `${setting.typeable}`)
+});
+
+export const emulateDeviceOrientation = flags.build({
+  default: () =>
+    getConfigDefault('emulateDeviceOrientation', defaultFlagArgs.emulateDeviceOrientation),
+  description: `Expected to be either "vertical" or "horizontal". Dictates orientation of device screen.`,
+  options: ['horizontal', 'vertical']
 });
