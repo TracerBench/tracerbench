@@ -1,4 +1,5 @@
 import {
+  checkEnvironmentSpecificOverride,
   findFrame,
   isCommitLoad,
   isFrameNavigationStart,
@@ -61,5 +62,38 @@ describe('utils', () => {
 
   it(`convertMSToMicroseconds()`, () => {
     expect(micro).to.equal(-100000);
+  });
+});
+
+
+describe('checkEnvironmentSpecificOverride', () => {
+  it(`tbConfig missing case`, () => {
+    const defaultValues = { 'network': 'defaultValue' };
+    // @ts-ignore
+    const result = checkEnvironmentSpecificOverride('network', defaultValues, 'overrideName');
+    expect(result).to.equal('defaultValue');
+  });
+
+  it(`tbConfig exists but environment config missing case`, () => {
+    const defaultValues = { 'network': 'defaultValue' };
+    // @ts-ignore
+    const result = checkEnvironmentSpecificOverride('network', defaultValues, 'overrideName', {});
+    expect(result).to.equal('defaultValue');
+  });
+
+  it(`tbConfig exists and environment exists but config missing case`, () => {
+    const defaultValues = { 'network': 'defaultValue' };
+    const tbConfig = { overrideName: { cpuThrottleRate: 1 } };
+    // @ts-ignore
+    const result = checkEnvironmentSpecificOverride('network', defaultValues, 'overrideName', tbConfig);
+    expect(result).to.equal('defaultValue');
+  });
+
+  it(`tbConfig exists and environment exists and config exists case`, () => {
+    const defaultValues = { 'cpuThrottleRate': 100 };
+    const tbConfig = { overrideName: { cpuThrottleRate: 1 } };
+    // @ts-ignore
+    const result = checkEnvironmentSpecificOverride('cpuThrottleRate', defaultValues, 'overrideName', tbConfig);
+    expect(result).to.equal(1);
   });
 });

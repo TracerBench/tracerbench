@@ -5,8 +5,9 @@ import * as logSymbols from 'log-symbols';
 import { IMarker, ITraceEvent } from 'tracerbench';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { ITBConfig } from './tb-config';
+import { IBenchmarkEnvironmentOverride, ITBConfig } from './tb-config';
 import * as JSON5 from 'json5';
+import { ICompareFlags } from '../commands/compare';
 
 type ITBConfigKeys = keyof ITBConfig;
 
@@ -28,25 +29,59 @@ export const chalkScheme = {
   }
 };
 
+/**
+ * Handles checking if there is a specific override for the attributeName in the tbConfigs for the given overrideObjectName.
+ * Defaults to whatever is in the flags object if there is no override.
+ *
+ * @param attributeName - Attribute name to check if there is an override in overrideObjectName from tbConfig
+ * @param flags - Object containing configs parsed from the Command class
+ * @param overrideObjectName - Either "controlBenchmarkEnvironment" or "experimentBenchmarkEnvironment"
+ * @param tbConfig - This refers to the parsed JSON from the config file if it exists
+ */
+export function checkEnvironmentSpecificOverride(attributeName: keyof ICompareFlags, flags: ICompareFlags, overrideObjectName: string, tbConfig?: ITBConfig) {
+  if (!tbConfig || !tbConfig[overrideObjectName]) {
+    return flags[attributeName];
+  }
+  const environmentSpecificConfigs: IBenchmarkEnvironmentOverride = tbConfig[overrideObjectName]!;
+
+  if (!environmentSpecificConfigs[attributeName]) {
+    return flags[attributeName];
+  }
+
+  return environmentSpecificConfigs[attributeName];
+}
+
+/**
+ * Attempt to read tbconfig json file
+ *
+ * @param altTBconfigPath - Override default path with this parameter
+ */
+export function getTBConfigFromFile (altTBconfigPath?: string): [ITBConfig, string] {
+  const tbConfigPath = altTBconfigPath ? altTBconfigPath : path.join(process.cwd(), 'tbconfig.json');
+  try {
+    return [JSON5.parse(fs.readFileSync(tbConfigPath, 'utf8')), tbConfigPath];
+  } catch(error) {
+    throw error;
+  }
+}
+
 export function getConfigDefault(
   id: ITBConfigKeys,
   defaultValue?: any,
   altTBconfigPath?: string
 ) {
-  let tbconfig;
-  const tbConfigPath = altTBconfigPath
-    ? altTBconfigPath
-    : path.join(process.cwd(), 'tbconfig.json');
+  let tbConfigPath;
+  let tbConfig;
 
   try {
-    tbconfig = JSON5.parse(fs.readFileSync(tbConfigPath, 'utf8'));
-    if (tbconfig[id]) {
+    [tbConfig, tbConfigPath] = getTBConfigFromFile(altTBconfigPath);
+    if (tbConfig[id]) {
       console.warn(
         `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON5.stringify(
-          tbconfig[id]
+          tbConfig[id]
         )} from ${tbConfigPath}`
       );
-      return tbconfig[id];
+      return tbConfig[id];
     } else if (defaultValue) {
       console.warn(
         `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON5.stringify(
