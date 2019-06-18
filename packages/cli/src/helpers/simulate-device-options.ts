@@ -46,4 +46,31 @@ const deviceSettings: EmulateDeviceSettingCliOption[] = simulateDeviceOptions.ma
   }
 );
 
+/**
+ * Iterate over deviceSettings until a match is found in the option's typable field. Extract the contents into EmulateDeviceSetting
+ * formatted object
+ *
+ * @param key - One of typeable strings such as iphone-x
+ * @param orientation - Either "vertical" or "horizontal"
+ */
+export function getEmulateDeviceSettingForKeyAndOrientation(key: string, orientation: string = 'vertical'): EmulateDeviceSetting | undefined {
+  let deviceSetting;
+
+  for (deviceSetting of deviceSettings) {
+    if (key === deviceSetting.typeable) {
+      if (!deviceSetting.screens[orientation!]) {
+        throw new Error(`${orientation} orientation for ${key} does not exist.`);
+      }
+      return {
+        width: deviceSetting.screens[orientation!].width,
+        height: deviceSetting.screens[orientation!].height,
+        deviceScaleFactor: deviceSetting.deviceScaleFactor,
+        mobile: deviceSetting.mobile,
+        userAgent: deviceSetting.userAgent,
+        typeable: deviceSetting.typeable,
+      };
+    }
+  }
+}
+
 export default deviceSettings;

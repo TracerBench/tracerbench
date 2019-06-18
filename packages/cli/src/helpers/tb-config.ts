@@ -2,6 +2,9 @@ import { IMarker } from 'tracerbench';
 import { PerformanceTimingMark } from './default-flag-args';
 import Protocol from 'devtools-protocol';
 
+export const CONTROL_ENV_OVERRIDE_ATTR = 'controlBenchmarkEnvironment';
+export const EXPERIMENT_ENV_OVERRIDE_ATTR = 'experimentBenchmarkEnvironment';
+
 export interface ITBConfig {
   plotTitle?: string;
   methods?: string;
@@ -28,6 +31,19 @@ export interface ITBConfig {
   emulateDeviceOrientation?: string;
   socksPorts?: [string, string];
   regressionThreshold?: number | string;
+
+  // Optional overrides specific to control or experiment benchmark environments
+  [CONTROL_ENV_OVERRIDE_ATTR]?: IBenchmarkEnvironmentOverride;
+  [EXPERIMENT_ENV_OVERRIDE_ATTR]?: IBenchmarkEnvironmentOverride;
+  [key: string]: any;
+}
+
+export interface IBenchmarkEnvironmentOverride {
+  cpuThrottle?: number;
+  network?: keyof INetworkConditions;
+  emulateDevice?: string;
+  emulateDeviceOrientation?: string;
+  [key: string]: any;
 }
 
 export interface INetworkConditions {

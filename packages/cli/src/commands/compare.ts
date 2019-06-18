@@ -3,6 +3,7 @@ import * as fs from 'fs-extra';
 import * as path from 'path';
 import { Command } from '@oclif/command';
 import {
+  IInitialRenderBenchmarkParams,
   InitialRenderBenchmark,
   Runner,
   networkConditions,
@@ -28,11 +29,9 @@ import {
 } from '../helpers/flags';
 import { fidelityLookup } from '../helpers/default-flag-args';
 import { logCompareResults } from '../helpers/log-compare-results';
-import { parseMarkers, convertMSToMicroseconds } from '../helpers/utils';
-import deviceSettings, {
-  EmulateDeviceSetting,
-  EmulateDeviceSettingCliOption,
-} from '../helpers/simulate-device-options';
+import { checkEnvironmentSpecificOverride, convertMSToMicroseconds, getTBConfigFromFile, parseMarkers } from '../helpers/utils';
+import { getEmulateDeviceSettingForKeyAndOrientation } from '../helpers/simulate-device-options';
+import { CONTROL_ENV_OVERRIDE_ATTR, EXPERIMENT_ENV_OVERRIDE_ATTR } from '../helpers/tb-config';
 
 export interface ICompareFlags {
   browserArgs: string[];
@@ -54,8 +53,7 @@ export interface ICompareFlags {
 }
 
 export default class Compare extends Command {
-  public static description =
-    'Compare the performance delta between an experiment and control';
+  public static description = 'Compare the performance delta between an experiment and control';
   public static flags = {
     browserArgs: browserArgs({ required: true }),
     cpuThrottleRate: cpuThrottleRate({ required: true }),
@@ -81,14 +79,9 @@ export default class Compare extends Command {
       tbResultsFolder,
       debug,
       fidelity,
-      network,
       markers,
-      emulateDevice,
-      emulateDeviceOrientation,
-      regressionThreshold,
+      regressionThreshold
     } = flags as ICompareFlags;
-    const delay = 100;
-    let parsedEmulationDeviceSetting: EmulateDeviceSetting | undefined;
 
     // modifies properties of flags that were not set
     // during flag.parse(). these are intentionally
@@ -107,9 +100,6 @@ export default class Compare extends Command {
     if (typeof fidelity === 'string') {
       flags.fidelity = parseInt((fidelityLookup as any)[fidelity], 10);
     }
-    if (typeof network === 'string') {
-      flags.network = networkConditions[network];
-    }
     if (typeof markers === 'string') {
       flags.markers = parseMarkers(markers);
     }
@@ -123,50 +113,13 @@ export default class Compare extends Command {
           : convertMSToMicroseconds(regressionThreshold);
     }
 
-    if (emulateDevice) {
-      let option: EmulateDeviceSettingCliOption;
-      for (option of deviceSettings) {
-        if (emulateDevice === option.typeable) {
-          if (!option.screens[emulateDeviceOrientation!]) {
-            this.error(
-              `${emulateDeviceOrientation} orientation for ${emulateDevice} does not exist.`
-            );
-          }
-          parsedEmulationDeviceSetting = {
-            width: option.screens[emulateDeviceOrientation!].width,
-            height: option.screens[emulateDeviceOrientation!].height,
-            deviceScaleFactor: option.deviceScaleFactor,
-            mobile: option.mobile,
-            userAgent: option.userAgent,
-            typeable: option.typeable,
-          };
-          break;
-        }
-      }
-    }
     // if the folder for the tracerbench results file
     // does not exist then create it
     if (!fs.existsSync(tbResultsFolder)) {
       fs.mkdirSync(tbResultsFolder);
     }
 
-    // config for the browsers
-    const controlBrowser = {
-      additionalArguments: flags.browserArgs,
-    };
-    const experimentBrowser = {
-      additionalArguments: flags.browserArgs,
-    };
-    // config for the browswers to leverage socks proxy
-    if (flags.socksPorts) {
-      controlBrowser.additionalArguments.push(
-        `--proxy-server=socks5://0.0.0.0:${flags.socksPorts[0]}`
-      );
-      experimentBrowser.additionalArguments.push(
-        `--proxy-server=socks5://0.0.0.0:${flags.socksPorts[1]}`
-      );
-    }
-
+    const [controlSettings, experimentSettings] = this.generateControlExperimentEnvironmentSettings(flags);
     // if debug flag then log X post mutations
     if (debug) {
       this.log(`\n FLAGS: ${JSON.stringify(flags)}`);
@@ -174,30 +127,8 @@ export default class Compare extends Command {
 
     // todo: leverage har-remix?
     const benchmarks = {
-      control: new InitialRenderBenchmark({
-        browser: controlBrowser,
-        cpuThrottleRate: flags.cpuThrottleRate,
-        delay,
-        emulateDeviceSettings: parsedEmulationDeviceSetting,
-        markers: flags.markers,
-        networkConditions: flags.network,
-        name: 'control',
-        runtimeStats: flags.runtimeStats,
-        saveTraces: () => `${flags.tbResultsFolder}/control.json`,
-        url: path.join(flags.controlURL + flags.tracingLocationSearch),
-      }),
-      experiment: new InitialRenderBenchmark({
-        browser: experimentBrowser,
-        cpuThrottleRate: flags.cpuThrottleRate,
-        delay,
-        emulateDeviceSettings: parsedEmulationDeviceSetting,
-        markers: flags.markers,
-        networkConditions: flags.network,
-        name: 'experiment',
-        runtimeStats: flags.runtimeStats,
-        saveTraces: () => `${flags.tbResultsFolder}/experiment.json`,
-        url: path.join(flags.experimentURL + flags.tracingLocationSearch),
-      }),
+      control: new InitialRenderBenchmark(controlSettings),
+      experiment: new InitialRenderBenchmark(experimentSettings),
     };
 
     const runner = new Runner([benchmarks.control, benchmarks.experiment]);
@@ -208,22 +139,99 @@ export default class Compare extends Command {
           this.error(
             `Could not sample from provided urls\nCONTROL: ${
               flags.controlURL
-            }\nEXPERIMENT: ${flags.experimentURL}.`
+              }\nEXPERIMENT: ${flags.experimentURL}.`,
           );
         }
 
         fs.writeFileSync(
           `${flags.tbResultsFolder}/compare.json`,
-          JSON.stringify(results, null, 2)
+          JSON.stringify(results, null, 2),
         );
 
         fs.writeFileSync(
           `${flags.tbResultsFolder}/compare-stat-results.json`,
-          JSON.stringify(logCompareResults(results, flags, this), null, 2)
+          JSON.stringify(logCompareResults(results, flags, this), null, 2),
         );
       })
       .catch((err: any) => {
         this.error(err);
       });
   }
-}
+
+
+  /**
+   * Final result of the configs are in the following order:
+   *
+   * controlConfigs = tbconfig:controlBenchmarkEnvironment > command line > tbconfig > default
+   * experimentConfigs = tbconfig:experimentBenchmarkEnvironment > command line > tbconfig > default
+   *
+   * This functions handles the tsconfig:** part since it is assumed that parent function that passed input "flags"
+   * would've handled "command line > tbconfig > default"
+   *
+   * @param flags - Object containing configs parsed from the Command class
+   */
+  private generateControlExperimentEnvironmentSettings(flags: ICompareFlags): [IInitialRenderBenchmarkParams, IInitialRenderBenchmarkParams] {
+    const delay = 100;
+    const controlBrowser = { additionalArguments: flags.browserArgs };
+    const experimentBrowser = { additionalArguments: flags.browserArgs };
+    let controlNetwork: string;
+    let experimentNetwork: string;
+    let experimentEmulateDevice;
+    let experimentEmulateDeviceOrientation;
+    let controlEmulateDevice;
+    let controlEmulateDeviceOrientation;
+    let controlSettings;
+    let experimentSettings;
+    let tbConfig;
+
+    try {
+      [ tbConfig ] = getTBConfigFromFile();
+    } catch {
+      tbConfig = undefined;
+    }
+
+    // config for the browsers to leverage socks proxy
+    if (flags.socksPorts) {
+      controlBrowser.additionalArguments.push(
+        `--proxy-server=socks5://0.0.0.0:${flags.socksPorts[0]}`,
+      );
+      experimentBrowser.additionalArguments.push(
+        `--proxy-server=socks5://0.0.0.0:${flags.socksPorts[1]}`,
+      );
+    }
+
+    controlNetwork = checkEnvironmentSpecificOverride('network', flags, CONTROL_ENV_OVERRIDE_ATTR, tbConfig);
+    controlEmulateDevice = checkEnvironmentSpecificOverride('emulateDevice', flags, CONTROL_ENV_OVERRIDE_ATTR, tbConfig);
+    controlEmulateDeviceOrientation = checkEnvironmentSpecificOverride('emulateDeviceOrientation', flags, CONTROL_ENV_OVERRIDE_ATTR, tbConfig);
+    experimentNetwork = checkEnvironmentSpecificOverride('network', flags, EXPERIMENT_ENV_OVERRIDE_ATTR, tbConfig);
+    experimentEmulateDevice = checkEnvironmentSpecificOverride('emulateDevice', flags, EXPERIMENT_ENV_OVERRIDE_ATTR, tbConfig);
+    experimentEmulateDeviceOrientation = checkEnvironmentSpecificOverride('emulateDeviceOrientation', flags, EXPERIMENT_ENV_OVERRIDE_ATTR, tbConfig);
+
+    controlSettings = {
+      browser: controlBrowser,
+      cpuThrottleRate: checkEnvironmentSpecificOverride('cpuThrottleRate', flags, CONTROL_ENV_OVERRIDE_ATTR, tbConfig),
+      delay,
+      emulateDeviceSettings: getEmulateDeviceSettingForKeyAndOrientation(controlEmulateDevice, controlEmulateDeviceOrientation),
+      markers: flags.markers,
+      networkConditions: controlNetwork ? networkConditions[controlNetwork] : flags.network,
+      name: 'control',
+      runtimeStats: flags.runtimeStats,
+      saveTraces: () => `${flags.tbResultsFolder}/control.json`,
+      url: path.join(flags.controlURL + flags.tracingLocationSearch),
+    };
+
+    experimentSettings = {
+      browser: experimentBrowser,
+      cpuThrottleRate: checkEnvironmentSpecificOverride('cpuThrottleRate', flags, EXPERIMENT_ENV_OVERRIDE_ATTR, tbConfig),
+      delay,
+      emulateDeviceSettings: getEmulateDeviceSettingForKeyAndOrientation(experimentEmulateDevice, experimentEmulateDeviceOrientation),
+      markers: flags.markers,
+      networkConditions: experimentNetwork ? networkConditions[experimentNetwork] : flags.network,
+      name: 'experiment',
+      runtimeStats: flags.runtimeStats,
+      saveTraces: () => `${flags.tbResultsFolder}/experiment.json`,
+      url: path.join(flags.experimentURL + flags.tracingLocationSearch),
+    };
+
+    return [controlSettings, experimentSettings];
+  }}
