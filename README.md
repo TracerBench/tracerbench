@@ -274,6 +274,8 @@ The variance measures how much the data is scattered about their mean. The varia
 
 A confidence interval is a range of values, derived from sample statistics, that is likely to contain the value of an unknown population parameter. Since they are random it's unlikely that two samples from a population will yield identical confidence intervals. However, if the sampling is repeated many times, a certain percentage of the confidence intervals would contain the unknown population parameter. For example in a 95% confidence interval, 5% would contain the unknown population parameter.
 
+![Understanding-Confidence-Interval](https://github.com/TracerBench/tracerbench/blob/master/docs/c-interval.png)
+
 ### Power
 
 The power of a hypothesis test is the probability that the test correctly rejects the null hypothesis. The power of a hypothesis test is affected by the sample size, difference, variance and the significance level of the test.
