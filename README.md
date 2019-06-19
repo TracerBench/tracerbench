@@ -233,6 +233,9 @@ Assuming you have the output results ("trace-results.json") from your TracerBenc
 
 When running the TracerBench-CLI `compare` command, on a successful trace a stdout statistical summary report will be generated.
 
+### Understanding The Box-Plot Results
+![box-plot-results](https://github.com/TracerBench/tracerbench/blob/master/docs/box-plot-transparent.png)
+
 ---
 
 # Statistics Primer
