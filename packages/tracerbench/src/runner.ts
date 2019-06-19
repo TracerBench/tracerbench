@@ -1,5 +1,3 @@
-import { createSession, ISession } from "chrome-debugging-client";
-
 export interface IBenchmark<State, Result> {
   name: string;
 
@@ -9,32 +7,36 @@ export interface IBenchmark<State, Result> {
   /** alternatively, the following can be invoked manually in order */
 
   /** setup the benchmark */
-  setup(session: ISession): Promise<State>;
+  setup(): Promise<State>;
 
   /** run a single iteration of the benchmark */
-  perform(session: ISession, state: State, iteration: number): Promise<State>;
+  perform(state: State, iteration: number): Promise<State>;
 
   /** finalize the benchmark, returning result */
-  finalize(session: ISession, state: State): Promise<Result>;
+  finalize(state: State): Promise<Result>;
+
+  dispose(): Promise<void>;
 }
 
 export class Runner<R, S> {
   constructor(private benchmarks: Array<IBenchmark<S, R>>) {}
 
   public async run(iterations: number): Promise<R[]> {
-    return await createSession<R[]>(async (session: ISession) => {
-      let states = await this.inSequence(benchmark => benchmark.setup(session));
+    try {
+      let states = await this.inSequence(benchmark => benchmark.setup());
 
       for (let iteration = 0; iteration < iterations; iteration++) {
         states = await this.shuffled((benchmark, i) =>
-          benchmark.perform(session, states[i], iteration)
+          benchmark.perform(states[i], iteration)
         );
       }
 
-      return this.inSequence((benchmark, i) =>
-        benchmark.finalize(session, states[i])
-      );
-    });
+      return this.inSequence((benchmark, i) => benchmark.finalize(states[i]));
+    } finally {
+      for (const benchmark of this.benchmarks) {
+        await benchmark.dispose();
+      }
+    }
   }
 
   private async inSequence<T>(

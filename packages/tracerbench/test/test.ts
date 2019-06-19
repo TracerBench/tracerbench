@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as mkdirp from 'mkdirp';
 import { resolve } from 'path';
 import { InitialRenderBenchmark, Runner } from 'tracerbench';
+import { Stdio } from '@tracerbench/spawn';
 
 /* tslint:disable:no-var-requires */
 const globSync: (glob: string) => string[] = require('glob').sync;
@@ -9,15 +10,17 @@ const globSync: (glob: string) => string[] = require('glob').sync;
 
 const browserOpts = {
   additionalArguments: [
-    '--headless',
-    '--disable-gpu',
-    '--hide-scrollbars',
-    '--mute-audio',
     '--v8-cache-options=none',
-    '--disable-cache',
     '--disable-v8-idle-tasks',
-    '--crash-dumps-dir=./tmp'
-  ]
+    '--crash-dumps-dir=./tmp',
+  ],
+  stdio: 'inherit' as Stdio,
+  chromeExecutable: undefined,
+  userDataDir: undefined,
+  userDataRoot: undefined,
+  url: undefined,
+  disableDefaultArguments: false,
+  headless: true,
 };
 
 const tests = globSync('dist/test/*/index.html');
@@ -45,12 +48,12 @@ tests.forEach((indexFile: string) => {
         { start: 'startRouting', label: 'routing' },
         { start: 'willTransition', label: 'transition' },
         { start: 'didTransition', label: 'render' },
-        { start: 'renderEnd', label: 'afterRender' }
+        { start: 'renderEnd', label: 'afterRender' },
       ],
       name: version,
       runtimeStats: true,
       saveTraces: (i: any) => `test/results/trace-${version}-${i}.json`,
-      url
+      url,
     })
   );
 });

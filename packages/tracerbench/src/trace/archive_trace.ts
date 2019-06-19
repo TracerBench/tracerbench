@@ -1,10 +1,9 @@
 // tslint:disable:no-console
 
-import { createSession } from 'chrome-debugging-client';
-import { Network, Page } from 'chrome-debugging-client/dist/protocol/tot';
+import Protocol from 'devtools-protocol';
 import * as fs from 'fs';
 import * as path from 'path';
-import { createClient, setCookies } from './trace-utils';
+import { createBrowser, getTab, setCookies } from './trace-utils';
 
 // Represents a subset of a HAR
 export interface IArchive {
@@ -37,18 +36,26 @@ export async function harTrace(
   outputPath: string,
   cookies: any = null
 ) {
-  return await createSession(async session => {
-    const client = await createClient(session);
-    const page = new Page(client);
-    const network = new Network(client);
+
+  // the saving of the cookies should be a dif command
+  // spawn browser > sign-in > done > save cookies
+
+  // passing in the cookies file needs to be more
+  // explicit (especially as its pertained to automation)
+
+  // in the instance we are passing in the cookies
+
+  const browser = await createBrowser();
+  try {
+    const client = await getTab(browser.connection);
     const traceHAR = path.join(outputPath, 'trace.har');
     const cookiesJSON = path.join(outputPath, 'cookies.json');
 
     const requestIds: string[] = [];
-    const responses: Network.Response[] = [];
+    const responses: Protocol.Network.Response[] = [];
     const urls = [url];
 
-    network.responseReceived = ({ requestId, response }) => {
+    client.on('Network.responseReceived', ({ requestId, response }) => {
       if (
         response.mimeType === 'text/html' ||
         response.mimeType === 'text/javascript' ||
@@ -57,7 +64,7 @@ export async function harTrace(
         requestIds.push(requestId);
         responses.push(response);
       }
-    };
+    });
 
     const archive: IArchive = {
       log: {
@@ -65,30 +72,22 @@ export async function harTrace(
       },
     };
 
-    await network.enable({});
+    await client.send('Network.enable');
 
-    cookies = cookies ? cookies : await network.getCookies({ urls });
-    await setCookies(network, cookies);
+    cookies = cookies ? cookies : await client.send('Network.getCookies', { urls });
+    await setCookies(client, cookies);
 
-    await page.enable();
+    await client.send('Page.enable');
 
-    const pageLoad = new Promise(resolve => {
-      page.loadEventFired = () => {
-        // console.log(evt);
-        resolve();
-      };
-    });
-
-    await page.navigate({
-      url,
-    });
-
-    await pageLoad;
+    await Promise.all([
+      client.until('Page.loadEventFired'),
+      client.send('Page.navigate', { url })
+    ]);
 
     for (let i = 0; i < requestIds.length; i++) {
       const requestId = requestIds[i];
       const response = responses[i];
-      const responseBody = await network.getResponseBody({ requestId });
+      const responseBody = await client.send('Network.getResponseBody', { requestId });
       const entry: IEntry = {
         request: { url: response.url },
         response: { content: { text: responseBody.body } },
@@ -98,5 +97,7 @@ export async function harTrace(
 
     fs.writeFileSync(cookiesJSON, JSON.stringify(cookies));
     fs.writeFileSync(traceHAR, JSON.stringify(archive));
-  });
+  } finally {
+    await browser.dispose();
+  }
 }

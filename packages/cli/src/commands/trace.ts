@@ -75,7 +75,7 @@ export default class Trace extends Command {
           JSON.parse(fs.readFileSync(traceHAR, 'utf8'))
         );
       } catch (error) {
-        log.error(
+        this.error(
           `Could not extract cookies from cookies.json or HAR file at path ${traceHAR}, ${error}`
         );
         cookies = null;
@@ -98,7 +98,9 @@ export default class Trace extends Command {
     try {
       archiveFile = JSON.parse(fs.readFileSync(traceHAR, 'utf8'));
     } catch (error) {
-      log.error(`Could not find trace har file at path: ${traceHAR}, ${error}`);
+      this.error(
+        `Could not find trace har file at path: ${traceHAR}, ${error}`
+      );
     }
 
     await analyze({

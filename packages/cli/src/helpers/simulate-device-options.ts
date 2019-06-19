@@ -1,4 +1,4 @@
-import { Emulation } from 'chrome-debugging-client/dist/protocol/tot';
+import Protocol from 'devtools-protocol';
 import { convertToTypable } from './utils';
 import { simulateDeviceOptions } from '../static/simulate-device-options';
 
@@ -20,13 +20,16 @@ export interface EmulateDeviceSettingBase {
   typeable: string;
 }
 
-export interface EmulateDeviceSetting extends EmulateDeviceSettingBase, Emulation.SetDeviceMetricsOverrideParameters,
-  Emulation.SetUserAgentOverrideParameters {
+export interface EmulateDeviceSetting
+  extends EmulateDeviceSettingBase,
+    Protocol.Emulation.SetDeviceMetricsOverrideRequest,
+    Protocol.Emulation.SetUserAgentOverrideRequest {
   width: number;
   height: number;
 }
 
-export interface EmulateDeviceSettingCliOption extends EmulateDeviceSettingBase {
+export interface EmulateDeviceSettingCliOption
+  extends EmulateDeviceSettingBase {
   screens: Screens;
 }
 

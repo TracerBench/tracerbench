@@ -1,16 +1,13 @@
 // tslint:disable:no-console
 
-import { createSession } from 'chrome-debugging-client';
-import {
-  IO,
-  Network,
-  Page,
-  Tracing,
-} from 'chrome-debugging-client/dist/protocol/tot';
+import debug from 'debug';
+import Protocol from 'devtools-protocol';
 import * as fs from 'fs';
 
+const debugCallback = debug('tracerbench-cli:trace');
+
 import { IConditions } from './conditions';
-import { createClient, emulate, setCookies } from './trace-utils';
+import { createBrowser, getTab, emulate, setCookies } from './trace-utils';
 
 const DEVTOOLS_CATEGORIES = [
   '-*',
@@ -31,79 +28,64 @@ const DEVTOOLS_CATEGORIES = [
 export async function liveTrace(
   url: string,
   out: string,
-  cookies: Network.SetCookieParameters[],
+  cookies: Protocol.Network.CookieParam[],
   conditions: IConditions
 ) {
-  return await createSession(async session => {
-    const client = await createClient(session);
-    const page = new Page(client);
-    const tracing = new Tracing(client);
-    const network = new Network(client);
-    const io = new IO(client);
+  const browser = await createBrowser();
+  try {
+    const client = await getTab(browser.connection);
+    await emulate(client, conditions);
+    await setCookies(client, cookies);
 
-    await emulate(client, network, conditions);
-    await setCookies(network, cookies);
-
-    const tree = await page.getFrameTree();
+    const tree = await client.send('Page.getFrameTree');
     const mainFrameId = tree.frameTree.frame.id;
-    // console.log('frame tree', tree);
 
-    await page.enable();
-    const pageLoad = new Promise(resolve => {
-      page.loadEventFired = () => {
-        // console.log(evt);
-        resolve();
-      };
+    debugCallback('frame tree', tree);
+
+    await client.send('Page.enable');
+
+    // these can be leveraged and commented in/out
+    client.on('Page.frameStartedLoading', evt => {
+      if (mainFrameId === evt.frameId) {
+        debugCallback('frameStartedLoading', evt);
+      }
     });
 
-    page.frameStartedLoading = evt => {
+    client.on('Page.frameScheduledNavigation', evt => {
       if (mainFrameId === evt.frameId) {
-        // console.log('frameStartedLoading', evt);
+        debugCallback('frameScheduledNavigation', evt);
       }
-    };
+    });
 
-    page.frameScheduledNavigation = evt => {
-      if (mainFrameId === evt.frameId) {
-        // console.log('frameScheduledNavigation', evt);
-      }
-    };
-
-    page.frameNavigated = evt => {
+    client.on('Page.frameNavigated', evt => {
       if (mainFrameId === evt.frame.id) {
-        // console.log('frameNavigated', evt);
+        debugCallback('frameNavigated', evt);
       }
-    };
+    });
 
-    const tracingComplete = new Promise<Tracing.TracingCompleteParameters>(
-      resolve => {
-        tracing.tracingComplete = resolve;
-      }
-    );
+    debugCallback(`starting trace`);
 
-    // console.log(`starting trace`);
-    await tracing.start({
+    await client.send('Tracing.start', {
       categories: DEVTOOLS_CATEGORIES.join(','),
       transferMode: 'ReturnAsStream',
       streamCompression: 'none',
     });
-    // console.log(`navigating to ${url}`);
-    await page.navigate({
-      url,
-    });
+    await Promise.all([
+      client.until('Page.loadEventFired'),
+      client.send('Page.navigate', { url })
+    ]);
 
-    // console.log(`waiting for load event`);
-    await pageLoad;
+    const [result] = await Promise.all([
+      client.until('Tracing.tracingComplete'),
+      client.send('Tracing.end')
+    ]);
 
-    // console.log(`stopping trace`);
-    await tracing.end();
-
-    const result = await tracingComplete;
     const handle = result.stream as string;
     const file = fs.openSync(out, 'w');
     try {
-      let read: IO.ReadReturn;
+      let read: Protocol.IO.ReadResponse;
       do {
-        read = await io.read({ handle });
+        read = await client.send('IO.read', { handle });
         fs.writeSync(
           file,
           read.base64Encoded
@@ -113,7 +95,9 @@ export async function liveTrace(
       } while (!read.eof);
     } finally {
       fs.closeSync(file);
-      await io.close({ handle });
+      await client.send('IO.close', { handle });
     }
-  });
+  } finally {
+    await browser.dispose();
+  }
 }

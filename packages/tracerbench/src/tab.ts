@@ -1,24 +1,20 @@
-import { IDebuggingProtocolClient } from "chrome-debugging-client";
-import {
-  Emulation,
-  HeapProfiler,
-  Network,
-  Page,
-  Tracing
-} from "chrome-debugging-client/dist/protocol/tot";
-import Trace from "./trace/trace";
+import Protocol from 'devtools-protocol';
+import Trace from './trace/trace';
+import { RootConnection, SessionConnection } from 'chrome-debugging-client';
 
 export interface ITab {
   isTracing: boolean;
 
   /** The current frame for the tab */
-  frame: Page.Frame;
+  frame: Protocol.Page.Frame;
   onNavigate: (() => void) | undefined;
   /** Add a script to execute on load */
-  addScriptToEvaluateOnLoad(source: string): Promise<Page.ScriptIdentifier>;
+  addScriptToEvaluateOnLoad(
+    source: string
+  ): Promise<Protocol.Page.ScriptIdentifier>;
   /** Remove a previously added script */
   removeScriptToEvaluateOnLoad(
-    identifier: Page.ScriptIdentifier
+    identifier: Protocol.Page.ScriptIdentifier
   ): Promise<void>;
   /** Navigates to the specified url */
   navigate(url: string, waitForLoad?: boolean): Promise<void>;
@@ -32,24 +28,28 @@ export interface ITab {
 
   setCPUThrottlingRate(rate: number): Promise<void>;
   emulateNetworkConditions(
-    conditions: Network.EmulateNetworkConditionsParameters
+    conditions: Protocol.Network.EmulateNetworkConditionsRequest
   ): Promise<void>;
   disableNetworkEmulation(): Promise<void>;
 
   /** Configure tab to take on the device emulation settings */
-  emulateDevice(deviceSettings: Emulation.SetDeviceMetricsOverrideParameters): Promise<void>;
+  emulateDevice(
+    deviceSettings: Protocol.Emulation.SetDeviceMetricsOverrideRequest
+  ): Promise<void>;
 
   /** Cofigure tabe to send the specified user agent */
-  setUserAgent(userAgentSettings: Emulation.SetUserAgentOverrideParameters): Promise<void>;
+  setUserAgent(
+    userAgentSettings: Protocol.Emulation.SetUserAgentOverrideRequest
+  ): Promise<void>;
 }
 
 export default function createTab(
   id: string,
-  client: IDebuggingProtocolClient,
-  page: Page,
-  frame: Page.Frame
+  browser: RootConnection,
+  tab: SessionConnection,
+  frame: Protocol.Page.Frame
 ): ITab {
-  return new Tab(id, client, page, frame);
+  return new Tab(id, browser, tab, frame);
 }
 
 export interface ITracing {
@@ -64,7 +64,7 @@ class Tab implements ITab {
   /**
    * The current frame for the tab
    */
-  public frame: Page.Frame;
+  public frame: Protocol.Page.Frame;
 
   /**
    * Called when the frame navigates
@@ -72,29 +72,22 @@ class Tab implements ITab {
   public onNavigate: (() => void) | undefined = undefined;
 
   public id: string;
-  public client: IDebuggingProtocolClient;
+  public browser: RootConnection;
 
-  private page: Page;
-  private tracing: Tracing;
-  private emulation: Emulation;
-  private network: Network;
-  private heapProfiler: HeapProfiler;
+  private page: SessionConnection;
 
   constructor(
     id: string,
-    client: IDebuggingProtocolClient,
-    page: Page,
-    frame: Page.Frame
+    browser: RootConnection,
+    page: SessionConnection,
+    frame: Protocol.Page.Frame
   ) {
     this.id = id;
-    this.client = client;
+    this.browser = browser;
     this.page = page;
     this.frame = frame;
-    this.tracing = new Tracing(client);
-    this.network = new Network(client);
-    this.emulation = new Emulation(client);
-    this.heapProfiler = new HeapProfiler(client);
-    page.frameNavigated = params => {
+
+    page.on('Page.frameNavigated', params => {
       const newFrame = params.frame;
       if (!newFrame.parentId) {
         this.frame = newFrame;
@@ -102,40 +95,51 @@ class Tab implements ITab {
           this.onNavigate();
         }
       }
-    };
+    });
   }
 
   /**
    * Navigates to the specified url
    */
-  public async navigate(url: string, waitForLoad?: boolean): Promise<void> {
+  public async navigate(
+    url: string,
+    shouldWaitForLoad?: boolean
+  ): Promise<void> {
     const { frame, page } = this;
-    await Promise.all<any>([
-      waitForLoad
-        ? new Promise(resolve => {
-            page.frameStoppedLoading = params => {
-              if (params.frameId === frame.id) {
-                page.frameStoppedLoading = null;
-                resolve();
-              }
-            };
-          })
-        : undefined,
-      frame.url === url ? page.reload({}) : page.navigate({ url })
-    ]);
+
+    await Promise.all([maybeWaitForLoad(), load()]);
+
+    async function maybeWaitForLoad() {
+      if (shouldWaitForLoad) {
+        await page.until(
+          'Page.frameStoppedLoading',
+          ({ frameId }) => frameId === frame.id
+        );
+      }
+    }
+
+    async function load() {
+      if (frame.url === url) {
+        await page.send('Page.reload', {});
+      } else {
+        await page.send('Page.navigate', { url });
+      }
+    }
   }
 
   public async addScriptToEvaluateOnLoad(
     scriptSource: string
-  ): Promise<Page.ScriptIdentifier> {
-    const result = await this.page.addScriptToEvaluateOnLoad({ scriptSource });
+  ): Promise<Protocol.Page.ScriptIdentifier> {
+    const result = await this.page.send('Page.addScriptToEvaluateOnLoad', {
+      scriptSource,
+    });
     return result.identifier;
   }
 
   public async removeScriptToEvaluateOnLoad(
-    identifier: Page.ScriptIdentifier
+    identifier: Protocol.Page.ScriptIdentifier
   ): Promise<void> {
-    await this.page.removeScriptToEvaluateOnLoad({ identifier });
+    await this.page.send('Page.removeScriptToEvaluateOnLoad', { identifier });
   }
 
   /** Start tracing */
@@ -144,30 +148,29 @@ class Tab implements ITab {
     options?: string
   ): Promise<ITracing> {
     if (this.isTracing) {
-      throw new Error("already tracing");
+      throw new Error('already tracing');
     }
 
     this.isTracing = true;
 
-    const { tracing } = this;
+    const { page } = this;
 
     const traceComplete = (async () => {
       const trace = new Trace();
 
-      tracing.dataCollected = evt => {
-        trace.addEvents(evt.value);
+      const onDataCollected = ({
+        value,
+      }: Protocol.Tracing.DataCollectedEvent) => {
+        trace.addEvents(value);
       };
 
-      await new Promise(resolve => {
-        tracing.tracingComplete = () => {
-          resolve();
-        };
-      });
+      page.on('Tracing.dataCollected', onDataCollected);
+
+      await page.until('Tracing.tracingComplete');
 
       this.isTracing = false;
 
-      tracing.tracingComplete = null;
-      tracing.dataCollected = null;
+      page.removeListener('Tracing.dataCollected', onDataCollected);
 
       trace.buildModel();
 
@@ -178,7 +181,7 @@ class Tab implements ITab {
         Renderer process.
       */
       trace.mainProcess = trace.processes
-        .filter(p => p.name === "Renderer")
+        .filter(p => p.name === 'Renderer')
         .reduce((c, v) => (v.events.length > c.events.length ? v : c));
 
       return trace;
@@ -186,65 +189,69 @@ class Tab implements ITab {
 
     const end = async () => {
       if (this.isTracing) {
-        await tracing.end();
+        await page.send('Tracing.end');
       }
     };
 
-    await this.tracing.start({ categories, options });
+    await page.send('Tracing.start', { categories, options });
 
     return { end, traceComplete };
   }
 
   /** Clear browser cache and memory cache */
   public async clearBrowserCache(): Promise<void> {
-    const { network } = this;
-    await network.enable({ maxTotalBufferSize: 0 });
-    const res = await network.canClearBrowserCache();
+    const { page } = this;
+    await page.send('Network.enable', { maxTotalBufferSize: 0 });
+    const res = await page.send('Network.canClearBrowserCache');
     if (!res.result) {
-      throw new Error("Cannot clear browser cache");
+      throw new Error('Cannot clear browser cache');
     }
-    await network.clearBrowserCache();
+    await page.send('Network.clearBrowserCache');
     // causes MemoryCache entries to be evicted
-    await network.setCacheDisabled({ cacheDisabled: true });
-    await network.disable();
+    await page.send('Network.setCacheDisabled', { cacheDisabled: true });
+    // await page.send('Network.disable');
   }
 
   public async setCPUThrottlingRate(rate: number) {
-    await this.emulation.setCPUThrottlingRate({ rate });
+    await this.page.send('Emulation.setCPUThrottlingRate', { rate });
   }
 
   public async emulateNetworkConditions(
-    conditions: Network.EmulateNetworkConditionsParameters
+    conditions: Protocol.Network.EmulateNetworkConditionsRequest
   ) {
-    await this.network.enable({
+    await this.page.send('Network.enable', {
       maxResourceBufferSize: 0,
-      maxTotalBufferSize: 0
+      maxTotalBufferSize: 0,
     });
-    await this.network.emulateNetworkConditions(conditions);
+    await this.page.send('Network.emulateNetworkConditions', conditions);
   }
 
   public async disableNetworkEmulation() {
-    await this.network.emulateNetworkConditions({
+    await this.page.send('Network.emulateNetworkConditions', {
       downloadThroughput: 0,
       latency: 0,
       offline: false,
-      uploadThroughput: 0
+      uploadThroughput: 0,
     });
-    await this.network.disable();
+    await this.page.send('Network.disable');
   }
 
   public async collectGarbage(): Promise<void> {
-    const { heapProfiler } = this;
-    await heapProfiler.enable();
-    await heapProfiler.collectGarbage();
-    await heapProfiler.disable();
+    const { page } = this;
+    await page.send('HeapProfiler.enable');
+    await page.send('HeapProfiler.collectGarbage');
+    await page.send('HeapProfiler.disable');
   }
 
-  public async emulateDevice(deviceSettings: Emulation.SetDeviceMetricsOverrideParameters): Promise<void> {
-    await this.emulation.setDeviceMetricsOverride(deviceSettings);
+  public async emulateDevice(
+    deviceSettings: Protocol.Emulation.SetDeviceMetricsOverrideRequest
+  ): Promise<void> {
+    await this.page.send('Emulation.setDeviceMetricsOverride', deviceSettings);
   }
 
-  public async setUserAgent(userAgentSettings: Emulation.SetUserAgentOverrideParameters): Promise<void> {
-    await this.emulation.setUserAgentOverride(userAgentSettings);
+  public async setUserAgent(
+    userAgentSettings: Protocol.Emulation.SetUserAgentOverrideRequest
+  ): Promise<void> {
+    await this.page.send('Emulation.setUserAgentOverride', userAgentSettings);
   }
 }

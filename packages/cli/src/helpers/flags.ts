@@ -2,7 +2,7 @@
 
 import { flags } from '@oclif/command';
 import { networkConditions } from 'tracerbench';
-import { Network } from 'chrome-debugging-client/dist/protocol/tot';
+import Protocol from 'devtools-protocol';
 import { defaultFlagArgs, fidelityLookup } from './default-flag-args';
 import {
   parseMarkers,
@@ -13,7 +13,7 @@ import deviceSettings from './simulate-device-options';
 
 /*
 ! oclif flags.build#parse will only execute when the flag:string is passed directly
-! from the cli. thus when passed via the tbconfig.json or the defaultFlagArgs 
+! from the cli. thus when passed via the tbconfig.json or the defaultFlagArgs
 ! the parse method will never execute
 ! todo: mitigate above by either extending the flags oclif command calling parse
 ! and type checking in all circumstances
@@ -132,8 +132,8 @@ export const network = flags.build({
   default: () => getConfigDefault('network', defaultFlagArgs.network),
   description: 'Simulated network conditions.',
   options: [`${Object.keys(networkConditions).join(' | ')}`],
-  parse: (n: string): Network.EmulateNetworkConditionsParameters => {
-    return (networkConditions as any)[n];
+  parse: (n: string): Protocol.Network.EmulateNetworkConditionsRequest => {
+    return networkConditions[n as keyof typeof networkConditions];
   },
 });
 
@@ -193,12 +193,15 @@ export const emulateDevice = flags.build({
   default: () =>
     getConfigDefault('emulateDevice', defaultFlagArgs.emulateDevice),
   description: `Emulate a mobile device screen size.`,
-  options: deviceSettings.map(setting => `${setting.typeable}`)
+  options: deviceSettings.map(setting => `${setting.typeable}`),
 });
 
 export const emulateDeviceOrientation = flags.build({
   default: () =>
-    getConfigDefault('emulateDeviceOrientation', defaultFlagArgs.emulateDeviceOrientation),
+    getConfigDefault(
+      'emulateDeviceOrientation',
+      defaultFlagArgs.emulateDeviceOrientation
+    ),
   description: `Expected to be either "vertical" or "horizontal". Dictates orientation of device screen.`,
-  options: ['horizontal', 'vertical']
+  options: ['horizontal', 'vertical'],
 });
