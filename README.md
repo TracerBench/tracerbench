@@ -97,7 +97,7 @@ $ tracerbench timeline:show --urlOrFrame http://localhost:8000
 
 In your app you must place a marker to let TracerBench know that you are done rendering to the DOM, it searches forward from this to find the next paint event. This is done by using a `performance.mark` function call. Additionally the [properties](https://raw.githubusercontent.com/TracerBench/tracerbench/master/docs/nav-timings.png) of the [NavigationTiming API](https://www.w3.org/TR/navigation-timing/#sec-navigation-timing-interface) can be passed a `markers` arguments array to the `InitialRenderBenchmark`.
 
-![Understanding-NavTiming-API](https://github.com/TracerBench/tracerbench/blob/master/docs/nav-timings.png | width=500)
+![Understanding-NavTiming-API](https://github.com/TracerBench/tracerbench/blob/master/docs/nav-timings.png)
 
 ```js
 function renderMyApp() {
@@ -236,7 +236,7 @@ Assuming you have the output results ("trace-results.json") from your TracerBenc
 When running the TracerBench-CLI `compare` command, on a successful trace a stdout statistical summary report will be generated.
 
 ### Understanding The Box-Plot Results
-![box-plot-results](https://github.com/TracerBench/tracerbench/blob/master/docs/box-plot-transparent.png | width=500)
+![box-plot-results](https://github.com/TracerBench/tracerbench/blob/master/docs/box-plot-transparent.png)
 
 ---
 
@@ -268,13 +268,13 @@ The standard deviation is the most common measure of how spread out the data are
 
 The variance measures how much the data is scattered about their mean. The variance is equal to the standard deviation squared.
 
-![Understanding-Standard-Deviation-and-Variance](https://github.com/TracerBench/tracerbench/blob/master/docs/std-deviation.png | width=500)
+![Understanding-Standard-Deviation-and-Variance](https://github.com/TracerBench/tracerbench/blob/master/docs/std-deviation.png)
 
 ### Confidence Interval
 
 A confidence interval is a range of values, derived from sample statistics, that is likely to contain the value of an unknown population parameter. Since they are random it's unlikely that two samples from a population will yield identical confidence intervals. However, if the sampling is repeated many times, a certain percentage of the confidence intervals would contain the unknown population parameter. For example in a 95% confidence interval, 5% would contain the unknown population parameter.
 
-![Understanding-Confidence-Interval](https://github.com/TracerBench/tracerbench/blob/master/docs/c-interval.png | width=500)
+![Understanding-Confidence-Interval](https://github.com/TracerBench/tracerbench/blob/master/docs/c-interval.png){:width="500px"}
 
 ### Power
 
