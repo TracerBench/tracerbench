@@ -266,13 +266,13 @@ The null hypothesis is a statement about a population. A hypothesis test uses sa
 
 A confidence interval is a range of values, derived from sample statistics, that is likely to contain the value of an unknown population parameter. Since they are random it's unlikely that two samples from a population will yield identical confidence intervals. However, if the sampling is repeated many times, a certain percentage of the confidence intervals would contain the unknown population parameter.
 
-### Standard Deviation
+### Standard Deviation & Variance
 
 The standard deviation is the most common measure of how spread out the data are from the mean (dispersion). The greater the standard deviation, the greater the spread in the data.
 
-### Variance
-
 The variance measures how much the data is scattered about their mean. The variance is equal to the standard deviation squared.
+
+!(Understanding-Standard-Deviation-and-Variance)[https://github.com/TracerBench/tracerbench/blob/master/docs/std-deviation.png]
 
 ### Power
 
