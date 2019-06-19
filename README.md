@@ -272,7 +272,7 @@ The standard deviation is the most common measure of how spread out the data are
 
 The variance measures how much the data is scattered about their mean. The variance is equal to the standard deviation squared.
 
-!(Understanding-Standard-Deviation-and-Variance)[https://github.com/TracerBench/tracerbench/blob/master/docs/std-deviation.png]
+![Understanding-Standard-Deviation-and-Variance](https://github.com/TracerBench/tracerbench/blob/master/docs/std-deviation.png)
 
 ### Power
 
