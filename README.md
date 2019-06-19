@@ -262,10 +262,6 @@ The two major categories in sampling are probability and non-probability samplin
 
 The null hypothesis is a statement about a population. A hypothesis test uses sample data to determine whether to reject the null hypothesis. The null hypothesis states that a population parameter (such as the mean, the standard deviation, etc.) is equal to a hypothesized value. The null hypothesis is often an initial claim that is based on a previous analysis or insights.
 
-### Confidence Interval
-
-A confidence interval is a range of values, derived from sample statistics, that is likely to contain the value of an unknown population parameter. Since they are random it's unlikely that two samples from a population will yield identical confidence intervals. However, if the sampling is repeated many times, a certain percentage of the confidence intervals would contain the unknown population parameter.
-
 ### Standard Deviation & Variance
 
 The standard deviation is the most common measure of how spread out the data are from the mean (dispersion). The greater the standard deviation, the greater the spread in the data.
@@ -273,6 +269,10 @@ The standard deviation is the most common measure of how spread out the data are
 The variance measures how much the data is scattered about their mean. The variance is equal to the standard deviation squared.
 
 ![Understanding-Standard-Deviation-and-Variance](https://github.com/TracerBench/tracerbench/blob/master/docs/std-deviation.png)
+
+### Confidence Interval
+
+A confidence interval is a range of values, derived from sample statistics, that is likely to contain the value of an unknown population parameter. Since they are random it's unlikely that two samples from a population will yield identical confidence intervals. However, if the sampling is repeated many times, a certain percentage of the confidence intervals would contain the unknown population parameter.
 
 ### Power
 
