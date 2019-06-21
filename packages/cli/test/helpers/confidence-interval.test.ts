@@ -15,16 +15,16 @@ const experiment = [311.307077576214, 287.01781844844, 326.260035401324, 354.377
 
 describe('confidence-interval test', () => {
   it(`confidenceInterval()`, () => {
-    expect(confidenceInterval(control, experiment, 0.95)).to.equal([-8.466935463651964, 51.96882328768899]);
+    expect(confidenceInterval(control, experiment, 0.95)).to.eqls([-8.466935463651964, 51.96882328768899]);
   });
 
   it(`cartesianProduct()`, () => {
     const inputOne = [1, 2];
     const inputTwo = [3, 4];
-    expect(cartesianProduct(inputOne, inputTwo)).to.equal([-3, -2, -2, -1]);
-    function add (x, y) {
+    expect(cartesianProduct(inputOne, inputTwo)).to.eqls([-3, -2, -2, -1]);
+    function add (x: number, y: number) {
       return x + y;
     }
-    expect(cartesianProduct(inputOne, inputTwo, add)).to.equal([4, 5, 5, 6]);
+    expect(cartesianProduct(inputOne, inputTwo, add)).to.eqls([4, 5, 5, 6]);
   });
 });

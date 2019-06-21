@@ -23,7 +23,7 @@ export function cartesianProduct(listOne: number[], listTwo: number[], func = _d
       results.push(func(x, y));
     });
   });
-  results = results.sort();
+  results = results.sort((a, b) => a - b);
   return results;
 }
 
@@ -42,7 +42,6 @@ export function confidenceInterval(distributionOne: number[], distributionTwo: n
   const sqrtOfSomething = Math.sqrt(lengthsMultiplied * (distributionOneLength + distributionTwoLength + 1) / 12);
   const other = jStat.normal.inv(1 - (1 - interval) / 2, 0, 1) * sqrtOfSomething;
   const ca = Math.floor(distributionOneLength * distributionTwoLength / 2 - other);
-
   const diffs = cartesianProduct(distributionOne, distributionTwo);
   return [diffs[ca - 1], diffs[(distributionOneLength * distributionTwoLength) - ca]];
 }
