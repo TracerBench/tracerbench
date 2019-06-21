@@ -4,7 +4,7 @@ import { pathToFileURL } from 'url';
 import { findChrome } from 'chrome-debugging-client';
 import { join, resolve } from 'path';
 import { Command } from '@oclif/command';
-import { inputFilePath, tbResultsFolder } from '../helpers/flags';
+import { tbResultsFolder } from '../helpers/flags';
 import createConsumeableHTML, {
   ITracerBenchTraceResult,
 } from '../helpers/create-consumeable-html';
@@ -14,7 +14,6 @@ const ARTIFACT_FILE_NAME = 'artifact';
 export default class Report extends Command {
   public static description = `Parses the output json from tracerbench and formats it into pdf and html`;
   public static flags = {
-    inputFilePath: inputFilePath({ required: true }),
     tbResultsFolder: tbResultsFolder({ required: true }),
   };
   /**
@@ -23,7 +22,8 @@ export default class Report extends Command {
    */
   public async run() {
     const { flags } = this.parse(Report);
-    const { inputFilePath, tbResultsFolder } = flags;
+    const { tbResultsFolder } = flags;
+    const inputFilePath = join(tbResultsFolder, 'compare.json');
     let absPathToHTML;
     let absOutputPath;
     let renderedHTML;

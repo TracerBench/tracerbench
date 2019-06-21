@@ -200,8 +200,3 @@ export const emulateDeviceOrientation = flags.build({
   description: `Expected to be either "vertical" or "horizontal". Dictates orientation of device screen.`,
   options: ['horizontal', 'vertical'],
 });
-
-export const inputFilePath = flags.build({
-  default: () => getConfigDefault('inputFilePath', defaultFlagArgs.inputFilePath),
-  description: 'The json output filepath for tracerbench result',
-});
