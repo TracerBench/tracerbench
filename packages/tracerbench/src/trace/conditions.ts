@@ -20,6 +20,7 @@ export interface INetworkConditions {
   '4g': Protocol.Network.EmulateNetworkConditionsRequest;
   LTE: Protocol.Network.EmulateNetworkConditionsRequest;
   FIOS: Protocol.Network.EmulateNetworkConditionsRequest;
+  [key: string]: Protocol.Network.EmulateNetworkConditionsRequest;
 }
 
 export const networkConditions: INetworkConditions = {
