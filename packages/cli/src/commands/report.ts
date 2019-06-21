@@ -1,7 +1,6 @@
 import * as execa from 'execa';
 import * as fs from 'fs-extra';
 import { pathToFileURL } from 'url';
-
 import { findChrome } from 'chrome-debugging-client';
 import { join, resolve } from 'path';
 import { Command } from '@oclif/command';
@@ -75,12 +74,11 @@ export default class Report extends Command {
     absOutputPath = resolve(join(tbResultsFolder + `/${outputFileName}.pdf`));
 
     const chromeExecutablePath = findChrome();
-
     await execa(chromeExecutablePath, [
       '--headless',
       '--disable-gpu',
       `--print-to-pdf=${absOutputPath}`,
-      pathToFileURL(absPathToHTML).toString()
+      pathToFileURL(absPathToHTML).toString(),
     ]);
 
     this.log(`Written files out at ${absPathToHTML} and ${absOutputPath}`);
