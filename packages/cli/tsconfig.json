@@ -1,8 +1,6 @@
 {
   "$schema": "http://json.schemastore.org/tsconfig",
   "compilerOptions": {
-      "baseUrl": ".",
-      "paths": { "*": ["types/*"] },
     "composite": true,
     "declaration": true,
     "declarationMap": true,
@@ -21,11 +19,6 @@
     "target": "es2017",
     "outDir": "./dist"
   },
-  "include": [
-    "src"
-  ],
-  "exclude": [
-    "node_modules",
-    "test"
-  ],
+  "include": ["src"],
+  "exclude": ["node_modules", "test"]
 }

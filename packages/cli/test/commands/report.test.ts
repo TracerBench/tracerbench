@@ -16,15 +16,12 @@ const app = {
   )}`,
 };
 
-
-describe('create-output-artifact: creates html', () => {
+describe('report: creates html', () => {
   test
     .stdout()
     .it(
-      `runs create-output-artifact --inputFilePath ${tbResultsFolder}`,
+      `runs report --inputFilePath ${tbResultsFolder}/compare.json --tbResultsFolder ${tbResultsFolder}`,
       async ctx => {
-
-        // First generate the compare.json by running the compare function
         await Compare.run([
           '--controlURL',
           app.control,
@@ -33,14 +30,17 @@ describe('create-output-artifact: creates html', () => {
           '--tbResultsFolder',
           tbResultsFolder,
           '--json',
+          '--cpuThrottleRate=1',
         ]);
 
         await Report.run([
           '--inputFilePath',
-          tbResultsFolder
+          `${tbResultsFolder}/compare.json`,
+          '--tbResultsFolder',
+          `${tbResultsFolder}`,
         ]);
 
-        chai.expect(ctx.stdout).to.contain(`Written files out at `);
-      },
+        chai.expect(ctx.stdout).to.contain(`Written files out at`);
+      }
     );
 });
