@@ -15,7 +15,9 @@
     "ordered-imports": false,
     "object-literal-sort-keys": false,
     "no-console": false,
-    "prefer-for-of": false
+    "prefer-for-of": false,
+    "whitespace": false,
+    "no-namespace": false
   },
   "rulesDirectory": []
 }

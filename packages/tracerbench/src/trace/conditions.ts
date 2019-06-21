@@ -1,4 +1,4 @@
-import { Network } from 'chrome-debugging-client/dist/protocol/tot';
+import Protocol from 'devtools-protocol';
 
 export interface IConditions {
   network: keyof INetworkConditions;
@@ -6,20 +6,20 @@ export interface IConditions {
 }
 
 export interface INetworkConditions {
-  none: Network.EmulateNetworkConditionsParameters;
-  'dialup': Network.EmulateNetworkConditionsParameters;
-  '2g': Network.EmulateNetworkConditionsParameters;
-  '3g': Network.EmulateNetworkConditionsParameters;
-  offline: Network.EmulateNetworkConditionsParameters;
-  cable: Network.EmulateNetworkConditionsParameters;
-  dsl: Network.EmulateNetworkConditionsParameters;
-  edge: Network.EmulateNetworkConditionsParameters;
-  'slow-3g': Network.EmulateNetworkConditionsParameters;
-  'em-3g': Network.EmulateNetworkConditionsParameters;
-  'fast-3g': Network.EmulateNetworkConditionsParameters;
-  '4g': Network.EmulateNetworkConditionsParameters;
-  LTE: Network.EmulateNetworkConditionsParameters;
-  FIOS: Network.EmulateNetworkConditionsParameters;
+  none: Protocol.Network.EmulateNetworkConditionsRequest;
+  'dialup': Protocol.Network.EmulateNetworkConditionsRequest;
+  '2g': Protocol.Network.EmulateNetworkConditionsRequest;
+  '3g': Protocol.Network.EmulateNetworkConditionsRequest;
+  offline: Protocol.Network.EmulateNetworkConditionsRequest;
+  cable: Protocol.Network.EmulateNetworkConditionsRequest;
+  dsl: Protocol.Network.EmulateNetworkConditionsRequest;
+  edge: Protocol.Network.EmulateNetworkConditionsRequest;
+  'slow-3g': Protocol.Network.EmulateNetworkConditionsRequest;
+  'em-3g': Protocol.Network.EmulateNetworkConditionsRequest;
+  'fast-3g': Protocol.Network.EmulateNetworkConditionsRequest;
+  '4g': Protocol.Network.EmulateNetworkConditionsRequest;
+  LTE: Protocol.Network.EmulateNetworkConditionsRequest;
+  FIOS: Protocol.Network.EmulateNetworkConditionsRequest;
 }
 
 export const networkConditions: INetworkConditions = {

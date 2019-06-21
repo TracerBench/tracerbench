@@ -1,6 +1,6 @@
+import Protocol from 'devtools-protocol';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { Network } from 'chrome-debugging-client/dist/protocol/tot';
 import { Command } from '@oclif/command';
 import {
   InitialRenderBenchmark,
@@ -29,14 +29,17 @@ import {
 import { fidelityLookup } from '../helpers/default-flag-args';
 import { logCompareResults } from '../helpers/log-compare-results';
 import { parseMarkers, convertMSToMicroseconds } from '../helpers/utils';
-import deviceSettings, { EmulateDeviceSetting , EmulateDeviceSettingCliOption } from '../helpers/simulate-device-options';
+import deviceSettings, {
+  EmulateDeviceSetting,
+  EmulateDeviceSettingCliOption,
+} from '../helpers/simulate-device-options';
 
 export interface ICompareFlags {
   browserArgs: string[];
   cpuThrottleRate: number;
   fidelity: number;
   markers: IMarker[];
-  network: Network.EmulateNetworkConditionsParameters;
+  network: Protocol.Network.EmulateNetworkConditionsRequest;
   tbResultsFolder: string;
   controlURL: string;
   experimentURL: string;
@@ -125,7 +128,9 @@ export default class Compare extends Command {
       for (option of deviceSettings) {
         if (emulateDevice === option.typeable) {
           if (!option.screens[emulateDeviceOrientation!]) {
-            this.error(`${emulateDeviceOrientation} orientation for ${emulateDevice} does not exist.`);
+            this.error(
+              `${emulateDeviceOrientation} orientation for ${emulateDevice} does not exist.`
+            );
           }
           parsedEmulationDeviceSetting = {
             width: option.screens[emulateDeviceOrientation!].width,
@@ -133,7 +138,7 @@ export default class Compare extends Command {
             deviceScaleFactor: option.deviceScaleFactor,
             mobile: option.mobile,
             userAgent: option.userAgent,
-            typeable: option.typeable
+            typeable: option.typeable,
           };
           break;
         }

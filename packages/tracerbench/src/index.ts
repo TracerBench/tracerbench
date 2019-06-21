@@ -1,6 +1,5 @@
-import * as Domains from 'chrome-debugging-client/dist/protocol/tot';
 import * as Trace from './trace/index';
-export { Domains, Trace };
+export { Trace };
 export {
   IV8GCSample,
   IGCStat,
@@ -19,7 +18,6 @@ export {
   IBenchmarkMeta,
   IBenchmarkParams,
   IBenchmarkState,
-  BrowserOptions,
 } from './benchmark';
 export { Runner, IBenchmark } from './runner';
 export { ITab } from './tab';

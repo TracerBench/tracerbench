@@ -1,76 +1,81 @@
 // tslint:disable:no-console
-
-import {
-  IAPIClient,
-  IDebuggingProtocolClient,
-  IResolveOptions,
-  ISession
-} from 'chrome-debugging-client';
-import { Emulation, Network } from 'chrome-debugging-client/dist/protocol/tot';
-
+import { ProtocolConnection } from '@tracerbench/protocol-connection';
+import { spawnChrome } from 'chrome-debugging-client';
+import Protocol from 'devtools-protocol';
 import { IConditions, networkConditions } from './conditions';
 import { filterObjectByKeys } from './utils';
 
-export async function createClient(session: ISession) {
-  let browserType;
-  let executablePath;
-  const additionalArguments = ['--headless', '--crash-dumps-dir=/tmp'];
-  const windowSize = {
-    width: 320,
-    height: 640
-  };
+export async function createBrowser() {
+  const additionalArguments = ['--crash-dumps-dir=/tmp'];
 
-  if (process.env.CHROME_BIN) {
-    executablePath = process.env.CHROME_BIN;
-    browserType = 'exact';
-  } else {
-    browserType = 'system';
-  }
-
-  const browser = await session.spawnBrowser({
-    browserType,
-    executablePath,
+  const browser = await spawnChrome({
     additionalArguments,
-    windowSize
-  } as IResolveOptions);
-  const tab = await getTab(
-    session.createAPIClient('127.0.0.1', browser.remoteDebuggingPort)
-  );
+    stdio: 'inherit',
+    chromeExecutable: undefined,
+    userDataDir: undefined,
+    userDataRoot: undefined,
+    url: undefined,
+    disableDefaultArguments: false,
+    headless: true,
+  });
 
-  return await session.openDebuggingProtocol(tab.webSocketDebuggerUrl!);
+  return browser;
 }
 
-async function getTab(apiClient: IAPIClient) {
-  const tabs = await apiClient.listTabs();
+export async function getTab(browser: ProtocolConnection) {
+  // const tabs = await apiClient.send();
   // create one tab at about:blank
-  const tab = await apiClient.newTab('about:blank');
-  // close other tabs
-  for (let i = 0; i < tabs.length; i++) {
-    await apiClient.closeTab(tabs[i].id);
+  const { targetId } = await browser.send('Target.createTarget', {
+    url: 'about:blank',
+  });
+
+  const tab = browser.connection(
+    await browser.send('Target.attachToTarget', {
+      targetId,
+      flatten: true,
+    })
+  );
+
+  if (!tab) {
+    throw Error('failed to attach to target');
   }
-  await new Promise(resolve => setTimeout(resolve, 2000));
-  await apiClient.activateTab(tab.id);
+
+  // close other page targets
+  const { targetInfos } = await browser.send('Target.getTargets');
+  for (const targetInfo of targetInfos) {
+    if (targetInfo.type === 'page' && targetInfo.targetId !== targetId) {
+      await browser.send('Target.closeTarget', {
+        targetId: targetInfo.targetId,
+      });
+    }
+  }
+
+  await browser.send('Target.activateTarget', { targetId });
+
   return tab;
 }
 
 export async function emulate(
-  client: IDebuggingProtocolClient,
-  network: Network,
+  client: ProtocolConnection,
   conditions: IConditions
 ) {
-  const emulation = new Emulation(client);
-  if (emulation.canEmulate()) {
-    await emulation.setCPUThrottlingRate({ rate: conditions.cpu });
-  }
+  // tells whether emulation is supported
+  const { result: canEmulate } = await client.send('Emulation.canEmulate');
+  if (canEmulate) {
+    await client.send('Emulation.setCPUThrottlingRate', {
+      rate: conditions.cpu,
+    });
+  } // throw error if configured to emulate and returned false
 
-  if (
-    conditions.network !== undefined &&
-    network.canEmulateNetworkConditions()
-  ) {
+  // needs to ensure Network.enable
+  const { result: canEmulateNetworkConditions } = await client.send(
+    'Network.canEmulateNetworkConditions'
+  );
+  if (conditions.network !== undefined && canEmulateNetworkConditions) {
     const networkCondition = networkConditions[conditions.network];
 
     if (networkCondition) {
-      await network.emulateNetworkConditions(networkCondition);
+      await client.send('Network.emulateNetworkConditions', networkCondition);
     } else {
       throw new Error(
         `Could not find network emulation "${conditions.network}"`
@@ -80,11 +85,11 @@ export async function emulate(
 }
 
 export async function setCookies(
-  network: Network,
-  cookies: Network.SetCookieParameters[]
+  page: ProtocolConnection,
+  cookies: Protocol.Network.CookieParam[]
 ) {
   for (let i = 0; i < cookies.length; i++) {
     const cookie = filterObjectByKeys(cookies[i], ['name', 'value', 'domain']);
-    await network.setCookie(cookie);
+    await page.send('Network.setCookie', cookie);
   }
 }
