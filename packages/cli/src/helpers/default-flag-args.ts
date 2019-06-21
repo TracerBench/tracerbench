@@ -30,11 +30,12 @@ export const markerSets: IMarkerSets = {
 // these default flag args are
 // **auto documented** in the README.md
 export const defaultFlagArgs: ITBConfig = {
-  cpuThrottleRate: 4,
+  cpuThrottleRate: 2,
   markers: 'domComplete',
   browserArgs: [
     '--crash-dumps-dir=./tmp',
     '--disable-background-timer-throttling',
+    '--disable-dev-shm-usage',
     '--disable-gpu',
     '--disable-cache',
     '--disable-v8-idle-tasks',
@@ -71,6 +72,5 @@ export const defaultFlagArgs: ITBConfig = {
   runtimeStats: 'false',
   emulateDevice: '',
   emulateDeviceOrientation: 'vertical',
-  routes: ['/'],
   regressionThreshold: '0ms',
 };

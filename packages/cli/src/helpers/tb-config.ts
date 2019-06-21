@@ -7,7 +7,7 @@ export const EXPERIMENT_ENV_OVERRIDE_ATTR = 'experimentBenchmarkEnvironment';
 export const EXTENDS = 'extends';
 
 export interface ITBConfig {
-  [EXTENDS]?: string,
+  [EXTENDS]?: string;
   plotTitle?: string;
   methods?: string;
   cpuThrottleRate?: number | string;
@@ -23,7 +23,6 @@ export interface ITBConfig {
   locations?: string;
   filter?: string;
   traceFrame?: string;
-  routes?: string[];
   appName?: string;
   browserArgs?: string[];
   iterations?: number | string;

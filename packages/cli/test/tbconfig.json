@@ -8,12 +8,12 @@
   "controlURL": "https://www.tracerbench.com/",
   "experimentURL": "https://www.tracerbench.com/",
   "url": "https://www.tracerbench.com/",
-  "routes": ["/", "/foo", "/baz", "/buzz"],
   "tracingLocationSearch": "?tracing",
   "regressionThreshold": "-100ms",
   "appName": "tracerbench",
   "network": "cable",
-  "markers": [{
+  "markers": [
+    {
       "start": "fetchStart",
       "label": "jquery"
     },

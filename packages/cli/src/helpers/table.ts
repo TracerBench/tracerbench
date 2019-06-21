@@ -34,8 +34,12 @@ export default class TBTable {
         experimentInterquartileRange: `${stat.experimentInterquartileRange}μs`,
         controlSampleCount: `${stat.controlSamplesCount}`,
         experimentSampleCount: `${stat.experimentSamplesCount}`,
-        controlConfidenceInterval: `${stat.controlMean}μs +/- ${stat.controlCInt}μs`,
-        experimentConfidenceInterval: `${stat.experimentMean}μs +/- ${stat.experimentCInt}μs`,
+        controlConfidenceInterval: `${stat.controlMean}μs +/- ${
+          stat.controlCInt
+        }μs`,
+        experimentConfidenceInterval: `${stat.experimentMean}μs +/- ${
+          stat.experimentCInt
+        }μs`,
         controlDistributionHistogram: stat.controlDistributionHistogram,
         experimentDistributionHistogram: stat.experimentDistributionHistogram,
       });
@@ -52,24 +56,67 @@ export default class TBTable {
 
   // Based on the confidence interval with a margin of error of +\- N on N samples, TracerBench is 99% confident the:
 
-  // Control mean is between N and N. 
-  // Experiment mean is between N and N. 
+  // Control mean is between N and N.
+  // Experiment mean is between N and N.
   // With a delta between N and N.
 
   private setTableData() {
     this.display.forEach(stat => {
       this.table.push(
-        [{ colSpan: 2, content: `${chalkScheme.tbBranding.blue(`${this.heading} : ${stat.name}`) }` }],
-        ['Control Sample Count', { hAlign: 'right', content: `${stat.controlSamplesCount}` }],
-        ['Experiment Sample Count', { hAlign: 'right', content: `${stat.experimentSamplesCount}` }],
+        [
+          {
+            colSpan: 2,
+            content: `${chalkScheme.tbBranding.blue(
+              `${this.heading} : ${stat.name}`
+            )}`,
+          },
+        ],
+        [
+          'Control Sample Count',
+          { hAlign: 'right', content: `${stat.controlSamplesCount}` },
+        ],
+        [
+          'Experiment Sample Count',
+          { hAlign: 'right', content: `${stat.experimentSamplesCount}` },
+        ],
         ['Control Mean', { hAlign: 'right', content: `${stat.controlMean}` }],
-        ['Experiment Mean', { hAlign: 'right', content: `${stat.experimentMean}` }],
-        ['Control Standard Deviation', { hAlign: 'right', content: `${stat.controlStandardDeviation}` }],
-        ['Experiment Standard Deviation', { hAlign: 'right', content: `${stat.experimentStandardDeviation}` }],
-        ['Control 95% Confidence Interval', { hAlign: 'right', content: `${stat.controlMean}μs +/- ${stat.controlCInt}μs` }],
-        ['Experiment 95% Confidence Interval', { hAlign: 'right', content: `${stat.experimentMean}μs +/- ${stat.experimentCInt}μs` }],
-        ['Control Interquartile Range', { hAlign: 'right', content: `${stat.controlInterquartileRange}μs` }],
-        ['Experiment Interquartile Range', { hAlign: 'right', content: `${stat.experimentInterquartileRange}μs` }],
+        [
+          'Experiment Mean',
+          { hAlign: 'right', content: `${stat.experimentMean}` },
+        ],
+        [
+          'Control Standard Deviation',
+          { hAlign: 'right', content: `${stat.controlStandardDeviation}` },
+        ],
+        [
+          'Experiment Standard Deviation',
+          { hAlign: 'right', content: `${stat.experimentStandardDeviation}` },
+        ],
+        [
+          'Control 95% Confidence Interval',
+          {
+            hAlign: 'right',
+            content: `${stat.controlMean}μs +/- ${stat.controlCInt}μs`,
+          },
+        ],
+        [
+          'Experiment 95% Confidence Interval',
+          {
+            hAlign: 'right',
+            content: `${stat.experimentMean}μs +/- ${stat.experimentCInt}μs`,
+          },
+        ],
+        [
+          'Control Interquartile Range',
+          { hAlign: 'right', content: `${stat.controlInterquartileRange}μs` },
+        ],
+        [
+          'Experiment Interquartile Range',
+          {
+            hAlign: 'right',
+            content: `${stat.experimentInterquartileRange}μs`,
+          },
+        ],
         ['Estimator Δ', { hAlign: 'right', content: `${stat.estimator}μs` }],
         [
           'Rank-Sum Significant',
@@ -112,9 +159,3 @@ export default class TBTable {
     };
   }
 }
-
-// create a new tbtable for each route
-// let routes = ['/feed', '/profile']
-// each routes new TBTable()
-
-// cli.log(`\n\n${newBenchMarkTable.toString()}`);

@@ -29,9 +29,17 @@ import {
 } from '../helpers/flags';
 import { fidelityLookup } from '../helpers/default-flag-args';
 import { logCompareResults } from '../helpers/log-compare-results';
-import { checkEnvironmentSpecificOverride, convertMSToMicroseconds, getDefaultConfigFileOrOverride, parseMarkers } from '../helpers/utils';
+import {
+  checkEnvironmentSpecificOverride,
+  convertMSToMicroseconds,
+  getDefaultConfigFileOrOverride,
+  parseMarkers,
+} from '../helpers/utils';
 import { getEmulateDeviceSettingForKeyAndOrientation } from '../helpers/simulate-device-options';
-import { CONTROL_ENV_OVERRIDE_ATTR, EXPERIMENT_ENV_OVERRIDE_ATTR } from '../helpers/tb-config';
+import {
+  CONTROL_ENV_OVERRIDE_ATTR,
+  EXPERIMENT_ENV_OVERRIDE_ATTR,
+} from '../helpers/tb-config';
 
 export interface ICompareFlags {
   browserArgs: string[];
@@ -53,7 +61,8 @@ export interface ICompareFlags {
 }
 
 export default class Compare extends Command {
-  public static description = 'Compare the performance delta between an experiment and control';
+  public static description =
+    'Compare the performance delta between an experiment and control';
   public static flags = {
     browserArgs: browserArgs({ required: true }),
     cpuThrottleRate: cpuThrottleRate({ required: true }),
@@ -80,23 +89,13 @@ export default class Compare extends Command {
       debug,
       fidelity,
       markers,
-      regressionThreshold
+      regressionThreshold,
     } = flags as ICompareFlags;
 
     // modifies properties of flags that were not set
     // during flag.parse(). these are intentionally
     // not deconstructed as to maintain the mutable
     // flags object state
-    // if (controlURL.startsWith('file:/')) {
-    //   if (!fs.existsSync(controlURL)) {
-    //     this.error(`controlURL file not found: ${controlURL}`);
-    //   }
-    // }
-    // if (experimentURL.startsWith('file:/')) {
-    //   if (!fs.existsSync(controlURL)) {
-    //     this.error(`controlURL file not found: ${controlURL}`);
-    //   }
-    // }
     if (typeof fidelity === 'string') {
       flags.fidelity = parseInt((fidelityLookup as any)[fidelity], 10);
     }
@@ -119,13 +118,16 @@ export default class Compare extends Command {
       fs.mkdirSync(tbResultsFolder);
     }
 
-    const [controlSettings, experimentSettings] = this.generateControlExperimentEnvironmentSettings(flags);
+    const [
+      controlSettings,
+      experimentSettings,
+    ] = this.generateControlExperimentEnvironmentSettings(flags);
+
     // if debug flag then log X post mutations
     if (debug) {
       this.log(`\n FLAGS: ${JSON.stringify(flags)}`);
     }
 
-    // todo: leverage har-remix?
     const benchmarks = {
       control: new InitialRenderBenchmark(controlSettings),
       experiment: new InitialRenderBenchmark(experimentSettings),
@@ -139,25 +141,24 @@ export default class Compare extends Command {
           this.error(
             `Could not sample from provided urls\nCONTROL: ${
               flags.controlURL
-              }\nEXPERIMENT: ${flags.experimentURL}.`,
+            }\nEXPERIMENT: ${flags.experimentURL}.`
           );
         }
 
         fs.writeFileSync(
           `${flags.tbResultsFolder}/compare.json`,
-          JSON.stringify(results, null, 2),
+          JSON.stringify(results, null, 2)
         );
 
         fs.writeFileSync(
           `${flags.tbResultsFolder}/compare-stat-results.json`,
-          JSON.stringify(logCompareResults(results, flags, this), null, 2),
+          JSON.stringify(logCompareResults(results, flags, this), null, 2)
         );
       })
       .catch((err: any) => {
         this.error(err);
       });
   }
-
 
   /**
    * Final result of the configs are in the following order:
@@ -170,7 +171,9 @@ export default class Compare extends Command {
    *
    * @param flags - Object containing configs parsed from the Command class
    */
-  private generateControlExperimentEnvironmentSettings(flags: ICompareFlags): [IInitialRenderBenchmarkParams, IInitialRenderBenchmarkParams] {
+  private generateControlExperimentEnvironmentSettings(
+    flags: ICompareFlags
+  ): [IInitialRenderBenchmarkParams, IInitialRenderBenchmarkParams] {
     const delay = 100;
     const controlBrowser = { additionalArguments: flags.browserArgs };
     const experimentBrowser = { additionalArguments: flags.browserArgs };
@@ -180,12 +183,12 @@ export default class Compare extends Command {
     let experimentEmulateDeviceOrientation;
     let controlEmulateDevice;
     let controlEmulateDeviceOrientation;
-    let controlSettings;
-    let experimentSettings;
+    let controlSettings: IInitialRenderBenchmarkParams;
+    let experimentSettings: IInitialRenderBenchmarkParams;
     let tbConfig;
 
     try {
-      [ tbConfig ] = getDefaultConfigFileOrOverride();
+      [tbConfig] = getDefaultConfigFileOrOverride();
     } catch {
       tbConfig = undefined;
     }
@@ -193,27 +196,67 @@ export default class Compare extends Command {
     // config for the browsers to leverage socks proxy
     if (flags.socksPorts) {
       controlBrowser.additionalArguments.push(
-        `--proxy-server=socks5://0.0.0.0:${flags.socksPorts[0]}`,
+        `--proxy-server=socks5://0.0.0.0:${flags.socksPorts[0]}`
       );
       experimentBrowser.additionalArguments.push(
-        `--proxy-server=socks5://0.0.0.0:${flags.socksPorts[1]}`,
+        `--proxy-server=socks5://0.0.0.0:${flags.socksPorts[1]}`
       );
     }
 
-    controlNetwork = checkEnvironmentSpecificOverride('network', flags, CONTROL_ENV_OVERRIDE_ATTR, tbConfig);
-    controlEmulateDevice = checkEnvironmentSpecificOverride('emulateDevice', flags, CONTROL_ENV_OVERRIDE_ATTR, tbConfig);
-    controlEmulateDeviceOrientation = checkEnvironmentSpecificOverride('emulateDeviceOrientation', flags, CONTROL_ENV_OVERRIDE_ATTR, tbConfig);
-    experimentNetwork = checkEnvironmentSpecificOverride('network', flags, EXPERIMENT_ENV_OVERRIDE_ATTR, tbConfig);
-    experimentEmulateDevice = checkEnvironmentSpecificOverride('emulateDevice', flags, EXPERIMENT_ENV_OVERRIDE_ATTR, tbConfig);
-    experimentEmulateDeviceOrientation = checkEnvironmentSpecificOverride('emulateDeviceOrientation', flags, EXPERIMENT_ENV_OVERRIDE_ATTR, tbConfig);
+    controlNetwork = checkEnvironmentSpecificOverride(
+      'network',
+      flags,
+      CONTROL_ENV_OVERRIDE_ATTR,
+      tbConfig
+    );
+    controlEmulateDevice = checkEnvironmentSpecificOverride(
+      'emulateDevice',
+      flags,
+      CONTROL_ENV_OVERRIDE_ATTR,
+      tbConfig
+    );
+    controlEmulateDeviceOrientation = checkEnvironmentSpecificOverride(
+      'emulateDeviceOrientation',
+      flags,
+      CONTROL_ENV_OVERRIDE_ATTR,
+      tbConfig
+    );
+    experimentNetwork = checkEnvironmentSpecificOverride(
+      'network',
+      flags,
+      EXPERIMENT_ENV_OVERRIDE_ATTR,
+      tbConfig
+    );
+    experimentEmulateDevice = checkEnvironmentSpecificOverride(
+      'emulateDevice',
+      flags,
+      EXPERIMENT_ENV_OVERRIDE_ATTR,
+      tbConfig
+    );
+    experimentEmulateDeviceOrientation = checkEnvironmentSpecificOverride(
+      'emulateDeviceOrientation',
+      flags,
+      EXPERIMENT_ENV_OVERRIDE_ATTR,
+      tbConfig
+    );
 
     controlSettings = {
       browser: controlBrowser,
-      cpuThrottleRate: checkEnvironmentSpecificOverride('cpuThrottleRate', flags, CONTROL_ENV_OVERRIDE_ATTR, tbConfig),
+      cpuThrottleRate: checkEnvironmentSpecificOverride(
+        'cpuThrottleRate',
+        flags,
+        CONTROL_ENV_OVERRIDE_ATTR,
+        tbConfig
+      ),
       delay,
-      emulateDeviceSettings: getEmulateDeviceSettingForKeyAndOrientation(controlEmulateDevice, controlEmulateDeviceOrientation),
+      emulateDeviceSettings: getEmulateDeviceSettingForKeyAndOrientation(
+        controlEmulateDevice,
+        controlEmulateDeviceOrientation
+      ),
       markers: flags.markers,
-      networkConditions: controlNetwork ? networkConditions[controlNetwork] : flags.network,
+      networkConditions: controlNetwork
+        ? networkConditions[controlNetwork as keyof typeof networkConditions]
+        : flags.network,
       name: 'control',
       runtimeStats: flags.runtimeStats,
       saveTraces: () => `${flags.tbResultsFolder}/control.json`,
@@ -222,11 +265,21 @@ export default class Compare extends Command {
 
     experimentSettings = {
       browser: experimentBrowser,
-      cpuThrottleRate: checkEnvironmentSpecificOverride('cpuThrottleRate', flags, EXPERIMENT_ENV_OVERRIDE_ATTR, tbConfig),
+      cpuThrottleRate: checkEnvironmentSpecificOverride(
+        'cpuThrottleRate',
+        flags,
+        EXPERIMENT_ENV_OVERRIDE_ATTR,
+        tbConfig
+      ),
       delay,
-      emulateDeviceSettings: getEmulateDeviceSettingForKeyAndOrientation(experimentEmulateDevice, experimentEmulateDeviceOrientation),
+      emulateDeviceSettings: getEmulateDeviceSettingForKeyAndOrientation(
+        experimentEmulateDevice,
+        experimentEmulateDeviceOrientation
+      ),
       markers: flags.markers,
-      networkConditions: experimentNetwork ? networkConditions[experimentNetwork] : flags.network,
+      networkConditions: experimentNetwork
+        ? networkConditions[experimentNetwork as keyof typeof networkConditions]
+        : flags.network,
       name: 'experiment',
       runtimeStats: flags.runtimeStats,
       saveTraces: () => `${flags.tbResultsFolder}/experiment.json`,
@@ -234,4 +287,5 @@ export default class Compare extends Command {
     };
 
     return [controlSettings, experimentSettings];
-  }}
+  }
+}

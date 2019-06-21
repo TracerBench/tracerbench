@@ -79,11 +79,6 @@ export const tracingLocationSearch = flags.build({
   description: `The document location search param.`,
 });
 
-export const routes = flags.build({
-  default: () => getConfigDefault('routes'),
-  description: `All routes to be analyzed by TracerBench. A HAR will be created for each route.`,
-});
-
 export const appName = flags.build({
   default: () => getConfigDefault('appName'),
   description: 'The name of your application',

@@ -7,16 +7,18 @@
 [![License](https://img.shields.io/npm/l/tracerbench-cli.svg)](https://github.com/TracerBench/tracerbench/blob/master/package.json)
 
 <!-- toc -->
-* [Usage](#usage)
-* [Optional Config](#optional-config)
-* [Example Travis-CI Integration](#example-travis-ci-integration)
-* [FAQ](#faq)
-* [Commands](#commands)
-<!-- tocstop -->
+
+- [Usage](#usage)
+- [Optional Config](#optional-config)
+- [Example Travis-CI Integration](#example-travis-ci-integration)
+- [FAQ](#faq)
+- [Commands](#commands)
+  <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g tracerbench-cli
 $ tracerbench COMMAND
@@ -28,6 +30,7 @@ USAGE
   $ tracerbench COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Optional Config
@@ -46,7 +49,6 @@ The optional existance of a "tbconfig.json" file in the project root will be con
   "controlURL": "https://www.tracerbench.com/",
   "experimentURL": "https://www.tracerbench.com/",
   "url": "https://www.tracerbench.com/",
-  "routes": ["/", "/foo", "/baz", "/buzz"],
   "tracingLocationSearch": "?tracing",
   "regressionThreshold": "-100ms",
   "appName": "tracerbench",
@@ -95,12 +97,14 @@ The optional existance of a "tbconfig.json" file in the project root will be con
 ```
 
 # Example Travis-CI Integration
+
 In this working example the `travis-script.js` would be called from the travis yml file `travis.yml` via `yarn run <script>` included within your applications package.json (not shown) eg: `yarn tracerbench:compare`.
 
 - [travis.yml](https://github.com/TracerBench/tracerbench/blob/master/docs/travis-example.yml)
 - [travis-script.js](https://github.com/TracerBench/tracerbench/blob/master/docs/travis-example.js)
 
 The results of this test would resolve in
+
 1. The results are statistically significant
 2. The results contained a regression, however the regression is below a set threshold from `tbconfig.json`. (For example to mitigate against false-positives).
 3. The results contained a regression and the delta was significant enough to cause concern. (Recommend running the test again with a higher sample size to confirm).
@@ -161,12 +165,13 @@ s?: TRACE_EVENT_SCOPE;
 # Commands
 
 <!-- commands -->
-* [`tracerbench compare`](#tracerbench-compare)
-* [`tracerbench create-archive`](#tracerbench-create-archive)
-* [`tracerbench help [COMMAND]`](#tracerbench-help-command)
-* [`tracerbench marker-timings`](#tracerbench-marker-timings)
-* [`tracerbench report`](#tracerbench-report)
-* [`tracerbench trace`](#tracerbench-trace)
+
+- [`tracerbench compare`](#tracerbench-compare)
+- [`tracerbench create-archive`](#tracerbench-create-archive)
+- [`tracerbench help [COMMAND]`](#tracerbench-help-command)
+- [`tracerbench marker-timings`](#tracerbench-marker-timings)
+- [`tracerbench report`](#tracerbench-report)
+- [`tracerbench trace`](#tracerbench-trace)
 
 ## `tracerbench compare`
 
@@ -178,12 +183,12 @@ USAGE
 
 OPTIONS
   --browserArgs=browserArgs
-      (required) [default: 
+      (required) [default:
       --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-gpu,--disable-cache,--disable-v8-idle-tasks,
       --disable-translate,--disable-breakpad,--disable-sync,--disable-background-networking,--disable-default-apps,--disab
       le-extensions,--disable-notifications,--disable-hang-monitor,--headless,--hide-scrollbars,--metrics-recording-only,-
       -mute-audio,--no-default-browser-check,--no-first-run,--no-experiments,--no-sandbox,--noerrdialogs,--safebrowsing-di
-      sable-auto-update,--setIgnoreCertificateErrors=true,--v8-cache-options=none] (Default Recommended) Browser 
+      sable-auto-update,--setIgnoreCertificateErrors=true,--v8-cache-options=none] (Default Recommended) Browser
       additional options for the TracerBench render benchmark
 
   --controlURL=controlURL
@@ -337,4 +342,5 @@ OPTIONS
   --url=url
       (required) [default: http://localhost:8000/] URL to visit for create-archive, timings & trace commands
 ```
+
 <!-- commandsstop -->
