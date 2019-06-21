@@ -14,7 +14,7 @@ TracerBench has been greatly inspired by the Chromium benchmark tool [Telemetry]
 
 
 ## How does TracerBench compare to [Lighthouse](https://github.com/GoogleChrome/lighthouse)?
-TracerBench focuses on getting a low-variance performance report across many samples, where Lighthouse provides a high-variance report based on a single sample. Lighthouse enables many "disabled-by-default" tracing categories while TracerBench can be instrumented without any "disabled-by-default" and with minimal impact on your application; as such TracerBench instrumentation can be "check-in" and left in your application without worry of negative performance impacts.
+When comparing TracerBench to the most popular tool Chrome Developer Tools Lighthouse. The primary difference is TracerBench is focused on getting a low variance for a metric across many samples versus getting a hard to replicate “Lighthouse performance report”. Lighthouse is essentially a black-box, with developers unable to customize performance parameters in-depth and lacking proper statistical rigor. TracerBench on the other hand, can be highly instrumented, provides statistical rigor and adequate sampling of data. Additionally, TracerBench instrumentation has minimal impact on the overhead of the application; as such TracerBench instrumentation can be "check-in" and left in your application without worry of negative performance impacts.
 
 # User-Stories
 
