@@ -29,7 +29,7 @@ import {
 } from '../helpers/flags';
 import { fidelityLookup } from '../helpers/default-flag-args';
 import { logCompareResults } from '../helpers/log-compare-results';
-import { checkEnvironmentSpecificOverride, convertMSToMicroseconds, getTBConfigFromFile, parseMarkers } from '../helpers/utils';
+import { checkEnvironmentSpecificOverride, convertMSToMicroseconds, getDefaultConfigFileOrOverride, parseMarkers } from '../helpers/utils';
 import { getEmulateDeviceSettingForKeyAndOrientation } from '../helpers/simulate-device-options';
 import { CONTROL_ENV_OVERRIDE_ATTR, EXPERIMENT_ENV_OVERRIDE_ATTR } from '../helpers/tb-config';
 
@@ -185,7 +185,7 @@ export default class Compare extends Command {
     let tbConfig;
 
     try {
-      [ tbConfig ] = getTBConfigFromFile();
+      [ tbConfig ] = getDefaultConfigFileOrOverride();
     } catch {
       tbConfig = undefined;
     }

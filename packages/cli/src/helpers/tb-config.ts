@@ -4,8 +4,10 @@ import Protocol from 'devtools-protocol';
 
 export const CONTROL_ENV_OVERRIDE_ATTR = 'controlBenchmarkEnvironment';
 export const EXPERIMENT_ENV_OVERRIDE_ATTR = 'experimentBenchmarkEnvironment';
+export const EXTENDS = 'extends';
 
 export interface ITBConfig {
+  [EXTENDS]?: string,
   plotTitle?: string;
   methods?: string;
   cpuThrottleRate?: number | string;

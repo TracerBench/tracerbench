@@ -5,7 +5,7 @@ import * as logSymbols from 'log-symbols';
 import { IMarker, ITraceEvent } from 'tracerbench';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { IBenchmarkEnvironmentOverride, ITBConfig } from './tb-config';
+import { EXTENDS, IBenchmarkEnvironmentOverride, ITBConfig } from './tb-config';
 import * as JSON5 from 'json5';
 import { ICompareFlags } from '../commands/compare';
 
@@ -25,8 +25,8 @@ export const chalkScheme = {
     blue: chalk.rgb(24, 132, 228),
     aqua: chalk.rgb(56, 210, 211),
     dkBlue: chalk.rgb(10, 45, 70),
-    grey: chalk.rgb(153, 153, 153)
-  }
+    grey: chalk.rgb(153, 153, 153),
+  },
 };
 
 /**
@@ -54,39 +54,96 @@ export function checkEnvironmentSpecificOverride(attributeName: keyof ICompareFl
 /**
  * Attempt to read tbconfig json file
  *
- * @param altTBconfigPath - Override default path with this parameter
+ * @param tbConfigPath - Override default path with this parameter
  */
-export function getTBConfigFromFile (altTBconfigPath?: string): [ITBConfig, string] {
-  const tbConfigPath = altTBconfigPath ? altTBconfigPath : path.join(process.cwd(), 'tbconfig.json');
+export function getTBConfigFromFile(tbConfigPath: string): ITBConfig {
   try {
-    return [JSON5.parse(fs.readFileSync(tbConfigPath, 'utf8')), tbConfigPath];
-  } catch(error) {
+    return JSON5.parse(fs.readFileSync(tbConfigPath, 'utf8'));
+  } catch (error) {
     throw error;
   }
+}
+
+/**
+ * Merge the contents of the right object into the left. Simply replace numbers, strings, arrays
+ * and recursively call this function with objects.
+ *
+ * Note that typeof null == 'object'
+ *
+ * @param left - Destination object
+ * @param right - Content of this object takes precedence
+ */
+export function mergeLeft(left: { [key: string]: any }, right: { [key: string]: any }): { [key: string]: any } {
+  Object.keys(right).forEach((key) => {
+    const leftValue = left[key];
+    const rightValue = left[key];
+    const matchingObjectType = typeof leftValue === 'object' && typeof rightValue === 'object';
+    const isOneArray = Array.isArray(leftValue) || Array.isArray(rightValue);
+
+    if (matchingObjectType && (left[key] || right[key]) && !isOneArray) {
+      mergeLeft(left[key], right[key]);
+    } else {
+      left[key] = right[key];
+    }
+  });
+
+  return left;
+}
+
+/**
+ * Handles the extension of any configs specified in the "extended" attribute by using the mergeLeft function
+ *
+ * @param tbConfigPath - Path to the file to load and check if there is a parent to extend
+ */
+export function resolveConfigFile(tbConfigPath: string): [ITBConfig, string] {
+  let tbConfig;
+  let parentConfig;
+
+  try {
+    tbConfig = getTBConfigFromFile(tbConfigPath);
+    if (tbConfig[EXTENDS]) {
+      [parentConfig] = resolveConfigFile(path.join(path.dirname(tbConfigPath), tbConfig[EXTENDS]!));
+      tbConfig = mergeLeft(parentConfig, tbConfig);
+    }
+    return [tbConfig, tbConfigPath];
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
+ * Determines if the default expected location of the tbconfig.json should be used or a given override and calls\
+ * resolveConfigFile;
+ *
+ * @param altTBConfigPath - Optional override path to a config json file
+ */
+export function getDefaultConfigFileOrOverride(altTBConfigPath?: string) {
+  const tbConfigPath = altTBConfigPath ? altTBConfigPath : path.join(process.cwd(), 'tbconfig.json');
+  return resolveConfigFile(tbConfigPath);
 }
 
 export function getConfigDefault(
   id: ITBConfigKeys,
   defaultValue?: any,
-  altTBconfigPath?: string
+  altTBConfigPath?: string,
 ) {
   let tbConfigPath;
   let tbConfig;
 
   try {
-    [tbConfig, tbConfigPath] = getTBConfigFromFile(altTBconfigPath);
+    [tbConfig, tbConfigPath] = getDefaultConfigFileOrOverride(altTBConfigPath);
     if (tbConfig[id]) {
       console.warn(
         `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON5.stringify(
-          tbConfig[id]
-        )} from ${tbConfigPath}`
+          tbConfig[id],
+        )} from ${tbConfigPath}`,
       );
       return tbConfig[id];
     } else if (defaultValue) {
       console.warn(
         `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON5.stringify(
-          defaultValue
-        )} from defaults`
+          defaultValue,
+        )} from defaults`,
       );
       return defaultValue;
     } else {
@@ -97,8 +154,8 @@ export function getConfigDefault(
       if (defaultValue) {
         console.warn(
           `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON5.stringify(
-            defaultValue
-          )} from defaults`
+            defaultValue,
+          )} from defaults`,
         );
         return defaultValue;
       }
@@ -216,7 +273,7 @@ export function removeDuplicates<T>(collection: T[]) {
 export function fillArray(
   arrLngth: number,
   incr: number = 1,
-  strt: number = 0
+  strt: number = 0,
 ): number[] {
   const a = [];
   while (a.length < arrLngth) {
@@ -228,6 +285,7 @@ export function fillArray(
   }
   return a;
 }
+
 /**
  * "name" is expected to be a titlecased string. We want something the user can type easily so the passed string
  * is converted into lowercased words dasherized. Any extra "/" will also be removed.
@@ -237,7 +295,7 @@ export function fillArray(
 export function convertToTypable(name: string): string {
   const split = name.split(' ');
   const lowercasedWords = split.map(word =>
-    word.toLowerCase().replace(/\//g, '')
+    word.toLowerCase().replace(/\//g, ''),
   );
   return lowercasedWords.join('-');
 }
