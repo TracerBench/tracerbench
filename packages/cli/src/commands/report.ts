@@ -1,5 +1,6 @@
-import * as fs from 'fs-extra';
 import * as execa from 'execa';
+import * as fs from 'fs-extra';
+import { pathToFileURL } from 'url';
 
 import { findChrome } from 'chrome-debugging-client';
 import { join, resolve } from 'path';
@@ -79,7 +80,7 @@ export default class Report extends Command {
       '--headless',
       '--disable-gpu',
       `--print-to-pdf=${absOutputPath}`,
-      `file://${absPathToHTML}`,
+      pathToFileURL(absPathToHTML).toString()
     ]);
 
     this.log(`Written files out at ${absPathToHTML} and ${absOutputPath}`);
