@@ -7,30 +7,27 @@
 [![License](https://img.shields.io/npm/l/tracerbench-cli.svg)](https://github.com/TracerBench/tracerbench/blob/master/package.json)
 
 <!-- toc -->
-
-- [Usage](#usage)
-- [Optional Config](#optional-config)
-- [Example Travis-CI Integration](#example-travis-ci-integration)
-- [FAQ](#faq)
-- [Commands](#commands)
-  <!-- tocstop -->
+* [Usage](#usage)
+* [Optional Config](#optional-config)
+* [Example Travis-CI Integration](#example-travis-ci-integration)
+* [FAQ](#faq)
+* [Commands](#commands)
+<!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g tracerbench-cli
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench-cli/2.0.0-beta.17 darwin-x64 node-v10.15.3
+tracerbench-cli/2.0.0-beta.17 darwin-x64 node-v10.15.2
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Optional Config
@@ -165,13 +162,11 @@ s?: TRACE_EVENT_SCOPE;
 # Commands
 
 <!-- commands -->
-
-- [`tracerbench compare`](#tracerbench-compare)
-- [`tracerbench create-archive`](#tracerbench-create-archive)
-- [`tracerbench help [COMMAND]`](#tracerbench-help-command)
-- [`tracerbench marker-timings`](#tracerbench-marker-timings)
-- [`tracerbench report`](#tracerbench-report)
-- [`tracerbench trace`](#tracerbench-trace)
+* [`tracerbench compare`](#tracerbench-compare)
+* [`tracerbench create-archive`](#tracerbench-create-archive)
+* [`tracerbench help [COMMAND]`](#tracerbench-help-command)
+* [`tracerbench marker-timings`](#tracerbench-marker-timings)
+* [`tracerbench trace`](#tracerbench-trace)
 
 ## `tracerbench compare`
 
@@ -183,19 +178,19 @@ USAGE
 
 OPTIONS
   --browserArgs=browserArgs
-      (required) [default:
-      --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-gpu,--disable-cache,--disable-v8-idle-tasks,
-      --disable-translate,--disable-breakpad,--disable-sync,--disable-background-networking,--disable-default-apps,--disab
-      le-extensions,--disable-notifications,--disable-hang-monitor,--headless,--hide-scrollbars,--metrics-recording-only,-
-      -mute-audio,--no-default-browser-check,--no-first-run,--no-experiments,--no-sandbox,--noerrdialogs,--safebrowsing-di
-      sable-auto-update,--setIgnoreCertificateErrors=true,--v8-cache-options=none] (Default Recommended) Browser
-      additional options for the TracerBench render benchmark
+      (required) [default: 
+      --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-dev-shm-usage,--disable-gpu,--disable-cache,
+      --disable-v8-idle-tasks,--disable-translate,--disable-breakpad,--disable-sync,--disable-background-networking,--disa
+      ble-default-apps,--disable-extensions,--disable-notifications,--disable-hang-monitor,--headless,--hide-scrollbars,--
+      metrics-recording-only,--mute-audio,--no-default-browser-check,--no-first-run,--no-experiments,--no-sandbox,--noerrd
+      ialogs,--safebrowsing-disable-auto-update,--setIgnoreCertificateErrors=true,--v8-cache-options=none] (Default 
+      Recommended) Browser additional options for the TracerBench render benchmark
 
   --controlURL=controlURL
       (required) [default: http://localhost:8000/] Control URL to visit for compare command
 
   --cpuThrottleRate=cpuThrottleRate
-      (required) [default: 4] CPU throttle multiplier
+      (required) [default: 2] CPU throttle multiplier
 
   --debug
       Debug flag per command. Will output noisy command
@@ -234,7 +229,7 @@ OPTIONS
       Specify a socks proxy port as browser option for control and experiment
 
   --tbResultsFolder=tbResultsFolder
-      (required) [default: ./tracerbench-results] The output folder path for all tracerbench results
+      (required) [default: ./tracerbench-results] The output filepath for all tracerbench results
 
   --tracingLocationSearch=tracingLocationSearch
       (required) [default: ?tracing] The document location search param.
@@ -249,8 +244,8 @@ USAGE
   $ tracerbench create-archive
 
 OPTIONS
-  --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output folder path for all
-                                     tracerbench results
+  --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output filepath for all tracerbench
+                                     results
 
   --url=url                          (required) [default: http://localhost:8000/] URL to visit for create-archive,
                                      timings & trace commands
@@ -284,29 +279,13 @@ USAGE
 OPTIONS
   --filter=filter                    User timing marks start with
 
-  --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output folder path for all
-                                     tracerbench results
+  --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output filepath for all tracerbench
+                                     results
 
   --traceFrame=traceFrame            Specify a trace insights frame
 
   --url=url                          (required) [default: http://localhost:8000/] URL to visit for create-archive,
                                      timings & trace commands
-```
-
-## `tracerbench report`
-
-Parses the output json from tracerbench and formats it into pdf and html
-
-```
-USAGE
-  $ tracerbench report
-
-OPTIONS
-  --inputFilePath=inputFilePath      (required) [default: ./tracerbench-results/compare.json] The json output filepath
-                                     for tracerbench result
-
-  --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output folder path for all
-                                     tracerbench results
 ```
 
 ## `tracerbench trace`
@@ -319,7 +298,7 @@ USAGE
 
 OPTIONS
   --cpuThrottleRate=cpuThrottleRate
-      (required) [default: 4] CPU throttle multiplier
+      (required) [default: 2] CPU throttle multiplier
 
   --insights
       Analyze insights from command.
@@ -337,10 +316,9 @@ OPTIONS
       [default: none] Simulated network conditions.
 
   --tbResultsFolder=tbResultsFolder
-      (required) [default: ./tracerbench-results] The output folder path for all tracerbench results
+      (required) [default: ./tracerbench-results] The output filepath for all tracerbench results
 
   --url=url
       (required) [default: http://localhost:8000/] URL to visit for create-archive, timings & trace commands
 ```
-
 <!-- commandsstop -->
