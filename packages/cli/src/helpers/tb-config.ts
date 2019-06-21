@@ -31,6 +31,8 @@ export interface ITBConfig {
   emulateDevice?: string;
   emulateDeviceOrientation?: string;
   socksPorts?: [string, string];
+  inputFilePath?: string;
+  outputFilePath?: string;
   regressionThreshold?: number | string;
 
   // Optional overrides specific to control or experiment benchmark environments

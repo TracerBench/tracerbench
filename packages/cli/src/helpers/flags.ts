@@ -135,7 +135,7 @@ export const network = flags.build({
 export const tbResultsFolder = flags.build({
   default: () =>
     getConfigDefault('tbResultsFolder', defaultFlagArgs.tbResultsFolder),
-  description: 'The output filepath for all tracerbench results',
+  description: 'The output folder path for all tracerbench results',
 });
 
 export const url = flags.build({

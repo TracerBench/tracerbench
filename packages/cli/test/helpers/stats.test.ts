@@ -1,4 +1,4 @@
-import { Stats } from '../../src/helpers/stats';
+import { Stats } from '../../src/helpers/statistics/stats';
 import { expect } from 'chai';
 import { fillArray } from '../../src/helpers/utils';
 

@@ -1,9 +1,9 @@
 import { fidelityLookup, PerformanceTimingMark, markerSets, defaultFlagArgs } from './default-flag-args';
 import deviceSettings, { EmulateDeviceSetting } from './simulate-device-options';
-import { Stats } from './stats';
+import { Stats } from './statistics/stats';
 import { ITBConfig, INetworkConditions } from './tb-config';
-import { getWilcoxonRankSumTest } from './wilcoxon-rank-sum';
-import { getWilcoxonSignedRankTest } from './wilcoxon-signed-rank';
+import { getWilcoxonRankSumTest } from './statistics/wilcoxon-rank-sum';
+import { getWilcoxonSignedRankTest } from './statistics/wilcoxon-signed-rank';
 
 export {
   fidelityLookup,
