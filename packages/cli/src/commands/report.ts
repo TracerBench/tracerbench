@@ -1,6 +1,6 @@
 import * as fs from 'fs-extra';
+import * as execa from 'execa';
 
-import { execSync } from 'child_process';
 import { findChrome } from 'chrome-debugging-client';
 import { join, resolve } from 'path';
 import { Command } from '@oclif/command';
@@ -29,7 +29,6 @@ export default class Report extends Command {
     let renderedHTML;
     let htmlOutputPath;
     let outputFileName;
-    let chromeArgs;
     let inputData: ITracerBenchTraceResult[] = [];
 
     // If the input file cannot be found, exit with and error
@@ -74,8 +73,15 @@ export default class Report extends Command {
 
     absOutputPath = resolve(join(tbResultsFolder + `/${outputFileName}.pdf`));
 
-    chromeArgs = `--headless --disable-gpu --print-to-pdf file://${absPathToHTML}`;
-    execSync(`${findChrome()} ${chromeArgs}`);
+    const chromeExecutablePath = findChrome();
+
+    await execa(chromeExecutablePath, [
+      '--headless',
+      '--disable-gpu',
+      `--print-to-pdf=${absOutputPath}`,
+      `file://${absPathToHTML}`,
+    ]);
+
     this.log(`Written files out at ${absPathToHTML} and ${absOutputPath}`);
   }
 

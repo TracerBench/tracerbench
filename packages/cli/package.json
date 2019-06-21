@@ -33,7 +33,8 @@
     "ora": "^3.4.0",
     "path": "0.12.7",
     "tracerbench": "^2.0.0-beta.11",
-    "tslib": "^1.9.3"
+    "tslib": "^1.9.3",
+    "execa": "^1.0.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.21.0",
@@ -55,6 +56,7 @@
     "@types/mock-fs": "3.6.30",
     "@types/node": "^10.12.18",
     "@types/ora": "^3.2.0",
+    "@types/execa": "^0.9.0",
     "chai": "^4.2.0",
     "chai-fs": "^2.0.0",
     "mocha": "^5.2.0",
