@@ -24,8 +24,6 @@ describe('report: creates html', () => {
         ]);
 
         await Report.run([
-          '--inputFilePath',
-          `${TB_RESULTS_FOLDER}/compare.json`,
           '--tbResultsFolder',
           `${TB_RESULTS_FOLDER}`,
         ]);
