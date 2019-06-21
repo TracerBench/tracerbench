@@ -165,8 +165,9 @@ const templateRaw = `
         <div class="col">
             <h1>Resources</h1>
             <ul>
+                <li><a href="https://github.com/TracerBench/tracerbench/tree/extension#statistics-primer" target="_blank">Stats Primer</a></li>
                 <li><a href="https://towardsdatascience.com/understanding-boxplots-5e2df7bcbd51" target="_blank">Understanding Boxplots</a></li>
-                <li><a href="https://newonlinecourses.science.psu.edu/stat414/node/318/" target="_blank">The Sign Test for a Median</a></li>
+                <li><a href="https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test" target="_blank">Wilcoxon Signed-Rank Test</a></li>
             </ul>
         </div>
     </div>
