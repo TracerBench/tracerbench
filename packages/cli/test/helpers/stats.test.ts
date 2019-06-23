@@ -12,54 +12,41 @@ const name = 'stats-test';
 const stats = new Stats({ control, experiment, name });
 
 describe('stats', () => {
-  it(`getRange()`, () => {
-    expect(stats.range.min).to.equal(1);
-    expect(stats.range.max).to.equal(50);
+  it(`name()`, () => {
+    expect(stats.name).to.equal('stats-test');
   });
 
-  it(`getHistogram()`, () => {
-    const cHistogram = stats.controlDistributionHistogram;
-    const eHistogram = stats.experimentDistributionHistogram;
-    const cLength = cHistogram.length;
-    const eLength = eHistogram.length;
-
-    expect(cHistogram[0]).to.equal(4);
-    expect(cHistogram[cLength - 1]).to.equal(0);
-    expect(cHistogram.length).to.equal(11);
-    expect(eHistogram[0]).to.equal(0);
-    expect(eHistogram[eLength - 1]).to.equal(1);
-    expect(eHistogram.length).to.equal(11);
+  it(`confidenceInterval()`, () => {
+    expect(stats.confidenceInterval.min).to.equal(-0.02);
+    expect(stats.confidenceInterval.max).to.equal(-0.02);
   });
 
-  it(`getQuantiles()`, () => {
-    const cQuantiles = stats.controlQuantiles;
-    const eQuantiles = stats.experimentQuantiles;
+  it(`sevenFigureSummary()`, () => {
+    const controlQuantiles = stats.sevenFigureSummary.control;
+    const experimentQuantiles = stats.sevenFigureSummary.experiment;
 
-    // buckets
-    expect(cQuantiles.length).to.equal(11);
-    expect(eQuantiles.length).to.equal(11);
+    expect(controlQuantiles.min).to.equal(0.001);
+    expect(controlQuantiles.max).to.equal(0.025);
+    expect(controlQuantiles[25]).to.equal(0.007);
+    expect(controlQuantiles[50]).to.equal(0.013);
+    expect(controlQuantiles[75]).to.equal(0.019);
 
-    // median
-    expect(cQuantiles[5].p).to.equal(0.5);
-    expect(cQuantiles[5].val).to.equal(13);
-    expect(eQuantiles[5].p).to.equal(0.5);
-    expect(eQuantiles[5].val).to.equal(38);
-
-    // 3rd decile
-    expect(cQuantiles[3].val).to.equal(8.2);
-    expect(eQuantiles[3].val).to.equal(33.2);
-
-    // 6th decile
-    expect(cQuantiles[6].val).to.equal(15.399999999999999);
-    expect(eQuantiles[6].val).to.equal(40.4);
+    expect(experimentQuantiles.min).to.equal(0.026);
+    expect(experimentQuantiles.max).to.equal(0.05);
+    expect(experimentQuantiles[10]).to.equal(0.0284);
+    expect(experimentQuantiles[90]).to.equal(0.0476);
   });
 
   it(`getHodgesLehmann()`, () => {
-    expect(stats.estimator).to.equal(-25);
+    expect(stats.estimator).to.equal(-0.025);
+  });
+
+  it(`isSigWilcoxonRankSumTest()`, () => {
+    expect(stats.isSigWilcoxonRankSumTest).to.equal('No');
   });
 
   it(`getSparkline()`, () => {
-    expect(stats.controlDistributionSparkline).to.equal('▆████▂▁▁▁▁▁');
-    expect(stats.experimentDistributionSparkline).to.equal('▁▁▁▁▁▆████▂');
+    expect(stats.sparkLine.control).to.equal('▆████▂▁▁▁▁▁');
+    expect(stats.sparkLine.experiment).to.equal('▁▁▁▁▁▆████▂');
   });
 });
