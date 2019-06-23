@@ -1,220 +1,249 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "additionalProperties": {},
-  "definitions": {
-    "IBenchmarkEnvironmentOverride": {
-      "additionalProperties": {},
-      "properties": {
-        "cpuThrottle": {
-          "type": "number"
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "additionalProperties": {
+    },
+    "definitions": {
+        "IBenchmarkEnvironmentOverride": {
+            "additionalProperties": {
+            },
+            "properties": {
+                "cpuThrottle": {
+                    "type": "number"
+                },
+                "emulateDevice": {
+                    "type": "string"
+                },
+                "emulateDeviceOrientation": {
+                    "type": "string"
+                },
+                "network": {
+                    "enum": [
+                        "2g",
+                        "3g",
+                        "4g",
+                        "FIOS",
+                        "LTE",
+                        "cable",
+                        "dialup",
+                        "dsl",
+                        "edge",
+                        "em-3g",
+                        "fast-3g",
+                        "none",
+                        "offline",
+                        "slow-3g"
+                    ],
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
+        "IMarker": {
+            "properties": {
+                "label": {
+                    "description": "Label of phase",
+                    "type": "string"
+                },
+                "start": {
+                    "description": "performance.mark name",
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        }
+    },
+    "properties": {
+        "appName": {
+            "type": "string"
+        },
+        "browserArgs": {
+            "items": {
+                "type": "string"
+            },
+            "type": "array"
+        },
+        "controlBenchmarkEnvironment": {
+            "$ref": "#/definitions/IBenchmarkEnvironmentOverride"
+        },
+        "controlURL": {
+            "type": "string"
+        },
+        "cpuThrottleRate": {
+            "type": [
+                "string",
+                "number"
+            ]
         },
         "emulateDevice": {
-          "type": "string"
+            "type": "string"
         },
         "emulateDeviceOrientation": {
-          "type": "string"
-        },
-        "network": {
-          "enum": [
-            "2g",
-            "3g",
-            "4g",
-            "FIOS",
-            "LTE",
-            "cable",
-            "dialup",
-            "dsl",
-            "edge",
-            "em-3g",
-            "fast-3g",
-            "none",
-            "offline",
-            "slow-3g"
-          ],
-          "type": "string"
-        }
-      },
-      "type": "object"
-    },
-    "IMarker": {
-      "properties": {
-        "label": {
-          "description": "Label of phase",
-          "type": "string"
-        },
-        "start": {
-          "description": "performance.mark name",
-          "type": "string"
-        }
-      },
-      "type": "object"
-    }
-  },
-  "properties": {
-    "appName": {
-      "type": "string"
-    },
-    "browserArgs": {
-      "items": {
-        "type": "string"
-      },
-      "type": "array"
-    },
-    "controlBenchmarkEnvironment": {
-      "$ref": "#/definitions/IBenchmarkEnvironmentOverride"
-    },
-    "controlURL": {
-      "type": "string"
-    },
-    "cpuThrottleRate": {
-      "type": ["string", "number"]
-    },
-    "emulateDevice": {
-      "type": "string"
-    },
-    "emulateDeviceOrientation": {
-      "type": "string"
-    },
-    "event": {
-      "type": "string"
-    },
-    "experimentBenchmarkEnvironment": {
-      "$ref": "#/definitions/IBenchmarkEnvironmentOverride"
-    },
-    "experimentURL": {
-      "type": "string"
-    },
-    "fidelity": {
-      "enum": ["high", "low", "medium", "test"],
-      "type": "string"
-    },
-    "filter": {
-      "type": "string"
-    },
-    "iterations": {
-      "type": ["string", "number"]
-    },
-    "locations": {
-      "type": "string"
-    },
-    "markers": {
-      "anyOf": [
-        {
-          "items": {
             "type": "string"
-          },
-          "type": "array"
         },
-        {
-          "items": {
-            "$ref": "#/definitions/IMarker"
-          },
-          "type": "array"
+        "event": {
+            "type": "string"
         },
-        {
-          "items": {
+        "experimentBenchmarkEnvironment": {
+            "$ref": "#/definitions/IBenchmarkEnvironmentOverride"
+        },
+        "experimentURL": {
+            "type": "string"
+        },
+        "extends": {
+            "type": "string"
+        },
+        "fidelity": {
             "enum": [
-              "connectEnd",
-              "connectStart",
-              "domComplete",
-              "domContentLoadedEventEnd",
-              "domContentLoadedEventStart",
-              "domInteractive",
-              "domLoading",
-              "domainLookupEnd",
-              "domainLookupStart",
-              "fetchStart",
-              "loadEventEnd",
-              "loadEventStart",
-              "navigationStart",
-              "redirectEnd",
-              "redirectStart",
-              "requestStart",
-              "responseEnd",
-              "responseStart",
-              "secureConnectionStart",
-              "toJSON",
-              "unloadEventEnd",
-              "unloadEventStart"
+                "high",
+                "low",
+                "medium",
+                "test"
             ],
             "type": "string"
-          },
-          "type": "array"
         },
-        {
-          "type": "string"
-        }
-      ]
-    },
-    "methods": {
-      "type": "string"
-    },
-    "network": {
-      "enum": [
-        "2g",
-        "3g",
-        "4g",
-        "FIOS",
-        "LTE",
-        "cable",
-        "dialup",
-        "dsl",
-        "edge",
-        "em-3g",
-        "fast-3g",
-        "none",
-        "offline",
-        "slow-3g"
-      ],
-      "type": "string"
-    },
-    "plotTitle": {
-      "type": "string"
-    },
-    "regressionThreshold": {
-      "type": ["string", "number"]
-    },
-    "report": {
-      "type": "string"
-    },
-    "runtimeStats": {
-      "enum": ["false", "true"],
-      "type": "string"
-    },
-    "socksPorts": {
-      "additionalItems": {
-        "anyOf": [
-          {
+        "filter": {
             "type": "string"
-          },
-          {
-            "type": "string"
-          }
-        ]
-      },
-      "items": [
-        {
-          "type": "string"
         },
-        {
-          "type": "string"
+        "inputFilePath": {
+            "type": "string"
+        },
+        "iterations": {
+            "type": [
+                "string",
+                "number"
+            ]
+        },
+        "locations": {
+            "type": "string"
+        },
+        "markers": {
+            "anyOf": [
+                {
+                    "items": {
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                {
+                    "items": {
+                        "$ref": "#/definitions/IMarker"
+                    },
+                    "type": "array"
+                },
+                {
+                    "items": {
+                        "enum": [
+                            "connectEnd",
+                            "connectStart",
+                            "domComplete",
+                            "domContentLoadedEventEnd",
+                            "domContentLoadedEventStart",
+                            "domInteractive",
+                            "domLoading",
+                            "domainLookupEnd",
+                            "domainLookupStart",
+                            "fetchStart",
+                            "loadEventEnd",
+                            "loadEventStart",
+                            "navigationStart",
+                            "redirectEnd",
+                            "redirectStart",
+                            "requestStart",
+                            "responseEnd",
+                            "responseStart",
+                            "secureConnectionStart",
+                            "toJSON",
+                            "unloadEventEnd",
+                            "unloadEventStart"
+                        ],
+                        "type": "string"
+                    },
+                    "type": "array"
+                },
+                {
+                    "type": "string"
+                }
+            ]
+        },
+        "methods": {
+            "type": "string"
+        },
+        "network": {
+            "enum": [
+                "2g",
+                "3g",
+                "4g",
+                "FIOS",
+                "LTE",
+                "cable",
+                "dialup",
+                "dsl",
+                "edge",
+                "em-3g",
+                "fast-3g",
+                "none",
+                "offline",
+                "slow-3g"
+            ],
+            "type": "string"
+        },
+        "outputFilePath": {
+            "type": "string"
+        },
+        "plotTitle": {
+            "type": "string"
+        },
+        "regressionThreshold": {
+            "type": [
+                "string",
+                "number"
+            ]
+        },
+        "report": {
+            "type": "string"
+        },
+        "runtimeStats": {
+            "enum": [
+                "false",
+                "true"
+            ],
+            "type": "string"
+        },
+        "socksPorts": {
+            "additionalItems": {
+                "anyOf": [
+                    {
+                        "type": "string"
+                    },
+                    {
+                        "type": "string"
+                    }
+                ]
+            },
+            "items": [
+                {
+                    "type": "string"
+                },
+                {
+                    "type": "string"
+                }
+            ],
+            "minItems": 2,
+            "type": "array"
+        },
+        "tbResultsFolder": {
+            "type": "string"
+        },
+        "traceFrame": {
+            "type": "string"
+        },
+        "tracingLocationSearch": {
+            "type": "string"
+        },
+        "url": {
+            "type": "string"
         }
-      ],
-      "minItems": 2,
-      "type": "array"
     },
-    "tbResultsFolder": {
-      "type": "string"
-    },
-    "traceFrame": {
-      "type": "string"
-    },
-    "tracingLocationSearch": {
-      "type": "string"
-    },
-    "url": {
-      "type": "string"
-    }
-  },
-  "type": "object"
+    "type": "object"
 }
+

@@ -1,6 +1,19 @@
 import * as Table from 'cli-table3';
-import { Stats } from './statistics/stats';
+import { Stats, ISevenFigureSummary } from './statistics/stats';
 import { chalkScheme } from './utils';
+
+export interface ICompareJSONResults {
+  heading: string;
+  statName: string;
+  rankSumSignificant: string;
+  estimatorDelta: string;
+  controlSampleCount: number;
+  experimentSampleCount: number;
+  confidenceIntervalMin: string;
+  confidenceIntervalMax: string;
+  controlSevenFigureSummary: ISevenFigureSummary;
+  experimentSevenFigureSummary: ISevenFigureSummary;
+}
 
 export default class TBTable {
   public config: Table.TableConstructorOptions;
@@ -17,32 +30,23 @@ export default class TBTable {
     this.isSigWilcoxonRankSumTestArray = [];
     this.estimatorDeltas = [];
   }
-  // return table data for jsonResults
-  public getData(): object[] {
-    const a: object[] = [];
+  // return table data for --json flag
+  public getData(): ICompareJSONResults[] {
+    const a: ICompareJSONResults[] = [];
     this.display.forEach(stat => {
       a.push({
         heading: this.heading,
         statName: stat.name,
         rankSumSignificant: stat.isSigWilcoxonRankSumTest,
-        controlMean: `${stat.controlMean}μs`,
-        experimentMean: `${stat.experimentMean}μs`,
-        estimatorDelta: `${stat.estimator}μs`,
-        controlStandardDeviation: `${stat.controlStandardDeviation}μs`,
-        experimentStandardDeviation: `${stat.experimentStandardDeviation}μs`,
-        controlInterquartileRange: `${stat.controlInterquartileRange}μs`,
-        experimentInterquartileRange: `${stat.experimentInterquartileRange}μs`,
-        controlSampleCount: `${stat.controlSamplesCount}`,
-        experimentSampleCount: `${stat.experimentSamplesCount}`,
-        controlConfidenceInterval: `${stat.controlMean}μs +/- ${
-          stat.controlCInt
-        }μs`,
-        experimentConfidenceInterval: `${stat.experimentMean}μs +/- ${
-          stat.experimentCInt
-        }μs`,
-        controlDistributionHistogram: stat.controlDistributionHistogram,
-        experimentDistributionHistogram: stat.experimentDistributionHistogram,
+        estimatorDelta: `${stat.estimator}ms`,
+        controlSampleCount: stat.sampleCount.control,
+        experimentSampleCount: stat.sampleCount.experiment,
+        confidenceIntervalMin: `${stat.confidenceInterval.min}ms`,
+        confidenceIntervalMax: `${stat.confidenceInterval.max}ms`,
+        controlSevenFigureSummary: stat.sevenFigureSummary.control,
+        experimentSevenFigureSummary: stat.sevenFigureSummary.experiment,
       });
+
       this.isSigWilcoxonRankSumTestArray.push(stat.isSigWilcoxonRankSumTest);
       this.estimatorDeltas.push(stat.estimator);
     });
@@ -53,12 +57,6 @@ export default class TBTable {
     this.setTableData();
     return this.table.toString();
   }
-
-  // Based on the confidence interval with a margin of error of +\- N on N samples, TracerBench is 99% confident the:
-
-  // Control mean is between N and N.
-  // Experiment mean is between N and N.
-  // With a delta between N and N.
 
   private setTableData() {
     this.display.forEach(stat => {
@@ -72,65 +70,76 @@ export default class TBTable {
           },
         ],
         [
-          'Control Sample Count',
-          { hAlign: 'right', content: `${stat.controlSamplesCount}` },
-        ],
-        [
-          'Experiment Sample Count',
-          { hAlign: 'right', content: `${stat.experimentSamplesCount}` },
-        ],
-        ['Control Mean', { hAlign: 'right', content: `${stat.controlMean}` }],
-        [
-          'Experiment Mean',
-          { hAlign: 'right', content: `${stat.experimentMean}` },
-        ],
-        [
-          'Control Standard Deviation',
-          { hAlign: 'right', content: `${stat.controlStandardDeviation}` },
-        ],
-        [
-          'Experiment Standard Deviation',
-          { hAlign: 'right', content: `${stat.experimentStandardDeviation}` },
-        ],
-        [
-          'Control 95% Confidence Interval',
           {
-            hAlign: 'right',
-            content: `${stat.controlMean}μs +/- ${stat.controlCInt}μs`,
+            vAlign: 'center',
+            rowSpan: 2,
+            colSpan: 1,
+            content: 'Sample Counts:',
+          },
+          `Control: ${stat.sampleCount.control}`,
+        ],
+        [`Experiment: ${stat.sampleCount.experiment}`],
+        [],
+        [
+          {
+            vAlign: 'center',
+            rowSpan: 7,
+            colSpan: 1,
+            content: 'Control Seven Figure Summary:',
+          },
+          `MIN: ${stat.sevenFigureSummary.control.min}ms`,
+        ],
+        [`MAX: ${stat.sevenFigureSummary.control.max}ms`],
+        [`10th: ${stat.sevenFigureSummary.control[10]}ms`],
+        [`25th: ${stat.sevenFigureSummary.control[25]}ms`],
+        [`50th: ${stat.sevenFigureSummary.control[50]}ms`],
+        [`75th: ${stat.sevenFigureSummary.control[75]}ms`],
+        [`90th: ${stat.sevenFigureSummary.control[90]}ms`],
+        [],
+        [
+          {
+            vAlign: 'center',
+            rowSpan: 7,
+            colSpan: 1,
+            content: 'Experiment Seven Figure Summary:',
+          },
+          `MIN: ${stat.sevenFigureSummary.experiment.min}ms`,
+        ],
+        [`MAX: ${stat.sevenFigureSummary.experiment.max}ms`],
+        [`10th: ${stat.sevenFigureSummary.experiment[10]}ms`],
+        [`25th: ${stat.sevenFigureSummary.experiment[25]}ms`],
+        [`50th: ${stat.sevenFigureSummary.experiment[50]}ms`],
+        [`75th: ${stat.sevenFigureSummary.experiment[75]}ms`],
+        [`90th: ${stat.sevenFigureSummary.experiment[90]}ms`],
+        [],
+        [
+          {
+            content: 'Hodges–Lehmann estimated delta:',
+          },
+          { content: `${stat.estimator}ms` },
+        ],
+        [],
+        [
+          {
+            content: '95% confident the delta is between:',
+          },
+          {
+            content: `${stat.confidenceInterval.min}ms to ${
+              stat.confidenceInterval.max
+            }ms`,
           },
         ],
+        [],
         [
-          'Experiment 95% Confidence Interval',
-          {
-            hAlign: 'right',
-            content: `${stat.experimentMean}μs +/- ${stat.experimentCInt}μs`,
-          },
+          { content: 'Wilcoxon Rank-Sum Significant:' },
+          { content: `${stat.isSigWilcoxonRankSumTest}` },
         ],
-        [
-          'Control Interquartile Range',
-          { hAlign: 'right', content: `${stat.controlInterquartileRange}μs` },
-        ],
-        [
-          'Experiment Interquartile Range',
-          {
-            hAlign: 'right',
-            content: `${stat.experimentInterquartileRange}μs`,
-          },
-        ],
-        ['Estimator Δ', { hAlign: 'right', content: `${stat.estimator}μs` }],
-        [
-          'Rank-Sum Significant',
-          { hAlign: 'right', content: `${stat.isSigWilcoxonRankSumTest}` },
-        ],
-        [
-          'Control Sparkline',
-          { hAlign: 'right', content: `${stat.controlDistributionSparkline}` },
-        ],
+        [],
+        ['Control Sparkline', { content: `${stat.sparkLine.control}` }],
         [
           'Experiment Sparkline',
           {
-            hAlign: 'right',
-            content: `${stat.experimentDistributionSparkline}`,
+            content: `${stat.sparkLine.experiment}`,
           },
         ]
       );
@@ -138,24 +147,7 @@ export default class TBTable {
   }
   private initConfig() {
     return {
-      colWidths: [40, 40],
-      chars: {
-        top: '═',
-        'top-mid': '─',
-        'top-left': '╔',
-        'top-right': '╗',
-        bottom: '═',
-        'bottom-mid': '═',
-        'bottom-left': '╚',
-        'bottom-right': '╝',
-        left: '║',
-        'left-mid': '║',
-        mid: '─',
-        'mid-mid': '─',
-        right: '║',
-        'right-mid': '║',
-        middle: '│',
-      },
+      colWidths: [40, 30],
     };
   }
 }

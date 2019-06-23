@@ -22,7 +22,7 @@ $ npm install -g tracerbench-cli
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench-cli/2.0.0-beta.17 darwin-x64 node-v10.15.3
+tracerbench-cli/2.0.0-beta.17 darwin-x64 node-v10.15.2
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
@@ -180,18 +180,18 @@ USAGE
 OPTIONS
   --browserArgs=browserArgs
       (required) [default: 
-      --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-gpu,--disable-cache,--disable-v8-idle-tasks,
-      --disable-translate,--disable-breakpad,--disable-sync,--disable-background-networking,--disable-default-apps,--disab
-      le-extensions,--disable-notifications,--disable-hang-monitor,--headless,--hide-scrollbars,--metrics-recording-only,-
-      -mute-audio,--no-default-browser-check,--no-first-run,--no-experiments,--no-sandbox,--noerrdialogs,--safebrowsing-di
-      sable-auto-update,--setIgnoreCertificateErrors=true,--v8-cache-options=none] (Default Recommended) Browser 
-      additional options for the TracerBench render benchmark
+      --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-dev-shm-usage,--disable-gpu,--disable-cache,
+      --disable-v8-idle-tasks,--disable-translate,--disable-breakpad,--disable-sync,--disable-background-networking,--disa
+      ble-default-apps,--disable-extensions,--disable-notifications,--disable-hang-monitor,--headless,--hide-scrollbars,--
+      metrics-recording-only,--mute-audio,--no-default-browser-check,--no-first-run,--no-experiments,--no-sandbox,--noerrd
+      ialogs,--safebrowsing-disable-auto-update,--setIgnoreCertificateErrors=true,--v8-cache-options=none] (Default 
+      Recommended) Browser additional options for the TracerBench render benchmark
 
   --controlURL=controlURL
       (required) [default: http://localhost:8000/] Control URL to visit for compare command
 
   --cpuThrottleRate=cpuThrottleRate
-      (required) [default: 4] CPU throttle multiplier
+      (required) [default: 2] CPU throttle multiplier
 
   --debug
       Debug flag per command. Will output noisy command
@@ -312,7 +312,7 @@ USAGE
 
 OPTIONS
   --cpuThrottleRate=cpuThrottleRate
-      (required) [default: 4] CPU throttle multiplier
+      (required) [default: 2] CPU throttle multiplier
 
   --insights
       Analyze insights from command.

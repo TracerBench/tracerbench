@@ -5,7 +5,7 @@ import { ICompareFlags } from '../commands/compare';
 import { fidelityLookup } from './default-flag-args';
 
 const benchmarkTable = new TBTable('Initial Render');
-const phaseTable = new TBTable('Phases');
+const phaseTable = new TBTable('Phase');
 
 export function logCompareResults(
   results: any,
@@ -87,19 +87,6 @@ export function logCompareResults(
     }
     return true;
   }
-
-  // Based on the confidence interval with a margin of error of +\- N on N samples, TracerBench is 99% confident the:
-
-  // Control mean is between N and N.
-  // Experiment mean is between N and N.
-  // With a delta between N and N.
-
-  // —
-  // Sample Deviation
-  // Sample Size
-  // Confidence Level
-  // Sample Mean
-  // Interquartile Range
 
   if (!json) {
     // LOG THE TABLES AND MESSAGE

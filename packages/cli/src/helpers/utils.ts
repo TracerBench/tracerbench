@@ -38,11 +38,18 @@ export const chalkScheme = {
  * @param overrideObjectName - Either "controlBenchmarkEnvironment" or "experimentBenchmarkEnvironment"
  * @param tbConfig - This refers to the parsed JSON from the config file if it exists
  */
-export function checkEnvironmentSpecificOverride(attributeName: keyof ICompareFlags, flags: ICompareFlags, overrideObjectName: string, tbConfig?: ITBConfig) {
+export function checkEnvironmentSpecificOverride(
+  attributeName: keyof ICompareFlags,
+  flags: ICompareFlags,
+  overrideObjectName: string,
+  tbConfig?: ITBConfig
+) {
   if (!tbConfig || !tbConfig[overrideObjectName]) {
     return flags[attributeName];
   }
-  const environmentSpecificConfigs: IBenchmarkEnvironmentOverride = tbConfig[overrideObjectName]!;
+  const environmentSpecificConfigs: IBenchmarkEnvironmentOverride = tbConfig[
+    overrideObjectName
+  ]!;
 
   if (!environmentSpecificConfigs[attributeName]) {
     return flags[attributeName];
@@ -73,11 +80,15 @@ export function getTBConfigFromFile(tbConfigPath: string): ITBConfig {
  * @param left - Destination object
  * @param right - Content of this object takes precedence
  */
-export function mergeLeft(left: { [key: string]: any }, right: { [key: string]: any }): { [key: string]: any } {
-  Object.keys(right).forEach((key) => {
+export function mergeLeft(
+  left: { [key: string]: any },
+  right: { [key: string]: any }
+): { [key: string]: any } {
+  Object.keys(right).forEach(key => {
     const leftValue = left[key];
     const rightValue = left[key];
-    const matchingObjectType = typeof leftValue === 'object' && typeof rightValue === 'object';
+    const matchingObjectType =
+      typeof leftValue === 'object' && typeof rightValue === 'object';
     const isOneArray = Array.isArray(leftValue) || Array.isArray(rightValue);
 
     if (matchingObjectType && (left[key] || right[key]) && !isOneArray) {
@@ -102,7 +113,9 @@ export function resolveConfigFile(tbConfigPath: string): [ITBConfig, string] {
   try {
     tbConfig = getTBConfigFromFile(tbConfigPath);
     if (tbConfig[EXTENDS]) {
-      [parentConfig] = resolveConfigFile(path.join(path.dirname(tbConfigPath), tbConfig[EXTENDS]!));
+      [parentConfig] = resolveConfigFile(
+        path.join(path.dirname(tbConfigPath), tbConfig[EXTENDS]!)
+      );
       tbConfig = mergeLeft(parentConfig, tbConfig);
     }
     return [tbConfig, tbConfigPath];
@@ -118,14 +131,16 @@ export function resolveConfigFile(tbConfigPath: string): [ITBConfig, string] {
  * @param altTBConfigPath - Optional override path to a config json file
  */
 export function getDefaultConfigFileOrOverride(altTBConfigPath?: string) {
-  const tbConfigPath = altTBConfigPath ? altTBConfigPath : path.join(process.cwd(), 'tbconfig.json');
+  const tbConfigPath = altTBConfigPath
+    ? altTBConfigPath
+    : path.join(process.cwd(), 'tbconfig.json');
   return resolveConfigFile(tbConfigPath);
 }
 
 export function getConfigDefault(
   id: ITBConfigKeys,
   defaultValue?: any,
-  altTBConfigPath?: string,
+  altTBConfigPath?: string
 ) {
   let tbConfigPath;
   let tbConfig;
@@ -135,15 +150,15 @@ export function getConfigDefault(
     if (tbConfig[id]) {
       console.warn(
         `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON5.stringify(
-          tbConfig[id],
-        )} from ${tbConfigPath}`,
+          tbConfig[id]
+        )} from ${tbConfigPath}`
       );
       return tbConfig[id];
     } else if (defaultValue) {
       console.warn(
         `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON5.stringify(
-          defaultValue,
-        )} from defaults`,
+          defaultValue
+        )} from defaults`
       );
       return defaultValue;
     } else {
@@ -154,8 +169,8 @@ export function getConfigDefault(
       if (defaultValue) {
         console.warn(
           `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON5.stringify(
-            defaultValue,
-          )} from defaults`,
+            defaultValue
+          )} from defaults`
         );
         return defaultValue;
       }
@@ -164,6 +179,11 @@ export function getConfigDefault(
       // throw new CLIError(error);
     }
   }
+}
+
+export function convertMicrosecondsToMS(ms: string | number): number {
+  ms = typeof ms === 'string' ? parseInt(ms, 10) : ms;
+  return Math.floor(ms * 100) / 100000;
 }
 
 export function convertMSToMicroseconds(ms: string | number): number {
@@ -273,7 +293,7 @@ export function removeDuplicates<T>(collection: T[]) {
 export function fillArray(
   arrLngth: number,
   incr: number = 1,
-  strt: number = 0,
+  strt: number = 0
 ): number[] {
   const a = [];
   while (a.length < arrLngth) {
@@ -295,7 +315,7 @@ export function fillArray(
 export function convertToTypable(name: string): string {
   const split = name.split(' ');
   const lowercasedWords = split.map(word =>
-    word.toLowerCase().replace(/\//g, ''),
+    word.toLowerCase().replace(/\//g, '')
   );
   return lowercasedWords.join('-');
 }
