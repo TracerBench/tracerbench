@@ -1,15 +1,24 @@
 {
   "name": "tracerbench",
-  "version": "2.0.0-beta.11",
+  "version": "2.0.0-beta.18",
   "description": "Benchmark runner for trace metrics",
-  "keywords": ["chrome", "metrics", "tracing"],
+  "keywords": [
+    "chrome",
+    "metrics",
+    "tracing"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/TracerBench/tracerbench.git"
   },
   "license": "BSD-2-Clause",
   "author": "Kris Selden <kris.selden@gmail.com>",
-  "files": ["dist", "!dist/test", "src", "bin"],
+  "files": [
+    "dist",
+    "!dist/test",
+    "src",
+    "bin"
+  ],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
@@ -37,19 +46,19 @@
     "chalk": "^2.4.2",
     "chrome-debugging-client": "^1.0.0-beta.2",
     "d3": "^5.7.0",
+    "debug": "^4.1.1",
+    "devtools-protocol": "0.0.665395",
     "handlebars": "^4.1.2",
     "silent-error": "^1.1.1",
-    "tslib": "^1.9.3",
-    "devtools-protocol": "0.0.665395",
-    "debug": "^4.1.1"
+    "tslib": "^1.9.3"
   },
   "devDependencies": {
-    "@types/debug": "^4.1.4",
     "@types/chai": "^4.1.7",
+    "@types/debug": "^4.1.4",
     "@types/glob": "^7.1.1",
+    "@types/mkdirp": "^0.5.2",
     "@types/mocha": "^5.2.6",
     "@types/tar": "^4.0.0",
-    "@types/mkdirp": "^0.5.2",
     "chai": "^4.2.0",
     "finalhandler": "^1.1.1",
     "jquery": "^3.3.1",
