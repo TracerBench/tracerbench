@@ -1,5 +1,4 @@
 <html>
-
 <head>
   <meta charset="utf-8">
   <title>TracerBench Report</title>
@@ -7,7 +6,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {{!-- TRACERBENCH-CHART-BOOTSTRAP.CSS --}}
 </head>
-
 <body>
   <div class="container">
     {{#each sectionFormattedData as |analysisForPhase|}}
@@ -68,13 +66,10 @@
     </div>
   </div>
   {{!-- TRACERBENCH-CHART-JS --}}
-  <script type="text/x-handlebars-template">
-
-  </script>
-  <script type="text/x-handlebars-template">
+  <script>
     {{#each sectionFormattedData as |analysisForPhase|}}
-      const canvasFor{{analysisForPhase.identifierHash}} = document.getElementById('{{analysisForPhase.identifierHash}}-chart').getContext('2d');
-      const optionFor{{analysisForPhase.identifierHash}} = {
+      const canvasFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}} = document.getElementById('{{analysisForPhase.identifierHash}}-chart').getContext('2d');
+      const optionFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}} = {
         type: 'boxplot',
         data: {
           labels: ['{{analysisForPhase.phase}}'],
@@ -113,7 +108,7 @@
         }
       };
 
-      window['{{analysisForPhase.phase}}'] = new Chart(canvasFor{{analysisForPhase.identifierHash}}, optionFor{{analysisForPhase.identifierHash}});
+      window['{{analysisForPhase.phase}}'] = new Chart(canvasFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}}, optionFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}});
     {{/each}}
   </script>
 </body>

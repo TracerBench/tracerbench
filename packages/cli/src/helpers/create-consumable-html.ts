@@ -117,6 +117,10 @@ export default function createConsumeableHTML(
     });
   });
 
+  Handlebars.registerHelper('toCamel', (val) => {
+    return val.replace(/-([a-z])/g, (g:string) => g[1].toUpperCase());
+  });
+
   const template = Handlebars.compile(REPORT_TEMPLATE_RAW);
 
   return template({

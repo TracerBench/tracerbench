@@ -87,9 +87,8 @@
     "test": "yarn lint && nyc --extension .ts mocha \"test/commands/**/*.test.ts\" \"test/helpers/**/*.test.ts\"",
     "test:helpers": "nyc --extension .ts mocha \"test/helpers/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md",
-    "build": "rm -rf ./dist && tsc -b && yarn cp-static && yarn lint",
-    "build:schema": "typescript-json-schema \"src/helpers/tb-config.ts\" ITBConfig --out ./tb-schema.json",
-    "cp-static": "cp -a ./src/static ./dist/src"
+    "build": "rm -rf ./dist && tsc -b && yarn lint",
+    "build:schema": "typescript-json-schema \"src/helpers/tb-config.ts\" ITBConfig --out ./tb-schema.json"
   },
   "gitHead": "e9e301b7d4a75ac252fe69cf533668e42432ea8d"
 }
