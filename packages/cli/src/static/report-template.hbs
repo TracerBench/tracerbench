@@ -1,0 +1,121 @@
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>TracerBench Report</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {{!-- TRACERBENCH-CHART-BOOTSTRAP.CSS --}}
+</head>
+
+<body>
+  <div class="container">
+    {{#each sectionFormattedData as |analysisForPhase|}}
+    <div class="row">
+      <div class="col">
+        <h1>{{analysisForPhase.phase}}</h1>
+        {{#if analysisForPhase.isSignificant}}
+        <div class="alert alert-warning" role="alert">
+          Difference is Significant
+        </div>
+        {{else}}
+        <div class="alert alert-secondary" role="alert">
+          Difference is Not Significant
+        </div>
+        {{/if}}
+        <p><i>Wilcoxon rank-sum test</i> indicated that
+          {{#if analysisForPhase.isSignificant}}
+          there is sufficient evidence that there is a difference between the control and experiment.
+          {{else}}
+          there is not sufficient evidence that there is a difference between the control and experiment.
+          {{/if}}
+        </p>
+        <p>
+          The <i>Hodges–Lehmann estimated</i> difference in location of the two distributions is
+          {{analysisForPhase.hlDiff}} ms. With a 95% confidence the difference is between {{analysisForPhase.ciMin}} to
+          {{analysisForPhase.ciMax}}.
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <canvas id="{{analysisForPhase.identifierHash}}-chart"></canvas>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <hr>
+      </div>
+    </div>
+    {{/each}}
+    <div class="row mt-5">
+      <div class="col">
+        <hr>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col">
+        <h1>Resources</h1>
+        <ul>
+          <li><a href="https://github.com/TracerBench/tracerbench/tree/extension#statistics-primer"
+              target="_blank">Stats Primer</a></li>
+          <li><a href="https://towardsdatascience.com/understanding-boxplots-5e2df7bcbd51" target="_blank">Understanding
+              Boxplots</a></li>
+          <li><a href="https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test" target="_blank">Wilcoxon Signed-Rank
+              Test</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  {{!-- TRACERBENCH-CHART-JS --}}
+  <script type="text/x-handlebars-template">
+
+  </script>
+  <script type="text/x-handlebars-template">
+    {{#each sectionFormattedData as |analysisForPhase|}}
+      const canvasFor{{analysisForPhase.identifierHash}} = document.getElementById('{{analysisForPhase.identifierHash}}-chart').getContext('2d');
+      const optionFor{{analysisForPhase.identifierHash}} = {
+        type: 'boxplot',
+        data: {
+          labels: ['{{analysisForPhase.phase}}'],
+          datasets: [{
+            label: 'Control',
+            borderColor: '#C7F16A',
+            backgroundColor: 'rgba(199, 241, 106, 0.25)',
+            borderWidth: 1,
+            outlierColor: '#0A2D46',
+            data: [{{{analysisForPhase.controlSamples}}}]
+          },{
+            label: 'Experiment',
+            borderColor: '#1884E4',
+            backgroundColor: 'rgba(24, 132, 228, 0.25)',
+            borderWidth: 1,
+            outlierColor: '#0A2D46',
+            data: [{{{analysisForPhase.experimentSamples}}}]
+          }]
+        },
+        options: {
+          responsive: true,
+          legend: {
+            display: false,
+            position: 'top'
+          },
+          title: {
+            display: false
+          },
+          scales: {
+            xAxes: [{
+              // Specific to Bar Controller
+              categoryPercentage: 0.9,
+              barPercentage: 0.8
+            }]
+          }
+        }
+      };
+
+      window['{{analysisForPhase.phase}}'] = new Chart(canvasFor{{analysisForPhase.identifierHash}}, optionFor{{analysisForPhase.identifierHash}});
+    {{/each}}
+  </script>
+</body>
+
+</html>

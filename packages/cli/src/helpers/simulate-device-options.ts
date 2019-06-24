@@ -1,6 +1,6 @@
 import Protocol from 'devtools-protocol';
 import { convertToTypable } from './utils';
-import { simulateDeviceOptions } from '../static/simulate-device-options';
+import { deviceLookup } from './device-lookup';
 
 interface ScreenDimensions {
   width: number;
@@ -33,7 +33,7 @@ export interface EmulateDeviceSettingCliOption
   screens: Screens;
 }
 
-const deviceSettings: EmulateDeviceSettingCliOption[] = simulateDeviceOptions.map(
+const deviceSettings: EmulateDeviceSettingCliOption[] = deviceLookup.map(
   (item: any) => {
     return {
       screens: item.device.screen,
@@ -53,13 +53,18 @@ const deviceSettings: EmulateDeviceSettingCliOption[] = simulateDeviceOptions.ma
  * @param key - One of typeable strings such as iphone-x
  * @param orientation - Either "vertical" or "horizontal"
  */
-export function getEmulateDeviceSettingForKeyAndOrientation(key: string, orientation: string = 'vertical'): EmulateDeviceSetting | undefined {
+export function getEmulateDeviceSettingForKeyAndOrientation(
+  key: string,
+  orientation: string = 'vertical'
+): EmulateDeviceSetting | undefined {
   let deviceSetting;
 
   for (deviceSetting of deviceSettings) {
     if (key === deviceSetting.typeable) {
       if (!deviceSetting.screens[orientation!]) {
-        throw new Error(`${orientation} orientation for ${key} does not exist.`);
+        throw new Error(
+          `${orientation} orientation for ${key} does not exist.`
+        );
       }
       return {
         width: deviceSetting.screens[orientation!].width,

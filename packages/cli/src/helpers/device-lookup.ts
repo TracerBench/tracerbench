@@ -1,4 +1,4 @@
-export const simulateDeviceOptions = [
+export const deviceLookup = [
   {
     type: 'emulated-device',
     device: {

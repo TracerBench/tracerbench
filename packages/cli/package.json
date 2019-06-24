@@ -34,7 +34,8 @@
     "ora": "^3.4.0",
     "path": "0.12.7",
     "tracerbench": "^2.0.0-beta.18",
-    "tslib": "^1.9.3"
+    "tslib": "^1.9.3",
+    "handlebars": "^4.1.2"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.21.0",
@@ -86,8 +87,9 @@
     "test": "yarn lint && nyc --extension .ts mocha \"test/commands/**/*.test.ts\" \"test/helpers/**/*.test.ts\"",
     "test:helpers": "nyc --extension .ts mocha \"test/helpers/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md",
-    "build": "rm -rf ./dist && tsc -b && yarn lint",
-    "build:schema": "typescript-json-schema \"src/helpers/tb-config.ts\" ITBConfig --out ./tb-schema.json"
+    "build": "rm -rf ./dist && tsc -b && yarn cp-static && yarn lint",
+    "build:schema": "typescript-json-schema \"src/helpers/tb-config.ts\" ITBConfig --out ./tb-schema.json",
+    "cp-static": "cp -a ./src/static ./dist/src"
   },
   "gitHead": "e9e301b7d4a75ac252fe69cf533668e42432ea8d"
 }

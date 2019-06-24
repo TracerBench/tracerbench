@@ -7,7 +7,7 @@ import { Command } from '@oclif/command';
 import { tbResultsFolder } from '../helpers/flags';
 import createConsumeableHTML, {
   ITracerBenchTraceResult,
-} from '../helpers/create-consumeable-html';
+} from '../helpers/create-consumable-html';
 
 const ARTIFACT_FILE_NAME = 'artifact';
 
