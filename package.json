@@ -1,9 +1,7 @@
 {
   "name": "tracerbench",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": ["packages/*"],
   "scripts": {
     "lint": "lerna run lint --stream",
     "prepare": "lerna run prepare --stream",
@@ -16,7 +14,7 @@
     }
   },
   "devDependencies": {
-    "lerna": "^3.4.3",
-    "husky": "^2.2.0"
+    "lerna": "^3.15.0",
+    "husky": "^2.4.0"
   }
 }
