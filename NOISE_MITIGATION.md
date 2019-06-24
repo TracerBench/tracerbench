@@ -28,6 +28,8 @@ Once that's complete, time to disable/enable spotlight from indexing (which is v
 
 ## RHEL 7
 ### Script to stop/start the following jobs
+For example: saving this script to something like `~/clean.sh` and running `chmod a+x clean.sh` and then running tracerbench commands eg `./clean.sh tracerbench compare`.
+
 ```sh
 #!/usr/bin/bash
 
