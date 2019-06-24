@@ -25,3 +25,22 @@ Once that's complete, time to disable/enable spotlight from indexing (which is v
 - To disable "sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist"
 - To enable "sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist"
 ```
+
+## RHEL 7
+### Script to stop/start the following jobs
+```sh
+#!/usr/bin/bash
+
+sudo service yum-cron stop
+sudo service cfengine3 stop
+sudo service osad stop
+sudo service rhnsd stop
+
+# execute the arguments as a command
+$*
+
+sudo service yum-cron start
+sudo service cfengine3 start
+sudo service osad start
+sudo service rhnsd start
+```
