@@ -81,8 +81,7 @@
   "scripts": {
     "lint": "tslint -p tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
-    "posttest": "tslint -p test -t stylish",
-    "prepare": "yarn build && yarn build:schema && yarn prepack",
+    "prepare": "yarn build && yarn build:schema && yarn test && yarn prepack",
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "test": "yarn lint && nyc --extension .ts mocha \"test/commands/**/*.test.ts\" \"test/helpers/**/*.test.ts\"",
     "test:helpers": "nyc --extension .ts mocha \"test/helpers/**/*.test.ts\"",

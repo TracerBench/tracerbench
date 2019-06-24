@@ -173,13 +173,14 @@ export const socksPorts = flags.build({
   default: () => getConfigDefault('socksPorts'),
   description:
     'Specify a socks proxy port as browser option for control and experiment',
-  parse: (s: string): [string, string] | undefined => {
+  parse: (s: string): [number, number] | undefined => {
     if (typeof s === 'string') {
       const a = s.split(',');
       if (a.length > 2) {
         console.error(`Maximium of two socks ports can be passed`);
       }
-      return a as [string, string];
+
+      return [parseInt(a[0], 10), parseInt(a[1], 10)] as [number, number];
     }
   },
 });

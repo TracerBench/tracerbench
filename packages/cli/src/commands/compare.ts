@@ -55,7 +55,7 @@ export interface ICompareFlags {
   runtimeStats: boolean;
   emulateDevice?: string;
   emulateDeviceOrientation?: string;
-  socksPorts?: [string, string] | undefined;
+  socksPorts?: [string, string] | [number, number] | undefined;
   json: boolean;
   debug: boolean;
   regressionThreshold?: number;

@@ -38,6 +38,23 @@
             },
             "type": "object"
         },
+        "IHARServer": {
+            "properties": {
+                "dist": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "socksPort": {
+                    "type": "number"
+                },
+                "url": {
+                    "type": "string"
+                }
+            },
+            "type": "object"
+        },
         "IMarker": {
             "properties": {
                 "label": {
@@ -209,23 +226,45 @@
             ],
             "type": "string"
         },
-        "socksPorts": {
+        "servers": {
             "additionalItems": {
                 "anyOf": [
                     {
-                        "type": "string"
+                        "$ref": "#/definitions/IHARServer"
                     },
                     {
-                        "type": "string"
+                        "$ref": "#/definitions/IHARServer"
                     }
                 ]
             },
             "items": [
                 {
-                    "type": "string"
+                    "$ref": "#/definitions/IHARServer"
                 },
                 {
-                    "type": "string"
+                    "$ref": "#/definitions/IHARServer"
+                }
+            ],
+            "minItems": 2,
+            "type": "array"
+        },
+        "socksPorts": {
+            "additionalItems": {
+                "anyOf": [
+                    {
+                        "type": "number"
+                    },
+                    {
+                        "type": "number"
+                    }
+                ]
+            },
+            "items": [
+                {
+                    "type": "number"
+                },
+                {
+                    "type": "number"
                 }
             ],
             "minItems": 2,

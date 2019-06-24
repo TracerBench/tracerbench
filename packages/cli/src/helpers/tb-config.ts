@@ -30,15 +30,22 @@ export interface ITBConfig {
   runtimeStats?: 'true' | 'false';
   emulateDevice?: string;
   emulateDeviceOrientation?: string;
-  socksPorts?: [string, string];
+  socksPorts?: [number, number];
   inputFilePath?: string;
   outputFilePath?: string;
   regressionThreshold?: number | string;
-
+  servers?: [IHARServer, IHARServer];
   // Optional overrides specific to control or experiment benchmark environments
   [CONTROL_ENV_OVERRIDE_ATTR]?: IBenchmarkEnvironmentOverride;
   [EXPERIMENT_ENV_OVERRIDE_ATTR]?: IBenchmarkEnvironmentOverride;
   [key: string]: any;
+}
+
+interface IHARServer {
+  name: string;
+  url: string;
+  dist: string;
+  socksPort: number;
 }
 
 export interface IBenchmarkEnvironmentOverride {
