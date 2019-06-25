@@ -46,6 +46,7 @@ interface IHARServer {
   url: string;
   dist: string;
   socksPort: number;
+  har: string;
 }
 
 export interface IBenchmarkEnvironmentOverride {
