@@ -41,7 +41,7 @@ export interface ITBConfig {
   [key: string]: any;
 }
 
-interface IHARServer {
+export interface IHARServer {
   name: string;
   url: string;
   dist: string;
