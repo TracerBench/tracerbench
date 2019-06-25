@@ -43,6 +43,9 @@
                 "dist": {
                     "type": "string"
                 },
+                "har": {
+                    "type": "string"
+                },
                 "name": {
                     "type": "string"
                 },
