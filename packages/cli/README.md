@@ -1,5 +1,3 @@
-#### !!! This is unstable, incomplete, work-in-progress software in a constant state of change. You have been warned!!!
-
 ## TracerBench-CLI: Automated Chrome Tracing For Benchmarking
 
 [![Build Status](https://travis-ci.org/TracerBench/tracerbench.svg?branch=master)](https://travis-ci.org/TracerBench/tracerbench)
