@@ -7,7 +7,7 @@ export const fidelityLookup = {
   high: 25,
 };
 
-export type PerformanceTimingMark = keyof PerformanceTiming;
+export type PerformanceTimingMark = keyof PerformanceNavigationTiming;
 
 interface IMarkerSets {
   ember: string[];
