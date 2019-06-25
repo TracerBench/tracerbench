@@ -44,15 +44,32 @@
     }
   ],
   "browserArgs": [
-    "--headless",
+    "--crash-dumps-dir=./tmp",
+    "--disable-background-timer-throttling",
+    "--disable-dev-shm-usage",
     "--disable-gpu",
-    "--hide-scrollbars",
-    "--mute-audio",
-    "--v8-cache-options=none",
     "--disable-cache",
     "--disable-v8-idle-tasks",
-    "--crash-dumps-dir=./tmp",
-    "--disable-background-timer-throttling"
+    "--disable-translate",
+    "--disable-breakpad",
+    "--disable-sync",
+    "--disable-background-networking",
+    "--disable-default-apps",
+    "--disable-extensions",
+    "--disable-notifications",
+    "--disable-hang-monitor",
+    "--headless",
+    "--hide-scrollbars",
+    "--metrics-recording-only",
+    "--mute-audio",
+    "--no-default-browser-check",
+    "--no-first-run",
+    "--no-experiments",
+    "--no-sandbox",
+    "--noerrdialogs",
+    "--safebrowsing-disable-auto-update",
+    "--setIgnoreCertificateErrors=true",
+    "--v8-cache-options=none"
   ],
   // optional servers config for a/b testing with har-remix w/dist slicing
   // https://github.com/TracerBench/tracerbench/tree/master/packages/har-remix
