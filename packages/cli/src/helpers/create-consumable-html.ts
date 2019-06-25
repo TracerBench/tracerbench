@@ -1,8 +1,8 @@
 import * as Handlebars from 'handlebars';
 import * as path from 'path';
-import * as fs from 'fs-extra';
 import { confidenceInterval } from './statistics/confidence-interval';
 import { Stats } from './statistics/stats';
+import { readFileSync } from 'fs-extra';
 
 export interface Sample {
   duration: number;
@@ -39,19 +39,17 @@ interface HTMLSectionRenderData {
 
 const PAGE_LOAD_TIME = 'duration';
 const NORMALIZE = 1000;
-const CHART_CSS = fs.readFileSync(
-  path.join(`${process.cwd()}`, '/src/static/chart-bootstrap.css'),
-  'utf8'
-);
-const CHART_JS = fs.readFileSync(
-  path.join(`${process.cwd()}`, '/src/static/chartjs-2.8.0-chart.min.js'),
-  'utf8'
-);
 
-let REPORT_TEMPLATE_RAW = fs.readFileSync(
-  path.join(`${process.cwd()}`, '/src/static/report-template.hbs'),
-  'utf8'
+const CHART_CSS_PATH = path.join(__dirname, '../static/chart-bootstrap.css');
+const CHART_JS_PATH = path.join(
+  __dirname,
+  '../static/chartjs-2.8.0-chart.min.js'
 );
+const REPORT_PATH = path.join(__dirname, '../static/report-template.hbs');
+
+const CHART_CSS = readFileSync(CHART_CSS_PATH, 'utf8');
+const CHART_JS = readFileSync(CHART_JS_PATH, 'utf8');
+let REPORT_TEMPLATE_RAW = readFileSync(REPORT_PATH, 'utf8');
 
 REPORT_TEMPLATE_RAW = REPORT_TEMPLATE_RAW.toString()
   .replace(
@@ -117,8 +115,8 @@ export default function createConsumeableHTML(
     });
   });
 
-  Handlebars.registerHelper('toCamel', (val) => {
-    return val.replace(/-([a-z])/g, (g:string) => g[1].toUpperCase());
+  Handlebars.registerHelper('toCamel', val => {
+    return val.replace(/-([a-z])/g, (g: string) => g[1].toUpperCase());
   });
 
   const template = Handlebars.compile(REPORT_TEMPLATE_RAW);
