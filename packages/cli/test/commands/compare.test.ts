@@ -39,14 +39,14 @@ describe('compare regression: fixture: A/B', () => {
     .it(
       `runs compare --controlURL ${FIXTURE_APP.control +
         defaultFlagArgs.tracingLocationSearch} --experimentURL ${FIXTURE_APP.regression +
-        defaultFlagArgs.tracingLocationSearch} --fidelity=medium --tbResultsFolder ${TB_RESULTS_FOLDER} --regressionThreshold ${regressionThreshold} --cpuThrottleRate=1`,
+        defaultFlagArgs.tracingLocationSearch} --fidelity=low --tbResultsFolder ${TB_RESULTS_FOLDER} --regressionThreshold ${regressionThreshold} --cpuThrottleRate=1`,
       async ctx => {
         await Compare.run([
           '--controlURL',
           FIXTURE_APP.control,
           '--experimentURL',
           FIXTURE_APP.regression,
-          '--fidelity=medium',
+          '--fidelity=low',
           '--cpuThrottleRate=1',
           '--regressionThreshold',
           regressionThreshold,
