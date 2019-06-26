@@ -20,6 +20,7 @@ export interface IStatsOptions {
   name: string;
 }
 
+// ! all stats assume microseconds from tracerbench and round to milliseconds
 export class Stats {
   public readonly name: string;
   public readonly estimator: number;

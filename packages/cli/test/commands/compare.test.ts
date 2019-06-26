@@ -55,9 +55,7 @@ describe('compare regression: fixture: A/B', () => {
           '--json',
         ]);
 
-        chai
-          .expect(ctx.stdout)
-          .to.contain(`Statistically significant results were found`);
+        chai.expect(ctx.stdout).to.contain(`that there IS sufficient`);
       }
     );
 });
