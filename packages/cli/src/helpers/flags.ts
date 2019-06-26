@@ -19,6 +19,11 @@ import deviceSettings from './simulate-device-options';
 ! and type checking in all circumstances
 */
 
+export const headless = flags.boolean({
+  description: `Run with headless chrome flags`,
+  default: false,
+});
+
 export const insights = flags.boolean({
   description: `Analyze insights from command.`,
   default: false,

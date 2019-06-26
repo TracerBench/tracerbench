@@ -36,6 +36,7 @@ const flags = {
   runtimeStats: false,
   json: false,
   debug: false,
+  headless: false,
 };
 
 describe('log-compare-results', () => {

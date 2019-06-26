@@ -178,12 +178,10 @@ USAGE
 OPTIONS
   --browserArgs=browserArgs
       (required) [default: 
-      --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-dev-shm-usage,--disable-gpu,--disable-cache,
-      --disable-v8-idle-tasks,--disable-translate,--disable-breakpad,--disable-sync,--disable-background-networking,--disa
-      ble-default-apps,--disable-extensions,--disable-notifications,--disable-hang-monitor,--headless,--hide-scrollbars,--
-      metrics-recording-only,--mute-audio,--no-default-browser-check,--no-first-run,--no-experiments,--no-sandbox,--noerrd
-      ialogs,--safebrowsing-disable-auto-update,--setIgnoreCertificateErrors=true,--v8-cache-options=none] (Default 
-      Recommended) Browser additional options for the TracerBench render benchmark
+      --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-dev-shm-usage,--disable-cache,--disable-v8-i
+      dle-tasks,--disable-breakpad,--disable-notifications,--disable-hang-monitor,--safebrowsing-disable-auto-update,--set
+      IgnoreCertificateErrors=true,--v8-cache-options=none] (Default Recommended) Browser additional options for the 
+      TracerBench render benchmark
 
   --controlURL=controlURL
       (required) [default: http://localhost:8000/] Control URL to visit for compare command
@@ -208,6 +206,9 @@ OPTIONS
 
   --fidelity=test|low|medium|high
       (required) [default: low] Directly correlates to the number of samples per trace. High is the longest trace time.
+
+  --headless
+      Run with headless chrome flags
 
   --json
       If supported output the command stdout with json rather than formatted results
@@ -265,7 +266,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.0/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.6/src/commands/help.ts)_
 
 ## `tracerbench marker-timings`
 

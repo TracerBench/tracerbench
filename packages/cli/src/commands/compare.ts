@@ -27,8 +27,9 @@ import {
   emulateDeviceOrientation,
   socksPorts,
   regressionThreshold,
+  headless,
 } from '../helpers/flags';
-import { fidelityLookup } from '../helpers/default-flag-args';
+import { fidelityLookup, headlessFlags } from '../helpers/default-flag-args';
 import { logCompareResults } from '../helpers/log-compare-results';
 import {
   checkEnvironmentSpecificOverride,
@@ -59,6 +60,7 @@ export interface ICompareFlags {
   json: boolean;
   debug: boolean;
   regressionThreshold?: number;
+  headless: boolean;
 }
 
 export default class Compare extends Command {
@@ -81,6 +83,7 @@ export default class Compare extends Command {
     regressionThreshold: regressionThreshold(),
     json,
     debug,
+    headless,
   };
 
   public async run() {
@@ -206,6 +209,12 @@ export default class Compare extends Command {
       experimentBrowser.additionalArguments.push(
         `--proxy-server=socks5://0.0.0.0:${flags.socksPorts[1]}`
       );
+    }
+
+    // if headless flag is true include the headless flags
+    if (flags.headless) {
+      controlBrowser.additionalArguments.concat(headlessFlags);
+      experimentBrowser.additionalArguments.concat(headlessFlags);
     }
 
     controlNetwork = checkEnvironmentSpecificOverride(

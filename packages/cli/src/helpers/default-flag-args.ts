@@ -29,6 +29,8 @@ export const markerSets: IMarkerSets = {
 
 // these default flag args are
 // auto documented in the README.md
+// in-addition to these we are defaulting
+// chrome-debugging-client#defaultFlags.ts
 export const defaultFlagArgs: ITBConfig = {
   cpuThrottleRate: 2,
   markers: 'domComplete',
@@ -36,26 +38,11 @@ export const defaultFlagArgs: ITBConfig = {
     '--crash-dumps-dir=./tmp',
     '--disable-background-timer-throttling',
     '--disable-dev-shm-usage',
-    '--disable-gpu',
     '--disable-cache',
     '--disable-v8-idle-tasks',
-    '--disable-translate',
     '--disable-breakpad',
-    '--disable-sync',
-    '--disable-background-networking',
-    '--disable-default-apps',
-    '--disable-extensions',
     '--disable-notifications',
     '--disable-hang-monitor',
-    '--headless',
-    '--hide-scrollbars',
-    '--metrics-recording-only',
-    '--mute-audio',
-    '--no-default-browser-check',
-    '--no-first-run',
-    '--no-experiments',
-    '--no-sandbox',
-    '--noerrdialogs',
     '--safebrowsing-disable-auto-update',
     '--setIgnoreCertificateErrors=true',
     '--v8-cache-options=none',
@@ -74,3 +61,12 @@ export const defaultFlagArgs: ITBConfig = {
   emulateDeviceOrientation: 'vertical',
   regressionThreshold: '0ms',
 };
+
+// specify with --headless flag
+export const headlessFlags = [
+  '--headless',
+  '--disable-gpu',
+  '--hide-scrollbars',
+  '--mute-audio',
+  '--disable-logging',
+];
