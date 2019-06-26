@@ -132,6 +132,7 @@ export default class Compare extends Command {
       experimentSettings,
     ] = this.generateControlExperimentEnvironmentSettings(flags);
 
+    // ! keep this directly above the instantiation of the InitialRenderBenchmarks
     // if debug flag then log X post mutations
     if (debug) {
       this.log(`\n FLAGS: ${JSON.stringify(flags)}`);
