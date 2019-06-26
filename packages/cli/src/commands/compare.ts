@@ -94,6 +94,7 @@ export default class Compare extends Command {
       fidelity,
       markers,
       regressionThreshold,
+      headless,
     } = flags as ICompareFlags;
 
     // modifies properties of flags that were not set
@@ -114,6 +115,10 @@ export default class Compare extends Command {
         regressionThreshold <= -1000
           ? regressionThreshold
           : convertMSToMicroseconds(regressionThreshold);
+    }
+    // if headless flag is true include the headless flags
+    if (headless) {
+      flags.browserArgs = flags.browserArgs.concat(headlessFlags);
     }
 
     // if the folder for the tracerbench results file
@@ -209,12 +214,6 @@ export default class Compare extends Command {
       experimentBrowser.additionalArguments.push(
         `--proxy-server=socks5://0.0.0.0:${flags.socksPorts[1]}`
       );
-    }
-
-    // if headless flag is true include the headless flags
-    if (flags.headless) {
-      controlBrowser.additionalArguments.concat(headlessFlags);
-      experimentBrowser.additionalArguments.concat(headlessFlags);
     }
 
     controlNetwork = checkEnvironmentSpecificOverride(

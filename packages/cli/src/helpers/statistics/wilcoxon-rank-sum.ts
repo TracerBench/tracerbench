@@ -1,10 +1,10 @@
+// ! we are not using this ATM; rather using the conf interval isSig
 // all exports are alpha of 0.05 for two-tailed tests
 // using (array length) as N value up to 25 anything over uses normal approximation
 // unpaired data with two samples
 // also known as the mann-whitney-test
 // prettier-ignore
 
-// todo need to write logic for normal approximation for samples over 25 (high fidelity)
 export const wilcoxonRankSumTable = [0,0,0,10,17,26,36,49,62,78,96,115,136,160,184,211,240,270,303,337,373,411,451,491,536];
 
 interface ISample {

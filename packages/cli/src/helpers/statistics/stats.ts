@@ -1,6 +1,5 @@
 import { cross, histogram, quantile } from 'd3-array';
 import { scaleLinear } from 'd3-scale';
-import { getWilcoxonRankSumTest } from './wilcoxon-rank-sum';
 import { getWilcoxonSignedRankTest } from './wilcoxon-signed-rank';
 import { confidenceInterval } from './confidence-interval';
 import { convertMicrosecondsToMS } from '../utils';
@@ -29,13 +28,13 @@ export class Stats {
   public readonly confidenceInterval: {
     min: number;
     max: number;
-    isSig: boolean;
+    isSig: 'Yes' | 'No';
+    pVal: number;
   };
   public readonly sevenFigureSummary: {
     control: ISevenFigureSummary;
     experiment: ISevenFigureSummary;
   };
-  public readonly isSigWilcoxonRankSumTest: string;
   public readonly sampleCount: { control: number; experiment: number };
   private range: { min: number; max: number };
   constructor(options: IStatsOptions) {
@@ -57,39 +56,50 @@ export class Stats {
       control: this.getSparkline(this.getHistogram(this.range, control)),
       experiment: this.getSparkline(this.getHistogram(this.range, experiment)),
     };
-    this.isSigWilcoxonRankSumTest = getWilcoxonRankSumTest(control, experiment);
-    this.isSigWilcoxonSignedRankTest = getWilcoxonSignedRankTest(
+    this.confidenceInterval = this.getConfidenceInterval(control, experiment);
+    this.estimator = Math.round(this.getHodgesLehmann(
       control,
       experiment
-    );
-    this.confidenceInterval = this.getConfidenceInterval(control, experiment);
-    this.estimator = this.getHodgesLehmann(control, experiment) as number;
+    ) as number);
     this.sevenFigureSummary = {
       control: this.getSevenFigureSummary(control),
       experiment: this.getSevenFigureSummary(experiment),
     };
+    this.isSigWilcoxonSignedRankTest = getWilcoxonSignedRankTest(
+      control,
+      experiment
+    );
   }
 
   private getSevenFigureSummary(a: number[]): ISevenFigureSummary {
     return {
-      min: Math.min.apply(null, a),
-      max: Math.max.apply(null, a),
-      10: quantile(a, 0.1) as number,
-      25: quantile(a, 0.25) as number,
-      50: quantile(a, 0.5) as number,
-      75: quantile(a, 0.75) as number,
-      90: quantile(a, 0.9) as number,
+      min: Math.round(Math.min.apply(null, a)),
+      max: Math.round(Math.max.apply(null, a)),
+      10: Math.round(quantile(a, 0.1) as number),
+      25: Math.round(quantile(a, 0.25) as number),
+      50: Math.round(quantile(a, 0.5) as number),
+      75: Math.round(quantile(a, 0.75) as number),
+      90: Math.round(quantile(a, 0.9) as number),
     };
   }
   private getConfidenceInterval(
     control: number[],
     experiment: number[]
-  ): { min: number; max: number; isSig: boolean } {
-    const ci = confidenceInterval(control, experiment, 0.95);
+  ): { min: number; max: number; isSig: 'Yes' | 'No'; pVal: number } {
+    const pVal = 0.05;
+    const interval = 1 - pVal;
+    const ci = confidenceInterval(control, experiment, interval);
+    const isSig =
+      (ci[0] < 0 && 0 < ci[1]) ||
+      (ci[0] > 0 && 0 > ci[1]) ||
+      (ci[0] === 0 && ci[1] === 0)
+        ? 'No'
+        : 'Yes';
     return {
-      min: Math.ceil(ci[0] * 100) / 100,
-      max: Math.ceil(ci[1] * 100) / 100,
-      isSig: !((ci[0] < 0 && 0 < ci[1]) || (ci[0] > 0 && 0 > ci[1])),
+      min: Math.round(Math.ceil(ci[0] * 100) / 100),
+      max: Math.round(Math.ceil(ci[1] * 100) / 100),
+      isSig,
+      pVal,
     };
   }
   private getHodgesLehmann(control: any[], experiment: any[]) {

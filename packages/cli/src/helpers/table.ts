@@ -5,12 +5,14 @@ import { chalkScheme } from './utils';
 export interface ICompareJSONResults {
   heading: string;
   statName: string;
-  rankSumSignificant: string;
+  rankSumSignificant: 'Yes' | 'No';
   estimatorDelta: string;
   controlSampleCount: number;
   experimentSampleCount: number;
   confidenceIntervalMin: string;
   confidenceIntervalMax: string;
+  confidenceIntervalPVal: number;
+  confidenceIntervalIsSig: 'Yes' | 'No' | string;
   controlSevenFigureSummary: ISevenFigureSummary;
   experimentSevenFigureSummary: ISevenFigureSummary;
 }
@@ -21,6 +23,7 @@ export default class TBTable {
   public display: Stats[];
   public estimatorDeltas: number[];
   public isSigWilcoxonRankSumTestArray: string[];
+  public pVal: number;
   private heading: string;
   constructor(heading: string) {
     this.heading = heading;
@@ -29,6 +32,7 @@ export default class TBTable {
     this.display = [];
     this.isSigWilcoxonRankSumTestArray = [];
     this.estimatorDeltas = [];
+    this.pVal = 0;
   }
   // return table data for --json flag
   public getData(): ICompareJSONResults[] {
@@ -37,18 +41,21 @@ export default class TBTable {
       a.push({
         heading: this.heading,
         statName: stat.name,
-        rankSumSignificant: stat.isSigWilcoxonRankSumTest,
+        rankSumSignificant: stat.confidenceInterval.isSig,
         estimatorDelta: `${stat.estimator}ms`,
         controlSampleCount: stat.sampleCount.control,
         experimentSampleCount: stat.sampleCount.experiment,
         confidenceIntervalMin: `${stat.confidenceInterval.min}ms`,
         confidenceIntervalMax: `${stat.confidenceInterval.max}ms`,
+        confidenceIntervalPVal: stat.confidenceInterval.pVal,
+        confidenceIntervalIsSig: `${stat.confidenceInterval.isSig}`,
         controlSevenFigureSummary: stat.sevenFigureSummary.control,
         experimentSevenFigureSummary: stat.sevenFigureSummary.experiment,
       });
 
-      this.isSigWilcoxonRankSumTestArray.push(stat.isSigWilcoxonRankSumTest);
+      this.isSigWilcoxonRankSumTestArray.push(stat.confidenceInterval.isSig);
       this.estimatorDeltas.push(stat.estimator);
+      this.pVal = stat.confidenceInterval.pVal;
     });
     return a;
   }
@@ -121,7 +128,7 @@ export default class TBTable {
         [],
         [
           {
-            content: '95% confident the delta is between:',
+            content: `95% confident the delta is between:`,
           },
           {
             content: `${stat.confidenceInterval.min}ms to ${
@@ -132,7 +139,7 @@ export default class TBTable {
         [],
         [
           { content: 'Wilcoxon Rank-Sum Significant:' },
-          { content: `${stat.isSigWilcoxonRankSumTest}` },
+          { content: `${stat.confidenceInterval.isSig}` },
         ],
         [],
         ['Control Sparkline', { content: `${stat.sparkLine.control}` }],

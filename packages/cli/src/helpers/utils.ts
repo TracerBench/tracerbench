@@ -126,9 +126,9 @@ export function resolveConfigFile(tbConfigPath: string): [ITBConfig, string] {
 
 /**
  * Determines if the default expected location of the tbconfig.json should be used or a given override and calls\
- * resolveConfigFile;
+ * resolveConfigFile; eg. grandparent > parent > child inheritance with tbconfig.json files are each level
  *
- * @param altTBConfigPath - Optional override path to a config json file
+ * @param altTBConfigPath - Optional override path to a tbconfig.json file
  */
 export function getDefaultConfigFileOrOverride(altTBConfigPath?: string) {
   const tbConfigPath = altTBConfigPath
