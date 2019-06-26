@@ -166,6 +166,25 @@ export default class Compare extends Command {
           `${flags.tbResultsFolder}/compare-stat-results.json`,
           JSON.stringify(logCompareResults(results, flags, this), null, 2)
         );
+
+        // with debug flag output three files
+        // on config specifics
+        if (debug) {
+          fs.writeFileSync(
+            `${flags.tbResultsFolder}/server-control-settings.json`,
+            JSON.stringify(Object.assign(controlSettings), null, 2)
+          );
+
+          fs.writeFileSync(
+            `${flags.tbResultsFolder}/server-experiment-settings.json`,
+            JSON.stringify(Object.assign(experimentSettings), null, 2)
+          );
+
+          fs.writeFileSync(
+            `${flags.tbResultsFolder}/compare-flags-settings.json`,
+            JSON.stringify(Object.assign(flags), null, 2)
+          );
+        }
       })
       .catch((err: any) => {
         spinner.fail();
