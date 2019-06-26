@@ -6,6 +6,13 @@ As a general rule of thumb to "zero-out" your environment its recommended you cl
 - software updates, file syncing, browser-tabs, (osx spotlight & notification: do not disturb "on" )
 - when manually running tests and _not_ using the default headless chrome. be sure to exit all browser extensions
 
+To quickly scan your environment for running processes run in a terminal window:
+```sh
+ps -eo pcpu,pid,user,args | sort -k 1 -r -n | head
+```
+
+For example you might see a spike process for OSX updater or Chrome updater etc.
+
 ## OSX
 ### Disable Spotlight
 In more recent versions of OSX you cannot disable spotlight without first disabling system integrity protection. This operation comes with risks, please read-up before continuing.
