@@ -2,20 +2,12 @@
   "name": "tracerbench-cli",
   "version": "2.0.0-beta.24",
   "description": "CLI for Tracerbench",
-  "keywords": [
-    "oclif"
-  ],
+  "keywords": ["oclif"],
   "homepage": "https://github.com/TracerBench/tracerbench",
   "bugs": "https://github.com/TracerBench/tracerbench/issues",
   "license": "BSD-2-Clause",
   "author": "Kris Selden @krisselden",
-  "files": [
-    "bin",
-    "dist",
-    "src",
-    "oclif.manifest.json",
-    "tb-schema.json"
-  ],
+  "files": ["bin", "dist", "src", "oclif.manifest.json", "tb-schema.json"],
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "bin": {
@@ -28,17 +20,14 @@
     "chalk": "^2.4.2",
     "cli-table3": "^0.5.1",
     "d3-array": "^2.0.3",
-    "d3-color": "^1.2.3",
     "d3-scale": "^3.0.0",
     "devtools-protocol": "^0.0.670852",
     "execa": "^1.0.0",
     "fs-extra": "^7.0.1",
     "handlebars": "^4.1.2",
-    "inquirer": "^6.2.2",
     "json-query": "^2.2.2",
     "json5": "^2.1.0",
     "jstat": "^1.9.0",
-    "listr": "^0.14.3",
     "log-symbols": "^3.0.0",
     "ora": "^3.4.0",
     "path": "0.12.7",
@@ -53,14 +42,11 @@
     "@types/chai-fs": "^2.0.1",
     "@types/chalk": "^2.2.0",
     "@types/d3-array": "^1.2.6",
-    "@types/d3-color": "^1.2.2",
     "@types/d3-scale": "^2.1.1",
     "@types/execa": "^0.9.0",
     "@types/fs-extra": "^5.0.4",
-    "@types/inquirer": "^0.0.44",
     "@types/json-query": "^2.2.0",
     "@types/json5": "*",
-    "@types/listr": "^0.13.0",
     "@types/log-symbols": "^3.0.0",
     "@types/mocha": "^5.2.5",
     "@types/mock-fs": "3.6.30",
@@ -85,9 +71,7 @@
   "oclif": {
     "commands": "./dist/src/commands",
     "bin": "tracerbench",
-    "plugins": [
-      "@oclif/plugin-help"
-    ]
+    "plugins": ["@oclif/plugin-help"]
   },
   "scripts": {
     "lint": "tslint -p tsconfig.json",
