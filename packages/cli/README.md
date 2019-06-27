@@ -180,8 +180,8 @@ OPTIONS
       (required) [default: 
       --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-dev-shm-usage,--disable-cache,--disable-v8-i
       dle-tasks,--disable-breakpad,--disable-notifications,--disable-hang-monitor,--safebrowsing-disable-auto-update,--set
-      IgnoreCertificateErrors=true,--v8-cache-options=none] (Default Recommended) Browser additional options for the 
-      TracerBench render benchmark
+      IgnoreCertificateErrors=true,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the 
+      TracerBench render benchmark. TracerBench includes many non-configurable defaults in this category.
 
   --controlURL=controlURL
       (required) [default: http://localhost:8000/] Control URL to visit for compare command

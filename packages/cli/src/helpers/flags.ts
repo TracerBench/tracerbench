@@ -69,7 +69,7 @@ export const iterations = flags.build({
 
 export const browserArgs = flags.build({
   default: () => getConfigDefault('browserArgs', defaultFlagArgs.browserArgs),
-  description: `(Default Recommended) Browser additional options for the TracerBench render benchmark`,
+  description: `(Default Recommended) Additional chrome flags for the TracerBench render benchmark. TracerBench includes many non-configurable defaults in this category.`,
   parse: (s): string[] => {
     return s.split(',');
   },

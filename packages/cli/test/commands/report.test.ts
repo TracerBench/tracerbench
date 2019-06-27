@@ -6,11 +6,13 @@ import { FIXTURE_APP, TB_RESULTS_FOLDER } from '../test-helpers';
 
 chai.use(require('chai-fs'));
 
+const fidelity = 'test';
+
 describe('report: creates html', () => {
   test
     .stdout()
     .it(
-      `runs report --inputFilePath ${TB_RESULTS_FOLDER}/compare.json --tbResultsFolder ${TB_RESULTS_FOLDER}`,
+      `runs report --inputFilePath ${TB_RESULTS_FOLDER}/compare.json --tbResultsFolder ${TB_RESULTS_FOLDER} --headless --fidelity ${fidelity}`,
       async ctx => {
         await Compare.run([
           '--controlURL',
@@ -21,12 +23,12 @@ describe('report: creates html', () => {
           TB_RESULTS_FOLDER,
           '--json',
           '--cpuThrottleRate=1',
+          '--headless',
+          '--fidelity',
+          fidelity,
         ]);
 
-        await Report.run([
-          '--tbResultsFolder',
-          `${TB_RESULTS_FOLDER}`,
-        ]);
+        await Report.run(['--tbResultsFolder', `${TB_RESULTS_FOLDER}`]);
 
         chai.expect(ctx.stdout).to.contain(`Written files out at`);
         chai.expect(`${TB_RESULTS_FOLDER}/artifact-1.html`).to.be.a.file();

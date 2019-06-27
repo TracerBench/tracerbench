@@ -14,7 +14,7 @@ describe('compare fixture: A/A', () => {
     .it(
       `runs compare --controlURL ${FIXTURE_APP.control +
         defaultFlagArgs.tracingLocationSearch} --experimentURL ${FIXTURE_APP.control +
-        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER} --cpuThrottleRate=1`,
+        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER} --cpuThrottleRate=1 --headless --debug`,
       async ctx => {
         await Compare.run([
           '--controlURL',
@@ -26,9 +26,20 @@ describe('compare fixture: A/A', () => {
           '--tbResultsFolder',
           TB_RESULTS_FOLDER,
           '--cpuThrottleRate=1',
+          '--headless',
+          '--debug',
         ]);
 
         chai.expect(ctx.stdout).to.contain(`Success`);
+        chai
+          .expect(`${TB_RESULTS_FOLDER}/server-control-settings.json`)
+          .to.be.a.file();
+        chai
+          .expect(`${TB_RESULTS_FOLDER}/server-experiment-settings.json`)
+          .to.be.a.file();
+        chai
+          .expect(`${TB_RESULTS_FOLDER}/compare-flags-settings.json`)
+          .to.be.a.file();
       }
     );
 });
@@ -39,7 +50,7 @@ describe('compare regression: fixture: A/B', () => {
     .it(
       `runs compare --controlURL ${FIXTURE_APP.control +
         defaultFlagArgs.tracingLocationSearch} --experimentURL ${FIXTURE_APP.regression +
-        defaultFlagArgs.tracingLocationSearch} --fidelity=low --tbResultsFolder ${TB_RESULTS_FOLDER} --regressionThreshold ${regressionThreshold} --cpuThrottleRate=1`,
+        defaultFlagArgs.tracingLocationSearch} --fidelity=low --tbResultsFolder ${TB_RESULTS_FOLDER} --regressionThreshold ${regressionThreshold} --cpuThrottleRate=1 --headless`,
       async ctx => {
         await Compare.run([
           '--controlURL',
@@ -53,6 +64,7 @@ describe('compare regression: fixture: A/B', () => {
           '--tbResultsFolder',
           TB_RESULTS_FOLDER,
           '--json',
+          '--headless',
         ]);
 
         chai.expect(ctx.stdout).to.contain(`that there IS sufficient`);
@@ -66,7 +78,7 @@ describe('compare mobile horizontal: fixture: A/A', () => {
     .it(
       `runs compare --controlURL ${FIXTURE_APP.control +
         defaultFlagArgs.tracingLocationSearch} --experimentURL ${FIXTURE_APP.experiment +
-        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER} --emulateDevice ${emulateDevice} --emulateDeviceOrientation horizontal --cpuThrottleRate=6`,
+        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER} --emulateDevice ${emulateDevice} --emulateDeviceOrientation horizontal --cpuThrottleRate=6 --headless`,
       async ctx => {
         await Compare.run([
           '--controlURL',
@@ -80,6 +92,7 @@ describe('compare mobile horizontal: fixture: A/A', () => {
           '--emulateDevice',
           emulateDevice,
           '--cpuThrottleRate=6',
+          '--headless',
         ]);
 
         chai.expect(ctx.stdout).to.contain(`Success`);
@@ -93,7 +106,7 @@ describe('compare mobile vertical: fixture: A/A', () => {
     .it(
       `runs compare --controlURL ${FIXTURE_APP.control +
         defaultFlagArgs.tracingLocationSearch} --experimentURL ${FIXTURE_APP.experiment +
-        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER} --emulateDevice ${emulateDevice} --emulateDeviceOrientation vertical --cpuThrottleRate=6`,
+        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER} --emulateDevice ${emulateDevice} --emulateDeviceOrientation vertical --cpuThrottleRate=6 --headless`,
       async ctx => {
         await Compare.run([
           '--controlURL',
@@ -107,6 +120,7 @@ describe('compare mobile vertical: fixture: A/A', () => {
           '--emulateDevice',
           emulateDevice,
           '--cpuThrottleRate=6',
+          '--headless',
         ]);
 
         chai.expect(ctx.stdout).to.contain(`Success`);
@@ -120,7 +134,7 @@ describe('compare mobile vertical: fixture: A/A', () => {
     .it(
       `runs compare --controlURL ${FIXTURE_APP.control +
         defaultFlagArgs.tracingLocationSearch} --experimentURL ${FIXTURE_APP.experiment +
-        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER} --emulateDevice ${emulateDevice} --emulateDeviceOrientation vertical --cpuThrottleRate=6`,
+        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER} --emulateDevice ${emulateDevice} --emulateDeviceOrientation vertical --cpuThrottleRate=6 --headless`,
       async ctx => {
         await Compare.run([
           '--controlURL',
@@ -134,6 +148,7 @@ describe('compare mobile vertical: fixture: A/A', () => {
           '--emulateDevice',
           emulateDevice,
           '--cpuThrottleRate=6',
+          '--headless',
         ]);
 
         chai.expect(ctx.stdout).to.contain(`Success`);
