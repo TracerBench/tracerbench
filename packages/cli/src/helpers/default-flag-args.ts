@@ -1,7 +1,7 @@
 import { ITBConfig } from './tb-config';
 
 export const fidelityLookup = {
-  test: 5,
+  test: 2,
   low: 20,
   medium: 30,
   high: 40,
