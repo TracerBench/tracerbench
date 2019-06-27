@@ -1,13 +1,21 @@
 {
   "name": "tracerbench-cli",
-  "version": "2.0.0-beta.24",
+  "version": "2.0.0-beta.25",
   "description": "CLI for Tracerbench",
-  "keywords": ["oclif"],
+  "keywords": [
+    "oclif"
+  ],
   "homepage": "https://github.com/TracerBench/tracerbench",
   "bugs": "https://github.com/TracerBench/tracerbench/issues",
   "license": "BSD-2-Clause",
   "author": "Kris Selden @krisselden",
-  "files": ["bin", "dist", "src", "oclif.manifest.json", "tb-schema.json"],
+  "files": [
+    "bin",
+    "dist",
+    "src",
+    "oclif.manifest.json",
+    "tb-schema.json"
+  ],
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "bin": {
@@ -31,7 +39,7 @@
     "log-symbols": "^3.0.0",
     "ora": "^3.4.0",
     "path": "0.12.7",
-    "tracerbench": "^2.0.0-beta.18",
+    "tracerbench": "^2.0.0-beta.25",
     "tslib": "^1.9.3"
   },
   "devDependencies": {
@@ -71,7 +79,9 @@
   "oclif": {
     "commands": "./dist/src/commands",
     "bin": "tracerbench",
-    "plugins": ["@oclif/plugin-help"]
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
   },
   "scripts": {
     "lint": "tslint -p tsconfig.json",
