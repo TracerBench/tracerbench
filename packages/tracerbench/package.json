@@ -2,23 +2,14 @@
   "name": "tracerbench",
   "version": "2.0.0-beta.18",
   "description": "Benchmark runner for trace metrics",
-  "keywords": [
-    "chrome",
-    "metrics",
-    "tracing"
-  ],
+  "keywords": ["chrome", "metrics", "tracing"],
   "repository": {
     "type": "git",
     "url": "https://github.com/TracerBench/tracerbench.git"
   },
   "license": "BSD-2-Clause",
   "author": "Kris Selden <kris.selden@gmail.com>",
-  "files": [
-    "dist",
-    "!dist/test",
-    "src",
-    "bin"
-  ],
+  "files": ["dist", "!dist/test", "src", "bin"],
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
@@ -40,12 +31,16 @@
     "watch": "tsc -b -w"
   },
   "dependencies": {
-    "@types/d3": "^5.7.0",
+    "@types/d3-hierarchy": "^1.1.6",
+    "@types/d3-scale": "^2.1.1",
+    "@types/d3-array": "^2.0.0",
     "@types/node": "*",
     "array-binsearch": "^1.0.1",
     "chalk": "^2.4.2",
     "chrome-debugging-client": "^1.0.0-beta.2",
-    "d3": "^5.7.0",
+    "d3-array": "^2.2.0",
+    "d3-scale": "^3.0.0",
+    "d3-hierarchy": "^1.1.8",
     "debug": "^4.1.1",
     "devtools-protocol": "0.0.665395",
     "handlebars": "^4.1.2",
