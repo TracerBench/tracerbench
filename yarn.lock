@@ -1043,18 +1043,18 @@
     "@tracerbench/message-transport" "^1.0.0-beta.2"
     race-cancellation "^0.4.1"
 
-"@tracerbench/spawn-chrome@^1.0.0-beta.2":
-  version "1.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@tracerbench/spawn-chrome/-/spawn-chrome-1.0.0-beta.2.tgz#292f9c453d2a252e4e44baf728df9752a129258c"
-  integrity sha512-xYXfHce410jhvA52SHSHLqmGFSVEdMBVwLdXyoefz6k4ZosunOMF6rgkFgmFzAluCA1sFLQMG4XQ4eG/robBGw==
+"@tracerbench/spawn-chrome@^1.0.0-beta.4":
+  version "1.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@tracerbench/spawn-chrome/-/spawn-chrome-1.0.0-beta.4.tgz#937775870e47727ee34357a58c5e335d17db4c8e"
+  integrity sha512-HajEXPK2TPgOqW9hXzaWVD+APNoEmCiMUIbkWiIFayw0gQYo1dvlmTlp1AjK6LeQJ3fa8ezaW7uL8uUvWtRKhA==
   dependencies:
-    "@tracerbench/spawn" "^1.0.0-beta.2"
+    "@tracerbench/spawn" "^1.0.0-beta.4"
     tmp "^0.1.0"
 
-"@tracerbench/spawn@^1.0.0-beta.2":
-  version "1.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/@tracerbench/spawn/-/spawn-1.0.0-beta.2.tgz#8850ff9c832486ea474a3526f52d8c86900d45d3"
-  integrity sha512-4Qb36f0ktL85id1EyKJvHxAh+QfNrt95oGsGJZ3WeSVh8boedDay26ujdCGLxvgAKF14UhMYQ2MQkDmREaJjUQ==
+"@tracerbench/spawn@^1.0.0-beta.4":
+  version "1.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/@tracerbench/spawn/-/spawn-1.0.0-beta.4.tgz#7107b2884bd4c698e87483b66a417ce33ab0f37f"
+  integrity sha512-W7ji9jtprVVwpmcOMlrLiGapdobcH4GTcFAANVT00qq4Se3JHpLVuWoF4I/afy8xctzNiHF/Nm6e5/Mr/qt83g==
   dependencies:
     "@tracerbench/message-transport" "^1.0.0-beta.2"
     execa "^1.0.0"
@@ -1822,16 +1822,16 @@ chownr@^1.0.1, chownr@^1.1.1:
   resolved "https://registry.yarnpkg.com/chownr/-/chownr-1.1.1.tgz#54726b8b8fff4df053c42187e801fb4412df1494"
   integrity sha512-j38EvO5+LHX84jlo6h4UzmOwi0UgW61WRyPtJz4qaadK5eY3BTS5TY/S1Stc3Uk2lIM6TPevAlULiEJwie860g==
 
-chrome-debugging-client@^1.0.0-beta.2:
-  version "1.0.0-beta.2"
-  resolved "https://registry.yarnpkg.com/chrome-debugging-client/-/chrome-debugging-client-1.0.0-beta.2.tgz#1d19ff2cf5c3197b1269d4c18b3ecbef45107095"
-  integrity sha512-8OSniQSy36IasNjTKkpAi1Ym4p3EA9ofssWSZ+W1oy3dmQ9eCcRHPTbp2Ckbkuwat6mTt2BX/l5u6YlNd5gfcg==
+chrome-debugging-client@^1.0.0-beta.4:
+  version "1.0.0-beta.4"
+  resolved "https://registry.yarnpkg.com/chrome-debugging-client/-/chrome-debugging-client-1.0.0-beta.4.tgz#353bb3491cec233eb752ae934f19bc2a86406a8c"
+  integrity sha512-BwbD+ojkB/b9BUxCpTju7Ef3obzrjqT1PVo05OQTr5RM+A5hib2DPLMeNjOhxsn88uOKf/GGfgSxwRdhcu+q+A==
   dependencies:
     "@tracerbench/find-chrome" "1.0.0-beta.1"
     "@tracerbench/message-transport" "^1.0.0-beta.2"
     "@tracerbench/protocol-connection" "^1.0.0-beta.2"
-    "@tracerbench/spawn" "^1.0.0-beta.2"
-    "@tracerbench/spawn-chrome" "^1.0.0-beta.2"
+    "@tracerbench/spawn" "^1.0.0-beta.4"
+    "@tracerbench/spawn-chrome" "^1.0.0-beta.4"
     "@tracerbench/websocket-message-transport" "^1.0.0-beta.2"
     debug "^4.1.1"
 
