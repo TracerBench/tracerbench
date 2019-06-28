@@ -269,7 +269,6 @@ export default class Compare extends Command {
         [`--proxy-server=socks5://0.0.0.0:${this.mergedFlags.socksPorts[1]}`]
       );
     }
-
     controlNetwork = checkEnvironmentSpecificOverride(
       'network',
       this.mergedFlags,
