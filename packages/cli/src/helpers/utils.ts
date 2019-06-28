@@ -60,10 +60,18 @@ export function getTBConfigJSON(tbConfigPath: string): ITBConfig {
  * @param altTBConfigPath - Optional override path to a tbconfig.json file
  */
 export function getRootTBConfigOrOverride(altTBConfigPath?: string) {
-  const tbConfigPath = altTBConfigPath
-    ? path.join(process.cwd(), altTBConfigPath)
-    : path.join(process.cwd(), 'tbconfig.json');
-  return resolveConfigFile(tbConfigPath);
+  if (altTBConfigPath) {
+    const p = path.join(process.cwd(), altTBConfigPath);
+    const isDir = fs.existsSync(p) && fs.lstatSync(p).isDirectory();
+
+    if (isDir) {
+      return resolveConfigFile(path.join(altTBConfigPath, '/tbconfig.json'));
+    } else {
+      return resolveConfigFile(altTBConfigPath);
+    }
+  }
+
+  return resolveConfigFile(path.join(process.cwd(), 'tbconfig.json'));
 }
 
 /**

@@ -11,7 +11,6 @@ import {
 } from '../../src/helpers/utils';
 import { expect } from 'chai';
 import { ITraceEvent } from 'tracerbench';
-import * as path from 'path';
 import * as mock from 'mock-fs';
 
 const event: ITraceEvent = {
@@ -35,10 +34,7 @@ const frame = findFrame(events, url);
 const isLoad = isCommitLoad(event);
 const isFrameMark = isFrameNavigationStart(frame, event);
 const micro = convertMSToMicroseconds(`-100ms`);
-const tbConfigPath = path.join(
-  process.cwd(),
-  '/test/fixtures/regression/tbconfig.json'
-);
+const tbConfigPath = 'test/fixtures/release';
 
 describe('utils', () => {
   it(`getConfigDefault() from tbconfig at alt path`, () => {
