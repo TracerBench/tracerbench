@@ -4,11 +4,7 @@ import { flags } from '@oclif/command';
 import { networkConditions } from 'tracerbench';
 import Protocol from 'devtools-protocol';
 import { defaultFlagArgs, fidelityLookup } from './default-flag-args';
-import {
-  parseMarkers,
-  getConfigDefault,
-  convertMSToMicroseconds,
-} from './utils';
+import { parseMarkers, getConfigDefault } from './utils';
 import deviceSettings from './simulate-device-options';
 
 /*
@@ -20,7 +16,7 @@ import deviceSettings from './simulate-device-options';
 */
 
 export const config = flags.build({
-  description: `Specify an alternative tbconfig.json to extend from the root tbconfig.json`,
+  description: `Specify an alternative tbconfig.json to extend from the root tbconfig.json. This explicit config will overwrite all.`,
 });
 
 export const headless = flags.boolean({
@@ -51,7 +47,7 @@ export const regressionThreshold = flags.build({
     ),
   description: `Regression threshold in negative milliseconds. eg -100ms`,
   parse: (ms): number => {
-    return convertMSToMicroseconds(ms);
+    return parseInt(ms, 10);
   },
 });
 

@@ -45,12 +45,25 @@ export function checkEnvironmentSpecificOverride(
  *
  * @param tbConfigPath - Override default path with this parameter
  */
-export function getTBConfigFromFile(tbConfigPath: string): ITBConfig {
+export function getTBConfigJSON(tbConfigPath: string): ITBConfig {
   try {
     return JSON5.parse(fs.readFileSync(tbConfigPath, 'utf8'));
   } catch (error) {
     throw error;
   }
+}
+
+/**
+ * Determines if the default expected location of the tbconfig.json should be used or a given override and calls\
+ * resolveConfigFile; eg. grandparent > parent > child inheritance with tbconfig.json files are each level
+ *
+ * @param altTBConfigPath - Optional override path to a tbconfig.json file
+ */
+export function getRootTBConfigOrOverride(altTBConfigPath?: string) {
+  const tbConfigPath = altTBConfigPath
+    ? path.join(process.cwd(), altTBConfigPath)
+    : path.join(process.cwd(), 'tbconfig.json');
+  return resolveConfigFile(tbConfigPath);
 }
 
 /**
@@ -63,7 +76,7 @@ export function resolveConfigFile(tbConfigPath: string): [ITBConfig, string] {
   let parentConfig;
 
   try {
-    tbConfig = getTBConfigFromFile(tbConfigPath);
+    tbConfig = getTBConfigJSON(tbConfigPath);
     if (tbConfig[EXTENDS]) {
       [parentConfig] = resolveConfigFile(
         path.join(path.dirname(tbConfigPath), tbConfig[EXTENDS]!)
@@ -80,19 +93,6 @@ export function resolveConfigFile(tbConfigPath: string): [ITBConfig, string] {
  * Determines if the default expected location of the tbconfig.json should be used or a given override and calls\
  * resolveConfigFile; eg. grandparent > parent > child inheritance with tbconfig.json files are each level
  *
- * @param altTBConfigPath - Optional override path to a tbconfig.json file
- */
-export function getDefaultConfigFileOrOverride(altTBConfigPath?: string) {
-  const tbConfigPath = altTBConfigPath
-    ? path.join(process.cwd(), altTBConfigPath)
-    : path.join(process.cwd(), 'tbconfig.json');
-  return resolveConfigFile(tbConfigPath);
-}
-
-/**
- * Determines if the default expected location of the tbconfig.json should be used or a given override and calls\
- * resolveConfigFile; eg. grandparent > parent > child inheritance with tbconfig.json files are each level
- *
  * @param id - the flag name eg browserArgs or cpuThrottleRate etc.
  * @param defaultValue - default value for the flag specified on `defaultFlagArgs`
  * @param altTBConfigPath - optional override path to a tbconfig.json file NOT found in the project root
@@ -102,24 +102,13 @@ export function getConfigDefault(
   defaultValue?: any,
   altTBConfigPath?: string
 ) {
-  let tbConfigPath;
   let tbConfig;
 
   try {
-    [tbConfig, tbConfigPath] = getDefaultConfigFileOrOverride(altTBConfigPath);
+    [tbConfig] = getRootTBConfigOrOverride(altTBConfigPath);
     if (tbConfig[id]) {
-      console.warn(
-        `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON5.stringify(
-          tbConfig[id]
-        )} from ${tbConfigPath}`
-      );
       return tbConfig[id];
     } else if (defaultValue) {
-      console.warn(
-        `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON5.stringify(
-          defaultValue
-        )} from defaults`
-      );
       return defaultValue;
     } else {
       return undefined;
@@ -127,11 +116,6 @@ export function getConfigDefault(
   } catch (error) {
     try {
       if (defaultValue) {
-        console.warn(
-          `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON5.stringify(
-            defaultValue
-          )} from defaults`
-        );
         return defaultValue;
       }
       return undefined;

@@ -56,7 +56,7 @@ export function logCompareResults(
   const notSigMessage = `Wilcoxon rank-sum test indicated that there is NOT sufficient evidence that there is a statistical difference between the control and experiment.`;
   const sigMessage = `Wilcoxon rank-sum test indicated that there IS sufficient evidence that there is a statistical difference between the control and experiment.
   We would expect 5% of these kinds of results to be due to chance with no underlying effect. A recommended "fidelity=high" compare test should be run to rule out false negatives.`;
-  const regThresholdMessage = `A regression was found exceeding the set regression threshold of ${regressionThreshold}μs`;
+  const regThresholdMessage = `A regression was found exceeding the set regression threshold of ${regressionThreshold}ms`;
   const lowFidelityMessage = `The fidelity setting was set below the recommended for a viable result. Rerun TracerBench with at least "fidelity=low"`;
   const jsonResults = {
     benchmarkTable: benchmarkTable.getData(),
@@ -79,7 +79,7 @@ export function logCompareResults(
 
   function isBelowRegressionThreshold(): boolean {
     if (
-      fidelity > fidelityLookup.low &&
+      fidelity >= fidelityLookup.low &&
       regressionThreshold &&
       isSignificant()
     ) {

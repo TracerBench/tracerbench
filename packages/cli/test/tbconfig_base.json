@@ -1,8 +1,7 @@
 {
-  "$schema": "./tb-schema.json",
+  "$schema": "../tb-schema.json",
   // the title of the report pdf file
-  "plotTitle": "tbconfig_base",
-  "fidelity": "low",
+  "plotTitle": "tbconfig_base file",
   "cpuThrottleRate": 2,
   "tbResultsFolder": "tracerbench-results",
   "controlURL": "https://www.tracerbench.com/",
@@ -12,7 +11,6 @@
   "regressionThreshold": "-100ms",
   "appName": "tracerbench",
   "network": "cable",
-  "socksPorts": [8880, 8881],
   "markers": [
     {
       "start": "fetchStart",

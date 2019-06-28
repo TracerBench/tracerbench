@@ -33,6 +33,7 @@ export const markerSets: IMarkerSets = {
 // chrome-debugging-client#defaultFlags.ts
 export const defaultFlagArgs: ITBConfig = {
   cpuThrottleRate: 2,
+  fidelity: 'low',
   markers: 'domComplete',
   browserArgs: [
     '--crash-dumps-dir=./tmp',
@@ -48,7 +49,6 @@ export const defaultFlagArgs: ITBConfig = {
     '--v8-cache-options=none',
   ],
   methods: '""',
-  fidelity: 'low',
   tbResultsFolder: './tracerbench-results',
   url: 'http://localhost:8000/',
   controlURL: 'http://localhost:8000/',
