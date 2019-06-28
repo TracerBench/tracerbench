@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as mkdirp from 'mkdirp';
 import { resolve } from 'path';
-import { InitialRenderBenchmark, Runner } from 'tracerbench';
+import { InitialRenderBenchmark, Runner } from '@tracerbench/core';
 import { Stdio } from '@tracerbench/spawn';
 
 /* tslint:disable:no-var-requires */

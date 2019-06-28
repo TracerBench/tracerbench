@@ -2,7 +2,7 @@
 
 import chalk from 'chalk';
 import * as logSymbols from 'log-symbols';
-import { IMarker, ITraceEvent } from 'tracerbench';
+import { IMarker, ITraceEvent } from '@tracerbench/core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { EXTENDS, IBenchmarkEnvironmentOverride, ITBConfig } from './tb-config';

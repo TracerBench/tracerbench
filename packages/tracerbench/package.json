@@ -1,5 +1,5 @@
 {
-  "name": "tracerbench",
+  "name": "@tracerbench/core",
   "version": "2.0.0-beta.26",
   "description": "Benchmark runner for trace metrics",
   "keywords": [

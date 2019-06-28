@@ -1,7 +1,7 @@
 /* tslint:disable:no-console*/
 
 import { flags } from '@oclif/command';
-import { networkConditions } from 'tracerbench';
+import { networkConditions } from '@tracerbench/core';
 import Protocol from 'devtools-protocol';
 import { defaultFlagArgs, fidelityLookup } from './default-flag-args';
 import { parseMarkers, getConfigDefault } from './utils';

@@ -9,7 +9,7 @@ import {
   Runner,
   networkConditions,
   IMarker,
-} from 'tracerbench';
+} from '@tracerbench/core';
 import {
   browserArgs,
   controlURL,

@@ -31,7 +31,7 @@
     "log-symbols": "^3.0.0",
     "ora": "^3.4.0",
     "path": "0.12.7",
-    "tracerbench": "^2.0.0-beta.26",
+    "@tracerbench/core": "^2.0.0-beta.26",
     "tslib": "^1.9.3"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import { IMarker } from 'tracerbench';
+import { IMarker } from '@tracerbench/core';
 import { PerformanceTimingMark } from './default-flag-args';
 import Protocol from 'devtools-protocol';
 

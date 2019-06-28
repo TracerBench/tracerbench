@@ -1,5 +1,5 @@
 import { Command } from '@oclif/command';
-import { harTrace } from 'tracerbench';
+import { harTrace } from '@tracerbench/core';
 import { tbResultsFolder, url } from '../helpers/flags';
 import * as path from 'path';
 

@@ -10,7 +10,7 @@ import {
   resolveConfigFile,
 } from '../../src/helpers/utils';
 import { expect } from 'chai';
-import { ITraceEvent } from 'tracerbench';
+import { ITraceEvent } from '@tracerbench/core';
 import * as mock from 'mock-fs';
 
 const event: ITraceEvent = {

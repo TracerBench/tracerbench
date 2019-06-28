@@ -138,16 +138,16 @@ The most common and recommended consumption of TracerBench is via the [TracerBen
 
 ```js
 import * as fs from 'fs-extra';
-import { InitialRenderBenchmark, Runner } from 'tracerbench';
+import { InitialRenderBenchmark, Runner } from '@tracerbench/core';
 
-// the number of samples TracerBench will run. Higher sample count = more accurate. 
+// the number of samples TracerBench will run. Higher sample count = more accurate.
 // However the duration of the test will increase. The recommendation is somewhere between 30-60 samples.
 const samplesCount = 40;
 
-// the markers leveraged tuning your web application. additionally this assumes you have tuned 
-// your web application with the following marker "renderEnd" 
-// (see "Instrument your web application" above). the full list of available markers is robust, 
-// especially as it pertains to web application frameworks (ember, react etc). 
+// the markers leveraged tuning your web application. additionally this assumes you have tuned
+// your web application with the following marker "renderEnd"
+// (see "Instrument your web application" above). the full list of available markers is robust,
+// especially as it pertains to web application frameworks (ember, react etc).
 // as a baseline the `PerformanceTiming` API is fully available
 const markers = [{ start: 'domComplete', label: 'domComplete' }];
 const browser = {
@@ -250,7 +250,7 @@ Now that the tracing is complete and the data has been collected. The next step 
 
 Population and Sample are part of the foundation of statistical hypothesis testing.
 
-A population is a collection of data which you want to make an assumption on. For example in a swimming pool of water this represents all of the water in the pool. Since testing every drop of water is not realistically possible. A subset of the population (subset of the pool water) is tested to analyze and make an assumption, which is called a sample. 
+A population is a collection of data which you want to make an assumption on. For example in a swimming pool of water this represents all of the water in the pool. Since testing every drop of water is not realistically possible. A subset of the population (subset of the pool water) is tested to analyze and make an assumption, which is called a sample.
 
 To represent the population well, a sample should be randomly collected and adequately large. If the sample is random and large enough, you can use the information collected from the sample to make an assumption about the larger population. Then leverage a hypothesis test to estimate the percentage of the sample to the population.
 
