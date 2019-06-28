@@ -28,6 +28,11 @@ export const config = flags.build({
   description: `Specify an alternative tbconfig.json to extend from the root tbconfig.json. This explicit config will overwrite all.`,
 });
 
+export const report = flags.boolean({
+  description: `Generate a PDF report directly after running the compare command.`,
+  default: false,
+});
+
 export const headless = flags.boolean({
   description: `Run with headless chrome flags`,
   default: false,
@@ -106,11 +111,6 @@ export const event = flags.build({
 export const methods = flags.build({
   default: () => getConfigDefault('methods', defaultFlagArgs.methods),
   description: 'List of methods to aggregate',
-});
-
-export const report = flags.build({
-  default: () => getConfigDefault('report'),
-  description: `Directory path to generate a report with aggregated sums for each heuristic category and aggregated sum across all heuristics`,
 });
 
 export const cpuThrottleRate = flags.build({

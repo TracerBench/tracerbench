@@ -28,6 +28,7 @@ import {
   regressionThreshold,
   headless,
   config,
+  report
 } from '../helpers/flags';
 import { fidelityLookup, headlessFlags } from '../helpers/default-flag-args';
 import { logCompareResults } from '../helpers/log-compare-results';
@@ -42,6 +43,7 @@ import {
   CONTROL_ENV_OVERRIDE_ATTR,
   EXPERIMENT_ENV_OVERRIDE_ATTR,
 } from '../helpers/tb-config';
+import Report from './report';
 
 export interface ICompareFlags {
   browserArgs: string[];
@@ -62,6 +64,7 @@ export interface ICompareFlags {
   regressionThreshold?: number;
   headless: boolean;
   config?: string;
+  report?: boolean;
 }
 
 export default class Compare extends Command {
@@ -83,6 +86,7 @@ export default class Compare extends Command {
     socksPorts: socksPorts(),
     regressionThreshold: regressionThreshold(),
     config: config(),
+    report,
     json,
     debug,
     headless,
@@ -170,6 +174,12 @@ export default class Compare extends Command {
             `${this.mergedFlags.tbResultsFolder}/compare-flags-settings.json`,
             JSON.stringify(Object.assign(this.mergedFlags), null, 2)
           );
+        }
+
+        // if we want to run the Report without calling a seperate command
+        if (this.mergedFlags.report) {
+          this.log('RUNNING A REPORT');
+          Report.run(['--tbResultsFolder', `${this.mergedFlags.tbResultsFolder}`, '--config', `${this.mergedFlags.config}`]);
         }
       })
       .catch((err: any) => {
