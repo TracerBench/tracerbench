@@ -3,6 +3,8 @@ import * as path from 'path';
 import { confidenceInterval } from './statistics/confidence-interval';
 import { Stats } from './statistics/stats';
 import { readFileSync } from 'fs-extra';
+import { getRootTBConfigOrOverride } from './utils';
+import { defaultFlagArgs } from './default-flag-args';
 
 export interface Sample {
   duration: number;
@@ -35,6 +37,7 @@ interface HTMLSectionRenderData {
   identifierHash: string;
   controlSamples: string;
   experimentSamples: string;
+  servers: any;
 }
 
 const PAGE_LOAD_TIME = 'duration';
@@ -60,7 +63,8 @@ REPORT_TEMPLATE_RAW = REPORT_TEMPLATE_RAW.toString()
 
 export default function createConsumeableHTML(
   controlData: ITracerBenchTraceResult,
-  experimentData: ITracerBenchTraceResult
+  experimentData: ITracerBenchTraceResult,
+  config?: string
 ): string {
   /**
    * Extract the phases and page load time latency into sorted buckets by phase
@@ -84,6 +88,24 @@ export default function createConsumeableHTML(
     });
 
     return buckets;
+  }
+
+  const reportTitles = {
+    servers: [{name: 'Control'}, {name: 'Experiment'}],
+    plotTitle: defaultFlagArgs.plotTitle
+  }
+
+  try {
+    // get the raw tbconfig.json either root or child
+    const [tbConfig] = getRootTBConfigOrOverride(config);
+    if (tbConfig.servers) {
+      reportTitles.servers = tbConfig.servers as any;
+    }
+    if (tbConfig.plotTitle) {
+      reportTitles.plotTitle = tbConfig.plotTitle;
+    }
+  } catch (e) {
+    // e
   }
 
   const valuesByPhaseControl = bucketPhaseValues(controlData.samples);
@@ -112,6 +134,7 @@ export default function createConsumeableHTML(
       ciMin: Math.ceil(cInterval[0] * 100) / 100,
       ciMax: Math.ceil(cInterval[1] * 100) / 100,
       hlDiff: Math.ceil(stats.estimator * 100) / 100,
+      servers: reportTitles.servers
     });
   });
 
@@ -122,6 +145,7 @@ export default function createConsumeableHTML(
   const template = Handlebars.compile(REPORT_TEMPLATE_RAW);
 
   return template({
+    reportTitles,
     sectionFormattedData,
     sectionFormattedDataJson: JSON.stringify(sectionFormattedData),
   });

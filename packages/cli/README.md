@@ -300,6 +300,9 @@ USAGE
   $ tracerbench report
 
 OPTIONS
+  --config=config                    Specify an alternative tbconfig.json to extend from the root tbconfig.json. This
+                                     explicit config will overwrite all.
+
   --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output folder path for all
                                      tracerbench results
 ```

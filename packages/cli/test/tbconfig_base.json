@@ -3,7 +3,7 @@
   // the title of the report pdf file
   "plotTitle": "tbconfig_base file",
   "cpuThrottleRate": 2,
-  "tbResultsFolder": "tracerbench-results",
+  "tbResultsFolder": "../tracerbench-results",
   "controlURL": "https://www.tracerbench.com/",
   "experimentURL": "https://www.tracerbench.com/",
   "url": "https://www.tracerbench.com/",
@@ -54,21 +54,19 @@
     "--setIgnoreCertificateErrors=true",
     "--v8-cache-options=none"
   ],
-  // optional servers config for a/b testing with har-remix w/dist slicing
-  // https://github.com/TracerBench/tracerbench/tree/master/packages/har-remix
   "servers": [
     {
       "name": "control tracerbench-build_1.0.1234",
       "url": "https://www.tracerbench.com/",
-      "dist": "./location-to-dist-files/",
-      "har": "./location-to-har-file/",
+      "dist": "./relative-path-to-dist-files/",
+      "har": "./relative-path-location-to-har-file/",
       "socksPort": 8880
     },
     {
       "name": "experiment tracerbench-build-2-78ffg6a678g95",
       "url": "https://www.tracerbench.com/",
-      "dist": "./location-to-dist-files/",
-      "har": "./location-to-har-file/",
+      "dist": "./relative-path-to-dist-files/",
+      "har": "./relative-path-location-to-har-file/",
       "socksPort": 8881
     }
   ]

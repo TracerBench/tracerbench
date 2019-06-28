@@ -14,7 +14,10 @@ interface IMarkerSets {
   performanceTiming: PerformanceTimingMark[];
 }
 
-// todo: flesh these out
+// todo: flesh these framework specific markers out
+// these are not currently integrated
+// the intention is angular/ember/react/vue etc
+// will have curated markers that are framework specific
 export const markerSets: IMarkerSets = {
   ember: [
     'fetchStart',
@@ -32,6 +35,7 @@ export const markerSets: IMarkerSets = {
 // in-addition to these we are defaulting
 // chrome-debugging-client#defaultFlags.ts
 export const defaultFlagArgs: ITBConfig = {
+  plotTitle: 'TracerBench',
   cpuThrottleRate: 2,
   fidelity: 'low',
   markers: 'domComplete',

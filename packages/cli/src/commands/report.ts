@@ -4,7 +4,7 @@ import { pathToFileURL } from 'url';
 import { findChrome } from 'chrome-debugging-client';
 import { join, resolve } from 'path';
 import { Command } from '@oclif/command';
-import { tbResultsFolder } from '../helpers/flags';
+import { tbResultsFolder, config } from '../helpers/flags';
 import createConsumeableHTML, {
   ITracerBenchTraceResult,
 } from '../helpers/create-consumable-html';
@@ -15,7 +15,9 @@ export default class Report extends Command {
   public static description = `Parses the output json from tracerbench and formats it into pdf and html`;
   public static flags = {
     tbResultsFolder: tbResultsFolder({ required: true }),
+    config: config(),
   };
+
   /**
    * Ensure the input file is valid and call the helper function "createConsumeableHTML"
    * to generate the HTML string for the output file.
@@ -30,7 +32,6 @@ export default class Report extends Command {
     let htmlOutputPath;
     let outputFileName;
     let inputData: ITracerBenchTraceResult[] = [];
-
     // If the input file cannot be found, exit with and error
     if (!fs.existsSync(inputFilePath)) {
       this.error(
@@ -61,7 +62,11 @@ export default class Report extends Command {
     }
 
     outputFileName = this.determineOutputFileName(tbResultsFolder);
-    renderedHTML = createConsumeableHTML(controlData, experimentData);
+    renderedHTML = createConsumeableHTML(
+      controlData,
+      experimentData,
+      flags.config
+    );
     if (!fs.existsSync(tbResultsFolder)) {
       fs.mkdirSync(tbResultsFolder, { recursive: true });
     }

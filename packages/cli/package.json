@@ -29,7 +29,6 @@
     "json5": "^2.1.0",
     "jstat": "^1.9.0",
     "log-symbols": "^3.0.0",
-    "ora": "^3.4.0",
     "path": "0.12.7",
     "tracerbench": "^2.0.0-beta.26",
     "tslib": "^1.9.3"
@@ -51,7 +50,6 @@
     "@types/mocha": "^5.2.5",
     "@types/mock-fs": "3.6.30",
     "@types/node": "^10.12.18",
-    "@types/ora": "^3.2.0",
     "chai": "^4.2.0",
     "chai-fs": "^2.0.0",
     "mocha": "^5.2.0",

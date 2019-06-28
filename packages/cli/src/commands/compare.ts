@@ -1,7 +1,6 @@
 import Protocol from 'devtools-protocol';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import * as ora from 'ora';
 import { Command } from '@oclif/command';
 import {
   IInitialRenderBenchmarkParams,
@@ -126,21 +125,17 @@ export default class Compare extends Command {
       control: new InitialRenderBenchmark(controlSettings),
       experiment: new InitialRenderBenchmark(experimentSettings),
     };
-    const spinner = ora('TracerBench: Running Traces').start();
     const runner = new Runner([benchmarks.control, benchmarks.experiment]);
     await runner
       .run(this.mergedFlags.fidelity)
       .then((results: any) => {
         if (!results[0].samples[0]) {
-          spinner.fail();
           this.error(
             `Could not sample from provided urls\nCONTROL: ${
               this.mergedFlags.controlURL
             }\nEXPERIMENT: ${this.mergedFlags.experimentURL}.`
           );
         }
-
-        spinner.succeed();
 
         fs.writeFileSync(
           `${this.mergedFlags.tbResultsFolder}/compare.json`,
@@ -178,7 +173,6 @@ export default class Compare extends Command {
         }
       })
       .catch((err: any) => {
-        spinner.fail();
         this.error(err);
       });
   }

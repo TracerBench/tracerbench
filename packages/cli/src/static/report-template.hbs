@@ -1,19 +1,24 @@
 <html>
+
 <head>
   <meta charset="utf-8">
-  <title>TracerBench Report</title>
+  <title>{{reportTitles.plotTitle}}</title>
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {{!-- TRACERBENCH-CHART-BOOTSTRAP.CSS --}}
 </head>
+
 <body>
+  <h1>TracerBench: Boxplot Results</h1>
+  <p>{{reportTitles.plotTitle}}</p>
   <div class="container">
     {{#each sectionFormattedData as |analysisForPhase|}}
     <div class="row">
       <div class="col">
         <h1>{{analysisForPhase.phase}}</h1>
         {{#if analysisForPhase.isSignificant}}
-        <div class="alert alert-warning" role="alert">
+        <div class="alert alert-warning" style="color: #fff; background-color:#1884E4;border-color: #1884E4;"
+          role="alert">
           Difference is Significant
         </div>
         {{else}}
@@ -71,41 +76,46 @@
       const canvasFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}} = document.getElementById('{{analysisForPhase.identifierHash}}-chart').getContext('2d');
       const optionFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}} = {
         type: 'boxplot',
-        data: {
+          data: {
           labels: ['{{analysisForPhase.phase}}'],
           datasets: [{
-            label: 'Control',
-            borderColor: '#C7F16A',
-            backgroundColor: 'rgba(199, 241, 106, 0.25)',
-            borderWidth: 1,
-            outlierColor: '#0A2D46',
+            label: '{{analysisForPhase.servers.[0].name}}',
+            borderColor: '#0A2D46',
+            backgroundColor: 'rgba(199, 241, 106, 0.50)',
+            borderWidth: 2,
+            outlierColor: '#1884E4',
+            itemRadius: 2,
+            itemBackgroundColor: '#1884E4',
             data: [{{{analysisForPhase.controlSamples}}}]
-          },{
-            label: 'Experiment',
-            borderColor: '#1884E4',
-            backgroundColor: 'rgba(24, 132, 228, 0.25)',
-            borderWidth: 1,
-            outlierColor: '#0A2D46',
+          }, {
+            label: '{{analysisForPhase.servers.[1].name}}',
+            borderColor: '#0A2D46',
+            backgroundColor: 'rgba(56, 210, 211, 0.50)',
+            borderWidth: 2,
+            outlierColor: '#1884E4',
+            itemRadius: 2,
+            itemBackgroundColor: '#1884E4',
             data: [{{{analysisForPhase.experimentSamples}}}]
-          }]
-        },
-        options: {
-          responsive: true,
-          legend: {
-            display: false,
-            position: 'top'
-          },
-          title: {
-            display: false
-          },
-          scales: {
-            xAxes: [{
-              // Specific to Bar Controller
-              categoryPercentage: 0.9,
-              barPercentage: 0.8
-            }]
-          }
-        }
+        }]
+      },
+    options: {
+      responsive: true,
+        legend: {
+        display: true,
+          position: 'top'
+      },
+      title: {
+        display: true,
+        text: '{{reportTitles.plotTitle}}'
+      },
+      scales: {
+        xAxes: [{
+          // Specific to Bar Controller
+          categoryPercentage: 0.9,
+          barPercentage: 0.8
+        }]
+      }
+    }
       };
 
       window['{{analysisForPhase.phase}}'] = new Chart(canvasFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}}, optionFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}});

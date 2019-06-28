@@ -4,5 +4,5 @@
   "plotTitle": "test/fixtures/release/tbconfig.json",
   "regressionThreshold": "-100ms",
   "controlURL": "file:///Users/malynch/D/tracerbench/packages/cli/test/fixtures/release/index.html",
-  "experimentURL": "file:///Users/malynch/D/tracerbench/packages/cli/test/fixtures/release/index.html"
+  "experimentURL": "file:///Users/malynch/D/tracerbench/packages/cli/test/fixtures/release/index.html",
 }

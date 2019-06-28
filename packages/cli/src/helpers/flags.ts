@@ -15,6 +15,15 @@ import deviceSettings from './simulate-device-options';
 ! and type checking in all circumstances
 */
 
+export const servers = flags.build({
+  description: `Optional servers config for A/B testing with har-remix dist slicing with socks proxy. All paths within this config are relative.`,
+});
+
+export const plotTitle = flags.build({
+  default: () => getConfigDefault('plotTitle', defaultFlagArgs.plotTitle),
+  description: `Specify the title of the report pdf file.`,
+});
+
 export const config = flags.build({
   description: `Specify an alternative tbconfig.json to extend from the root tbconfig.json. This explicit config will overwrite all.`,
 });
