@@ -1,7 +1,7 @@
 {
-  "$schema": "../tb-schema.json",
+  "$schema": "./tb-schema.json",
   // the title of the report pdf file
-  "plotTitle": "TracerBench CLI",
+  "plotTitle": "tbconfig_base",
   "fidelity": "low",
   "cpuThrottleRate": 2,
   "tbResultsFolder": "tracerbench-results",

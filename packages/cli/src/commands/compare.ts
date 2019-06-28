@@ -28,6 +28,7 @@ import {
   socksPorts,
   regressionThreshold,
   headless,
+  config,
 } from '../helpers/flags';
 import { fidelityLookup, headlessFlags } from '../helpers/default-flag-args';
 import { logCompareResults } from '../helpers/log-compare-results';
@@ -61,6 +62,7 @@ export interface ICompareFlags {
   debug: boolean;
   regressionThreshold?: number;
   headless: boolean;
+  config?: string;
 }
 
 export default class Compare extends Command {
@@ -81,10 +83,20 @@ export default class Compare extends Command {
     emulateDeviceOrientation: emulateDeviceOrientation(),
     socksPorts: socksPorts(),
     regressionThreshold: regressionThreshold(),
+    config: config(),
     json,
     debug,
     headless,
   };
+
+  // instantiated before this.run()
+  public async init() {
+    const { flags } = this.parse(Compare);
+    if (typeof flags.config === 'string') {
+      const [customTBConfig] = getDefaultConfigFileOrOverride(flags.config);
+      this.log(`${customTBConfig}`);
+    }
+  }
 
   public async run() {
     const { flags } = this.parse(Compare);
@@ -228,11 +240,11 @@ export default class Compare extends Command {
 
     // config for the browsers to leverage socks proxy
     if (flags.socksPorts) {
-      controlBrowser.additionalArguments.push(
-        `--proxy-server=socks5://0.0.0.0:${flags.socksPorts[0]}`
+      controlBrowser.additionalArguments = controlBrowser.additionalArguments.concat(
+        [`--proxy-server=socks5://0.0.0.0:${flags.socksPorts[0]}`]
       );
-      experimentBrowser.additionalArguments.push(
-        `--proxy-server=socks5://0.0.0.0:${flags.socksPorts[1]}`
+      experimentBrowser.additionalArguments = experimentBrowser.additionalArguments.concat(
+        [`--proxy-server=socks5://0.0.0.0:${flags.socksPorts[1]}`]
       );
     }
 

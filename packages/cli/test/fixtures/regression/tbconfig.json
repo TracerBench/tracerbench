@@ -1,0 +1,4 @@
+{
+  "extends": "../../../tbconfig_base.json",
+  "plotTitle": "test/fixtures/regression/tbconfig.json"
+}

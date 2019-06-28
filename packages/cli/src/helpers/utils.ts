@@ -11,24 +11,6 @@ import { ICompareFlags } from '../commands/compare';
 
 type ITBConfigKeys = keyof ITBConfig;
 
-export const chalkScheme = {
-  header: chalk.rgb(255, 255, 255),
-  regress: chalk.rgb(239, 100, 107),
-  neutral: chalk.rgb(225, 225, 225),
-  significant: chalk.rgb(0, 191, 255),
-  imprv: chalk.rgb(135, 197, 113),
-  phase: chalk.rgb(225, 225, 225),
-  faint: chalk.rgb(80, 80, 80),
-  checkmark: chalk.rgb(133, 153, 36)(`${logSymbols.success}`),
-  tbBranding: {
-    lime: chalk.rgb(199, 241, 106),
-    blue: chalk.rgb(24, 132, 228),
-    aqua: chalk.rgb(56, 210, 211),
-    dkBlue: chalk.rgb(10, 45, 70),
-    grey: chalk.rgb(153, 153, 153),
-  },
-};
-
 /**
  * Handles checking if there is a specific override for the attributeName in the tbConfigs for the given overrideObjectName.
  * Defaults to whatever is in the flags object if there is no override.
@@ -72,36 +54,6 @@ export function getTBConfigFromFile(tbConfigPath: string): ITBConfig {
 }
 
 /**
- * Merge the contents of the right object into the left. Simply replace numbers, strings, arrays
- * and recursively call this function with objects.
- *
- * Note that typeof null == 'object'
- *
- * @param left - Destination object
- * @param right - Content of this object takes precedence
- */
-export function mergeLeft(
-  left: { [key: string]: any },
-  right: { [key: string]: any }
-): { [key: string]: any } {
-  Object.keys(right).forEach(key => {
-    const leftValue = left[key];
-    const rightValue = left[key];
-    const matchingObjectType =
-      typeof leftValue === 'object' && typeof rightValue === 'object';
-    const isOneArray = Array.isArray(leftValue) || Array.isArray(rightValue);
-
-    if (matchingObjectType && (left[key] || right[key]) && !isOneArray) {
-      mergeLeft(left[key], right[key]);
-    } else {
-      left[key] = right[key];
-    }
-  });
-
-  return left;
-}
-
-/**
  * Handles the extension of any configs specified in the "extended" attribute by using the mergeLeft function
  *
  * @param tbConfigPath - Path to the file to load and check if there is a parent to extend
@@ -132,11 +84,19 @@ export function resolveConfigFile(tbConfigPath: string): [ITBConfig, string] {
  */
 export function getDefaultConfigFileOrOverride(altTBConfigPath?: string) {
   const tbConfigPath = altTBConfigPath
-    ? altTBConfigPath
+    ? path.join(process.cwd(), altTBConfigPath)
     : path.join(process.cwd(), 'tbconfig.json');
   return resolveConfigFile(tbConfigPath);
 }
 
+/**
+ * Determines if the default expected location of the tbconfig.json should be used or a given override and calls\
+ * resolveConfigFile; eg. grandparent > parent > child inheritance with tbconfig.json files are each level
+ *
+ * @param id - the flag name eg browserArgs or cpuThrottleRate etc.
+ * @param defaultValue - default value for the flag specified on `defaultFlagArgs`
+ * @param altTBConfigPath - optional override path to a tbconfig.json file NOT found in the project root
+ */
 export function getConfigDefault(
   id: ITBConfigKeys,
   defaultValue?: any,
@@ -179,6 +139,36 @@ export function getConfigDefault(
       // throw new CLIError(error);
     }
   }
+}
+
+/**
+ * Merge the contents of the right object into the left. Simply replace numbers, strings, arrays
+ * and recursively call this function with objects.
+ *
+ * Note that typeof null == 'object'
+ *
+ * @param left - Destination object
+ * @param right - Content of this object takes precedence
+ */
+export function mergeLeft(
+  left: { [key: string]: any },
+  right: { [key: string]: any }
+): { [key: string]: any } {
+  Object.keys(right).forEach(key => {
+    const leftValue = left[key];
+    const rightValue = left[key];
+    const matchingObjectType =
+      typeof leftValue === 'object' && typeof rightValue === 'object';
+    const isOneArray = Array.isArray(leftValue) || Array.isArray(rightValue);
+
+    if (matchingObjectType && (left[key] || right[key]) && !isOneArray) {
+      mergeLeft(left[key], right[key]);
+    } else {
+      left[key] = right[key];
+    }
+  });
+
+  return left;
 }
 
 export function convertMicrosecondsToMS(ms: string | number): number {
@@ -323,3 +313,21 @@ export function convertToTypable(name: string): string {
 export function toNearestHundreth(n: number): number {
   return Math.round(n * 100) / 100;
 }
+
+export const chalkScheme = {
+  header: chalk.rgb(255, 255, 255),
+  regress: chalk.rgb(239, 100, 107),
+  neutral: chalk.rgb(225, 225, 225),
+  significant: chalk.rgb(0, 191, 255),
+  imprv: chalk.rgb(135, 197, 113),
+  phase: chalk.rgb(225, 225, 225),
+  faint: chalk.rgb(80, 80, 80),
+  checkmark: chalk.rgb(133, 153, 36)(`${logSymbols.success}`),
+  tbBranding: {
+    lime: chalk.rgb(199, 241, 106),
+    blue: chalk.rgb(24, 132, 228),
+    aqua: chalk.rgb(56, 210, 211),
+    dkBlue: chalk.rgb(10, 45, 70),
+    grey: chalk.rgb(153, 153, 153),
+  },
+};

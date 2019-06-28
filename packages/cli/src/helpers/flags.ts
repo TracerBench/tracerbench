@@ -19,6 +19,10 @@ import deviceSettings from './simulate-device-options';
 ! and type checking in all circumstances
 */
 
+export const config = flags.build({
+  description: `Specify an alternative tbconfig.json to extend from the root tbconfig.json`,
+});
+
 export const headless = flags.boolean({
   description: `Run with headless chrome flags`,
   default: false,
