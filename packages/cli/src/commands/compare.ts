@@ -228,11 +228,11 @@ export default class Compare extends Command {
 
     // config for the browsers to leverage socks proxy
     if (flags.socksPorts) {
-      controlBrowser.additionalArguments.push(
-        `--proxy-server=socks5://0.0.0.0:${flags.socksPorts[0]}`
+      controlBrowser.additionalArguments = controlBrowser.additionalArguments.concat(
+        [`--proxy-server=socks5://0.0.0.0:${flags.socksPorts[0]}`]
       );
-      experimentBrowser.additionalArguments.push(
-        `--proxy-server=socks5://0.0.0.0:${flags.socksPorts[1]}`
+      experimentBrowser.additionalArguments = experimentBrowser.additionalArguments.concat(
+        [`--proxy-server=socks5://0.0.0.0:${flags.socksPorts[1]}`]
       );
     }
 
