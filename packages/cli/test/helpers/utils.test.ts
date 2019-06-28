@@ -1,3 +1,4 @@
+import { ICompareFlags } from './../../src/commands/compare';
 import {
   checkEnvironmentSpecificOverride,
   findFrame,
@@ -10,7 +11,6 @@ import {
 } from '../../src/helpers/utils';
 import { expect } from 'chai';
 import { ITraceEvent } from 'tracerbench';
-import * as path from 'path';
 import * as mock from 'mock-fs';
 
 const event: ITraceEvent = {
@@ -34,14 +34,14 @@ const frame = findFrame(events, url);
 const isLoad = isCommitLoad(event);
 const isFrameMark = isFrameNavigationStart(frame, event);
 const micro = convertMSToMicroseconds(`-100ms`);
-const tbConfigPath = path.join(process.cwd(), '/test/tbconfig.json');
+const tbConfigPath = 'test/fixtures/release';
 
 describe('utils', () => {
   it(`getConfigDefault() from tbconfig at alt path`, () => {
     const regressionThreshold = getConfigDefault(
       'regressionThreshold',
       '50ms',
-      tbConfigPath,
+      tbConfigPath
     );
     expect(regressionThreshold).to.equal('-100ms');
   });
@@ -68,35 +68,54 @@ describe('utils', () => {
   });
 });
 
-
 describe('checkEnvironmentSpecificOverride', () => {
   it(`tbConfig missing case`, () => {
-    const defaultValues = { 'network': 'defaultValue' };
+    const defaultValues = { network: 'defaultValue' };
     // @ts-ignore
-    const result = checkEnvironmentSpecificOverride('network', defaultValues, 'overrideName');
+    // @ts-nocheck
+    const result = checkEnvironmentSpecificOverride(
+      'network',
+      (defaultValues as unknown) as ICompareFlags,
+      'overrideName'
+    );
     expect(result).to.equal('defaultValue');
   });
 
   it(`tbConfig exists but environment config missing case`, () => {
-    const defaultValues = { 'network': 'defaultValue' };
+    const defaultValues = { network: 'defaultValue' };
     // @ts-ignore
-    const result = checkEnvironmentSpecificOverride('network', defaultValues, 'overrideName', {});
+    const result = checkEnvironmentSpecificOverride(
+      'network',
+      (defaultValues as unknown) as ICompareFlags,
+      'overrideName',
+      {}
+    );
     expect(result).to.equal('defaultValue');
   });
 
   it(`tbConfig exists and environment exists but config missing case`, () => {
-    const defaultValues = { 'network': 'defaultValue' };
+    const defaultValues = { network: 'defaultValue' };
     const tbConfig = { overrideName: { cpuThrottleRate: 1 } };
     // @ts-ignore
-    const result = checkEnvironmentSpecificOverride('network', defaultValues, 'overrideName', tbConfig);
+    const result = checkEnvironmentSpecificOverride(
+      'network',
+      (defaultValues as unknown) as ICompareFlags,
+      'overrideName',
+      tbConfig
+    );
     expect(result).to.equal('defaultValue');
   });
 
   it(`tbConfig exists and environment exists and config exists case`, () => {
-    const defaultValues = { 'cpuThrottleRate': 100 };
+    const defaultValues = { cpuThrottleRate: 100 };
     const tbConfig = { overrideName: { cpuThrottleRate: 1 } };
     // @ts-ignore
-    const result = checkEnvironmentSpecificOverride('cpuThrottleRate', defaultValues, 'overrideName', tbConfig);
+    const result = checkEnvironmentSpecificOverride(
+      'cpuThrottleRate',
+      (defaultValues as unknown) as ICompareFlags,
+      'overrideName',
+      tbConfig
+    );
     expect(result).to.equal(1);
   });
 });
@@ -111,7 +130,7 @@ describe('mergeLeft', () => {
       shouldStaySame: 'same',
       shouldBeNullAfter: 'not null',
       objectMerge: {
-        'value': 0,
+        value: 0,
       },
     };
     const toMerge = {
@@ -121,8 +140,8 @@ describe('mergeLeft', () => {
       flag: true,
       shouldBeNullAfter: null,
       objectMerge: {
-        'value': 2,
-        'newValue': 1,
+        value: 2,
+        newValue: 1,
       },
     };
     const result = mergeLeft(destination, toMerge);
@@ -133,23 +152,35 @@ describe('mergeLeft', () => {
     expect(result.flag).to.equal(true);
     expect(result.shouldBeNullAfter).to.equal(null);
     expect(result.objectMerge).to.eql({
-      'value': 2,
-      'newValue': 1,
+      value: 2,
+      newValue: 1,
     });
   });
 });
 
 describe('resolveConfigFile', () => {
   const mockFileSystem = {
-    'parent': {
-      'child': {
-        'grandchild': {
-          'tbconfig.json': Buffer.from(JSON.stringify({ extends: '../tbconfig.json', cpuThrottleRate: 0 })),
-          'shouldfail.json': Buffer.from(JSON.stringify({ extends: '../lostparent.json' })),
+    parent: {
+      child: {
+        grandchild: {
+          'tbconfig.json': Buffer.from(
+            JSON.stringify({ extends: '../tbconfig.json', cpuThrottleRate: 0 })
+          ),
+          'shouldfail.json': Buffer.from(
+            JSON.stringify({ extends: '../lostparent.json' })
+          ),
         },
-        'tbconfig.json': Buffer.from(JSON.stringify({ extends: '../tbconfig.json', cpuThrottleRate: 1 })),
+        'tbconfig.json': Buffer.from(
+          JSON.stringify({ extends: '../tbconfig.json', cpuThrottleRate: 1 })
+        ),
       },
-      'tbconfig.json': Buffer.from(JSON.stringify({ extends: '../tbconfig.json', cpuThrottleRate: 3, regressionThreshold: 5 })),
+      'tbconfig.json': Buffer.from(
+        JSON.stringify({
+          extends: '../tbconfig.json',
+          cpuThrottleRate: 3,
+          regressionThreshold: 5,
+        })
+      ),
     },
     'tbconfig.json': Buffer.from(JSON.stringify({ cpuThrottleRate: 4 })),
   };
@@ -157,7 +188,9 @@ describe('resolveConfigFile', () => {
   it('Make sure the output has the correct values replaced', () => {
     mock(mockFileSystem);
 
-    const [resolvedConfig] = resolveConfigFile('parent/child/grandchild/tbconfig.json');
+    const [resolvedConfig] = resolveConfigFile(
+      'parent/child/grandchild/tbconfig.json'
+    );
     expect(resolvedConfig.cpuThrottleRate).to.equal(0);
     expect(resolvedConfig.regressionThreshold).to.equal(5);
 

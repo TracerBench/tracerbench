@@ -183,6 +183,9 @@ OPTIONS
       IgnoreCertificateErrors=true,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the 
       TracerBench render benchmark. TracerBench includes many non-configurable defaults in this category.
 
+  --config=config
+      Specify an alternative tbconfig.json to extend from the root tbconfig.json. This explicit config will overwrite all.
+
   --controlURL=controlURL
       (required) [default: http://localhost:8000/] Control URL to visit for compare command
 

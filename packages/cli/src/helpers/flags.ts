@@ -4,11 +4,7 @@ import { flags } from '@oclif/command';
 import { networkConditions } from 'tracerbench';
 import Protocol from 'devtools-protocol';
 import { defaultFlagArgs, fidelityLookup } from './default-flag-args';
-import {
-  parseMarkers,
-  getConfigDefault,
-  convertMSToMicroseconds,
-} from './utils';
+import { parseMarkers, getConfigDefault } from './utils';
 import deviceSettings from './simulate-device-options';
 
 /*
@@ -18,6 +14,10 @@ import deviceSettings from './simulate-device-options';
 ! todo: mitigate above by either extending the flags oclif command calling parse
 ! and type checking in all circumstances
 */
+
+export const config = flags.build({
+  description: `Specify an alternative tbconfig.json to extend from the root tbconfig.json. This explicit config will overwrite all.`,
+});
 
 export const headless = flags.boolean({
   description: `Run with headless chrome flags`,
@@ -47,7 +47,7 @@ export const regressionThreshold = flags.build({
     ),
   description: `Regression threshold in negative milliseconds. eg -100ms`,
   parse: (ms): number => {
-    return convertMSToMicroseconds(ms);
+    return parseInt(ms, 10);
   },
 });
 

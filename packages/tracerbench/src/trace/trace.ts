@@ -173,7 +173,6 @@ export default class Trace {
   public buildModel() {
     const { events } = this;
     if (this.stack.length > 0) {
-      console.error('trace has incomplete B phase events');
       this.stack.length = 0;
     }
     for (const event of events) {

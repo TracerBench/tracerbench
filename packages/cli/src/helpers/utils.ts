@@ -11,24 +11,6 @@ import { ICompareFlags } from '../commands/compare';
 
 type ITBConfigKeys = keyof ITBConfig;
 
-export const chalkScheme = {
-  header: chalk.rgb(255, 255, 255),
-  regress: chalk.rgb(239, 100, 107),
-  neutral: chalk.rgb(225, 225, 225),
-  significant: chalk.rgb(0, 191, 255),
-  imprv: chalk.rgb(135, 197, 113),
-  phase: chalk.rgb(225, 225, 225),
-  faint: chalk.rgb(80, 80, 80),
-  checkmark: chalk.rgb(133, 153, 36)(`${logSymbols.success}`),
-  tbBranding: {
-    lime: chalk.rgb(199, 241, 106),
-    blue: chalk.rgb(24, 132, 228),
-    aqua: chalk.rgb(56, 210, 211),
-    dkBlue: chalk.rgb(10, 45, 70),
-    grey: chalk.rgb(153, 153, 153),
-  },
-};
-
 /**
  * Handles checking if there is a specific override for the attributeName in the tbConfigs for the given overrideObjectName.
  * Defaults to whatever is in the flags object if there is no override.
@@ -63,11 +45,91 @@ export function checkEnvironmentSpecificOverride(
  *
  * @param tbConfigPath - Override default path with this parameter
  */
-export function getTBConfigFromFile(tbConfigPath: string): ITBConfig {
+export function getTBConfigJSON(tbConfigPath: string): ITBConfig {
   try {
     return JSON5.parse(fs.readFileSync(tbConfigPath, 'utf8'));
   } catch (error) {
     throw error;
+  }
+}
+
+/**
+ * Determines if the default expected location of the tbconfig.json should be used or a given override and calls\
+ * resolveConfigFile; eg. grandparent > parent > child inheritance with tbconfig.json files are each level
+ *
+ * @param altTBConfigPath - Optional override path to a tbconfig.json file
+ */
+export function getRootTBConfigOrOverride(altTBConfigPath?: string) {
+  if (altTBConfigPath) {
+    const p = path.join(process.cwd(), altTBConfigPath);
+    const isDir = fs.existsSync(p) && fs.lstatSync(p).isDirectory();
+
+    if (isDir) {
+      return resolveConfigFile(path.join(altTBConfigPath, '/tbconfig.json'));
+    } else {
+      return resolveConfigFile(altTBConfigPath);
+    }
+  }
+
+  return resolveConfigFile(path.join(process.cwd(), 'tbconfig.json'));
+}
+
+/**
+ * Handles the extension of any configs specified in the "extended" attribute by using the mergeLeft function
+ *
+ * @param tbConfigPath - Path to the file to load and check if there is a parent to extend
+ */
+export function resolveConfigFile(tbConfigPath: string): [ITBConfig, string] {
+  let tbConfig;
+  let parentConfig;
+
+  try {
+    tbConfig = getTBConfigJSON(tbConfigPath);
+    if (tbConfig[EXTENDS]) {
+      [parentConfig] = resolveConfigFile(
+        path.join(path.dirname(tbConfigPath), tbConfig[EXTENDS]!)
+      );
+      tbConfig = mergeLeft(parentConfig, tbConfig);
+    }
+    return [tbConfig, tbConfigPath];
+  } catch (error) {
+    throw error;
+  }
+}
+
+/**
+ * Determines if the default expected location of the tbconfig.json should be used or a given override and calls\
+ * resolveConfigFile; eg. grandparent > parent > child inheritance with tbconfig.json files are each level
+ *
+ * @param id - the flag name eg browserArgs or cpuThrottleRate etc.
+ * @param defaultValue - default value for the flag specified on `defaultFlagArgs`
+ * @param altTBConfigPath - optional override path to a tbconfig.json file NOT found in the project root
+ */
+export function getConfigDefault(
+  id: ITBConfigKeys,
+  defaultValue?: any,
+  altTBConfigPath?: string
+) {
+  let tbConfig;
+
+  try {
+    [tbConfig] = getRootTBConfigOrOverride(altTBConfigPath);
+    if (tbConfig[id]) {
+      return tbConfig[id];
+    } else if (defaultValue) {
+      return defaultValue;
+    } else {
+      return undefined;
+    }
+  } catch (error) {
+    try {
+      if (defaultValue) {
+        return defaultValue;
+      }
+      return undefined;
+    } catch (error) {
+      // throw new CLIError(error);
+    }
   }
 }
 
@@ -99,86 +161,6 @@ export function mergeLeft(
   });
 
   return left;
-}
-
-/**
- * Handles the extension of any configs specified in the "extended" attribute by using the mergeLeft function
- *
- * @param tbConfigPath - Path to the file to load and check if there is a parent to extend
- */
-export function resolveConfigFile(tbConfigPath: string): [ITBConfig, string] {
-  let tbConfig;
-  let parentConfig;
-
-  try {
-    tbConfig = getTBConfigFromFile(tbConfigPath);
-    if (tbConfig[EXTENDS]) {
-      [parentConfig] = resolveConfigFile(
-        path.join(path.dirname(tbConfigPath), tbConfig[EXTENDS]!)
-      );
-      tbConfig = mergeLeft(parentConfig, tbConfig);
-    }
-    return [tbConfig, tbConfigPath];
-  } catch (error) {
-    throw error;
-  }
-}
-
-/**
- * Determines if the default expected location of the tbconfig.json should be used or a given override and calls\
- * resolveConfigFile; eg. grandparent > parent > child inheritance with tbconfig.json files are each level
- *
- * @param altTBConfigPath - Optional override path to a tbconfig.json file
- */
-export function getDefaultConfigFileOrOverride(altTBConfigPath?: string) {
-  const tbConfigPath = altTBConfigPath
-    ? altTBConfigPath
-    : path.join(process.cwd(), 'tbconfig.json');
-  return resolveConfigFile(tbConfigPath);
-}
-
-export function getConfigDefault(
-  id: ITBConfigKeys,
-  defaultValue?: any,
-  altTBConfigPath?: string
-) {
-  let tbConfigPath;
-  let tbConfig;
-
-  try {
-    [tbConfig, tbConfigPath] = getDefaultConfigFileOrOverride(altTBConfigPath);
-    if (tbConfig[id]) {
-      console.warn(
-        `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON5.stringify(
-          tbConfig[id]
-        )} from ${tbConfigPath}`
-      );
-      return tbConfig[id];
-    } else if (defaultValue) {
-      console.warn(
-        `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON5.stringify(
-          defaultValue
-        )} from defaults`
-      );
-      return defaultValue;
-    } else {
-      return undefined;
-    }
-  } catch (error) {
-    try {
-      if (defaultValue) {
-        console.warn(
-          `${chalkScheme.checkmark} Fetching flag ${id} as ${JSON5.stringify(
-            defaultValue
-          )} from defaults`
-        );
-        return defaultValue;
-      }
-      return undefined;
-    } catch (error) {
-      // throw new CLIError(error);
-    }
-  }
 }
 
 export function convertMicrosecondsToMS(ms: string | number): number {
@@ -323,3 +305,21 @@ export function convertToTypable(name: string): string {
 export function toNearestHundreth(n: number): number {
   return Math.round(n * 100) / 100;
 }
+
+export const chalkScheme = {
+  header: chalk.rgb(255, 255, 255),
+  regress: chalk.rgb(239, 100, 107),
+  neutral: chalk.rgb(225, 225, 225),
+  significant: chalk.rgb(0, 191, 255),
+  imprv: chalk.rgb(135, 197, 113),
+  phase: chalk.rgb(225, 225, 225),
+  faint: chalk.rgb(80, 80, 80),
+  checkmark: chalk.rgb(133, 153, 36)(`${logSymbols.success}`),
+  tbBranding: {
+    lime: chalk.rgb(199, 241, 106),
+    blue: chalk.rgb(24, 132, 228),
+    aqua: chalk.rgb(56, 210, 211),
+    dkBlue: chalk.rgb(10, 45, 70),
+    grey: chalk.rgb(153, 153, 153),
+  },
+};
