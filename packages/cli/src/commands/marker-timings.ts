@@ -1,7 +1,7 @@
 import { Command } from '@oclif/command';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { ITraceEvent } from 'tracerbench';
+import { ITraceEvent } from '@tracerbench/core';
 import { filter, tbResultsFolder, url, traceFrame } from '../helpers/flags';
 import {
   byTime,

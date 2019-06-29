@@ -1,5 +1,5 @@
 {
-  "name": "tracerbench",
+  "name": "tracerbench-workspace",
   "private": true,
   "workspaces": ["packages/*"],
   "scripts": {

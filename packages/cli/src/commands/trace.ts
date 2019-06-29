@@ -7,7 +7,7 @@ import {
   analyze,
   loadTrace,
   ITraceEvent,
-} from 'tracerbench';
+} from '@tracerbench/core';
 import {
   tbResultsFolder,
   cpuThrottleRate,

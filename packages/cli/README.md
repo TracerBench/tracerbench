@@ -1,8 +1,8 @@
 ## TracerBench-CLI: Automated Chrome Tracing For Benchmarking
 
 [![Build Status](https://travis-ci.org/TracerBench/tracerbench.svg?branch=master)](https://travis-ci.org/TracerBench/tracerbench)
-[![Version](https://img.shields.io/npm/v/tracerbench-cli.svg)](https://npmjs.org/package/tracerbench-cli)
-[![License](https://img.shields.io/npm/l/tracerbench-cli.svg)](https://github.com/TracerBench/tracerbench/blob/master/package.json)
+[![Version](https://img.shields.io/npm/v/tracerbench.svg)](https://npmjs.org/package/tracerbench)
+[![License](https://img.shields.io/npm/l/tracerbench.svg)](https://github.com/TracerBench/tracerbench/blob/master/package.json)
 
 <!-- toc -->
 * [Usage](#usage)
@@ -16,11 +16,11 @@
 
 <!-- usage -->
 ```sh-session
-$ npm install -g tracerbench-cli
+$ npm install -g tracerbench
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench-cli/2.0.0-beta.26 darwin-x64 node-v10.15.2
+tracerbench/2.0.0-beta.26 darwin-x64 node-v12.4.0
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
@@ -107,13 +107,13 @@ The results of this test would resolve in
 
 # FAQ
 
-_What exactly is contained within the `tracerbench compare` "tracerbench-results.json"?_  
+_What exactly is contained within the `tracerbench compare` "tracerbench-results.json"?_
 An overview of "tracerbench-results.json" is available [here](https://github.com/TracerBench/tracerbench/blob/master/README.md#trace-results)
 
-_What exactly is a HAR file?_  
+_What exactly is a HAR file?_
 HAR (HTTP Archive) is a file format used by several HTTP session tools to export the captured data. The format is basically a JSON object with a particular field distribution. In any case, please note that not all the fields are mandatory, and many times some information won't be saved to the file ["Additional insight on Google's HAR Analyzer"](https://toolbox.googleapps.com/apps/har_analyzer/)
 
-_What exactly is contained within the output file "trace.json"?_  
+_What exactly is contained within the output file "trace.json"?_
 The file "trace.json" is leveraged by TracerBench to capture an array of trace events. The interface of an individual trace event is essentially:
 
 ```ts
@@ -160,12 +160,17 @@ s?: TRACE_EVENT_SCOPE;
 # Commands
 
 <!-- commands -->
-* [`tracerbench compare`](#tracerbench-compare)
-* [`tracerbench create-archive`](#tracerbench-create-archive)
-* [`tracerbench help [COMMAND]`](#tracerbench-help-command)
-* [`tracerbench marker-timings`](#tracerbench-marker-timings)
-* [`tracerbench report`](#tracerbench-report)
-* [`tracerbench trace`](#tracerbench-trace)
+- [Usage](#Usage)
+- [Optional Config](#Optional-Config)
+- [Example Travis-CI Integration](#Example-Travis-CI-Integration)
+- [FAQ](#FAQ)
+- [Commands](#Commands)
+  - [`tracerbench compare`](#tracerbench-compare)
+  - [`tracerbench create-archive`](#tracerbench-create-archive)
+  - [`tracerbench help [COMMAND]`](#tracerbench-help-COMMAND)
+  - [`tracerbench marker-timings`](#tracerbench-marker-timings)
+  - [`tracerbench report`](#tracerbench-report)
+  - [`tracerbench trace`](#tracerbench-trace)
 
 ## `tracerbench compare`
 
@@ -177,10 +182,10 @@ USAGE
 
 OPTIONS
   --browserArgs=browserArgs
-      (required) [default: 
+      (required) [default:
       --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-dev-shm-usage,--disable-cache,--disable-v8-i
       dle-tasks,--disable-breakpad,--disable-notifications,--disable-hang-monitor,--safebrowsing-disable-auto-update,--set
-      IgnoreCertificateErrors=true,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the 
+      IgnoreCertificateErrors=true,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the
       TracerBench render benchmark. TracerBench includes many non-configurable defaults in this category.
 
   --config=config

@@ -4,7 +4,7 @@ import debug from 'debug';
 import Protocol from 'devtools-protocol';
 import * as fs from 'fs';
 
-const debugCallback = debug('tracerbench-cli:trace');
+const debugCallback = debug('tracerbench:trace');
 
 import { IConditions } from './conditions';
 import { createBrowser, getTab, emulate, setCookies } from './trace-utils';
