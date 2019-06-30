@@ -31,7 +31,7 @@ describe('trace', () => {
     );
 });
 
-describe('trace :: insights', () => {
+describe('trace: insights', () => {
   test
     .stdout()
     .it(

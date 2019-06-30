@@ -1,28 +1,14 @@
 import { ICompareFlags } from '../../src/commands/compare';
-import {
-  checkEnvironmentSpecificOverride,
-  getConfigDefault,
-  mergeLeft,
-  resolveConfigFile,
-} from '../../src/helpers/utils';
+import { checkEnvironmentSpecificOverride } from '../../src/helpers/utils';
+import { getDefaultValue } from '../../src/command-config/default-flag-args';
 import { expect } from 'chai';
 import * as mock from 'mock-fs';
-
-const tbConfigPath = 'test/fixtures/release';
+import { resolveRelativeConfigExtends } from '../../src/command-config';
 
 describe('utils', () => {
-  it(`getConfigDefault() from tbconfig at alt path`, () => {
-    const regressionThreshold = getConfigDefault(
-      'regressionThreshold',
-      '50ms',
-      tbConfigPath
-    );
-    expect(regressionThreshold).to.equal('-100ms');
-  });
-
-  it(`getConfigDefault() from default`, () => {
-    const regressionThreshold = getConfigDefault('regressionThreshold', '50ms');
-    expect(regressionThreshold).to.equal('50ms');
+  it(`getDefaultValue() from default`, () => {
+    const regressionThreshold = getDefaultValue('regressionThreshold');
+    expect(regressionThreshold).to.equal('0ms');
   });
 });
 
@@ -78,44 +64,6 @@ describe('checkEnvironmentSpecificOverride', () => {
   });
 });
 
-describe('mergeLeft', () => {
-  it(`Ensure merge left works as expected`, () => {
-    const destination = {
-      list: [1, 2, 3],
-      num: 1,
-      str: 'string',
-      flag: false,
-      shouldStaySame: 'same',
-      shouldBeNullAfter: 'not null',
-      objectMerge: {
-        value: 0,
-      },
-    };
-    const toMerge = {
-      list: [5],
-      num: 25,
-      str: 'other',
-      flag: true,
-      shouldBeNullAfter: null,
-      objectMerge: {
-        value: 2,
-        newValue: 1,
-      },
-    };
-    const result = mergeLeft(destination, toMerge);
-
-    expect(result.list).to.eql([5]);
-    expect(result.num).to.equal(25);
-    expect(result.str).to.equal('other');
-    expect(result.flag).to.equal(true);
-    expect(result.shouldBeNullAfter).to.equal(null);
-    expect(result.objectMerge).to.eql({
-      value: 2,
-      newValue: 1,
-    });
-  });
-});
-
 describe('resolveConfigFile', () => {
   const mockFileSystem = {
     parent: {
@@ -143,23 +91,11 @@ describe('resolveConfigFile', () => {
     'tbconfig.json': Buffer.from(JSON.stringify({ cpuThrottleRate: 4 })),
   };
 
-  it('Make sure the output has the correct values replaced', () => {
-    mock(mockFileSystem);
-
-    const [resolvedConfig] = resolveConfigFile(
-      'parent/child/grandchild/tbconfig.json'
-    );
-    expect(resolvedConfig.cpuThrottleRate).to.equal(0);
-    expect(resolvedConfig.regressionThreshold).to.equal(5);
-
-    mock.restore();
-  });
-
   it('Ensure if parent does not exist, an Error is thrown', () => {
     mock(mockFileSystem);
 
     const shouldThrowError = () => {
-      resolveConfigFile('parent/child/grandchild/failparent.json');
+      resolveRelativeConfigExtends('parent/child/grandchild/failparent.json');
     };
     expect(shouldThrowError).to.throw();
 

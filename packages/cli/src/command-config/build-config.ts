@@ -52,7 +52,9 @@ export function getRelativeConfigRAW(configPath: string): ITBConfig {
 // STEP 3
 // resolve relative config extends
 // convert parent configs to absolute paths
-function resolveRelativeConfigExtends(configPath: string): [ITBConfig, string] {
+export function resolveRelativeConfigExtends(
+  configPath: string
+): [ITBConfig, string] {
   let tbConfig;
   let parentConfig;
   try {
@@ -151,6 +153,8 @@ function resolveRelativePath(
   }
 }
 
+// STEP 5
+// overwrite all flags explicity flagged within cli command
 function handleExplicitFlags(flags: any, explicitFlags: string[]): {} {
   const obj: any = {};
   const f = flags;
@@ -175,6 +179,18 @@ export function getConfig(
 ): ITBConfig {
   const ef = handleExplicitFlags(flags, explicitFlags);
   const commandDefaults = getCommandDefaults(flags);
+
+  if (!fs.existsSync(path.join(process.cwd(), configPath))) {
+    console.log(
+      `A TracerBench "tbconfig.json" file was not found at ${path.join(
+        process.cwd(),
+        configPath
+      )}. The config file is not required, however is strongly recommended.`
+    );
+    const m = mergeLeft(commandDefaults, ef);
+    return convertRAWTBConfigRelToAbs(path.join(process.cwd()), m);
+  }
+
   const [relativeConfigRAWResolved] = resolveRelativeConfigExtends(configPath);
   const relativeConfigRAWWithDefaults: ITBConfig = mergeLeft(
     commandDefaults,

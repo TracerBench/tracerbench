@@ -112,6 +112,7 @@ export default class Compare extends Command {
   public async init() {
     const { flags } = this.parse(Compare);
     this.parsedConfig = getConfig(flags.config, flags, this.explicitFlags);
+
     this.compareFlags = flags;
     await this.parseFlags();
   }

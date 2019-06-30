@@ -6,7 +6,11 @@ import {
   defaultFlagArgs,
   getDefaultValue,
 } from './default-flag-args';
-
+import {
+  resolveRelativeConfigExtends,
+  getRelativeConfigRAW,
+  getConfig,
+} from './build-config';
 export {
   fidelityLookup,
   PerformanceTimingMark,
@@ -16,4 +20,7 @@ export {
   IHARServer,
   INetworkConditions,
   getDefaultValue,
+  getConfig,
+  resolveRelativeConfigExtends,
+  getRelativeConfigRAW,
 };

@@ -94,6 +94,9 @@
                 "number"
             ]
         },
+        "debug": {
+            "type": "boolean"
+        },
         "emulateDevice": {
             "type": "string"
         },
@@ -124,6 +127,9 @@
         "filter": {
             "type": "string"
         },
+        "headless": {
+            "type": "boolean"
+        },
         "inputFilePath": {
             "type": "string"
         },
@@ -132,6 +138,9 @@
                 "string",
                 "number"
             ]
+        },
+        "json": {
+            "type": "boolean"
         },
         "locations": {
             "type": "string"

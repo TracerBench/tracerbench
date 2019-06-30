@@ -76,11 +76,11 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepare": "yarn build && yarn build:schema && yarn test && yarn prepack",
     "prepack": "oclif-dev manifest && oclif-dev readme",
-    "test": "yarn lint && nyc --extension .ts mocha \"test/commands/**/*.test.ts\" \"test/helpers/**/*.test.ts\"",
+    "test": "yarn lint && nyc --extension .ts mocha \"test/commands/**/*.test.ts\" \"test/helpers/**/*.test.ts\" \"test/command-config/**/*.test.ts\"",
     "test:helpers": "nyc --extension .ts mocha \"test/helpers/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md",
     "build": "rm -rf ./dist && tsc -b && yarn copystatic && yarn lint",
-    "build:schema": "typescript-json-schema \"src/helpers/tb-config.ts\" ITBConfig --out ./tb-schema.json",
+    "build:schema": "typescript-json-schema \"src/command-config/tb-config.ts\" ITBConfig --out ./tb-schema.json",
     "copystatic": "cp -a ./src/static ./dist/src"
   },
   "gitHead": "e9e301b7d4a75ac252fe69cf533668e42432ea8d"
