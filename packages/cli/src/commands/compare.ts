@@ -149,26 +149,6 @@ export default class Compare extends Command {
           );
         }
 
-
-        // private determineOutputFileName(outputFolder: string): string {
-        //   let count = 1;
-        //   while (true) {
-        //     const candidateHTML = join(
-        //       this.parsedConfig.tbResultsFolder,
-        //       `${ARTIFACT_FILE_NAME}-${count}.html`
-        //     );
-        //     const candidatePDF = join(
-        //       this.parsedConfig.tbResultsFolder,
-        //       `${ARTIFACT_FILE_NAME}-${count}.pdf`
-        //     );
-        //     if (!fs.existsSync(candidateHTML) && !fs.existsSync(candidatePDF)) {
-        //       break;
-        //     }
-        //     count += 1;
-        //   }
-        //   return `artifact-${count}`;
-        // }
-
         fs.writeFileSync(
           `${this.parsedConfig.tbResultsFolder}/compare.json`,
           JSON.stringify(results, null, 2)
