@@ -20,7 +20,7 @@ $ npm install -g tracerbench
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench/2.0.0-beta.26 darwin-x64 node-v12.4.0
+tracerbench/2.0.0-beta.26 darwin-x64 node-v10.15.2
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
@@ -160,17 +160,12 @@ s?: TRACE_EVENT_SCOPE;
 # Commands
 
 <!-- commands -->
-- [Usage](#Usage)
-- [Optional Config](#Optional-Config)
-- [Example Travis-CI Integration](#Example-Travis-CI-Integration)
-- [FAQ](#FAQ)
-- [Commands](#Commands)
-  - [`tracerbench compare`](#tracerbench-compare)
-  - [`tracerbench create-archive`](#tracerbench-create-archive)
-  - [`tracerbench help [COMMAND]`](#tracerbench-help-COMMAND)
-  - [`tracerbench marker-timings`](#tracerbench-marker-timings)
-  - [`tracerbench report`](#tracerbench-report)
-  - [`tracerbench trace`](#tracerbench-trace)
+* [`tracerbench compare`](#tracerbench-compare)
+* [`tracerbench create-archive`](#tracerbench-create-archive)
+* [`tracerbench help [COMMAND]`](#tracerbench-help-command)
+* [`tracerbench marker-timings`](#tracerbench-marker-timings)
+* [`tracerbench report`](#tracerbench-report)
+* [`tracerbench trace`](#tracerbench-trace)
 
 ## `tracerbench compare`
 
@@ -182,10 +177,10 @@ USAGE
 
 OPTIONS
   --browserArgs=browserArgs
-      (required) [default:
+      (required) [default: 
       --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-dev-shm-usage,--disable-cache,--disable-v8-i
       dle-tasks,--disable-breakpad,--disable-notifications,--disable-hang-monitor,--safebrowsing-disable-auto-update,--set
-      IgnoreCertificateErrors=true,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the
+      IgnoreCertificateErrors=true,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the 
       TracerBench render benchmark. TracerBench includes many non-configurable defaults in this category.
 
   --config=config
@@ -229,6 +224,9 @@ OPTIONS
 
   --regressionThreshold=regressionThreshold
       [default: 0ms] Regression threshold in negative milliseconds. eg -100ms
+
+  --report
+      Generate a PDF report directly after running the compare command.
 
   --runtimeStats=runtimeStats
       (required) [default: false] Compare command output stats during run

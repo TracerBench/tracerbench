@@ -35,6 +35,9 @@ export interface ITBConfig {
   outputFilePath?: string;
   regressionThreshold?: number | string;
   servers?: [IHARServer, IHARServer];
+  headless?: boolean;
+  json?: boolean;
+  debug?: boolean;
   // Optional overrides specific to control or experiment benchmark environments
   [CONTROL_ENV_OVERRIDE_ATTR]?: IBenchmarkEnvironmentOverride;
   [EXPERIMENT_ENV_OVERRIDE_ATTR]?: IBenchmarkEnvironmentOverride;

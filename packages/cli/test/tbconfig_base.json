@@ -1,5 +1,5 @@
 {
-  "$schema": "../tb-schema.json",
+  "$schema": "https://raw.githubusercontent.com/TracerBench/tracerbench/master/packages/cli/tb-schema.json",
   // the title of the report pdf file
   "plotTitle": "tbconfig_base file",
   "cpuThrottleRate": 2,
@@ -58,15 +58,15 @@
     {
       "name": "control tracerbench-build_1.0.1234",
       "url": "https://www.tracerbench.com/",
-      "dist": "./relative-path-to-dist-files/",
-      "har": "./relative-path-location-to-har-file/",
+      "dist": "./relative-path-to-control-dist-files/",
+      "har": "./relative-path-location-to-control-har-file/",
       "socksPort": 8880
     },
     {
       "name": "experiment tracerbench-build-2-78ffg6a678g95",
       "url": "https://www.tracerbench.com/",
-      "dist": "./relative-path-to-dist-files/",
-      "har": "./relative-path-location-to-har-file/",
+      "dist": "./relative-path-to-experiment-dist-files/",
+      "har": "./relative-path-location-to-experiment-har-file/",
       "socksPort": 8881
     }
   ]

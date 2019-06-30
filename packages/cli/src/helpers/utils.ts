@@ -5,11 +5,11 @@ import * as logSymbols from 'log-symbols';
 import { IMarker, ITraceEvent } from '@tracerbench/core';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { EXTENDS, IBenchmarkEnvironmentOverride, ITBConfig } from './tb-config';
-import * as JSON5 from 'json5';
+import {
+  IBenchmarkEnvironmentOverride,
+  ITBConfig,
+} from '../command-config/tb-config';
 import { ICompareFlags } from '../commands/compare';
-
-type ITBConfigKeys = keyof ITBConfig;
 
 /**
  * Handles checking if there is a specific override for the attributeName in the tbConfigs for the given overrideObjectName.
@@ -41,99 +41,6 @@ export function checkEnvironmentSpecificOverride(
 }
 
 /**
- * Attempt to read tbconfig json file
- *
- * @param tbConfigPath - Override default path with this parameter
- */
-export function getTBConfigJSON(tbConfigPath: string): ITBConfig {
-  try {
-    return JSON5.parse(fs.readFileSync(tbConfigPath, 'utf8'));
-  } catch (error) {
-    throw error;
-  }
-}
-
-/**
- * Determines if the default expected location of the tbconfig.json should be used or a given override and calls\
- * resolveConfigFile; eg. grandparent > parent > child inheritance with tbconfig.json files are each level
- *
- * @param altTBConfigPath - Optional override path to a tbconfig.json file
- */
-export function getRootTBConfigOrOverride(altTBConfigPath?: string) {
-  if (altTBConfigPath) {
-    const p = path.join(process.cwd(), altTBConfigPath);
-    const isDir = fs.existsSync(p) && fs.lstatSync(p).isDirectory();
-
-    if (isDir) {
-      return resolveConfigFile(path.join(altTBConfigPath, '/tbconfig.json'));
-    } else {
-      return resolveConfigFile(altTBConfigPath);
-    }
-  }
-
-  return resolveConfigFile(path.join(process.cwd(), 'tbconfig.json'));
-}
-
-/**
- * Handles the extension of any configs specified in the "extended" attribute by using the mergeLeft function
- *
- * @param tbConfigPath - Path to the file to load and check if there is a parent to extend
- */
-export function resolveConfigFile(tbConfigPath: string): [ITBConfig, string] {
-  let tbConfig;
-  let parentConfig;
-
-  try {
-    tbConfig = getTBConfigJSON(tbConfigPath);
-    if (tbConfig[EXTENDS]) {
-      [parentConfig] = resolveConfigFile(
-        path.join(path.dirname(tbConfigPath), tbConfig[EXTENDS]!)
-      );
-      tbConfig = mergeLeft(parentConfig, tbConfig);
-    }
-    return [tbConfig, tbConfigPath];
-  } catch (error) {
-    throw error;
-  }
-}
-
-/**
- * Determines if the default expected location of the tbconfig.json should be used or a given override and calls\
- * resolveConfigFile; eg. grandparent > parent > child inheritance with tbconfig.json files are each level
- *
- * @param id - the flag name eg browserArgs or cpuThrottleRate etc.
- * @param defaultValue - default value for the flag specified on `defaultFlagArgs`
- * @param altTBConfigPath - optional override path to a tbconfig.json file NOT found in the project root
- */
-export function getConfigDefault(
-  id: ITBConfigKeys,
-  defaultValue?: any,
-  altTBConfigPath?: string
-) {
-  let tbConfig;
-
-  try {
-    [tbConfig] = getRootTBConfigOrOverride(altTBConfigPath);
-    if (tbConfig[id]) {
-      return tbConfig[id];
-    } else if (defaultValue) {
-      return defaultValue;
-    } else {
-      return undefined;
-    }
-  } catch (error) {
-    try {
-      if (defaultValue) {
-        return defaultValue;
-      }
-      return undefined;
-    } catch (error) {
-      // throw new CLIError(error);
-    }
-  }
-}
-
-/**
  * Merge the contents of the right object into the left. Simply replace numbers, strings, arrays
  * and recursively call this function with objects.
  *
@@ -161,6 +68,23 @@ export function mergeLeft(
   });
 
   return left;
+}
+
+// will return an absolute path
+export function relPathToAbs(relPath: string, contextPath: string): string {
+  contextPath = path.isAbsolute(contextPath)
+    ? contextPath
+    : path.join(process.cwd(), contextPath);
+
+  contextPath = isDirectory(contextPath)
+    ? contextPath
+    : path.dirname(contextPath);
+
+  return path.resolve(contextPath, relPath);
+}
+
+export function isDirectory(p: string): boolean {
+  return fs.existsSync(p) && fs.lstatSync(p).isDirectory();
 }
 
 export function convertMicrosecondsToMS(ms: string | number): number {

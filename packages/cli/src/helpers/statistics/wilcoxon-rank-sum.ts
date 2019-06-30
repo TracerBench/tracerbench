@@ -83,17 +83,6 @@ export function getWilcoxonRankSumTest(
   const uStatExperiment = getSampleUStat(experimentRankSum, N);
   const uStat = Math.min(uStatControl, uStatExperiment);
 
-  // console.log(`samplePool ${samplePool}\n`);
-  // console.log(`rankedControlSamples ${JSON.stringify(rankedControlSamples)}\n`);
-  // console.log(
-  //   `rankedExperimentSamples ${JSON.stringify(rankedExperimentSamples)}\n`
-  // );
-  // console.log(`controlRankSum ${controlRankSum}\n`);
-  // console.log(`experimentRankSum ${experimentRankSum}\n`);
-  // console.log(`uStatControl ${uStatControl}\n`);
-  // console.log(`uStatExperiment ${uStatExperiment}\n`);
-  // console.log(`uStat ${uStat}\n`);
-
   if (N > 25) {
     throw new Error(
       `Sample sizes greater than 25 are not supported. Your sample size is ${N}`

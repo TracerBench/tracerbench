@@ -2,7 +2,7 @@ import * as jsonQuery from 'json-query';
 import { IStatsOptions, Stats } from './statistics/stats';
 import TBTable from './table';
 import { ICompareFlags } from '../commands/compare';
-import { fidelityLookup } from './default-flag-args';
+import { fidelityLookup } from '../command-config/default-flag-args';
 
 const benchmarkTable = new TBTable('Initial Render');
 const phaseTable = new TBTable('Phase');
@@ -52,9 +52,11 @@ export function logCompareResults(
   const browser = browserArgs.includes('--headless')
     ? 'Headless-Chrome'
     : 'Chrome';
-  const message = `Success! ${fidelity} test samples were run with ${browser}. The json file with results from the compare test are available here: ${tbResultsFolder}/compare.json. To generate a pdf report run "tracerbench report"`;
+  const message = `Success! ${fidelity} test samples were run with ${browser}.
+The json file with results from the compare test are available here: ${tbResultsFolder}/compare.json. To generate a pdf report run "tracerbench report"`;
   const notSigMessage = `Wilcoxon rank-sum test indicated that there is NOT sufficient evidence that there is a statistical difference between the control and experiment.`;
-  const sigMessage = `Wilcoxon rank-sum test indicated that there IS sufficient evidence that there is a statistical difference between the control and experiment. We would expect 5% of these kinds of results to be due to chance with no underlying effect. A recommended "fidelity=high" compare test should be run to rule out false negatives.`;
+  const sigMessage = `Wilcoxon rank-sum test indicated that there IS sufficient evidence that there is a statistical difference between the control and experiment. 
+  We would expect 5% of these kinds of results to be due to chance with no underlying effect. A recommended "fidelity=high" compare test should be run to rule out false negatives.`;
   const regThresholdMessage = `A regression was found exceeding the set regression threshold of ${regressionThreshold}ms`;
   const lowFidelityMessage = `The fidelity setting was set below the recommended for a viable result. Rerun TracerBench with at least "fidelity=low"`;
   const jsonResults = {
@@ -106,17 +108,17 @@ export function logCompareResults(
     // LOG THE TABLES AND MESSAGE
     cli.log(`\n\n${benchmarkTable.render()}`);
     cli.log(`\n\n${phaseTable.render()}`);
-    cli.log(`\n\n${message}`);
+    cli.log(`\n${message}`);
     if (jsonResults.isSignificant) {
-      cli.log(`\n\n${sigMessage}`);
+      cli.log(`\n${sigMessage}`);
     } else {
-      cli.log(`\n\n${notSigMessage}`);
+      cli.log(`\n${notSigMessage}`);
     }
     if (!jsonResults.isBelowRegressionThreshold) {
-      cli.log(`${regThresholdMessage}\n\n`);
+      cli.log(`${regThresholdMessage}\n`);
     }
     if (fidelity < 10) {
-      cli.log(`\n\n${lowFidelityMessage}\n\n`);
+      cli.log(`\n${lowFidelityMessage}\n`);
     }
   } else {
     // WILL ONLY STDOUT JSON. NO TABLES OR SPARKLINE

@@ -28,21 +28,27 @@ import {
   regressionThreshold,
   headless,
   config,
+  report,
 } from '../helpers/flags';
-import { fidelityLookup, headlessFlags } from '../helpers/default-flag-args';
+import {
+  fidelityLookup,
+  headlessFlags,
+  defaultFlagArgs,
+} from '../command-config/default-flag-args';
 import { logCompareResults } from '../helpers/log-compare-results';
 import {
   checkEnvironmentSpecificOverride,
-  getRootTBConfigOrOverride,
   parseMarkers,
-  mergeLeft,
 } from '../helpers/utils';
 import { getEmulateDeviceSettingForKeyAndOrientation } from '../helpers/simulate-device-options';
 import {
   CONTROL_ENV_OVERRIDE_ATTR,
   EXPERIMENT_ENV_OVERRIDE_ATTR,
-} from '../helpers/tb-config';
-
+  ITBConfig,
+} from '../command-config/tb-config';
+import Report from './report';
+import { IConfig } from '@oclif/config';
+import { getConfig } from '../command-config/build-config';
 export interface ICompareFlags {
   browserArgs: string[];
   cpuThrottleRate: number;
@@ -62,6 +68,7 @@ export interface ICompareFlags {
   regressionThreshold?: number;
   headless: boolean;
   config?: string;
+  report?: boolean;
 }
 
 export default class Compare extends Command {
@@ -83,25 +90,30 @@ export default class Compare extends Command {
     socksPorts: socksPorts(),
     regressionThreshold: regressionThreshold(),
     config: config(),
+    report,
     json,
     debug,
     headless,
   };
-  public mergedFlags: ICompareFlags = this.parse(Compare).flags;
+  public compareFlags: ICompareFlags;
+  public parsedConfig: ITBConfig = defaultFlagArgs;
+  // flags explicitly specified within the cli when
+  // running the command. these will override all
+  public explicitFlags: string[];
+  constructor(argv: string[], config: IConfig) {
+    super(argv, config);
+    const { flags } = this.parse(Compare);
+
+    this.explicitFlags = argv;
+    this.compareFlags = flags;
+  }
 
   // instantiated before this.run()
   public async init() {
     const { flags } = this.parse(Compare);
+    this.parsedConfig = getConfig(flags.config, flags, this.explicitFlags);
 
-    this.mergedFlags = flags;
-    if (typeof flags.config === 'string') {
-      // merge the dominant customTBConfig
-      // into flags which is defaults, rootTBConfig and inline flags
-      // the customTBConfig will overwrite all
-      const [customTBConfig] = getRootTBConfigOrOverride(flags.config);
-      this.mergedFlags = mergeLeft(flags, customTBConfig) as ICompareFlags;
-    }
-
+    this.compareFlags = flags;
     await this.parseFlags();
   }
 
@@ -111,10 +123,9 @@ export default class Compare extends Command {
       experimentSettings,
     ] = this.generateControlExperimentServerConfig();
 
-    // ! this should be directly above the instantiation of the InitialRenderBenchmarks
-    // if debug flag then log X post mutations
-    if (this.mergedFlags.debug) {
-      Object.entries(this.mergedFlags).forEach(([key, value]) => {
+    // this should be directly above the instantiation of the InitialRenderBenchmarks
+    if (this.parsedConfig.debug) {
+      Object.entries(this.parsedConfig).forEach(([key, value]) => {
         if (value) {
           this.log(`${key}: ${JSON.stringify(value)}`);
         }
@@ -125,27 +136,28 @@ export default class Compare extends Command {
       control: new InitialRenderBenchmark(controlSettings),
       experiment: new InitialRenderBenchmark(experimentSettings),
     };
+
     const runner = new Runner([benchmarks.control, benchmarks.experiment]);
     await runner
-      .run(this.mergedFlags.fidelity)
+      .run(this.compareFlags.fidelity)
       .then((results: any) => {
         if (!results[0].samples[0]) {
           this.error(
             `Could not sample from provided urls\nCONTROL: ${
-              this.mergedFlags.controlURL
-            }\nEXPERIMENT: ${this.mergedFlags.experimentURL}.`
+              this.parsedConfig.controlURL
+            }\nEXPERIMENT: ${this.parsedConfig.experimentURL}.`
           );
         }
 
         fs.writeFileSync(
-          `${this.mergedFlags.tbResultsFolder}/compare.json`,
+          `${this.parsedConfig.tbResultsFolder}/compare.json`,
           JSON.stringify(results, null, 2)
         );
 
         fs.writeFileSync(
-          `${this.mergedFlags.tbResultsFolder}/compare-stat-results.json`,
+          `${this.parsedConfig.tbResultsFolder}/compare-stat-results.json`,
           JSON.stringify(
-            logCompareResults(results, this.mergedFlags, this),
+            logCompareResults(results, this.compareFlags, this),
             null,
             2
           )
@@ -153,23 +165,34 @@ export default class Compare extends Command {
 
         // with debug flag output three files
         // on config specifics
-        if (this.mergedFlags.debug) {
+        if (this.parsedConfig.debug) {
           fs.writeFileSync(
-            `${this.mergedFlags.tbResultsFolder}/server-control-settings.json`,
+            `${this.parsedConfig.tbResultsFolder}/server-control-settings.json`,
             JSON.stringify(Object.assign(controlSettings), null, 2)
           );
 
           fs.writeFileSync(
             `${
-              this.mergedFlags.tbResultsFolder
+              this.parsedConfig.tbResultsFolder
             }/server-experiment-settings.json`,
             JSON.stringify(Object.assign(experimentSettings), null, 2)
           );
 
           fs.writeFileSync(
-            `${this.mergedFlags.tbResultsFolder}/compare-flags-settings.json`,
-            JSON.stringify(Object.assign(this.mergedFlags), null, 2)
+            `${this.parsedConfig.tbResultsFolder}/compare-flags-settings.json`,
+            JSON.stringify(Object.assign(this.parsedConfig), null, 2)
           );
+        }
+
+        // if we want to run the Report without calling a seperate command
+        if (this.parsedConfig.report) {
+          this.log('RUNNING A REPORT');
+          Report.run([
+            '--tbResultsFolder',
+            `${this.parsedConfig.tbResultsFolder}`,
+            '--config',
+            `${this.parsedConfig.config}`,
+          ]);
         }
       })
       .catch((err: any) => {
@@ -184,27 +207,27 @@ export default class Compare extends Command {
       markers,
       regressionThreshold,
       headless,
-    } = this.mergedFlags as ICompareFlags;
+    } = (this.parsedConfig as unknown) as ICompareFlags;
 
     // modifies properties of flags that were not set
     // during flag.parse(). these are intentionally
     // not deconstructed as to maintain the mutable
     // flags object state
     if (typeof fidelity === 'string') {
-      this.mergedFlags.fidelity = parseInt(
+      this.compareFlags.fidelity = parseInt(
         (fidelityLookup as any)[fidelity],
         10
       );
     }
     if (typeof markers === 'string') {
-      this.mergedFlags.markers = parseMarkers(markers);
+      this.parsedConfig.markers = parseMarkers(markers);
     }
     if (typeof regressionThreshold === 'string') {
-      this.mergedFlags.regressionThreshold = parseInt(regressionThreshold, 10);
+      this.parsedConfig.regressionThreshold = parseInt(regressionThreshold, 10);
     }
     // if headless flag is true include the headless flags
     if (headless) {
-      this.mergedFlags.browserArgs = this.mergedFlags.browserArgs.concat(
+      this.parsedConfig.browserArgs = this.compareFlags.browserArgs.concat(
         headlessFlags
       );
     }
@@ -225,7 +248,7 @@ export default class Compare extends Command {
    * This functions handles the tsconfig:** part since it is assumed that parent function that passed input "flags"
    * would've handled "command line > tbconfig > default"
    *
-   * @param this.mergedFlags - Object containing configs parsed from the Command class
+   * @param this.parsedConfig - Object containing configs parsed from the Command class
    */
   private generateControlExperimentServerConfig(): [
     IInitialRenderBenchmarkParams,
@@ -233,10 +256,10 @@ export default class Compare extends Command {
   ] {
     const delay = 100;
     const controlBrowser = {
-      additionalArguments: this.mergedFlags.browserArgs,
+      additionalArguments: this.compareFlags.browserArgs,
     };
     const experimentBrowser = {
-      additionalArguments: this.mergedFlags.browserArgs,
+      additionalArguments: this.compareFlags.browserArgs,
     };
     let controlNetwork: string;
     let experimentNetwork: string;
@@ -246,82 +269,75 @@ export default class Compare extends Command {
     let controlEmulateDeviceOrientation;
     let controlSettings: IInitialRenderBenchmarkParams;
     let experimentSettings: IInitialRenderBenchmarkParams;
-    let tbConfig;
-
-    try {
-      [tbConfig] = getRootTBConfigOrOverride();
-    } catch {
-      tbConfig = undefined;
-    }
 
     // config for the browsers to leverage socks proxy
-    if (this.mergedFlags.socksPorts) {
+    if (this.parsedConfig.socksPorts) {
       controlBrowser.additionalArguments = controlBrowser.additionalArguments.concat(
-        [`--proxy-server=socks5://0.0.0.0:${this.mergedFlags.socksPorts[0]}`]
+        [`--proxy-server=socks5://0.0.0.0:${this.parsedConfig.socksPorts[0]}`]
       );
       experimentBrowser.additionalArguments = experimentBrowser.additionalArguments.concat(
-        [`--proxy-server=socks5://0.0.0.0:${this.mergedFlags.socksPorts[1]}`]
+        [`--proxy-server=socks5://0.0.0.0:${this.parsedConfig.socksPorts[1]}`]
       );
     }
     controlNetwork = checkEnvironmentSpecificOverride(
       'network',
-      this.mergedFlags,
+      this.compareFlags,
       CONTROL_ENV_OVERRIDE_ATTR,
-      tbConfig
+      this.parsedConfig
     );
     controlEmulateDevice = checkEnvironmentSpecificOverride(
       'emulateDevice',
-      this.mergedFlags,
+      this.compareFlags,
       CONTROL_ENV_OVERRIDE_ATTR,
-      tbConfig
+      this.parsedConfig
     );
     controlEmulateDeviceOrientation = checkEnvironmentSpecificOverride(
       'emulateDeviceOrientation',
-      this.mergedFlags,
+      this.compareFlags,
       CONTROL_ENV_OVERRIDE_ATTR,
-      tbConfig
+      this.parsedConfig
     );
     experimentNetwork = checkEnvironmentSpecificOverride(
       'network',
-      this.mergedFlags,
+      this.compareFlags,
       EXPERIMENT_ENV_OVERRIDE_ATTR,
-      tbConfig
+      this.parsedConfig
     );
     experimentEmulateDevice = checkEnvironmentSpecificOverride(
       'emulateDevice',
-      this.mergedFlags,
+      this.compareFlags,
       EXPERIMENT_ENV_OVERRIDE_ATTR,
-      tbConfig
+      this.parsedConfig
     );
     experimentEmulateDeviceOrientation = checkEnvironmentSpecificOverride(
       'emulateDeviceOrientation',
-      this.mergedFlags,
+      this.compareFlags,
       EXPERIMENT_ENV_OVERRIDE_ATTR,
-      tbConfig
+      this.parsedConfig
     );
 
     controlSettings = {
       browser: controlBrowser,
       cpuThrottleRate: checkEnvironmentSpecificOverride(
         'cpuThrottleRate',
-        this.mergedFlags,
+        this.compareFlags,
         CONTROL_ENV_OVERRIDE_ATTR,
-        tbConfig
+        this.parsedConfig
       ),
       delay,
       emulateDeviceSettings: getEmulateDeviceSettingForKeyAndOrientation(
         controlEmulateDevice,
         controlEmulateDeviceOrientation
       ),
-      markers: this.mergedFlags.markers,
+      markers: this.compareFlags.markers,
       networkConditions: controlNetwork
         ? networkConditions[controlNetwork as keyof typeof networkConditions]
-        : this.mergedFlags.network,
+        : this.compareFlags.network,
       name: 'control',
-      runtimeStats: this.mergedFlags.runtimeStats,
-      saveTraces: () => `${this.mergedFlags.tbResultsFolder}/control.json`,
+      runtimeStats: this.compareFlags.runtimeStats,
+      saveTraces: () => `${this.compareFlags.tbResultsFolder}/control.json`,
       url: path.join(
-        this.mergedFlags.controlURL + this.mergedFlags.tracingLocationSearch
+        this.compareFlags.controlURL + this.compareFlags.tracingLocationSearch
       ),
     };
 
@@ -329,24 +345,25 @@ export default class Compare extends Command {
       browser: experimentBrowser,
       cpuThrottleRate: checkEnvironmentSpecificOverride(
         'cpuThrottleRate',
-        this.mergedFlags,
+        this.compareFlags,
         EXPERIMENT_ENV_OVERRIDE_ATTR,
-        tbConfig
+        this.parsedConfig
       ),
       delay,
       emulateDeviceSettings: getEmulateDeviceSettingForKeyAndOrientation(
         experimentEmulateDevice,
         experimentEmulateDeviceOrientation
       ),
-      markers: this.mergedFlags.markers,
+      markers: this.compareFlags.markers,
       networkConditions: experimentNetwork
         ? networkConditions[experimentNetwork as keyof typeof networkConditions]
-        : this.mergedFlags.network,
+        : this.compareFlags.network,
       name: 'experiment',
-      runtimeStats: this.mergedFlags.runtimeStats,
-      saveTraces: () => `${this.mergedFlags.tbResultsFolder}/experiment.json`,
+      runtimeStats: this.compareFlags.runtimeStats,
+      saveTraces: () => `${this.compareFlags.tbResultsFolder}/experiment.json`,
       url: path.join(
-        this.mergedFlags.experimentURL + this.mergedFlags.tracingLocationSearch
+        this.compareFlags.experimentURL +
+          this.compareFlags.tracingLocationSearch
       ),
     };
 

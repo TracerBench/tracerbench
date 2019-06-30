@@ -3,9 +3,8 @@ import * as path from 'path';
 import { confidenceInterval } from './statistics/confidence-interval';
 import { Stats } from './statistics/stats';
 import { readFileSync } from 'fs-extra';
-import { getRootTBConfigOrOverride } from './utils';
-import { defaultFlagArgs } from './default-flag-args';
-
+import { defaultFlagArgs } from '../command-config/default-flag-args';
+import { getRelativeConfigRAW } from '../command-config/build-config';
 export interface Sample {
   duration: number;
   js: number;
@@ -64,7 +63,7 @@ REPORT_TEMPLATE_RAW = REPORT_TEMPLATE_RAW.toString()
 export default function createConsumeableHTML(
   controlData: ITracerBenchTraceResult,
   experimentData: ITracerBenchTraceResult,
-  config?: string
+  config: string = 'tbconfig.json'
 ): string {
   /**
    * Extract the phases and page load time latency into sorted buckets by phase
@@ -91,13 +90,13 @@ export default function createConsumeableHTML(
   }
 
   const reportTitles = {
-    servers: [{name: 'Control'}, {name: 'Experiment'}],
-    plotTitle: defaultFlagArgs.plotTitle
-  }
+    servers: [{ name: 'Control' }, { name: 'Experiment' }],
+    plotTitle: defaultFlagArgs.plotTitle,
+  };
 
   try {
     // get the raw tbconfig.json either root or child
-    const [tbConfig] = getRootTBConfigOrOverride(config);
+    const tbConfig = getRelativeConfigRAW(config);
     if (tbConfig.servers) {
       reportTitles.servers = tbConfig.servers as any;
     }
@@ -134,7 +133,7 @@ export default function createConsumeableHTML(
       ciMin: Math.ceil(cInterval[0] * 100) / 100,
       ciMax: Math.ceil(cInterval[1] * 100) / 100,
       hlDiff: Math.ceil(stats.estimator * 100) / 100,
-      servers: reportTitles.servers
+      servers: reportTitles.servers,
     });
   });
 
