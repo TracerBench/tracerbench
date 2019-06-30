@@ -86,7 +86,7 @@ export default class Report extends Command {
       pathToFileURL(absPathToHTML).toString(),
     ]);
 
-    this.log(`Written files out at ${absPathToHTML} and ${absOutputPath}`);
+    this.log(`The PDF and HTML reports are available here: ${absPathToHTML} and here: ${absOutputPath}`);
   }
 
   private determineOutputFileName(outputFolder: string): string {

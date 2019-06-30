@@ -41,12 +41,11 @@ export class Stats {
   constructor(options: IStatsOptions) {
     const { name } = options;
     let { control, experiment } = options;
+
     control = control.sort((a, b) => a - b);
     experiment = experiment.sort((a, b) => a - b);
-
     control = control.map(x => convertMicrosecondsToMS(x));
     experiment = experiment.map(x => convertMicrosecondsToMS(x));
-
     this.name = name;
     this.sampleCount = {
       control: control.length,

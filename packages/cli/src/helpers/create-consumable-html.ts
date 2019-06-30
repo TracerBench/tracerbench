@@ -1,6 +1,5 @@
 import * as Handlebars from 'handlebars';
 import * as path from 'path';
-import { confidenceInterval } from './statistics/confidence-interval';
 import { Stats } from './statistics/stats';
 import { readFileSync } from 'fs-extra';
 import { defaultFlagArgs } from '../command-config/default-flag-args';
@@ -40,7 +39,6 @@ interface HTMLSectionRenderData {
 }
 
 const PAGE_LOAD_TIME = 'duration';
-const NORMALIZE = 1000;
 
 const CHART_CSS_PATH = path.join(__dirname, '../static/chart-bootstrap.css');
 const CHART_JS_PATH = path.join(
@@ -74,10 +72,10 @@ export default function createConsumeableHTML(
     const buckets: { [key: string]: number[] } = { [PAGE_LOAD_TIME]: [] };
 
     samples.forEach((sample: Sample) => {
-      buckets[PAGE_LOAD_TIME].push(sample[PAGE_LOAD_TIME] / NORMALIZE);
+      buckets[PAGE_LOAD_TIME].push(sample[PAGE_LOAD_TIME]);
       sample.phases.forEach(phaseData => {
         const bucket = buckets[phaseData.phase] || [];
-        bucket.push(phaseData.duration / NORMALIZE);
+        bucket.push(phaseData.duration);
         buckets[phaseData.phase] = bucket;
       });
     });
@@ -120,19 +118,20 @@ export default function createConsumeableHTML(
       experiment: experimentValues,
       name: 'output',
     });
-    const cInterval = confidenceInterval(controlValues, experimentValues, 0.95);
     const isNotSignificant =
-      (cInterval[0] < 0 && 0 < cInterval[1]) ||
-      (cInterval[0] > 0 && 0 > cInterval[1]);
+      (stats.confidenceInterval.min < 0 && 0 < stats.confidenceInterval.max) ||
+      (stats.confidenceInterval.min > 0 && 0 > stats.confidenceInterval.max) ||
+      (stats.confidenceInterval.min === 0 && stats.confidenceInterval.max === 0);
+
     sectionFormattedData.push({
       phase,
       identifierHash: phase,
       isSignificant: !isNotSignificant,
       controlSamples: JSON.stringify(controlValues),
       experimentSamples: JSON.stringify(experimentValues),
-      ciMin: Math.ceil(cInterval[0] * 100) / 100,
-      ciMax: Math.ceil(cInterval[1] * 100) / 100,
-      hlDiff: Math.ceil(stats.estimator * 100) / 100,
+      ciMin: stats.confidenceInterval.min,
+      ciMax: stats.confidenceInterval.max,
+      hlDiff: stats.estimator,
       servers: reportTitles.servers,
     });
   });
