@@ -5,7 +5,6 @@ import * as path from 'path';
 import { EXTENDS, ITBConfig } from './tb-config';
 import * as JSON5 from 'json5';
 import { getDefaultValue } from './default-flag-args';
-import { flags } from '@oclif/command';
 import { mergeLeft, relPathToAbs, isDirectory } from '../helpers/utils';
 
 // 1. GET DEFAULTS FOR COMMAND
@@ -19,7 +18,7 @@ import { mergeLeft, relPathToAbs, isDirectory } from '../helpers/utils';
 // STEP 1
 // takes a command flags object with all the flags the command accepts
 // runs that commands object thru the defaults and returns those values
-function getCommandDefaults(flags: any): flags.Input<any> {
+function getCommandDefaults(flags: any) {
   const f = flags;
   Object.entries(f).forEach(([key]) => {
     f[key] = getDefaultValue(key);
@@ -154,11 +153,12 @@ function resolveRelativePath(
 
 function handleExplicitFlags(flags: any, explicitFlags: string[]): {} {
   const obj: any = {};
+  const f = flags;
 
-  explicitFlags.forEach(f => {
-    if (f.startsWith('--') && !f.includes('config')) {
-      f = f.substring(2);
-      obj[f] = flags[f];
+  explicitFlags.forEach(exF => {
+    if (exF.startsWith('--') && !exF.includes('config')) {
+      exF = exF.substring(2);
+      obj[exF] = f[exF];
     }
   });
 

@@ -95,25 +95,23 @@ export default class Compare extends Command {
     debug,
     headless,
   };
+  public compareFlags: ICompareFlags;
   public parsedConfig: ITBConfig = defaultFlagArgs;
   // flags explicitly specified within the cli when
   // running the command. these will override all
   public explicitFlags: string[];
-  public compareFlags: any = null;
   constructor(argv: string[], config: IConfig) {
     super(argv, config);
+    const { flags } = this.parse(Compare);
+
     this.explicitFlags = argv;
+    this.compareFlags = flags;
   }
 
   // instantiated before this.run()
   public async init() {
     const { flags } = this.parse(Compare);
-    this.parsedConfig = getConfig(
-      flags.config,
-      flags,
-      this.explicitFlags
-    ) as ITBConfig;
-
+    this.parsedConfig = getConfig(flags.config, flags, this.explicitFlags);
     this.compareFlags = flags;
     await this.parseFlags();
   }
