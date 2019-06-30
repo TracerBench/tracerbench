@@ -74,3 +74,9 @@ export const headlessFlags = [
   '--mute-audio',
   '--disable-logging',
 ];
+
+export function getDefaultValue(key: string): any {
+  if (key in defaultFlagArgs) {
+    return defaultFlagArgs[key];
+  }
+}

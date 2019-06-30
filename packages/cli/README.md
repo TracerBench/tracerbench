@@ -230,6 +230,9 @@ OPTIONS
   --regressionThreshold=regressionThreshold
       [default: 0ms] Regression threshold in negative milliseconds. eg -100ms
 
+  --report
+      Generate a PDF report directly after running the compare command.
+
   --runtimeStats=runtimeStats
       (required) [default: false] Compare command output stats during run
 

@@ -3,10 +3,12 @@
 import { flags } from '@oclif/command';
 import { networkConditions } from '@tracerbench/core';
 import Protocol from 'devtools-protocol';
-import { defaultFlagArgs, fidelityLookup } from './default-flag-args';
-import { parseMarkers, getConfigDefault } from './utils';
+import {
+  fidelityLookup,
+  getDefaultValue,
+} from '../command-config/default-flag-args';
+import { parseMarkers } from './utils';
 import deviceSettings from './simulate-device-options';
-
 /*
 ! oclif flags.build#parse will only execute when the flag:string is passed directly
 ! from the cli. thus when passed via the tbconfig.json or the defaultFlagArgs
@@ -20,7 +22,7 @@ export const servers = flags.build({
 });
 
 export const plotTitle = flags.build({
-  default: () => getConfigDefault('plotTitle', defaultFlagArgs.plotTitle),
+  default: () => getDefaultValue('plotTitle'),
   description: `Specify the title of the report pdf file.`,
 });
 
@@ -54,11 +56,7 @@ export const debug = flags.boolean({
 });
 
 export const regressionThreshold = flags.build({
-  default: () =>
-    getConfigDefault(
-      'regressionThreshold',
-      defaultFlagArgs.regressionThreshold
-    ),
+  default: () => getDefaultValue('regressionThreshold'),
   description: `Regression threshold in negative milliseconds. eg -100ms`,
   parse: (ms): number => {
     return parseInt(ms, 10);
@@ -66,7 +64,7 @@ export const regressionThreshold = flags.build({
 });
 
 export const runtimeStats = flags.build({
-  default: () => getConfigDefault('runtimeStats', defaultFlagArgs.runtimeStats),
+  default: () => getDefaultValue('runtimeStats'),
   description: `Compare command output stats during run`,
   parse: runtimeStats => {
     return runtimeStats === 'true';
@@ -74,7 +72,7 @@ export const runtimeStats = flags.build({
 });
 
 export const iterations = flags.build({
-  default: () => getConfigDefault('iterations', defaultFlagArgs.iterations),
+  default: () => getDefaultValue('iterations'),
   description: `Number of runs`,
   parse: iterations => {
     parseInt(iterations, 10);
@@ -82,7 +80,7 @@ export const iterations = flags.build({
 });
 
 export const browserArgs = flags.build({
-  default: () => getConfigDefault('browserArgs', defaultFlagArgs.browserArgs),
+  default: () => getDefaultValue('browserArgs'),
   description: `(Default Recommended) Additional chrome flags for the TracerBench render benchmark. TracerBench includes many non-configurable defaults in this category.`,
   parse: (s): string[] => {
     return s.split(',');
@@ -90,32 +88,27 @@ export const browserArgs = flags.build({
 });
 
 export const tracingLocationSearch = flags.build({
-  default: () =>
-    getConfigDefault(
-      'tracingLocationSearch',
-      defaultFlagArgs.tracingLocationSearch
-    ),
+  default: () => getDefaultValue('tracingLocationSearch'),
   description: `The document location search param.`,
 });
 
 export const appName = flags.build({
-  default: () => getConfigDefault('appName'),
+  default: () => getDefaultValue('appName'),
   description: 'The name of your application',
 });
 
 export const event = flags.build({
-  default: () => getConfigDefault('event'),
+  default: () => getDefaultValue('event'),
   description: 'Slice time and see the events before and after the time slice',
 });
 
 export const methods = flags.build({
-  default: () => getConfigDefault('methods', defaultFlagArgs.methods),
+  default: () => getDefaultValue('methods'),
   description: 'List of methods to aggregate',
 });
 
 export const cpuThrottleRate = flags.build({
-  default: () =>
-    getConfigDefault('cpuThrottleRate', defaultFlagArgs.cpuThrottleRate),
+  default: () => getDefaultValue('cpuThrottleRate'),
   description: 'CPU throttle multiplier',
   parse: (cpuThrottleRate): number => {
     return parseInt(cpuThrottleRate, 10);
@@ -123,7 +116,7 @@ export const cpuThrottleRate = flags.build({
 });
 
 export const fidelity = flags.build({
-  default: () => getConfigDefault('fidelity', defaultFlagArgs.fidelity),
+  default: () => getDefaultValue('fidelity'),
   description: `Directly correlates to the number of samples per trace. High is the longest trace time.`,
   options: Object.keys(fidelityLookup),
   parse: (fidelity: string): number => {
@@ -132,13 +125,13 @@ export const fidelity = flags.build({
 });
 
 export const markers = flags.build({
-  default: () => getConfigDefault('markers', defaultFlagArgs.markers),
+  default: () => getDefaultValue('markers'),
   description: 'User Timing Markers',
   parse: parseMarkers,
 });
 
 export const network = flags.build({
-  default: () => getConfigDefault('network', defaultFlagArgs.network),
+  default: () => getDefaultValue('network'),
   description: 'Simulated network conditions.',
   options: [`${Object.keys(networkConditions).join(' | ')}`],
   parse: (n: string): Protocol.Network.EmulateNetworkConditionsRequest => {
@@ -147,44 +140,42 @@ export const network = flags.build({
 });
 
 export const tbResultsFolder = flags.build({
-  default: () =>
-    getConfigDefault('tbResultsFolder', defaultFlagArgs.tbResultsFolder),
+  default: () => getDefaultValue('tbResultsFolder'),
   description: 'The output folder path for all tracerbench results',
 });
 
 export const url = flags.build({
-  default: () => getConfigDefault('url', defaultFlagArgs.url),
+  default: () => getDefaultValue('url'),
   description: 'URL to visit for create-archive, timings & trace commands',
 });
 
 export const controlURL = flags.build({
-  default: () => getConfigDefault('controlURL', defaultFlagArgs.controlURL),
+  default: () => getDefaultValue('controlURL'),
   description: 'Control URL to visit for compare command',
 });
 
 export const experimentURL = flags.build({
-  default: () =>
-    getConfigDefault('experimentURL', defaultFlagArgs.experimentURL),
+  default: () => getDefaultValue('experimentURL'),
   description: 'Experiment URL to visit for compare command',
 });
 
 export const locations = flags.build({
-  default: () => getConfigDefault('locations'),
+  default: () => getDefaultValue('locations'),
   description: 'include locations in names',
 });
 
 export const filter = flags.build({
-  default: () => getConfigDefault('filter'),
+  default: () => getDefaultValue('filter'),
   description: 'User timing marks start with',
 });
 
 export const traceFrame = flags.build({
-  default: () => getConfigDefault('traceFrame'),
+  default: () => getDefaultValue('traceFrame'),
   description: 'Specify a trace insights frame',
 });
 
 export const socksPorts = flags.build({
-  default: () => getConfigDefault('socksPorts'),
+  default: () => getDefaultValue('socksPorts'),
   description:
     'Specify a socks proxy port as browser option for control and experiment',
   parse: (s: string): [number, number] | undefined => {
@@ -200,18 +191,13 @@ export const socksPorts = flags.build({
 });
 
 export const emulateDevice = flags.build({
-  default: () =>
-    getConfigDefault('emulateDevice', defaultFlagArgs.emulateDevice),
+  default: () => getDefaultValue('emulateDevice'),
   description: `Emulate a mobile device screen size.`,
   options: deviceSettings.map(setting => `${setting.typeable}`),
 });
 
 export const emulateDeviceOrientation = flags.build({
-  default: () =>
-    getConfigDefault(
-      'emulateDeviceOrientation',
-      defaultFlagArgs.emulateDeviceOrientation
-    ),
+  default: () => getDefaultValue('emulateDeviceOrientation'),
   description: `Expected to be either "vertical" or "horizontal". Dictates orientation of device screen.`,
   options: ['horizontal', 'vertical'],
 });
