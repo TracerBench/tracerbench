@@ -4,6 +4,7 @@ import deviceSettings, {
 import { Stats } from './statistics/stats';
 import { getWilcoxonRankSumTest } from './statistics/wilcoxon-rank-sum';
 import { getWilcoxonSignedRankTest } from './statistics/wilcoxon-signed-rank';
+import createConsumeableHTML, { ITracerBenchTraceResult } from './create-consumable-html';
 
 export {
   deviceSettings,
@@ -11,4 +12,6 @@ export {
   Stats,
   getWilcoxonRankSumTest,
   getWilcoxonSignedRankTest,
+  createConsumeableHTML,
+  ITracerBenchTraceResult,
 };

@@ -4,12 +4,18 @@ import { pathToFileURL } from 'url';
 import { findChrome } from 'chrome-debugging-client';
 import { join, resolve } from 'path';
 import { Command } from '@oclif/command';
+
 import { tbResultsFolder, config } from '../helpers/flags';
-import createConsumeableHTML, {
-  ITracerBenchTraceResult,
-} from '../helpers/create-consumable-html';
+import createConsumeableHTML, { ITracerBenchTraceResult } from '../helpers/create-consumable-html';
+import { ITBConfig, defaultFlagArgs, getConfig } from '../command-config';
+import { IConfig } from '@oclif/config';
 
 const ARTIFACT_FILE_NAME = 'artifact';
+
+export interface IReportFlags {
+  tbResultsFolder: string;
+  config?: string;
+}
 
 export default class Report extends Command {
   public static description = `Parses the output json from tracerbench and formats it into pdf and html`;
@@ -17,14 +23,33 @@ export default class Report extends Command {
     tbResultsFolder: tbResultsFolder({ required: true }),
     config: config(),
   };
+  public reportFlags: IReportFlags;
+  public parsedConfig: ITBConfig = defaultFlagArgs;
+  // flags explicitly specified within the cli when
+  // running the command. these will override all
+  public explicitFlags: string[];
 
+  constructor(argv: string[], config: IConfig) {
+    super(argv, config);
+    const { flags } = this.parse(Report);
+
+    this.explicitFlags = argv;
+    this.reportFlags = flags;
+  }
+  // instantiated before this.run()
+  public async init() {
+    const { flags } = this.parse(Report);
+    this.parsedConfig = getConfig(flags.config, flags, this.explicitFlags);
+
+    this.reportFlags = flags;
+    await this.parseFlags();
+  }
   /**
    * Ensure the input file is valid and call the helper function "createConsumeableHTML"
    * to generate the HTML string for the output file.
    */
   public async run() {
-    const { flags } = this.parse(Report);
-    const { tbResultsFolder } = flags;
+    const tbResultsFolder = this.reportFlags.tbResultsFolder;
     const inputFilePath = join(tbResultsFolder, 'compare.json');
     let absPathToHTML;
     let absOutputPath;
@@ -65,7 +90,7 @@ export default class Report extends Command {
     renderedHTML = createConsumeableHTML(
       controlData,
       experimentData,
-      flags.config
+      this.parsedConfig.config
     );
     if (!fs.existsSync(tbResultsFolder)) {
       fs.mkdirSync(tbResultsFolder, { recursive: true });
@@ -79,7 +104,8 @@ export default class Report extends Command {
     absOutputPath = resolve(join(tbResultsFolder + `/${outputFileName}.pdf`));
 
     const chromeExecutablePath = findChrome();
-    await execa(chromeExecutablePath, [
+
+    await execa(`${chromeExecutablePath}`, [
       '--headless',
       '--disable-gpu',
       `--print-to-pdf=${absOutputPath}`,
@@ -88,7 +114,17 @@ export default class Report extends Command {
 
     this.log(`The PDF and HTML reports are available here: ${absPathToHTML} and here: ${absOutputPath}`);
   }
+  private async parseFlags() {
+    const {
+      tbResultsFolder
+    } = (this.parsedConfig as unknown) as IReportFlags;
 
+    // if the folder for the tracerbench results file
+    // does not exist then create it
+    if (!fs.existsSync(tbResultsFolder)) {
+      fs.mkdirSync(tbResultsFolder);
+    }
+  }
   private determineOutputFileName(outputFolder: string): string {
     let count = 1;
     while (true) {
