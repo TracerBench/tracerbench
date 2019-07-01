@@ -20,7 +20,7 @@ $ npm install -g tracerbench
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench/2.0.0-beta.27 darwin-x64 node-v10.15.2
+tracerbench/2.0.0-beta.28 darwin-x64 node-v10.15.2
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
@@ -184,7 +184,8 @@ OPTIONS
       TracerBench render benchmark. TracerBench includes many non-configurable defaults in this category.
 
   --config=config
-      Specify an alternative tbconfig.json to extend from the root tbconfig.json. This explicit config will overwrite all.
+      Specify an alternative directory rather than the project root for the tbconfig.json. This explicit config will 
+      overwrite all.
 
   --controlURL=controlURL
       (required) [default: http://localhost:8000/] Control URL to visit for compare command
@@ -303,8 +304,8 @@ USAGE
   $ tracerbench report
 
 OPTIONS
-  --config=config                    Specify an alternative tbconfig.json to extend from the root tbconfig.json. This
-                                     explicit config will overwrite all.
+  --config=config                    Specify an alternative directory rather than the project root for the
+                                     tbconfig.json. This explicit config will overwrite all.
 
   --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output folder path for all
                                      tracerbench results
