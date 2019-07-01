@@ -1,6 +1,6 @@
 {
   "name": "@tracerbench/core",
-  "version": "2.0.0-beta.28",
+  "version": "2.0.0",
   "description": "Benchmark runner for trace metrics",
   "keywords": [
     "chrome",
@@ -74,5 +74,5 @@
     "typescript": "^3.5.2"
   },
   "engine": "node >= 8",
-  "gitHead": "c2d28d0dec33261db27f241e719d0db2d92f89e1"
+  "gitHead": "142d4c4a60878c37fb056a06fccf9694bdeda259"
 }
