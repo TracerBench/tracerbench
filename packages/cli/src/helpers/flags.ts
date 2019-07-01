@@ -27,7 +27,7 @@ export const plotTitle = flags.build({
 });
 
 export const config = flags.build({
-  description: `Specify an alternative tbconfig.json to extend from the root tbconfig.json. This explicit config will overwrite all.`,
+  description: `Specify an alternative directory rather than the project root for the tbconfig.json. This explicit config will overwrite all.`,
 });
 
 export const report = flags.boolean({
