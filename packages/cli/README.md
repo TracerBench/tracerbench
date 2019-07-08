@@ -4,6 +4,9 @@
 [![Version](https://img.shields.io/npm/v/tracerbench.svg)](https://npmjs.org/package/tracerbench)
 [![License](https://img.shields.io/npm/l/tracerbench.svg)](https://github.com/TracerBench/tracerbench/blob/master/package.json)
 
+# TracerBench Core
+https://github.com/TracerBench/tracerbench/blob/master/README.md
+
 <!-- toc -->
 * [Usage](#usage)
 * [Optional Config](#optional-config)
