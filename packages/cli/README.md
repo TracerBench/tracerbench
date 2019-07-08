@@ -39,12 +39,10 @@ The optional existance of a "tbconfig.json" file in the project root will be con
 ```json-c
 {
   "$schema": "https://raw.githubusercontent.com/TracerBench/tracerbench/master/packages/cli/tb-schema.json",
-  // comments are ok with JSON5
-  "plotTitle": "TracerBench.com",
-  "outputFolderPath": "./tracerbench-results",
-  "fidelity": "high",
+  // the title of the report pdf file
+  "plotTitle": "tbconfig_base file",
   "cpuThrottleRate": 2,
-  "tbResultsFile": "tracerbench-results",
+  "tbResultsFolder": "../tracerbench-results",
   "controlURL": "https://www.tracerbench.com/",
   "experimentURL": "https://www.tracerbench.com/",
   "url": "https://www.tracerbench.com/",
@@ -52,7 +50,8 @@ The optional existance of a "tbconfig.json" file in the project root will be con
   "regressionThreshold": "-100ms",
   "appName": "tracerbench",
   "network": "cable",
-  "markers": [{
+  "markers": [
+    {
       "start": "fetchStart",
       "label": "jquery"
     },
@@ -82,17 +81,36 @@ The optional existance of a "tbconfig.json" file in the project root will be con
     }
   ],
   "browserArgs": [
-    "--headless",
-    "--disable-gpu",
-    "--hide-scrollbars",
-    "--mute-audio",
-    "--v8-cache-options=none",
+    "--crash-dumps-dir=./tmp",
+    "--disable-background-timer-throttling",
+    "--disable-dev-shm-usage",
     "--disable-cache",
     "--disable-v8-idle-tasks",
-    "--crash-dumps-dir=./tmp",
-    "--disable-background-timer-throttling"
+    "--disable-breakpad",
+    "--disable-notifications",
+    "--disable-hang-monitor",
+    "--safebrowsing-disable-auto-update",
+    "--setIgnoreCertificateErrors=true",
+    "--v8-cache-options=none"
+  ],
+  "servers": [
+    {
+      "name": "control tracerbench-build_1.0.1234",
+      "url": "https://www.tracerbench.com/",
+      "dist": "./relative-path-to-control-dist-files/",
+      "har": "./relative-path-location-to-control-har-file/",
+      "socksPort": 8880
+    },
+    {
+      "name": "experiment tracerbench-build-2-78ffg6a678g95",
+      "url": "https://www.tracerbench.com/",
+      "dist": "./relative-path-to-experiment-dist-files/",
+      "har": "./relative-path-location-to-experiment-har-file/",
+      "socksPort": 8881
+    }
   ]
 }
+
 ```
 
 # Example Travis-CI Integration
