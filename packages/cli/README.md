@@ -8,6 +8,7 @@
 https://github.com/TracerBench/tracerbench/blob/master/README.md
 
 <!-- toc -->
+* [TracerBench Core](#tracerbench-core)
 * [Usage](#usage)
 * [Optional Config](#optional-config)
 * [Example Travis-CI Integration](#example-travis-ci-integration)
@@ -23,7 +24,7 @@ $ npm install -g tracerbench
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench/2.0.0 darwin-x64 node-v10.15.2
+tracerbench/2.0.0 darwin-x64 node-v12.4.0
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
