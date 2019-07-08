@@ -24,7 +24,7 @@ import {
   TRACE_EVENT_PHASE_END,
   TRACE_EVENT_PHASE_METADATA,
   TRACE_EVENT_PHASE_SAMPLE,
-  TRACE_EVENT_PHASE_INSTANT
+  TRACE_EVENT_PHASE_INSTANT,
 } from './trace_event';
 
 import traceEventComparator from './trace_event_comparator';
@@ -107,8 +107,8 @@ export default class Trace {
             duration: 0,
             nodes: [] as Array<ICpuProfileNode & IProfileNode>,
             samples: [] as number[],
-            timeDeltas: [] as number[]
-          }
+            timeDeltas: [] as number[],
+          },
         });
       } else if (event.name === 'ProfileChunk') {
         const profileChunk = event as IProfileChunkEvent;
@@ -121,7 +121,7 @@ export default class Trace {
                 min: 0,
                 max: 0,
                 total: 0,
-                self: 0
+                self: 0,
               })
             );
           });
@@ -276,11 +276,11 @@ export default class Trace {
       tdur: end.tts! - begin.tts!,
       tid: begin.tid,
       ts: begin.ts,
-      tts: begin.tts
+      tts: begin.tts,
     };
     const { events } = this;
     const index = binsearch(events, begin, traceEventComparator);
-    events.splice(index, 0, complete);
+    events[index] = complete;
   }
 
   private addMetadata(event: ITraceEvent) {

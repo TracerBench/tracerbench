@@ -143,9 +143,7 @@ export default class Compare extends Command {
       .then((results: any) => {
         if (!results[0].samples[0]) {
           this.error(
-            `Could not sample from provided urls\nCONTROL: ${
-              this.parsedConfig.controlURL
-            }\nEXPERIMENT: ${this.parsedConfig.experimentURL}.`
+            `Could not sample from provided urls\nCONTROL: ${this.parsedConfig.controlURL}\nEXPERIMENT: ${this.parsedConfig.experimentURL}.`
           );
         }
 
@@ -172,9 +170,7 @@ export default class Compare extends Command {
           );
 
           fs.writeFileSync(
-            `${
-              this.parsedConfig.tbResultsFolder
-            }/server-experiment-settings.json`,
+            `${this.parsedConfig.tbResultsFolder}/server-experiment-settings.json`,
             JSON.stringify(Object.assign(experimentSettings), null, 2)
           );
 
@@ -234,9 +230,7 @@ export default class Compare extends Command {
 
     // if the folder for the tracerbench results file
     // does not exist then create it
-    if (!fs.existsSync(tbResultsFolder)) {
-      fs.mkdirSync(tbResultsFolder);
-    }
+    fs.mkdirpSync(path.join(tbResultsFolder, 'traces'));
   }
 
   /**
@@ -335,7 +329,8 @@ export default class Compare extends Command {
         : this.compareFlags.network,
       name: 'control',
       runtimeStats: this.compareFlags.runtimeStats,
-      saveTraces: () => `${this.compareFlags.tbResultsFolder}/control.json`,
+      saveTraces: i =>
+        `${this.compareFlags.tbResultsFolder}/traces/control${i}.json`,
       url: path.join(
         this.compareFlags.controlURL + this.compareFlags.tracingLocationSearch
       ),
@@ -360,7 +355,8 @@ export default class Compare extends Command {
         : this.compareFlags.network,
       name: 'experiment',
       runtimeStats: this.compareFlags.runtimeStats,
-      saveTraces: () => `${this.compareFlags.tbResultsFolder}/experiment.json`,
+      saveTraces: i =>
+        `${this.compareFlags.tbResultsFolder}/traces/experiment${i}.json`,
       url: path.join(
         this.compareFlags.experimentURL +
           this.compareFlags.tracingLocationSearch
