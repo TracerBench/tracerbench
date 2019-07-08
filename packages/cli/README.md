@@ -1,4 +1,4 @@
-## TracerBench-CLI: Automated Chrome Tracing For Benchmarking
+## TracerBench: Automated Chrome Tracing For Benchmarking
 
 [![Build Status](https://travis-ci.org/TracerBench/tracerbench.svg?branch=master)](https://travis-ci.org/TracerBench/tracerbench)
 [![Version](https://img.shields.io/npm/v/tracerbench.svg)](https://npmjs.org/package/tracerbench)
