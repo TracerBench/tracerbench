@@ -9,9 +9,13 @@
 </head>
 
 <body>
-  <h1>TracerBench: Boxplot Results</h1>
-  <p>{{reportTitles.plotTitle}}</p>
   <div class="container">
+    <div class="row mb-3">
+      <div class="col">
+        <h1>TracerBench: Boxplot Results</h1>
+        <p>{{reportTitles.plotTitle}}</p>
+      </div>
+    </div>
     {{#each sectionFormattedData as |analysisForPhase|}}
     <div class="row">
       <div class="col">
@@ -77,45 +81,45 @@
       const optionFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}} = {
         type: 'boxplot',
           data: {
-          labels: ['{{analysisForPhase.phase}}'],
-          datasets: [{
-            label: '{{analysisForPhase.servers.[0].name}}',
-            borderColor: '#0A2D46',
-            backgroundColor: 'rgba(199, 241, 106, 0.50)',
-            borderWidth: 2,
-            outlierColor: '#1884E4',
-            itemRadius: 2,
-            itemBackgroundColor: '#1884E4',
-            data: [{{{analysisForPhase.controlSamples}}}]
-          }, {
-            label: '{{analysisForPhase.servers.[1].name}}',
-            borderColor: '#0A2D46',
-            backgroundColor: 'rgba(56, 210, 211, 0.50)',
-            borderWidth: 2,
-            outlierColor: '#1884E4',
-            itemRadius: 2,
-            itemBackgroundColor: '#1884E4',
-            data: [{{{analysisForPhase.experimentSamples}}}]
-        }]
-      },
-    options: {
-      responsive: true,
-        legend: {
-        display: true,
-          position: 'top'
-      },
-      title: {
-        display: true,
-        text: '{{reportTitles.plotTitle}}'
-      },
-      scales: {
-        xAxes: [{
-          // Specific to Bar Controller
-          categoryPercentage: 0.9,
-          barPercentage: 0.8
-        }]
-      }
-    }
+            labels: ['{{analysisForPhase.phase}}'],
+            datasets: [{
+              label: '{{analysisForPhase.servers.[0].name}}',
+              borderColor: '#0A2D46',
+              backgroundColor: 'rgba(199, 241, 106, 0.50)',
+              borderWidth: 2,
+              outlierColor: '#1884E4',
+              itemRadius: 2,
+              itemBackgroundColor: '#1884E4',
+              data: [{{{analysisForPhase.controlSamples}}}]
+            }, {
+              label: '{{analysisForPhase.servers.[1].name}}',
+              borderColor: '#0A2D46',
+              backgroundColor: 'rgba(56, 210, 211, 0.50)',
+              borderWidth: 2,
+              outlierColor: '#1884E4',
+              itemRadius: 2,
+              itemBackgroundColor: '#1884E4',
+              data: [{{{analysisForPhase.experimentSamples}}}]
+          }]
+        },
+        options: {
+          responsive: true,
+            legend: {
+            display: true,
+              position: 'top'
+          },
+          title: {
+            display: true,
+            text: '{{reportTitles.plotTitle}}'
+          },
+          scales: {
+            xAxes: [{
+              // Specific to Bar Controller
+              categoryPercentage: 0.9,
+              barPercentage: 0.8
+            }]
+          }
+        }
       };
 
       window['{{analysisForPhase.phase}}'] = new Chart(canvasFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}}, optionFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}});
