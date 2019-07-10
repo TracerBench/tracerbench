@@ -1,14 +1,13 @@
-import * as execa from 'execa';
 import * as fs from 'fs-extra';
-import { pathToFileURL } from 'url';
-import { findChrome } from 'chrome-debugging-client';
 import { join, resolve } from 'path';
-import { Command } from '@oclif/command';
+import * as urlLib from 'url';
 
-import { tbResultsFolder, config } from '../helpers/flags';
-import createConsumeableHTML, { ITracerBenchTraceResult } from '../helpers/create-consumable-html';
-import { ITBConfig, defaultFlagArgs, getConfig } from '../command-config';
+import { Command } from '@oclif/command';
 import { IConfig } from '@oclif/config';
+import { ITBConfig, defaultFlagArgs, getConfig } from '../command-config';
+import createConsumeableHTML, { ITracerBenchTraceResult } from '../helpers/create-consumable-html';
+import { tbResultsFolder, config } from '../helpers/flags';
+import printToPDF from '../helpers/print-to-pdf';
 
 const ARTIFACT_FILE_NAME = 'artifact';
 
@@ -57,7 +56,7 @@ export default class Report extends Command {
     let htmlOutputPath;
     let outputFileName;
     let inputData: ITracerBenchTraceResult[] = [];
-    // If the input file cannot be found, exit with and error
+    // If the input file cannot be found, exit with an error
     if (!fs.existsSync(inputFilePath)) {
       this.error(
         `Input json file does not exist. Please make sure ${inputFilePath} exists`,
@@ -103,14 +102,7 @@ export default class Report extends Command {
 
     absOutputPath = resolve(join(tbResultsFolder + `/${outputFileName}.pdf`));
 
-    const chromeExecutablePath = findChrome();
-
-    await execa(`${chromeExecutablePath}`, [
-      '--headless',
-      '--disable-gpu',
-      `--print-to-pdf=${absOutputPath}`,
-      pathToFileURL(absPathToHTML).toString(),
-    ]);
+    await printToPDF(urlLib.pathToFileURL(absPathToHTML).toString(), absOutputPath);
 
     this.log(`The PDF and HTML reports are available here: ${absPathToHTML} and here: ${absOutputPath}`);
   }
