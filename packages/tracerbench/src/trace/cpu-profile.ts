@@ -9,8 +9,9 @@ import {
   ITraceEvent,
   TRACE_EVENT_NAME,
   TRACE_EVENT_PHASE_BEGIN,
-  TRACE_EVENT_PHASE_END
+  TRACE_EVENT_PHASE_END,
 } from '../trace';
+import { TRACE_EVENT_PHASE_COMPLETE } from './trace_event';
 
 export default class CpuProfile {
   public profile: ICpuProfile;
@@ -235,7 +236,7 @@ function absoluteSamples(
       delta: 0,
       timestamp,
       prev: null,
-      next: null
+      next: null,
     };
     last = timestamp;
 
@@ -273,52 +274,76 @@ function expandNodes(
   const expandedNodes: ICpuProfileNode[] = [];
   const orig2ExpNodes = new Map<number, ICpuProfileNode[]>();
   const state: IExpState = {
-    isExecuting: false,
     lastSampleTS: -1,
     stack: [],
     origId2activeIndex: new Map<number, number>(),
-    expId2origId: new Map<number, number>()
+    expId2origId: new Map<number, number>(),
   };
 
-  let i = 0;
-  let j = 0;
+  let begin: ITraceEvent | undefined;
+  let from = -1;
+  let to = -1;
 
-  for (; i < samples.length && j < events.length; ) {
-    if (samples[i].timestamp <= events[j].ts) {
-      if (!isOutOfBounds(samples[i].timestamp, min, max) && state.isExecuting) {
-        processSample(
-          samples[i],
-          orig2ExpNodes,
-          parentLinks,
-          expandedNodes,
-          state
-        );
+  let sampleIndex = 0;
+  let eventIndex = 0;
+
+  while (sampleIndex < samples.length) {
+    // move through events until we have an executing range
+    for (; eventIndex < events.length; eventIndex++) {
+      const event = events[eventIndex];
+      if (begin !== undefined) {
+        if (
+          event.ph === TRACE_EVENT_PHASE_END &&
+          event.pid === begin.pid &&
+          event.tid === begin.tid &&
+          event.cat === begin.cat &&
+          event.name === begin.name
+        ) {
+          begin = undefined;
+          to = event.ts;
+        }
+      } else if (from === -1) {
+        if (event.name === TRACE_EVENT_NAME.V8_EXECUTE) {
+          if (event.ph === TRACE_EVENT_PHASE_BEGIN) {
+            begin = event;
+            from = event.ts;
+            to = -1;
+          } else if (event.ph === TRACE_EVENT_PHASE_COMPLETE) {
+            from = event.ts;
+            to = event.ts + event.dur!;
+          }
+        }
+      } else if (event.ts > to) {
+        break;
       }
-      i++;
-    } else {
-      if (!isOutOfBounds(events[j].ts, min, max)) {
-        processEvent(events[j], state);
-      }
-      j++;
     }
+
+    // we should be just after `to` or out of events
+    // if we don't have a from/to then this will drain
+    // samples and exit
+
+    for (; sampleIndex < samples.length; sampleIndex++) {
+      // process samples in execute range
+      const sample = samples[sampleIndex];
+      if (to !== -1 && sample.timestamp > to) {
+        // end executing
+        endExecute(state, to);
+        from = to = -1;
+        break;
+      } else if (
+        from !== -1 &&
+        sample.timestamp > from &&
+        !isOutOfBounds(sample.timestamp, min, max)
+      ) {
+        processSample(sample, orig2ExpNodes, parentLinks, expandedNodes, state);
+      }
+    }
+
+    // we should be just past a range or have no more samples
   }
 
-  for (; i < samples.length; i++) {
-    if (!isOutOfBounds(samples[i].timestamp, min, max) && state.isExecuting) {
-      processSample(
-        samples[i],
-        orig2ExpNodes,
-        parentLinks,
-        expandedNodes,
-        state
-      );
-    }
-  }
-
-  for (; j < events.length; j++) {
-    if (!isOutOfBounds(events[j].ts, min, max)) {
-      processEvent(events[j], state);
-    }
+  if (to !== -1) {
+    endExecute(state, to);
   }
 
   terminateNodes(state.stack, state.lastSampleTS, state);
@@ -399,30 +424,17 @@ function addDurationToNodes(stack: ICpuProfileNode[], delta: number) {
 }
 
 interface IExpState {
-  isExecuting: boolean;
   lastSampleTS: number;
   stack: ICpuProfileNode[];
   origId2activeIndex: Map<number, number>;
   expId2origId: Map<number, number>;
 }
 
-function processExecute(event: ITraceEvent, state: IExpState) {
+function endExecute(state: IExpState, timestamp: number) {
   const { stack, lastSampleTS } = state;
-
-  if (event.ph === TRACE_EVENT_PHASE_BEGIN) {
-    state.isExecuting = true;
-  } else if (event.ph === TRACE_EVENT_PHASE_END) {
-    addDurationToNodes(stack, event.ts - lastSampleTS);
-    const toTerminate = stack.splice(1); // don't slice (root)
-    terminateNodes(toTerminate, event.ts, state);
-    state.isExecuting = false;
-  }
-}
-
-function processEvent(event: ITraceEvent, state: IExpState) {
-  if (event.name === TRACE_EVENT_NAME.V8_EXECUTE) {
-    processExecute(event, state);
-  }
+  addDurationToNodes(stack, timestamp - lastSampleTS);
+  const toTerminate = stack.splice(1); // don't slice (root)
+  terminateNodes(toTerminate, timestamp, state);
 }
 
 function processSample(

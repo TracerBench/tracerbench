@@ -2,15 +2,27 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Test",
+      "name": "Test PP",
       "type": "node",
       "request": "launch",
       "protocol": "inspector",
-      "preLaunchTask": "build",
       "cwd": "${workspaceFolder}/packages/tracerbench",
-      "program": "${workspaceRoot}/packages/tracerbench/test/test.ts",
-      "sourceMaps": true,
-      "outFiles": ["${workspaceRoot}/packages/tracerbench/dist/**/*.js"]
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "runtimeArgs": ["--nolazy"],
+      "args": ["test/pp/*.test.ts"],
+      "outFiles": ["dist/**/*.js"],
+      "sourceMaps": true
+    },
+    {
+      "name": "Test CLI",
+      "type": "node",
+      "request": "launch",
+      "protocol": "inspector",
+      "cwd": "${workspaceFolder}/packages/cli",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+      "args": ["test/**/*.ts"],
+      "sourceMaps": true
     }
   ]
 }
