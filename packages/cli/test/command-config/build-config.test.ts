@@ -3,7 +3,7 @@ import { checkEnvironmentSpecificOverride } from '../../src/helpers/utils';
 import { getDefaultValue } from '../../src/command-config/default-flag-args';
 import { expect } from 'chai';
 import * as mock from 'mock-fs';
-import { resolveRelativeConfigExtends } from '../../src/command-config';
+import { readConfig } from '../../src/command-config/build-config';
 
 describe('utils', () => {
   it(`getDefaultValue() from default`, () => {
@@ -91,14 +91,38 @@ describe('resolveConfigFile', () => {
     'tbconfig.json': Buffer.from(JSON.stringify({ cpuThrottleRate: 4 })),
   };
 
-  it('Ensure if parent does not exist, an Error is thrown', () => {
+  it('throws when a parent config does not exist', () => {
     mock(mockFileSystem);
+    try {
+      const shouldThrowError = () => {
+        readConfig('parent/child/grandchild/shouldfail.json');
+      };
+      expect(shouldThrowError).to.throw();
+    } finally {
+      mock.restore();
+    }
+  });
 
-    const shouldThrowError = () => {
-      resolveRelativeConfigExtends('parent/child/grandchild/failparent.json');
-    };
-    expect(shouldThrowError).to.throw();
+  it('merges the configs correctly', () => {
+    mock(mockFileSystem);
+    try {
+      const config = readConfig('parent/child/grandchild/tbconfig.json');
+      expect(config).to.deep.equal({
+        cpuThrottleRate: 0,
+        regressionThreshold: 5,
+      });
+    } finally {
+      mock.restore();
+    }
+  });
 
-    mock.restore();
+  it('returns undefined when config does not exist', () => {
+    mock(mockFileSystem);
+    try {
+      const config = readConfig('config/does/not/exist.json');
+      expect(config).to.equal(undefined);
+    } finally {
+      mock.restore();
+    }
   });
 });

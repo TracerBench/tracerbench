@@ -3,8 +3,6 @@
 import chalk from 'chalk';
 import * as logSymbols from 'log-symbols';
 import { IMarker, ITraceEvent } from '@tracerbench/core';
-import * as fs from 'fs-extra';
-import * as path from 'path';
 import {
   IBenchmarkEnvironmentOverride,
   ITBConfig,
@@ -68,23 +66,6 @@ export function mergeLeft(
   });
 
   return left;
-}
-
-// will return an absolute path
-export function relPathToAbs(relPath: string, contextPath: string): string {
-  contextPath = path.isAbsolute(contextPath)
-    ? contextPath
-    : path.join(process.cwd(), contextPath);
-
-  contextPath = isDirectory(contextPath)
-    ? contextPath
-    : path.dirname(contextPath);
-
-  return path.resolve(contextPath, relPath);
-}
-
-export function isDirectory(p: string): boolean {
-  return fs.existsSync(p) && fs.lstatSync(p).isDirectory();
 }
 
 export function convertMicrosecondsToMS(ms: string | number): number {

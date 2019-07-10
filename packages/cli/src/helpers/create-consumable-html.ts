@@ -3,7 +3,7 @@ import * as path from 'path';
 import { Stats } from './statistics/stats';
 import { readFileSync } from 'fs-extra';
 import { defaultFlagArgs } from '../command-config/default-flag-args';
-import { getRelativeConfigRAW } from '../command-config/build-config';
+import { ITBConfig } from '../command-config/tb-config';
 export interface Sample {
   duration: number;
   js: number;
@@ -61,7 +61,7 @@ REPORT_TEMPLATE_RAW = REPORT_TEMPLATE_RAW.toString()
 export default function createConsumeableHTML(
   controlData: ITracerBenchTraceResult,
   experimentData: ITracerBenchTraceResult,
-  config: string = 'tbconfig.json'
+  config: ITBConfig
 ): string {
   /**
    * Extract the phases and page load time latency into sorted buckets by phase
@@ -94,12 +94,11 @@ export default function createConsumeableHTML(
 
   try {
     // get the raw tbconfig.json either root or child
-    const tbConfig = getRelativeConfigRAW(config);
-    if (tbConfig.servers) {
-      reportTitles.servers = tbConfig.servers as any;
+    if (config.servers) {
+      reportTitles.servers = config.servers as any;
     }
-    if (tbConfig.plotTitle) {
-      reportTitles.plotTitle = tbConfig.plotTitle;
+    if (config.plotTitle) {
+      reportTitles.plotTitle = config.plotTitle;
     }
   } catch (e) {
     // e
@@ -121,7 +120,8 @@ export default function createConsumeableHTML(
     const isNotSignificant =
       (stats.confidenceInterval.min < 0 && 0 < stats.confidenceInterval.max) ||
       (stats.confidenceInterval.min > 0 && 0 > stats.confidenceInterval.max) ||
-      (stats.confidenceInterval.min === 0 && stats.confidenceInterval.max === 0);
+      (stats.confidenceInterval.min === 0 &&
+        stats.confidenceInterval.max === 0);
 
     sectionFormattedData.push({
       phase,
