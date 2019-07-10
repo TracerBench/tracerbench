@@ -2,6 +2,7 @@ import { Command } from '@oclif/command';
 import { harTrace } from '@tracerbench/core';
 import { tbResultsFolder, url } from '../helpers/flags';
 import * as path from 'path';
+import * as fs from 'fs-extra';
 
 export default class CreateArchive extends Command {
   public static description = 'Creates an automated HAR file from a URL.';
@@ -15,6 +16,10 @@ export default class CreateArchive extends Command {
     const { url, tbResultsFolder } = flags;
     const archiveOutput = path.join(tbResultsFolder, 'trace.har');
     const cookiesJSON = path.join(tbResultsFolder, 'cookies.json');
+
+    if (!fs.existsSync(tbResultsFolder)) {
+      fs.mkdirSync(tbResultsFolder);
+    }
 
     await harTrace(url, tbResultsFolder);
     return this.log(
