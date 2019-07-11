@@ -14,7 +14,7 @@ TracerBench has been greatly inspired by the Chromium benchmark tool [Telemetry]
 
 
 ## How does TracerBench compare to [Lighthouse](https://github.com/GoogleChrome/lighthouse)?
-When comparing TracerBench to the most popular tool Chrome Developer Tools Lighthouse. The primary difference is TracerBench is focused on getting a low variance for a metric across many samples versus getting a hard to replicate “Lighthouse performance report”. Lighthouse is essentially a black-box, with developers unable to customize performance parameters in-depth and lacking proper statistical rigor. TracerBench on the other hand, can be highly instrumented, provides statistical rigor and adequate sampling of data. Additionally, TracerBench instrumentation has minimal impact on the overhead of the application; as such TracerBench instrumentation can be "check-in" and left in your application without worry of negative performance impacts.
+When comparing TracerBench to the most popular tool Chrome Developer Tools Lighthouse. The primary difference is TracerBench is focused on getting a low variance for a metric across many samples versus getting a hard to replicate “Lighthouse performance report”. Lighthouse is essentially a black-box, with developers unable to customize performance parameters in-depth and lacking proper statistical rigor. TracerBench on the other hand, can be highly instrumented, provides statistical rigor and adequate sampling of data. Additionally, TracerBench instrumentation has minimal impact on the overhead of the application; as such TracerBench instrumentation can be "checked-in" and left in your application without worry of negative performance impacts.
 
 # User-Stories
 
@@ -26,11 +26,11 @@ When comparing TracerBench to the most popular tool Chrome Developer Tools Light
 
 # Ambient Noise
 
-When running a TracerBench recording command its exceptionally important to reduce ambient noise that could negatively impact the reliability of the test results. TL;DR don't just jump into leveraging TracerBench without first performing [Mitigating Ambient Noise](https://github.com/TracerBench/tracerbench/blob/master/NOISE_MITIGATION.md)
+When running a TracerBench recording command (eg `tracerbench compare`) its exceptionally important to reduce ambient noise that could negatively impact the reliability of the test results. TL;DR don't just jump into leveraging TracerBench without first performing [Mitigating Ambient Noise](https://github.com/TracerBench/tracerbench/blob/master/NOISE_MITIGATION.md)
 
 ### Testing Ambient Noise
 
-Assuming the pre-req mitigations above are complete, to test the ambient noise of your environment you can run and measure a few A/A tests. For example the control against the control. The results of which should all be near identical with no significant result and low variance.
+Assuming the pre-req mitigations above are complete, to test the ambient noise of your environment you can run and measure a few A/A tests. For example the control against the control. The results of which should all be near identical with no significant result, low variance and a narrow confidence interval range.
 
 ---
 
@@ -130,7 +130,7 @@ performance.mark('renderEnd');
 endTrace();
 ```
 
-In the example above we would mark right after we render the app and then call an `endTrace` function that ensures that we schedule after paint that transitions to a blank page. Internally tracerbench will see this as the cue to start a new sample.
+In the example above we would mark right after we render the app and then call an `endTrace` function that ensures that we schedule after paint then transition to a blank page. Internally tracerbench will see this as the cue to start a new sample.
 
 ### Init Benchmark & Runner
 
@@ -205,7 +205,7 @@ runner
 
 ### Trace-Results
 
-The typings for "trace-results.json" is as follows:
+The typings for "trace-results.json" are as follows:
 
 - [samples: IITerationSample](https://github.com/TracerBench/tracerbench/blob/0508e9867b8bb8624739e16f0e812211a8346cc1/packages/tracerbench/src/benchmarks/initial-render-metric.ts#L73-L106)
 - [phases: IPhaseSample](https://github.com/TracerBench/tracerbench/blob/0508e9867b8bb8624739e16f0e812211a8346cc1/packages/tracerbench/src/benchmarks/initial-render-metric.ts#L126-L141)
@@ -235,7 +235,9 @@ The typings for "trace-results.json" is as follows:
 
 Assuming you have the output results ("trace-results.json") from your TracerBench run, its time to perform statistical analysis on the [Trace-Results](#Trace-Results) JSON file.
 
-When running the TracerBench-CLI `compare` command, on a successful trace a stdout statistical summary report will be generated.
+When running the TracerBench-CLI `compare` command, on a successful trace a stdout statistical summary report will be generated. Additionally an included `compare --report` flag will create a PDF and HTML report.
+
+TracerBench also exposes an explicit `tracerbench report` command that takes a path to the folder containing your "trace-results.json" file and will create a PDF and HTML report.
 
 ### Understanding The Box-Plot Results
 ![box-plot-results](https://github.com/TracerBench/tracerbench/blob/master/docs/box-plot-transparent.png)
@@ -244,7 +246,7 @@ When running the TracerBench-CLI `compare` command, on a successful trace a stdo
 
 # Statistics Primer
 
-Now that the tracing is complete and the data has been collected. The next step in analyzing it, is to leverage some descriptive statistics to get a feeling for the data.
+Now that the tracing is complete and the data has been collected. The next step in analyzing it is to leverage some descriptive statistics to get a feeling for the data.
 
 ### Population & Sample
 
