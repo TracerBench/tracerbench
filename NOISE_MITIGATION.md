@@ -6,12 +6,20 @@ As a general rule of thumb to "zero-out" your environment its recommended you cl
 - software updates, file syncing, browser-tabs, (osx spotlight & notification: do not disturb "on" )
 - when manually running tests and _not_ using the default headless chrome. be sure to exit all browser extensions
 
+### Background Daemons
+Daemons are processes that run continuously in the background performing functions required by other processes. It's not explicitly necessary to kill all running daemons - just the ones consuming large amounts of resources and those that are likely to run a spike process for example OSX updater or Chrome updater.
+
+Some common running daemons such as Dropbox, Google, Adobe, Backblaze, Carbonite, CrashPlan more than likely should be exited before running a trace. 
+
 To quickly scan your environment for running processes run in a terminal window:
 ```sh
 ps -eo pcpu,pid,user,args | sort -k 1 -r -n | head
 ```
 
-For example you might see a spike process for OSX updater or Chrome updater etc.
+Then kill the process in question by finding the process-id from the previous command and run in a terminal window:
+```sh
+kill -2 <PROCESS-ID>
+```
 
 ## OSX
 ### Disable Spotlight
