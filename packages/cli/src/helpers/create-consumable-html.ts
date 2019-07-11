@@ -3,7 +3,8 @@ import * as path from 'path';
 import { Stats } from './statistics/stats';
 import { readFileSync } from 'fs-extra';
 import { defaultFlagArgs } from '../command-config/default-flag-args';
-import { ITBConfig } from '../command-config/tb-config';
+import { ITBConfig } from '../command-config';
+
 export interface Sample {
   duration: number;
   js: number;
@@ -58,56 +59,63 @@ REPORT_TEMPLATE_RAW = REPORT_TEMPLATE_RAW.toString()
   )
   .replace('{{!-- TRACERBENCH-CHART-JS --}}', `<script>${CHART_JS}</script>`);
 
-export default function createConsumeableHTML(
-  controlData: ITracerBenchTraceResult,
-  experimentData: ITracerBenchTraceResult,
-  config: ITBConfig
-): string {
-  /**
-   * Extract the phases and page load time latency into sorted buckets by phase
-   *
-   * @param samples - Array of "sample" objects
-   */
-  function bucketPhaseValues(samples: Sample[]): { [key: string]: number[] } {
-    const buckets: { [key: string]: number[] } = { [PAGE_LOAD_TIME]: [] };
 
-    samples.forEach((sample: Sample) => {
-      buckets[PAGE_LOAD_TIME].push(sample[PAGE_LOAD_TIME]);
-      sample.phases.forEach(phaseData => {
-        const bucket = buckets[phaseData.phase] || [];
-        bucket.push(phaseData.duration);
-        buckets[phaseData.phase] = bucket;
-      });
+/**
+ * Extract the phases and page load time latency into sorted buckets by phase
+ *
+ * @param samples - Array of "sample" objects
+ */
+export function bucketPhaseValues(samples: Sample[]): { [key: string]: number[] } {
+  const buckets: { [key: string]: number[] } = { [PAGE_LOAD_TIME]: [] };
+
+  samples.forEach((sample: Sample) => {
+    buckets[PAGE_LOAD_TIME].push(sample[PAGE_LOAD_TIME]);
+    sample.phases.forEach(phaseData => {
+      const bucket = buckets[phaseData.phase] || [];
+      bucket.push(phaseData.duration);
+      buckets[phaseData.phase] = bucket;
     });
+  });
 
-    Object.keys(buckets).forEach(phase => {
-      buckets[phase].sort();
-    });
+  Object.keys(buckets).forEach(phase => {
+    buckets[phase].sort();
+  });
 
-    return buckets;
-  }
+  return buckets;
+}
 
+/**
+ * Override the default server and plot title attributes
+ *
+ * @param tbConfig - Concerned only about the "servers" and "plotTitle" attribute
+ */
+export function resolveTitles(tbConfig: Partial<ITBConfig>) {
   const reportTitles = {
     servers: [{ name: 'Control' }, { name: 'Experiment' }],
     plotTitle: defaultFlagArgs.plotTitle,
   };
 
-  try {
-    // get the raw tbconfig.json either root or child
-    if (config.servers) {
-      reportTitles.servers = config.servers as any;
-    }
-    if (config.plotTitle) {
-      reportTitles.plotTitle = config.plotTitle;
-    }
-  } catch (e) {
-    // e
+  if (tbConfig.servers) {
+    reportTitles.servers = tbConfig.servers as any;
   }
 
+  if (tbConfig.plotTitle) {
+    reportTitles.plotTitle = tbConfig.plotTitle;
+  }
+
+  return reportTitles;
+}
+
+export default function createConsumeableHTML(
+  controlData: ITracerBenchTraceResult,
+  experimentData: ITracerBenchTraceResult,
+  tbConfig: ITBConfig
+): string {
   const valuesByPhaseControl = bucketPhaseValues(controlData.samples);
   const valuesByPhaseExperiment = bucketPhaseValues(experimentData.samples);
   const phases = Object.keys(valuesByPhaseControl);
   const sectionFormattedData: HTMLSectionRenderData[] = [];
+  const reportTitles = resolveTitles(tbConfig);
 
   phases.forEach(phase => {
     const controlValues = valuesByPhaseControl[phase];
@@ -120,8 +128,7 @@ export default function createConsumeableHTML(
     const isNotSignificant =
       (stats.confidenceInterval.min < 0 && 0 < stats.confidenceInterval.max) ||
       (stats.confidenceInterval.min > 0 && 0 > stats.confidenceInterval.max) ||
-      (stats.confidenceInterval.min === 0 &&
-        stats.confidenceInterval.max === 0);
+      (stats.confidenceInterval.min === 0 && stats.confidenceInterval.max === 0);
 
     sectionFormattedData.push({
       phase,
