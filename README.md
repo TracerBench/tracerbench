@@ -10,7 +10,7 @@ TracerBench is a controlled performance benchmarking tool for web applications. 
 
 There’s currently a gap in performance analysis tooling for web applications, which for example is especially true for Ember Applications. Developers today struggle to quickly find and analyze performance regressions which would empower them to make quick, iterative changes within their local development environment. Regressions need to be automatically uncovered, propagated and reported with both regression size and actionable data that explains the problem to maximize value and usefulness for the developer.
 
-The current approach for performance analysis for developers is running a single trace using Chrome Developer Tools. The issue however, is a single trace varies far too much to detect regressions in small changes to an app unless the effect size is very large. Additionally, most statistical tests assume sample independence which given caching like Chrome's v8 caching is quite difficult to meet.
+The current approach for performance analysis for developers is running a single trace using Chrome Developer Tools. The issue however, is a single trace varies far too much to detect regressions in small changes to a web application unless the effect size is very large. Additionally, most statistical tests assume sample independence which given caching like Chrome's v8 caching this is quite difficult to meet.
 
 TracerBench has been greatly inspired by the Chromium benchmark tool [Telemetry](https://github.com/catapult-project/catapult/blob/master/telemetry/docs/run_benchmarks_locally.md).
 
