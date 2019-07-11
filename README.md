@@ -2,13 +2,15 @@
 
 [![Build Status](https://travis-ci.org/TracerBench/tracerbench.svg?branch=master)](https://travis-ci.org/TracerBench/tracerbench)
 
-TracerBench is a web application benchmarking tool for providing clear, actionable and usable insights into performance regressions. By extracting metrics around Response, Animation, Idle, and Load through automated chrome traces and controlling that each of our samples is independent, TracerBench is able to provide low variance and reproducable performance data.
+As it pertains to data analysis, intuition almost always leads us astray. We see patterns in random data and jump to unwarranted conclusions. We need a guide. One that uses statistical rigor so that we can make valid conclusions based upon the data. TracerBench aims to be that guide. 
+
+TracerBench is a controlled performance benchmarking tool for web applications. Providing clear, actionable and usable insights into performance deltas. By extracting metrics around response, animation, idle, and load through automated chrome traces and controlling that each of our samples is independent. TracerBench is able to provide low variance and reproducible performance data. TracerBench results are packageable and shareable allowing for replicated peer review.
 
 # Motivation
 
-There’s currently a gap in performance analysis tooling for web applications, especially for Ember Applications. Developers do not have a mechansim for quickly and easily understanding the performance consequences around code changes, and are not automatically alerted in the event of a performance regression. Regressions need to be automatically uncovered and reported, including the performance effect and actionable data that allows developers to dig deeper and address them.
+There’s currently a gap in performance analysis tooling for web applications, which for example is especially true for Ember Applications. Developers today struggle to quickly find and analyze performance regressions which would empower them to make quick, iterative changes within their local development environment. Regressions need to be automatically uncovered, propagated and reported with both regression size and actionable data that explains the problem to maximize value and usefulness for the developer.
 
-A single trace varies far too much to reliably and conclusively detect regressions around small changes to an app unless the effect size is very large. Multi-sample statistical tests require sample independence, which is difficult to obtain due to Chrome's v8 caching.
+The current approach for performance analysis for developers is running a single trace using Chrome Developer Tools. The issue however, is a single trace varies far too much to detect regressions in small changes to an app unless the effect size is very large. Additionally, most statistical tests assume sample independence which given caching like Chrome's v8 caching is quite difficult to meet.
 
 TracerBench has been greatly inspired by the Chromium benchmark tool [Telemetry](https://github.com/catapult-project/catapult/blob/master/telemetry/docs/run_benchmarks_locally.md).
 
