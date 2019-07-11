@@ -1,6 +1,6 @@
 {
   "name": "tracerbench",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "CLI for Tracerbench",
   "keywords": [
     "oclif"
@@ -25,7 +25,7 @@
     "@oclif/command": "^1.5.8",
     "@oclif/config": "^1.12.0",
     "@oclif/plugin-help": "^2.1.4",
-    "@tracerbench/core": "^2.0.0",
+    "@tracerbench/core": "^2.0.1",
     "chalk": "^2.4.2",
     "cli-table3": "^0.5.1",
     "d3-array": "^2.0.3",
