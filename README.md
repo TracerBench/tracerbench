@@ -1,6 +1,8 @@
 # TracerBench: Automated Chrome Tracing For Benchmarking
 
 [![Build Status](https://travis-ci.org/TracerBench/tracerbench.svg?branch=master)](https://travis-ci.org/TracerBench/tracerbench)
+[![Version](https://img.shields.io/npm/v/tracerbench.svg)](https://npmjs.org/package/tracerbench)
+[![License](https://img.shields.io/npm/l/tracerbench.svg)](https://github.com/TracerBench/tracerbench/blob/master/package.json)
 
 As it pertains to data analysis, intuition almost always leads us astray. We see patterns in random data and jump to unwarranted conclusions. We need a guide. One that uses statistical rigor so that we can make valid conclusions based upon the data. TracerBench aims to be that guide. 
 
