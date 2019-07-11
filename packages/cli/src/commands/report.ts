@@ -1,11 +1,12 @@
 import * as fs from 'fs-extra';
 import { join, resolve } from 'path';
-import * as urlLib from 'url';
 
 import { Command } from '@oclif/command';
 import { IConfig } from '@oclif/config';
 import { ITBConfig, defaultFlagArgs, getConfig } from '../command-config';
-import createConsumeableHTML, { ITracerBenchTraceResult } from '../helpers/create-consumable-html';
+import createConsumeableHTML, {
+  ITracerBenchTraceResult,
+} from '../helpers/create-consumable-html';
 import { tbResultsFolder, config } from '../helpers/flags';
 import printToPDF from '../helpers/print-to-pdf';
 
@@ -89,7 +90,7 @@ export default class Report extends Command {
     renderedHTML = createConsumeableHTML(
       controlData,
       experimentData,
-      this.parsedConfig.config
+      this.parsedConfig
     );
     if (!fs.existsSync(tbResultsFolder)) {
       fs.mkdirSync(tbResultsFolder, { recursive: true });
@@ -102,14 +103,14 @@ export default class Report extends Command {
 
     absOutputPath = resolve(join(tbResultsFolder + `/${outputFileName}.pdf`));
 
-    await printToPDF(urlLib.pathToFileURL(absPathToHTML).toString(), absOutputPath);
+    await printToPDF(`file://${absPathToHTML}`, absOutputPath);
 
-    this.log(`The PDF and HTML reports are available here: ${absPathToHTML} and here: ${absOutputPath}`);
+    this.log(
+      `The PDF and HTML reports are available here: ${absPathToHTML} and here: ${absOutputPath}`
+    );
   }
   private async parseFlags() {
-    const {
-      tbResultsFolder
-    } = (this.parsedConfig as unknown) as IReportFlags;
+    const { tbResultsFolder } = (this.parsedConfig as unknown) as IReportFlags;
 
     // if the folder for the tracerbench results file
     // does not exist then create it
