@@ -6,11 +6,28 @@
   <meta name="description" content="">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   {{!-- TRACERBENCH-CHART-BOOTSTRAP.CSS --}}
+  <style>
+    @media print {
+      .page-break {
+        page-break-before: always;
+      }
+    }
+
+    @media screen {
+      .page-break {
+        margin-bottom: 10em;
+      }
+    }
+
+    .full-width-chart {
+      width: 100%;
+    }
+  </style>
 </head>
 
 <body>
   <div class="container">
-    <div class="row mb-3">
+    <div class="row">
       <div class="col">
         <h1>TracerBench: Boxplot Results</h1>
         <p>{{reportTitles.plotTitle}}</p>
@@ -46,7 +63,7 @@
     </div>
     <div class="row">
       <div class="col">
-        <canvas id="{{analysisForPhase.identifierHash}}-chart"></canvas>
+        <canvas id="{{analysisForPhase.identifierHash}}-chart" class="full-width-chart"></canvas>
       </div>
     </div>
     <div class="row">
@@ -54,6 +71,15 @@
         <hr>
       </div>
     </div>
+    {{#if analysisForPhase.shouldPageBreak}}
+      <div class="row">
+        <div class="col">
+          <canvas id="all-in-one-chart" class="full-width-chart"></canvas>
+        </div>
+      </div>
+
+      <div class="page-break"></div>
+    {{/if}}
     {{/each}}
     <div class="row mt-5">
       <div class="col">
@@ -103,10 +129,10 @@
           }]
         },
         options: {
-          responsive: true,
-            legend: {
+          aspectRatio: 3,
+          legend: {
             display: true,
-              position: 'top'
+            position: 'top'
           },
           title: {
             display: true,
@@ -124,6 +150,52 @@
 
       window['{{analysisForPhase.phase}}'] = new Chart(canvasFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}}, optionFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}});
     {{/each}}
+
+    function randomValues(count, min, max) {
+      const delta = max - min;
+      return Array.from({length: count}).map(() => Math.random() * delta + min);
+    }
+
+    const boxplotData = {
+      // define label tree
+      labels: {{{cumulativeChartData.categories}}},
+      datasets: [{
+        label: '{{reportTitles.servers.[0].name}}',
+        borderColor: '#0A2D46',
+        backgroundColor: 'rgba(199, 241, 106, 0.50)',
+        borderWidth: 2,
+        outlierColor: '#1884E4',
+        itemRadius: 2,
+        itemBackgroundColor: '#1884E4',
+        data: {{cumulativeChartData.controlData}}
+      }, {
+        label: '{{reportTitles.servers.[1].name}}',
+        borderColor: '#0A2D46',
+        backgroundColor: 'rgba(56, 210, 211, 0.50)',
+        borderWidth: 2,
+        outlierColor: '#1884E4',
+        itemRadius: 2,
+        itemBackgroundColor: '#1884E4',
+        data: {{cumulativeChartData.experimentData}}
+      }]
+    };
+
+      const ctx = document.getElementById("all-in-one-chart").getContext("2d");
+      window.myBar = new Chart(ctx, {
+        type: 'boxplot',
+        data: boxplotData,
+        options: {
+          aspectRatio: 1.5,
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: true,
+            text: 'Sub Phases of Duration (when they finished happening in the timeline)'
+          }
+        }
+      });
+
   </script>
 </body>
 

@@ -37,6 +37,7 @@ interface HTMLSectionRenderData {
   controlSamples: string;
   experimentSamples: string;
   servers: any;
+  shouldPageBreak: boolean;
 }
 
 const PAGE_LOAD_TIME = 'duration';
@@ -44,7 +45,7 @@ const PAGE_LOAD_TIME = 'duration';
 const CHART_CSS_PATH = path.join(__dirname, '../static/chart-bootstrap.css');
 const CHART_JS_PATH = path.join(
   __dirname,
-  '../static/chartjs-2.8.0-chart.min.js'
+  '../static/chartjs-2.8.0-chart.min.js',
 );
 const REPORT_PATH = path.join(__dirname, '../static/report-template.hbs');
 
@@ -55,7 +56,7 @@ let REPORT_TEMPLATE_RAW = readFileSync(REPORT_PATH, 'utf8');
 REPORT_TEMPLATE_RAW = REPORT_TEMPLATE_RAW.toString()
   .replace(
     '{{!-- TRACERBENCH-CHART-BOOTSTRAP.CSS --}}',
-    `<style>${CHART_CSS}</style>`
+    `<style>${CHART_CSS}</style>`,
   )
   .replace('{{!-- TRACERBENCH-CHART-JS --}}', `<script>${CHART_JS}</script>`);
 
@@ -64,15 +65,16 @@ REPORT_TEMPLATE_RAW = REPORT_TEMPLATE_RAW.toString()
  * Extract the phases and page load time latency into sorted buckets by phase
  *
  * @param samples - Array of "sample" objects
+ * @param valueGen - Calls this function to extract the value from the phase. A "phase" is passed containing duration and start
  */
-export function bucketPhaseValues(samples: Sample[]): { [key: string]: number[] } {
+export function bucketPhaseValues(samples: Sample[], valueGen: any = (a: any) => a.duration): { [key: string]: number[] } {
   const buckets: { [key: string]: number[] } = { [PAGE_LOAD_TIME]: [] };
 
   samples.forEach((sample: Sample) => {
     buckets[PAGE_LOAD_TIME].push(sample[PAGE_LOAD_TIME]);
     sample.phases.forEach(phaseData => {
       const bucket = buckets[phaseData.phase] || [];
-      bucket.push(phaseData.duration);
+      bucket.push(valueGen(phaseData));
       buckets[phaseData.phase] = bucket;
     });
   });
@@ -106,10 +108,29 @@ export function resolveTitles(tbConfig: Partial<ITBConfig>) {
   return reportTitles;
 }
 
+/**
+ * Generate the HTML render data for the cumulative chart
+ *
+ * @param controlData - Samples of the benchmark of control server
+ * @param experimentData - Samples of the benchmark experiment server
+ */
+export function buildCumulativeChartData(controlData: ITracerBenchTraceResult, experimentData: ITracerBenchTraceResult) {
+  const cumulativeValueFunc = (a: any) => a.start + a.duration;
+  const valuesByPhaseControl = bucketPhaseValues(controlData.samples, cumulativeValueFunc);
+  const valuesByPhaseExperiment = bucketPhaseValues(experimentData.samples, cumulativeValueFunc);
+  const phases = Object.keys(valuesByPhaseControl).filter((k) => k !== PAGE_LOAD_TIME);
+
+  return {
+    categories: JSON.stringify(phases),
+    controlData: JSON.stringify(phases.map((k) => valuesByPhaseControl[k])),
+    experimentData: JSON.stringify(phases.map((k) => valuesByPhaseExperiment[k])),
+  };
+}
+
 export default function createConsumeableHTML(
   controlData: ITracerBenchTraceResult,
   experimentData: ITracerBenchTraceResult,
-  tbConfig: ITBConfig
+  tbConfig: ITBConfig,
 ): string {
   const valuesByPhaseControl = bucketPhaseValues(controlData.samples);
   const valuesByPhaseExperiment = bucketPhaseValues(experimentData.samples);
@@ -140,6 +161,7 @@ export default function createConsumeableHTML(
       ciMax: stats.confidenceInterval.max,
       hlDiff: stats.estimator,
       servers: reportTitles.servers,
+      shouldPageBreak: phase === 'duration',
     });
   });
 
@@ -150,6 +172,7 @@ export default function createConsumeableHTML(
   const template = Handlebars.compile(REPORT_TEMPLATE_RAW);
 
   return template({
+    cumulativeChartData: buildCumulativeChartData(controlData, experimentData),
     reportTitles,
     sectionFormattedData,
     sectionFormattedDataJson: JSON.stringify(sectionFormattedData),
