@@ -1,5 +1,6 @@
 import * as Handlebars from 'handlebars';
 import * as path from 'path';
+import { convertMicrosecondsToMS } from './utils';
 import { Stats } from './statistics/stats';
 import { readFileSync } from 'fs-extra';
 import { defaultFlagArgs } from '../command-config/default-flag-args';
@@ -67,11 +68,11 @@ REPORT_TEMPLATE_RAW = REPORT_TEMPLATE_RAW.toString()
  * @param samples - Array of "sample" objects
  * @param valueGen - Calls this function to extract the value from the phase. A "phase" is passed containing duration and start
  */
-export function bucketPhaseValues(samples: Sample[], valueGen: any = (a: any) => a.duration): { [key: string]: number[] } {
+export function bucketPhaseValues(samples: Sample[], valueGen: any = (a: any) => convertMicrosecondsToMS(a.duration)): { [key: string]: number[] } {
   const buckets: { [key: string]: number[] } = { [PAGE_LOAD_TIME]: [] };
 
   samples.forEach((sample: Sample) => {
-    buckets[PAGE_LOAD_TIME].push(sample[PAGE_LOAD_TIME]);
+    buckets[PAGE_LOAD_TIME].push(convertMicrosecondsToMS(sample[PAGE_LOAD_TIME]));
     sample.phases.forEach(phaseData => {
       const bucket = buckets[phaseData.phase] || [];
       bucket.push(valueGen(phaseData));
@@ -115,7 +116,7 @@ export function resolveTitles(tbConfig: Partial<ITBConfig>) {
  * @param experimentData - Samples of the benchmark experiment server
  */
 export function buildCumulativeChartData(controlData: ITracerBenchTraceResult, experimentData: ITracerBenchTraceResult) {
-  const cumulativeValueFunc = (a: any) => a.start + a.duration;
+  const cumulativeValueFunc = (a: any) => convertMicrosecondsToMS(a.start + a.duration);
   const valuesByPhaseControl = bucketPhaseValues(controlData.samples, cumulativeValueFunc);
   const valuesByPhaseExperiment = bucketPhaseValues(experimentData.samples, cumulativeValueFunc);
   const phases = Object.keys(valuesByPhaseControl).filter((k) => k !== PAGE_LOAD_TIME);
