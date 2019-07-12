@@ -17,6 +17,11 @@ import deviceSettings from './simulate-device-options';
 ! and type checking in all circumstances
 */
 
+export const runtimeStats = flags.boolean({
+  description: `Compare command output deep-dive stats during run.`,
+  default: false
+});
+
 export const servers = flags.build({
   description: `Optional servers config for A/B testing with har-remix dist slicing with socks proxy. All paths within this config are relative.`,
 });
@@ -60,14 +65,6 @@ export const regressionThreshold = flags.build({
   description: `Regression threshold in negative milliseconds. eg -100ms`,
   parse: (ms): number => {
     return parseInt(ms, 10);
-  },
-});
-
-export const runtimeStats = flags.build({
-  default: () => getDefaultValue('runtimeStats'),
-  description: `Compare command output stats during run`,
-  parse: runtimeStats => {
-    return runtimeStats === 'true';
   },
 });
 

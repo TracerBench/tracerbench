@@ -242,11 +242,7 @@
             "type": "string"
         },
         "runtimeStats": {
-            "enum": [
-                "false",
-                "true"
-            ],
-            "type": "string"
+            "type": "boolean"
         },
         "servers": {
             "additionalItems": {

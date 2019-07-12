@@ -60,7 +60,6 @@ export const defaultFlagArgs: ITBConfig = {
   iterations: 1,
   tracingLocationSearch: '?tracing',
   network: 'none',
-  runtimeStats: 'false',
   emulateDevice: '',
   emulateDeviceOrientation: 'vertical',
   regressionThreshold: '0ms',
