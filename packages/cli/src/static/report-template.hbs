@@ -11,6 +11,13 @@
       .page-break {
         page-break-before: always;
       }
+      .print-only {
+        display: inherit;
+      }
+
+      .display-only {
+        display: none;
+      }
     }
 
     @media screen {
@@ -22,6 +29,14 @@
     .full-width-chart {
       width: 100%;
     }
+
+    .print-only {
+      display: none;
+    }
+
+    .display-only {
+      display: inherit;
+    }
   </style>
 </head>
 
@@ -31,22 +46,25 @@
       <div class="col">
         <h1>TracerBench: Boxplot Results</h1>
         <p>{{reportTitles.plotTitle}}</p>
+        <hr>
       </div>
     </div>
     {{#each sectionFormattedData as |analysisForPhase|}}
     <div class="row">
       <div class="col">
-        <h1>{{analysisForPhase.phase}}</h1>
-        {{#if analysisForPhase.isSignificant}}
-        <div class="alert alert-warning" style="color: #fff; background-color:#1884E4;border-color: #1884E4;"
-          role="alert">
-          Difference is Significant
-        </div>
-        {{else}}
-        <div class="alert alert-secondary" role="alert">
-          Difference is Not Significant
-        </div>
-        {{/if}}
+        <h2>{{analysisForPhase.phase}}
+          <small class="h5">
+            {{#if analysisForPhase.isSignificant}}
+              {{#if (isFaster analysisForPhase)}}
+                <span class="text-success font-weight-bolder">Faster</span>
+              {{else}}
+                <span class="text-danger font-weight-bolder">Slower</span>
+              {{/if}}
+            {{else}}
+              <span class="text-muted">No Difference</span>
+            {{/if}}
+          </small>
+        </h2>
         <p><i>Wilcoxon rank-sum test</i> indicated that
           {{#if analysisForPhase.isSignificant}}
           there is sufficient evidence that there is a difference between the control and experiment.
@@ -74,11 +92,24 @@
     {{#if analysisForPhase.shouldPageBreak}}
       <div class="row">
         <div class="col">
+          <h3>Sub Phases of Duration</h3>
+          <p>The chart below shows the finish times of the sub phases for experiment and control. It gives a high level view on what also changed. <span class="print-only">You can view more details about the phases starting from page 2 on.</span><span class="display-only">You can view more details about the phases in the sections below.</span>
+          </p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
           <canvas id="all-in-one-chart" class="full-width-chart"></canvas>
         </div>
       </div>
 
       <div class="page-break"></div>
+      <div class="row">
+        <div class="col">
+          <h1>Sub Phases in Detail</h1>
+          <hr>
+        </div>
+      </div>
     {{/if}}
     {{/each}}
     <div class="row mt-5">
@@ -107,7 +138,7 @@
       const optionFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}} = {
         type: 'boxplot',
           data: {
-            labels: ['{{analysisForPhase.phase}}'],
+            labels: ['{{analysisForPhase.phase}} (Lower is Better)'],
             datasets: [{
               label: '{{analysisForPhase.servers.[0].name}}',
               borderColor: '#0A2D46',
@@ -193,7 +224,7 @@
             position: 'top',
           },
           title: {
-            display: true,
+            display: false,
             text: 'Sub Phases of Duration (when they finished happening in the timeline)'
           },
           scales: {

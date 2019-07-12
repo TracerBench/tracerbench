@@ -68,11 +68,11 @@ REPORT_TEMPLATE_RAW = REPORT_TEMPLATE_RAW.toString()
  * @param samples - Array of "sample" objects
  * @param valueGen - Calls this function to extract the value from the phase. A "phase" is passed containing duration and start
  */
-export function bucketPhaseValues(samples: Sample[], valueGen: any = (a: any) => convertMicrosecondsToMS(a.duration)): { [key: string]: number[] } {
+export function bucketPhaseValues(samples: Sample[], valueGen: any = (a: any) => a.duration): { [key: string]: number[] } {
   const buckets: { [key: string]: number[] } = { [PAGE_LOAD_TIME]: [] };
 
   samples.forEach((sample: Sample) => {
-    buckets[PAGE_LOAD_TIME].push(convertMicrosecondsToMS(sample[PAGE_LOAD_TIME]));
+    buckets[PAGE_LOAD_TIME].push(sample[PAGE_LOAD_TIME]);
     sample.phases.forEach(phaseData => {
       const bucket = buckets[phaseData.phase] || [];
       bucket.push(valueGen(phaseData));
@@ -110,7 +110,7 @@ export function resolveTitles(tbConfig: Partial<ITBConfig>) {
 }
 
 /**
- * Generate the HTML render data for the cumulative chart
+ * Generate the HTML render data for the cumulative chart. Ensure to convert to milliseconds for presentation
  *
  * @param controlData - Samples of the benchmark of control server
  * @param experimentData - Samples of the benchmark experiment server
@@ -156,8 +156,9 @@ export default function createConsumeableHTML(
       phase,
       identifierHash: phase,
       isSignificant: !isNotSignificant,
-      controlSamples: JSON.stringify(controlValues),
-      experimentSamples: JSON.stringify(experimentValues),
+      // Ensure to convert to milliseconds for presentation
+      controlSamples: JSON.stringify(controlValues.map((val) => convertMicrosecondsToMS(val))),
+      experimentSamples: JSON.stringify(experimentValues.map((val) => convertMicrosecondsToMS(val))),
       ciMin: stats.confidenceInterval.min,
       ciMax: stats.confidenceInterval.max,
       hlDiff: stats.estimator,
@@ -168,6 +169,10 @@ export default function createConsumeableHTML(
 
   Handlebars.registerHelper('toCamel', val => {
     return val.replace(/-([a-z])/g, (g: string) => g[1].toUpperCase());
+  });
+
+  Handlebars.registerHelper('isFaster', analysis => {
+   return analysis.hlDiff < 0;
   });
 
   const template = Handlebars.compile(REPORT_TEMPLATE_RAW);
