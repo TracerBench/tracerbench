@@ -11,7 +11,7 @@ export interface ITBConfig {
   plotTitle?: string;
   methods?: string;
   cpuThrottleRate?: number | string;
-  fidelity?: 'test' | 'low' | 'medium' | 'high';
+  fidelity?: 'test' | 'low' | 'medium' | 'high' | number;
   report?: string;
   event?: string;
   markers?: string | string[] | IMarker[] | PerformanceTimingMark[];

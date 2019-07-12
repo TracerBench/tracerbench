@@ -19,7 +19,7 @@ import deviceSettings from './simulate-device-options';
 
 export const runtimeStats = flags.boolean({
   description: `Compare command output deep-dive stats during run.`,
-  default: false
+  default: false,
 });
 
 export const servers = flags.build({
@@ -115,9 +115,24 @@ export const cpuThrottleRate = flags.build({
 export const fidelity = flags.build({
   default: () => getDefaultValue('fidelity'),
   description: `Directly correlates to the number of samples per trace. High is the longest trace time.`,
-  options: Object.keys(fidelityLookup),
-  parse: (fidelity: string): number => {
-    return parseInt((fidelityLookup as any)[fidelity], 10);
+  parse: (fidelity: string | number): number => {
+    const warnMessage = `Expected --fidelity=${fidelity} to be either a number or one of: ${Object.keys(
+      fidelityLookup
+    )}. Defaulting to ${getDefaultValue('fidelity')}`;
+
+    if (typeof fidelity === 'string') {
+      // integers are coming as string from oclif
+      if (Number.isInteger(parseInt(fidelity, 10))) {
+        return parseInt(fidelity, 10);
+      }
+      // is a string and is either test/low/med/high
+      if (Object.keys(fidelityLookup).includes(fidelity)) {
+        return parseInt((fidelityLookup as any)[fidelity], 10);
+      } else {
+        console.warn(`${warnMessage}`);
+      }
+    }
+    return fidelity === 'number' ? fidelity : getDefaultValue('fidelity');
   },
 });
 

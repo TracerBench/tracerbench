@@ -230,7 +230,7 @@ OPTIONS
   --experimentURL=experimentURL
       (required) [default: http://localhost:8001/] Experiment URL to visit for compare command
 
-  --fidelity=test|low|medium|high
+  --fidelity=fidelity
       (required) [default: low] Directly correlates to the number of samples per trace. High is the longest trace time.
 
   --headless
