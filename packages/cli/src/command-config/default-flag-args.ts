@@ -4,7 +4,7 @@ export const fidelityLookup = {
   test: 2,
   low: 20,
   medium: 30,
-  high: 40,
+  high: 50,
 };
 
 export type PerformanceTimingMark = keyof PerformanceNavigationTiming;
@@ -66,6 +66,7 @@ export const defaultFlagArgs: ITBConfig = {
 };
 
 // specify with --headless flag
+// ! --disable-gpu might cause issues with RHEL7
 export const headlessFlags = [
   '--headless',
   '--disable-gpu',

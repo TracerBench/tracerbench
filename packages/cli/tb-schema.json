@@ -116,13 +116,20 @@
             "type": "string"
         },
         "fidelity": {
-            "enum": [
-                "high",
-                "low",
-                "medium",
-                "test"
-            ],
-            "type": "string"
+            "anyOf": [
+                {
+                    "enum": [
+                        "high",
+                        "low",
+                        "medium",
+                        "test"
+                    ],
+                    "type": "string"
+                },
+                {
+                    "type": "number"
+                }
+            ]
         },
         "filter": {
             "type": "string"
