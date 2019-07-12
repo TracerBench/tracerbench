@@ -27,7 +27,7 @@ export interface ITBConfig {
   browserArgs?: string[];
   iterations?: number | string;
   tracingLocationSearch?: string;
-  runtimeStats?: 'true' | 'false';
+  runtimeStats?: boolean;
   emulateDevice?: string;
   emulateDeviceOrientation?: string;
   socksPorts?: [number, number];

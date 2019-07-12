@@ -251,8 +251,8 @@ OPTIONS
   --report
       Generate a PDF report directly after running the compare command.
 
-  --runtimeStats=runtimeStats
-      (required) [default: false] Compare command output stats during run
+  --runtimeStats
+      Compare command output deep-dive stats during run.
 
   --socksPorts=socksPorts
       Specify a socks proxy port as browser option for control and experiment

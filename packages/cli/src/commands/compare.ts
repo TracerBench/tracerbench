@@ -84,12 +84,12 @@ export default class Compare extends Command {
     controlURL: controlURL({ required: true }),
     experimentURL: experimentURL({ required: true }),
     tracingLocationSearch: tracingLocationSearch({ required: true }),
-    runtimeStats: runtimeStats({ required: true }),
     emulateDevice: emulateDevice(),
     emulateDeviceOrientation: emulateDeviceOrientation(),
     socksPorts: socksPorts(),
     regressionThreshold: regressionThreshold(),
     config: config(),
+    runtimeStats,
     report,
     json,
     debug,
@@ -248,7 +248,9 @@ export default class Compare extends Command {
     IInitialRenderBenchmarkParams,
     IInitialRenderBenchmarkParams
   ] {
-    const delay = 100;
+    // delay in ms times the number of samples. this improves variance.
+    // eg 100 total samples X 200ms per sample = 20 seconds total added to the trace time
+    const delay = 200;
     const controlBrowser = {
       additionalArguments: this.compareFlags.browserArgs,
     };
