@@ -2,20 +2,12 @@
   "name": "tracerbench",
   "version": "2.0.1",
   "description": "CLI for Tracerbench",
-  "keywords": [
-    "oclif"
-  ],
+  "keywords": ["oclif"],
   "homepage": "https://github.com/TracerBench/tracerbench",
   "bugs": "https://github.com/TracerBench/tracerbench/issues",
   "license": "BSD-2-Clause",
   "author": "Kris Selden @krisselden",
-  "files": [
-    "bin",
-    "dist",
-    "src",
-    "oclif.manifest.json",
-    "tb-schema.json"
-  ],
+  "files": ["bin", "dist", "src", "oclif.manifest.json", "tb-schema.json"],
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "bin": {
@@ -30,7 +22,7 @@
     "cli-table3": "^0.5.1",
     "d3-array": "^2.0.3",
     "d3-scale": "^3.0.0",
-    "devtools-protocol": "^0.0.670852",
+    "devtools-protocol": "0.0.665395",
     "execa": "^2.0.3",
     "fs-extra": "^7.0.1",
     "handlebars": "^4.1.2",
@@ -76,9 +68,7 @@
   "oclif": {
     "commands": "./dist/src/commands",
     "bin": "tracerbench",
-    "plugins": [
-      "@oclif/plugin-help"
-    ]
+    "plugins": ["@oclif/plugin-help"]
   },
   "scripts": {
     "lint": "tslint -p tsconfig.json",
