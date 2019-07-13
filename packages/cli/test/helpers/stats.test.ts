@@ -60,7 +60,7 @@ const experiment = [
 const name = 'stats-test';
 const stats = new Stats({ control, experiment, name });
 
-// ! stats testing a regression experiment
+// stats testing a regression experiment
 describe('stats', () => {
   it(`name()`, () => {
     expect(stats.name).to.equal('stats-test');
@@ -69,7 +69,6 @@ describe('stats', () => {
   it(`confidenceInterval()`, () => {
     expect(stats.confidenceInterval.min).to.equal(-1081);
     expect(stats.confidenceInterval.max).to.equal(-1078);
-    expect(stats.confidenceInterval.pVal).to.equal(0.05);
     expect(stats.confidenceInterval.isSig).to.equal('Yes');
   });
 

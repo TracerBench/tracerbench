@@ -30,7 +30,6 @@ export class Stats {
     min: number;
     max: number;
     isSig: 'Yes' | 'No';
-    pVal: number;
   };
   public readonly sevenFigureSummary: {
     control: ISevenFigureSummary;
@@ -85,9 +84,9 @@ export class Stats {
   private getConfidenceInterval(
     control: number[],
     experiment: number[]
-  ): { min: number; max: number; isSig: 'Yes' | 'No'; pVal: number } {
-    const pVal = 0.05;
-    const interval = 1 - pVal;
+  ): { min: number; max: number; isSig: 'Yes' | 'No' } {
+    const sigVal = 0.05;
+    const interval = 1 - sigVal;
     const ci = confidenceInterval(control, experiment, interval);
     const isSig =
       (ci[0] < 0 && 0 < ci[1]) ||
@@ -99,7 +98,6 @@ export class Stats {
       min: Math.round(Math.ceil(ci[0] * 100) / 100),
       max: Math.round(Math.ceil(ci[1] * 100) / 100),
       isSig,
-      pVal,
     };
   }
   private getHodgesLehmann(control: any[], experiment: any[]) {
@@ -110,7 +108,6 @@ export class Stats {
     return { min: Math.min(...a), max: Math.max(...a) };
   }
   private getHistogram(range: { min: number; max: number }, a: number[]) {
-    a.sort((a, b) => a - b);
     const x: any = scaleLinear()
       .domain([range.min, range.max])
       .range([range.min, range.max]);
