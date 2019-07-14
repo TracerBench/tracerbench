@@ -1,0 +1,51 @@
+<script>
+  const canvasFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}} = document.getElementById('{{analysisForPhase.identifierHash}}-chart').getContext('2d');
+  const optionFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}} = {
+    type: 'boxplot',
+    data: {
+      labels: ['{{analysisForPhase.phase}} (lower is better)'],
+      datasets: [{
+        label: '{{analysisForPhase.servers.[0].name}}',
+        borderColor: '#0A2D46',
+        backgroundColor: 'rgba(199, 241, 106, 0.50)',
+        borderWidth: 2,
+        outlierColor: '#1884E4',
+        itemRadius: 2,
+        itemBackgroundColor: '#1884E4',
+        data: [{{{analysisForPhase.controlSamples}}}]
+      }, {
+        label: '{{analysisForPhase.servers.[1].name}}',
+        borderColor: '#0A2D46',
+        backgroundColor: 'rgba(56, 210, 211, 0.50)',
+        borderWidth: 2,
+        outlierColor: '#1884E4',
+        itemRadius: 2,
+        itemBackgroundColor: '#1884E4',
+        data: [{{{analysisForPhase.experimentSamples}}}]
+      }]
+    },
+    options: {
+      aspectRatio: 3,
+      legend: {
+        display: true,
+        position: 'top'
+      },
+      scales: {
+        xAxes: [{
+          // Specific to Bar Controller
+          categoryPercentage: 0.9,
+          barPercentage: 0.8
+        }],
+        yAxes: [{
+          ticks: {
+            callback: function(value) {
+              return `${value} ms`;
+            }
+          }
+        }]
+      }
+    }
+  };
+
+  window['{{analysisForPhase.phase}}'] = new Chart(canvasFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}}, optionFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}});
+</script>

@@ -38,7 +38,10 @@ interface HTMLSectionRenderData {
   controlSamples: string;
   experimentSamples: string;
   servers: any;
-  shouldPageBreak: boolean;
+}
+
+interface ValuesByPhase {
+ [key: string]: number[]
 }
 
 const PAGE_LOAD_TIME = 'duration';
@@ -49,9 +52,13 @@ const CHART_JS_PATH = path.join(
   '../static/chartjs-2.8.0-chart.min.js',
 );
 const REPORT_PATH = path.join(__dirname, '../static/report-template.hbs');
+const PHASE_DETAIL_PARTIAL = path.join(__dirname, '../static/phase-detail-partial.hbs');
+const PHASE_CHART_JS_PARTIAL = path.join(__dirname, '../static/phase-chart-js-partial.hbs');
 
 const CHART_CSS = readFileSync(CHART_CSS_PATH, 'utf8');
 const CHART_JS = readFileSync(CHART_JS_PATH, 'utf8');
+const PHASE_DETAIL_TEMPLATE_RAW = readFileSync(PHASE_DETAIL_PARTIAL, 'utf8');
+const PHASE_CHART_JS_TEMPLATE_RAW = readFileSync(PHASE_CHART_JS_PARTIAL, 'utf8');
 let REPORT_TEMPLATE_RAW = readFileSync(REPORT_PATH, 'utf8');
 
 REPORT_TEMPLATE_RAW = REPORT_TEMPLATE_RAW.toString()
@@ -61,6 +68,29 @@ REPORT_TEMPLATE_RAW = REPORT_TEMPLATE_RAW.toString()
   )
   .replace('{{!-- TRACERBENCH-CHART-JS --}}', `<script>${CHART_JS}</script>`);
 
+Handlebars.registerPartial('phaseChartJSSection', PHASE_CHART_JS_TEMPLATE_RAW);
+Handlebars.registerPartial('phaseDetailSection', PHASE_DETAIL_TEMPLATE_RAW);
+/**
+ * Camel case helper
+ */
+Handlebars.registerHelper('toCamel', val => {
+  return val.replace(/-([a-z])/g, (g: string) => g[1].toUpperCase());
+});
+
+/**
+ * Negative means slower
+ */
+Handlebars.registerHelper('isFaster', analysis => {
+  return analysis.hlDiff > 0;
+});
+
+/**
+ * Absolute number helper
+ */
+Handlebars.registerHelper('abs', num => {
+  return Math.abs(num);
+});
+
 
 /**
  * Extract the phases and page load time latency into sorted buckets by phase
@@ -68,7 +98,7 @@ REPORT_TEMPLATE_RAW = REPORT_TEMPLATE_RAW.toString()
  * @param samples - Array of "sample" objects
  * @param valueGen - Calls this function to extract the value from the phase. A "phase" is passed containing duration and start
  */
-export function bucketPhaseValues(samples: Sample[], valueGen: any = (a: any) => a.duration): { [key: string]: number[] } {
+export function bucketPhaseValues(samples: Sample[], valueGen: any = (a: any) => a.duration): ValuesByPhase {
   const buckets: { [key: string]: number[] } = { [PAGE_LOAD_TIME]: [] };
 
   samples.forEach((sample: Sample) => {
@@ -135,6 +165,63 @@ export function buildCumulativeChartData(controlData: ITracerBenchTraceResult, e
   };
 }
 
+/**
+ * Call the stats helper functions to generate the confidence interval and Hodges–Lehmann estimator. Format the data into
+ * HTMLSectionRenderData structure.
+ *
+ * @param controlValues - Values for the control for the phase
+ * @param experimentValues - Values for the experiment for the phase
+ * @param phaseName - Name of the phase the values represent
+ */
+export function formatPhaseData(controlValues: number[], experimentValues: number[], phaseName: string): Partial<HTMLSectionRenderData> {
+  const stats = new Stats({
+    control: controlValues,
+    experiment: experimentValues,
+    name: 'output',
+  });
+  const isNotSignificant =
+    (stats.confidenceInterval.min < 0 && 0 < stats.confidenceInterval.max) ||
+    (stats.confidenceInterval.min > 0 && 0 > stats.confidenceInterval.max) ||
+    (stats.confidenceInterval.min === 0 && stats.confidenceInterval.max === 0);
+
+  return {
+    phase: phaseName,
+    identifierHash: phaseName,
+    isSignificant: !isNotSignificant,
+    // Ensure to convert to milliseconds for presentation
+    controlSamples: JSON.stringify(controlValues.map((val) => convertMicrosecondsToMS(val))),
+    experimentSamples: JSON.stringify(experimentValues.map((val) => convertMicrosecondsToMS(val))),
+    ciMin: stats.confidenceInterval.min,
+    ciMax: stats.confidenceInterval.max,
+    hlDiff: stats.estimator
+  };
+}
+
+/**
+ * Prioritize the phase that has the largest difference in regression first.
+ */
+export function phaseSorter(a: HTMLSectionRenderData, b: HTMLSectionRenderData): number {
+  const A_ON_TOP = -1;
+  const B_ON_TOP = 1;
+
+  if (a.isSignificant) {
+    if (!b.isSignificant) {
+      return A_ON_TOP;
+    } else {
+      // If both are significant prefer slowest one
+      return a.hlDiff - b.hlDiff;
+    }
+  }
+
+  if (b.isSignificant) {
+    if (!a.isSignificant) {
+      return B_ON_TOP;
+    }
+  }
+
+  return 0;
+}
+
 export default function createConsumeableHTML(
   controlData: ITracerBenchTraceResult,
   experimentData: ITracerBenchTraceResult,
@@ -142,62 +229,30 @@ export default function createConsumeableHTML(
 ): string {
   const valuesByPhaseControl = bucketPhaseValues(controlData.samples);
   const valuesByPhaseExperiment = bucketPhaseValues(experimentData.samples);
-  const phases = Object.keys(valuesByPhaseControl);
-  const sectionFormattedData: HTMLSectionRenderData[] = [];
+  const subPhases = Object.keys(valuesByPhaseControl).filter((k) => k !== PAGE_LOAD_TIME);
+  const subPhaseSections: HTMLSectionRenderData[] = [];
   const reportTitles = resolveTitles(tbConfig);
+  const durationSection = formatPhaseData(valuesByPhaseControl[PAGE_LOAD_TIME], valuesByPhaseExperiment[PAGE_LOAD_TIME], PAGE_LOAD_TIME);
 
-  phases.forEach(phase => {
+  durationSection.servers = reportTitles.servers;
+
+  subPhases.forEach(phase => {
     const controlValues = valuesByPhaseControl[phase];
     const experimentValues = valuesByPhaseExperiment[phase];
-    const stats = new Stats({
-      control: controlValues,
-      experiment: experimentValues,
-      name: 'output',
-    });
-    const isNotSignificant =
-      (stats.confidenceInterval.min < 0 && 0 < stats.confidenceInterval.max) ||
-      (stats.confidenceInterval.min > 0 && 0 > stats.confidenceInterval.max) ||
-      (stats.confidenceInterval.min === 0 && stats.confidenceInterval.max === 0);
-
-    sectionFormattedData.push({
-      phase,
-      identifierHash: phase,
-      isSignificant: !isNotSignificant,
-      // Ensure to convert to milliseconds for presentation
-      controlSamples: JSON.stringify(controlValues.map((val) => convertMicrosecondsToMS(val))),
-      experimentSamples: JSON.stringify(experimentValues.map((val) => convertMicrosecondsToMS(val))),
-      ciMin: stats.confidenceInterval.min,
-      ciMax: stats.confidenceInterval.max,
-      hlDiff: stats.estimator,
-      servers: reportTitles.servers,
-      shouldPageBreak: phase === 'duration',
-    });
+    const renderDataForPhase = formatPhaseData(controlValues, experimentValues, phase);
+    renderDataForPhase.servers = reportTitles.servers;
+    subPhaseSections.push(renderDataForPhase as HTMLSectionRenderData);
   });
 
-  Handlebars.registerHelper('toCamel', val => {
-    return val.replace(/-([a-z])/g, (g: string) => g[1].toUpperCase());
-  });
-
-  /**
-   * Negative means slower
-   */
-  Handlebars.registerHelper('isFaster', analysis => {
-   return analysis.hlDiff > 0;
-  });
-
-  /**
-   * Absolute number helper
-   */
-  Handlebars.registerHelper('abs', num => {
-   return Math.abs(num);
-  });
+  subPhaseSections.sort(phaseSorter);
 
   const template = Handlebars.compile(REPORT_TEMPLATE_RAW);
 
   return template({
     cumulativeChartData: buildCumulativeChartData(controlData, experimentData),
+    durationSection,
     reportTitles,
-    sectionFormattedData,
-    sectionFormattedDataJson: JSON.stringify(sectionFormattedData)
+    subPhaseSections,
+    sectionFormattedDataJson: JSON.stringify(subPhaseSections)
   });
 }

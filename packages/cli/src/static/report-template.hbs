@@ -53,89 +53,31 @@
         <hr>
       </div>
     </div>
-    {{#each sectionFormattedData as |analysisForPhase|}}
+    {{>phaseDetailSection analysisForPhase=durationSection}}
     <div class="row">
       <div class="col">
-        <h2>{{analysisForPhase.phase}}
-          <small class="h5">
-            {{#if analysisForPhase.isSignificant}}
-              {{#if (isFaster analysisForPhase)}}
-                <span class="text-success font-weight-bolder">Faster</span>
-              {{else}}
-                <span class="text-danger font-weight-bolder">Slower</span>
-              {{/if}}
-            {{else}}
-              <span class="text-muted">No Difference</span>
-            {{/if}}
-          </small>
-        </h2>
-        <p>
-          A statistical analysis test was used <i><small>(<a href="https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test" target="_blank">Wilcoxon Signed-Rank Test</a>)</small></i> to determine that
-          {{#if analysisForPhase.isSignificant}}
-          the results are significant meaning they are worth looking at.
-          {{else}}
-          results are not significant.
-          {{/if}}
-        </p>
-        {{#if analysisForPhase.isSignificant}}
-          <p>
-            A statistics estimator <i><small>(<a href="https://en.wikipedia.org/wiki/Hodges%E2%80%93Lehmann_estimator" target="_blank">Hodges–Lehmann estimator</a>)</small></i> was used to determine <span class="experiment-color">{{analysisForPhase.servers.[1].name}}</span>
-            {{#if (isFaster analysisForPhase)}}
-              is <strong>faster</strong> by
-            {{else}}
-              is <strong>slower</strong> by
-            {{/if}}
-            <strong>{{abs analysisForPhase.hlDiff}} ms</strong>.
-          </p>
-        {{/if}}
+        <h3>Sub Phases of Duration</h3>
+        <p>The chart below shows the finish times (a point in the page load duration) of the sub phases for experiment and control. It gives a high level view on what also changed (if there are any).</p>
+        <p><span class="print-only">You can view more details about the phases starting from page 2.</span><span class="display-only">You can view more details about the phases in the below in the "Sub Phases in Detail" section.</span></p>
       </div>
     </div>
     <div class="row">
       <div class="col">
-        <canvas id="{{analysisForPhase.identifierHash}}-chart" class="full-width-chart"></canvas>
+        <canvas id="all-in-one-chart" class="full-width-chart"></canvas>
       </div>
     </div>
-    <div class="row display-only">
-      <div class="col-12">
-        <a data-toggle="collapse" href="#{{analysisForPhase.identifierHash}}-stats" aria-expanded="false" aria-controls="{{analysisForPhase.identifierHash}}-stats">
-          > Advanced Statistics
-        </a>
-      </div>
-      <div class="col-12 mt-1">
-        <div class="collapse" id="{{analysisForPhase.identifierHash}}-stats">
-          <div class="card card-body">
-            <p>Hodges–Lehmann estimated difference in location of the two distributions is <strong>{{analysisForPhase.hlDiff}}</strong> ms. With 95% confidence the difference of the control and experiment is between <strong>{{analysisForPhase.ciMin}} ms to {{analysisForPhase.ciMax}} ms</strong>.</p>
-          </div>
-        </div>
-      </div>
-    </div>
+
+    <div class="page-break"></div>
     <div class="row">
       <div class="col">
+        <h1>Sub Phases in Detail</h1>
+        <p>Sorted by phases that regressed with the most magnitude.</p>
         <hr>
       </div>
     </div>
-    {{#if analysisForPhase.shouldPageBreak}}
-      <div class="row">
-        <div class="col">
-          <h3>Sub Phases of Duration</h3>
-          <p>The chart below shows the finish times of the sub phases for experiment and control. It gives a high level view on what also changed (if there are any). <span class="print-only">You can view more details about the phases starting from page 2 on.</span><span class="display-only">You can view more details about the phases in the sections below.</span>
-          </p>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col">
-          <canvas id="all-in-one-chart" class="full-width-chart"></canvas>
-        </div>
-      </div>
 
-      <div class="page-break"></div>
-      <div class="row">
-        <div class="col">
-          <h1>Sub Phases in Detail</h1>
-          <hr>
-        </div>
-      </div>
-    {{/if}}
+    {{#each subPhaseSections as |analysisForPhase|}}
+      {{>phaseDetailSection analysisForPhase=analysisForPhase}}
     {{/each}}
     <div class="row mt-5">
       <div class="col">
@@ -157,63 +99,13 @@
     </div>
   </div>
   {{!-- TRACERBENCH-CHART-JS --}}
+  {{>phaseChartJSSection analysisForPhase=durationSection}}
+
+  {{#each subPhaseSections as |analysisForPhase|}}
+    {{>phaseChartJSSection analysisForPhase=analysisForPhase}}
+  {{/each}}
+
   <script>
-    {{#each sectionFormattedData as |analysisForPhase|}}
-      const canvasFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}} = document.getElementById('{{analysisForPhase.identifierHash}}-chart').getContext('2d');
-      const optionFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}} = {
-        type: 'boxplot',
-          data: {
-            labels: ['{{analysisForPhase.phase}} (Lower is Better)'],
-            datasets: [{
-              label: '{{analysisForPhase.servers.[0].name}}',
-              borderColor: '#0A2D46',
-              backgroundColor: 'rgba(199, 241, 106, 0.50)',
-              borderWidth: 2,
-              outlierColor: '#1884E4',
-              itemRadius: 2,
-              itemBackgroundColor: '#1884E4',
-              data: [{{{analysisForPhase.controlSamples}}}]
-            }, {
-              label: '{{analysisForPhase.servers.[1].name}}',
-              borderColor: '#0A2D46',
-              backgroundColor: 'rgba(56, 210, 211, 0.50)',
-              borderWidth: 2,
-              outlierColor: '#1884E4',
-              itemRadius: 2,
-              itemBackgroundColor: '#1884E4',
-              data: [{{{analysisForPhase.experimentSamples}}}]
-          }]
-        },
-        options: {
-          aspectRatio: 3,
-          legend: {
-            display: true,
-            position: 'top'
-          },
-          title: {
-            display: true,
-            text: '{{reportTitles.plotTitle}}'
-          },
-          scales: {
-            xAxes: [{
-              // Specific to Bar Controller
-              categoryPercentage: 0.9,
-              barPercentage: 0.8
-            }],
-            yAxes: [{
-              ticks: {
-                callback: function(value) {
-                  return `${value} ms`;
-                }
-              }
-            }]
-          }
-        }
-      };
-
-      window['{{analysisForPhase.phase}}'] = new Chart(canvasFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}}, optionFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}});
-    {{/each}}
-
     function randomValues(count, min, max) {
       const delta = max - min;
       return Array.from({length: count}).map(() => Math.random() * delta + min);

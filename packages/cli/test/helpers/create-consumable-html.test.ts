@@ -1,4 +1,4 @@
-import { bucketPhaseValues, resolveTitles } from '../../src/helpers/create-consumable-html';
+import { bucketPhaseValues, resolveTitles, phaseSorter } from '../../src/helpers/create-consumable-html';
 import { expect } from 'chai';
 
 
@@ -87,6 +87,36 @@ describe('create-consumable-html test', () => {
     expect(results).to.have.property('render');
     expect(results).to.have.property('boot');
     expect(results.duration.length).to.equal(2);
+  });
+
+  it(`phaseSorter()`, () => {
+    // Above 0 means the first object is above the second
+    // Below 0 means the second object is above the first
+
+    const slowest = { isSignificant: true, hlDiff: -150 };
+    const slower = { isSignificant: true, hlDiff: -125 };
+    const faster = { isSignificant: true, hlDiff: 125 };
+    const fastest = { isSignificant: true, hlDiff: 150 };
+    const inSignificant = { isSignificant: false, hlDiff: 500 };
+
+    // @ts-ignore
+    expect(phaseSorter(slower, inSignificant)).to.be.below(0);
+    // @ts-ignore
+    expect(phaseSorter(slowest, slower)).to.be.below(0);
+    // @ts-ignore
+    expect(phaseSorter(slower, slowest)).to.be.above(0);
+    // @ts-ignore
+    expect(phaseSorter(slowest, slowest)).to.equal(0);
+    // @ts-ignore
+    expect(phaseSorter(inSignificant, inSignificant)).to.equal(0);
+    // @ts-ignore
+    expect(phaseSorter(slowest, faster)).to.be.below(0);
+    // @ts-ignore
+    expect(phaseSorter(fastest, faster)).to.be.above(0);
+    // @ts-ignore
+    expect(phaseSorter(fastest, inSignificant)).to.be.below(0);
+    // @ts-ignore
+    expect(phaseSorter(inSignificant, fastest)).to.be.above(0);
   });
 
 });
