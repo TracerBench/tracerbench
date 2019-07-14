@@ -100,6 +100,13 @@ export function resolveTitles(tbConfig: Partial<ITBConfig>) {
 
   if (tbConfig.servers) {
     reportTitles.servers = tbConfig.servers as any;
+    reportTitles.servers = reportTitles.servers.map((titleConfig, idx) => {
+      if (idx === 0) {
+        return {name: `Control: ${titleConfig.name}`};
+      } else {
+        return {name: `Experiment: ${titleConfig.name}`};
+      }
+    }) as any;
   }
 
   if (tbConfig.plotTitle) {
@@ -171,8 +178,18 @@ export default function createConsumeableHTML(
     return val.replace(/-([a-z])/g, (g: string) => g[1].toUpperCase());
   });
 
+  /**
+   * Negative means slower
+   */
   Handlebars.registerHelper('isFaster', analysis => {
-   return analysis.hlDiff < 0;
+   return analysis.hlDiff > 0;
+  });
+
+  /**
+   * Absolute number helper
+   */
+  Handlebars.registerHelper('abs', num => {
+   return Math.abs(num);
   });
 
   const template = Handlebars.compile(REPORT_TEMPLATE_RAW);
@@ -181,6 +198,6 @@ export default function createConsumeableHTML(
     cumulativeChartData: buildCumulativeChartData(controlData, experimentData),
     reportTitles,
     sectionFormattedData,
-    sectionFormattedDataJson: JSON.stringify(sectionFormattedData),
+    sectionFormattedDataJson: JSON.stringify(sectionFormattedData)
   });
 }
