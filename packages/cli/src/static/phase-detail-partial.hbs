@@ -4,54 +4,51 @@
       <small class="h5">
         {{#if analysisForPhase.isSignificant}}
           {{#if (isFaster analysisForPhase)}}
-            <span class="text-success font-weight-bolder">Faster</span>
+            <span class="text-success font-weight-bolder">({{abs analysisForPhase.hlDiff}} ms faster)</span>
           {{else}}
-            <span class="text-danger font-weight-bolder">Slower</span>
+            <span class="text-danger font-weight-bolder">({{abs analysisForPhase.hlDiff}} ms slower)</span>
           {{/if}}
         {{else}}
-          <span class="text-muted">No Difference</span>
+          <span class="text-muted">(No Difference)</span>
         {{/if}}
       </small>
     </h2>
     <p>
-      A statistical analysis test was used <i><small>(<a href="https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test" target="_blank">Wilcoxon Signed-Rank Test</a>)</small></i> to determine that
+      A statistical analysis test was used <i>
+      <small>(<a href="https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test" target="_blank">Wilcoxon Signed-Rank
+        Test</a>)
+      </small>
+    </i> to determine that
       {{#if analysisForPhase.isSignificant}}
         the results are significant meaning they are worth looking at.
       {{else}}
         results are not significant.
       {{/if}}
-    </p>
     {{#if analysisForPhase.isSignificant}}
-      <p>
-        A statistics estimator <i><small>(<a href="https://en.wikipedia.org/wiki/Hodges%E2%80%93Lehmann_estimator" target="_blank">Hodges–Lehmann estimator</a>)</small></i> was used to determine <span class="experiment-color">{{analysisForPhase.servers.[1].name}}</span>
+        A statistics estimator <i>
+        <small>(<a href="https://en.wikipedia.org/wiki/Hodges%E2%80%93Lehmann_estimator" target="_blank">Hodges–Lehmann
+          estimator</a>)
+        </small>
+      </i> was used to determine "{{analysisForPhase.servers.[1].name}}" is
         {{#if (isFaster analysisForPhase)}}
-          is <strong>faster</strong> by
+          <strong>faster</strong>
         {{else}}
-          is <strong>slower</strong> by
+          <strong>slower</strong>
         {{/if}}
-        <strong>{{abs analysisForPhase.hlDiff}} ms</strong>.
-      </p>
+        by <strong>{{abs analysisForPhase.hlDiff}} ms</strong>. TracerBench is 95% confident it is
+        {{#if (isFaster analysisForPhase)}}
+          <strong>faster</strong>
+        {{else}}
+          <strong>slower</strong>
+        {{/if}}
+      between <strong>{{absSort analysisForPhase.ciMax analysisForPhase.ciMin 0}} ms to {{absSort analysisForPhase.ciMax analysisForPhase.ciMin 1}} ms</strong> based on {{analysisForPhase.sampleCount}} samples using a <a href="https://en.wikipedia.org/wiki/Confidence_interval" target="_blank">confidence interval</a>.
     {{/if}}
+    </p>
   </div>
 </div>
 <div class="row">
   <div class="col">
     <canvas id="{{analysisForPhase.identifierHash}}-chart" class="full-width-chart"></canvas>
-  </div>
-</div>
-<div class="row display-only">
-  <div class="col-12">
-    <a data-toggle="collapse" href="#{{analysisForPhase.identifierHash}}-stats" aria-expanded="false" aria-controls="{{analysisForPhase.identifierHash}}-stats">
-      > Advanced Statistics
-    </a>
-  </div>
-  <div class="col-12 mt-1">
-    <div class="collapse" id="{{analysisForPhase.identifierHash}}-stats">
-      <div class="card card-body">
-        <p>Hodges–Lehmann estimated difference in location of the two distributions is <strong>{{analysisForPhase.hlDiff}}</strong> ms.</p>
-        <p>With 95% confidence the difference of the control and experiment is between <strong>{{analysisForPhase.ciMin}} ms to {{analysisForPhase.ciMax}} ms</strong>.</p>
-      </div>
-    </div>
   </div>
 </div>
 <div class="row">

@@ -37,6 +37,7 @@ interface HTMLSectionRenderData {
   identifierHash: string;
   controlSamples: string;
   experimentSamples: string;
+  sampleCount: number;
   servers: any;
 }
 
@@ -89,6 +90,15 @@ Handlebars.registerHelper('isFaster', analysis => {
  */
 Handlebars.registerHelper('abs', num => {
   return Math.abs(num);
+});
+
+/**
+ * Sort the given numbers by their absolute values
+ */
+Handlebars.registerHelper('absSort', (num1, num2, position) => {
+  const sorted = [Math.abs(num1), Math.abs(num2)];
+  sorted.sort((a, b) => a - b);
+  return sorted[position];
 });
 
 
@@ -191,6 +201,7 @@ export function formatPhaseData(controlValues: number[], experimentValues: numbe
     // Ensure to convert to milliseconds for presentation
     controlSamples: JSON.stringify(controlValues.map((val) => convertMicrosecondsToMS(val))),
     experimentSamples: JSON.stringify(experimentValues.map((val) => convertMicrosecondsToMS(val))),
+    sampleCount: controlValues.length,
     ciMin: stats.confidenceInterval.min,
     ciMax: stats.confidenceInterval.max,
     hlDiff: stats.estimator
