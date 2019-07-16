@@ -9,8 +9,8 @@ describe('create-consumable-html test', () => {
       servers: [{ name: 'Hello World' }, { name: 'Hello World 2' }],
       plotTitle: 'Override',
     });
-    expect(resolved.servers[0].name).to.equal('Hello World');
-    expect(resolved.servers[1].name).to.equal('Hello World 2');
+    expect(resolved.servers[0].name).to.equal('Control: Hello World');
+    expect(resolved.servers[1].name).to.equal('Experiment: Hello World 2');
     expect(resolved.plotTitle).to.equal('Override');
   });
 
