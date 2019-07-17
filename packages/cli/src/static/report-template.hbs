@@ -33,10 +33,6 @@
         display: inherit;
       }
     }
-
-    .full-width-chart {
-      width: 100%;
-    }
   </style>
 </head>
 
@@ -64,7 +60,9 @@
     </div>
     <div class="row">
       <div class="col">
-        <canvas id="all-in-one-chart" class="full-width-chart"></canvas>
+        <div style="height: 600px; width: 962px;">
+          <canvas id="all-in-one-chart"></canvas>
+        </div>
       </div>
     </div>
 
@@ -137,6 +135,7 @@
         type: 'boxplot',
         data: boxplotData,
         options: {
+          devicePixelRatio: 2.5,
           aspectRatio: 1.5,
           legend: {
             position: 'top',
