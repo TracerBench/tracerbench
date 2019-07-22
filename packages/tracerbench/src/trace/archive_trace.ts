@@ -34,6 +34,7 @@ export interface IEntry {
 export async function harTrace(
   url: string,
   outputPath: string,
+  additionalBrowserArgs: string[] = [],
   cookies: any = null
 ) {
 
@@ -45,7 +46,7 @@ export async function harTrace(
 
   // in the instance we are passing in the cookies
 
-  const browser = await createBrowser();
+  const browser = await createBrowser(additionalBrowserArgs);
   try {
     const client = await getTab(browser.connection);
     const traceHAR = path.join(outputPath, 'trace.har');
