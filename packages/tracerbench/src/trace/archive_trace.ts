@@ -1,8 +1,6 @@
 // tslint:disable:no-console
 
 import Protocol from 'devtools-protocol';
-import * as fs from 'fs';
-import * as path from 'path';
 import { createBrowser, getTab, setCookies } from './trace-utils';
 
 // Represents a subset of a HAR
@@ -31,12 +29,7 @@ export interface IEntry {
   response: IResponse;
 }
 
-export async function harTrace(
-  url: string,
-  outputPath: string,
-  additionalBrowserArgs: string[] = [],
-  cookies: any = null
-) {
+export async function harTrace(url: string, additionalBrowserArgs: string[] = [], cookies: any = null) {
 
   // the saving of the cookies should be a dif command
   // spawn browser > sign-in > done > save cookies
@@ -49,8 +42,6 @@ export async function harTrace(
   const browser = await createBrowser(additionalBrowserArgs);
   try {
     const client = await getTab(browser.connection);
-    const traceHAR = path.join(outputPath, 'trace.har');
-    const cookiesJSON = path.join(outputPath, 'cookies.json');
 
     const requestIds: string[] = [];
     const responses: Protocol.Network.Response[] = [];
@@ -82,7 +73,7 @@ export async function harTrace(
 
     await Promise.all([
       client.until('Page.loadEventFired'),
-      client.send('Page.navigate', { url })
+      client.send('Page.navigate', { url }),
     ]);
 
     for (let i = 0; i < requestIds.length; i++) {
@@ -95,9 +86,7 @@ export async function harTrace(
       };
       archive.log.entries.push(entry);
     }
-
-    fs.writeFileSync(cookiesJSON, JSON.stringify(cookies));
-    fs.writeFileSync(traceHAR, JSON.stringify(archive));
+    return [cookies, archive];
   } finally {
     await browser.dispose();
   }

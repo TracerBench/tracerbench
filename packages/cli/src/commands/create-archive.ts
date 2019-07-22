@@ -17,12 +17,18 @@ export default class CreateArchive extends Command {
     const { browserArgs, url, tbResultsFolder } = flags;
     const archiveOutput = path.join(tbResultsFolder, 'trace.har');
     const cookiesJSON = path.join(tbResultsFolder, 'cookies.json');
+    let cookies;
+    let harArchive;
 
     if (!fs.existsSync(tbResultsFolder)) {
       fs.mkdirSync(tbResultsFolder);
     }
 
-    await harTrace(url, tbResultsFolder, browserArgs);
+    [cookies, harArchive] = await harTrace(url, browserArgs);
+    fs.writeFileSync(cookiesJSON, JSON.stringify(cookies));
+    fs.writeFileSync(archiveOutput, JSON.stringify(harArchive));
+
+    this.log(`Captured ${harArchive.log.entries.length} request responses in har file.`);
     return this.log(
       `HAR & cookies.json successfully generated from ${url} and available here: ${archiveOutput} and ${cookiesJSON}`
     );
