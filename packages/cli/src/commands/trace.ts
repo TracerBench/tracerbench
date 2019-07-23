@@ -64,7 +64,10 @@ export default class Trace extends Command {
 
     // if trace can't find a HAR then go and record one
     if (!fs.existsSync(traceHAR)) {
-      await harTrace(url, tbResultsFolder);
+      [cookies, archiveFile] = await harTrace(url);
+
+      fs.writeFileSync(cookiesJSON, JSON.stringify(cookies));
+      fs.writeFileSync(traceHAR, JSON.stringify(archiveFile));
     }
 
     try {

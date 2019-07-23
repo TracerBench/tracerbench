@@ -49,7 +49,7 @@ export const defaultFlagArgs: ITBConfig = {
     '--disable-notifications',
     '--disable-hang-monitor',
     '--safebrowsing-disable-auto-update',
-    '--setIgnoreCertificateErrors=true',
+    '--ignore-certificate-errors',
     '--v8-cache-options=none',
   ],
   methods: '""',
