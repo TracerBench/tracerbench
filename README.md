@@ -63,7 +63,7 @@ $ tracerbench create-archive --url http://localhost:8000
 2. Now have TracerBench record a Trace of that HAR:
 
 ```console
-$ tracerbench trace --url http://localhost:8000 --har ./trace.har
+$ tracerbench trace --url http://localhost:8000 --insights
 ...
 
 ✔ DevTools listening on ws://<address>
