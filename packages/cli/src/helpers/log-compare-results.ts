@@ -52,10 +52,10 @@ export function logCompareResults(
   const browser = browserArgs.includes('--headless')
     ? 'Headless-Chrome'
     : 'Chrome';
-// tslint:disable-next-line: max-line-length
+  // tslint:disable-next-line: max-line-length
   const message = `Success! ${fidelity} test samples were run with ${browser}. The JSON file with results from the compare test are available here: ${tbResultsFolder}/compare.json. To generate a pdf report run "tracerbench report"`;
   const notSigMessage = `Wilcoxon rank-sum test indicated that there is NOT sufficient evidence that there is a statistical difference between the control and experiment.`;
-// tslint:disable-next-line: max-line-length
+  // tslint:disable-next-line: max-line-length
   const sigMessage = `Wilcoxon rank-sum test indicated that there IS sufficient evidence that there is a statistical difference between the control and experiment. We would expect 5% of these kinds of results to be due to chance with no underlying effect. A recommended "fidelity=high" compare test should be run to rule out false negatives.`;
   const regThresholdMessage = `A regression was found exceeding the set regression threshold of ${regressionThreshold}ms`;
   const lowFidelityMessage = `The fidelity setting was set below the recommended for a viable result. Rerun TracerBench with at least "fidelity=low"`;
@@ -71,8 +71,8 @@ export function logCompareResults(
   function isSignificant(): boolean {
     if (fidelity > fidelityLookup.test) {
       return (
-        benchmarkTable.isSigWilcoxonRankSumTestArray.includes('Yes') ||
-        phaseTable.isSigWilcoxonRankSumTestArray.includes('Yes')
+        benchmarkTable.isSigArray.includes('Yes') ||
+        phaseTable.isSigArray.includes('Yes')
       );
     }
     return false;

@@ -5,7 +5,7 @@ import { chalkScheme } from './utils';
 export interface ICompareJSONResults {
   heading: string;
   statName: string;
-  rankSumSignificant: 'Yes' | 'No';
+  isSignificant: 'Yes' | 'No';
   estimatorDelta: string;
   controlSampleCount: number;
   experimentSampleCount: number;
@@ -21,14 +21,14 @@ export default class TBTable {
   public table: any;
   public display: Stats[];
   public estimatorDeltas: number[];
-  public isSigWilcoxonRankSumTestArray: string[];
+  public isSigArray: string[];
   private heading: string;
   constructor(heading: string) {
     this.heading = heading;
     this.config = this.initConfig();
     this.table = new Table(this.config) as Table.HorizontalTable;
     this.display = [];
-    this.isSigWilcoxonRankSumTestArray = [];
+    this.isSigArray = [];
     this.estimatorDeltas = [];
   }
   // return table data for --json flag
@@ -38,7 +38,7 @@ export default class TBTable {
       a.push({
         heading: this.heading,
         statName: stat.name,
-        rankSumSignificant: stat.confidenceInterval.isSig,
+        isSignificant: stat.confidenceInterval.isSig,
         estimatorDelta: `${stat.estimator}ms`,
         controlSampleCount: stat.sampleCount.control,
         experimentSampleCount: stat.sampleCount.experiment,
@@ -49,7 +49,7 @@ export default class TBTable {
         experimentSevenFigureSummary: stat.sevenFigureSummary.experiment,
       });
 
-      this.isSigWilcoxonRankSumTestArray.push(stat.confidenceInterval.isSig);
+      this.isSigArray.push(stat.confidenceInterval.isSig);
       this.estimatorDeltas.push(stat.estimator);
     });
     return a;
@@ -131,7 +131,7 @@ export default class TBTable {
         ],
         [],
         [
-          { content: 'Wilcoxon Rank-Sum Significant:' },
+          { content: 'Is Significant:' },
           { content: `${stat.confidenceInterval.isSig}` },
         ],
         [],

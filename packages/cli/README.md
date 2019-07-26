@@ -230,7 +230,7 @@ OPTIONS
   --experimentURL=experimentURL
       (required) [default: http://localhost:8001/] Experiment URL to visit for compare command
 
-  --fidelity=test|low|medium|high
+  --fidelity=fidelity
       (required) [default: low] Directly correlates to the number of samples per trace. High is the longest trace time.
 
   --headless
@@ -251,8 +251,8 @@ OPTIONS
   --report
       Generate a PDF report directly after running the compare command.
 
-  --runtimeStats=runtimeStats
-      (required) [default: false] Compare command output stats during run
+  --runtimeStats
+      Compare command output deep-dive stats during run.
 
   --socksPorts=socksPorts
       Specify a socks proxy port as browser option for control and experiment

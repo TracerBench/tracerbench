@@ -1,3 +1,4 @@
+// ! we are not using this ATM; rather using the conf interval isSig
 // all exports are alpha of 0.05 for two-tailed tests
 // using (array length) as N value up to 50
 // prettier-ignore

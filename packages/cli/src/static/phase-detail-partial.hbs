@@ -3,46 +3,49 @@
     <h2>{{analysisForPhase.phase}}
       <small class="h5">
         {{#if analysisForPhase.isSignificant}}
-          {{#if (isFaster analysisForPhase)}}
-            <span class="text-success font-weight-bolder">({{abs analysisForPhase.hlDiff}} ms faster)</span>
-          {{else}}
-            <span class="text-danger font-weight-bolder">({{abs analysisForPhase.hlDiff}} ms slower)</span>
-          {{/if}}
+        {{#if (isFaster analysisForPhase)}}
+        <span class="text-success font-weight-bolder">({{abs analysisForPhase.hlDiff}} ms faster)</span>
         {{else}}
-          <span class="text-muted">(No Difference)</span>
+        <span class="text-danger font-weight-bolder">({{abs analysisForPhase.hlDiff}} ms slower)</span>
+        {{/if}}
+        {{else}}
+        <span class="text-muted">(No Difference)</span>
         {{/if}}
       </small>
     </h2>
     <p>
       A statistical analysis test was used <i>
-      <small>(<a href="https://en.wikipedia.org/wiki/Wilcoxon_signed-rank_test" target="_blank">Wilcoxon Signed-Rank
-        Test</a>)
-      </small>
-    </i> to determine that
+        <small>(<a href="https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test" target="_blank">Wilcoxon Rank-Sum
+            Test</a>)
+        </small>
+      </i> to determine that
       {{#if analysisForPhase.isSignificant}}
-        the results are significant meaning they are worth looking at.
+      the results are significant meaning they are worth looking at.
       {{else}}
-        results are not significant.
+      results are not significant.
       {{/if}}
-    {{#if analysisForPhase.isSignificant}}
-        A statistics estimator <i>
+      {{#if analysisForPhase.isSignificant}}
+      A statistics estimator <i>
         <small>(<a href="https://en.wikipedia.org/wiki/Hodges%E2%80%93Lehmann_estimator" target="_blank">Hodges–Lehmann
-          estimator</a>)
+            estimator</a>)
         </small>
       </i> was used to determine "{{analysisForPhase.servers.[1].name}}" is
-        {{#if (isFaster analysisForPhase)}}
-          <strong>faster</strong>
-        {{else}}
-          <strong>slower</strong>
-        {{/if}}
-        by <strong>{{abs analysisForPhase.hlDiff}} ms</strong>. TracerBench is 95% confident it is
-        {{#if (isFaster analysisForPhase)}}
-          <strong>faster</strong>
-        {{else}}
-          <strong>slower</strong>
-        {{/if}}
-      between <strong>{{absSort analysisForPhase.ciMax analysisForPhase.ciMin 0}} ms to {{absSort analysisForPhase.ciMax analysisForPhase.ciMin 1}} ms</strong> based on {{analysisForPhase.sampleCount}} samples using a <a href="https://en.wikipedia.org/wiki/Confidence_interval" target="_blank">confidence interval</a>.
-    {{/if}}
+      {{#if (isFaster analysisForPhase)}}
+      <strong>faster</strong>
+      {{else}}
+      <strong>slower</strong>
+      {{/if}}
+      by <strong>{{abs analysisForPhase.hlDiff}} ms</strong>. TracerBench is 95% confident it is
+      {{#if (isFaster analysisForPhase)}}
+      <strong>faster</strong>
+      {{else}}
+      <strong>slower</strong>
+      {{/if}}
+      between <strong>{{absSort analysisForPhase.ciMax analysisForPhase.ciMin 0}} ms to
+        {{absSort analysisForPhase.ciMax analysisForPhase.ciMin 1}} ms</strong> based on
+      {{analysisForPhase.sampleCount}} samples using a <a href="https://en.wikipedia.org/wiki/Confidence_interval"
+        target="_blank">confidence interval</a>.
+      {{/if}}
     </p>
   </div>
 </div>
