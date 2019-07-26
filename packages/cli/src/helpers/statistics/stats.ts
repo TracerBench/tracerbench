@@ -95,7 +95,9 @@ export class Stats {
     };
   }
   private getHodgesLehmann(control: any[], experiment: any[]) {
-    return quantile(cross(control, experiment, (a, b) => a - b), 0.5);
+    let crossProduct = cross(control, experiment, (a, b) => a - b);
+    crossProduct = crossProduct.sort((a, b) => a - b);
+    return quantile(crossProduct, 0.5);
   }
   private getRange(control: number[], experiment: number[]) {
     const a = control.concat(experiment);
