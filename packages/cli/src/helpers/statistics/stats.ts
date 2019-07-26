@@ -1,6 +1,5 @@
 import { cross, histogram, quantile } from 'd3-array';
 import { scaleLinear } from 'd3-scale';
-import { getWilcoxonSignedRankTest } from './wilcoxon-signed-rank';
 import { confidenceInterval } from './confidence-interval';
 import { convertMicrosecondsToMS } from '../utils';
 
@@ -25,7 +24,6 @@ export class Stats {
   public readonly name: string;
   public readonly estimator: number;
   public readonly sparkLine: { control: string; experiment: string };
-  public readonly isSigWilcoxonSignedRankTest: string;
   public readonly confidenceInterval: {
     min: number;
     max: number;
@@ -64,10 +62,6 @@ export class Stats {
       control: this.getSevenFigureSummary(control),
       experiment: this.getSevenFigureSummary(experiment),
     };
-    this.isSigWilcoxonSignedRankTest = getWilcoxonSignedRankTest(
-      control,
-      experiment
-    );
   }
 
   private getSevenFigureSummary(a: number[]): ISevenFigureSummary {
