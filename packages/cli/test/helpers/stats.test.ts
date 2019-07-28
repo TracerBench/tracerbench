@@ -90,6 +90,11 @@ describe('stats', () => {
 
   it(`getHodgesLehmann()`, () => {
     expect(stats.estimator).to.equal(-1080);
+
+    const controlSetForHl = [15000, 17000, 18000];
+    const experimentSetForHl = [70000, 80000, 60000];
+    const statsForHl = new Stats({ control: controlSetForHl, experiment: experimentSetForHl, name: '2' });
+    expect(statsForHl.estimator).to.equal(-53);
   });
 
   it(`isSigWilcoxonRankSumTest()`, () => {
