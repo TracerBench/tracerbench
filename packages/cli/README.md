@@ -24,7 +24,7 @@ $ npm install -g tracerbench
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench/2.0.2 darwin-x64 node-v10.16.0
+tracerbench/2.0.3 darwin-x64 node-v10.16.0
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
@@ -201,9 +201,9 @@ OPTIONS
   --browserArgs=browserArgs
       (required) [default: 
       --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-dev-shm-usage,--disable-cache,--disable-v8-i
-      dle-tasks,--disable-breakpad,--disable-notifications,--disable-hang-monitor,--safebrowsing-disable-auto-update,--set
-      IgnoreCertificateErrors=true,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the 
-      TracerBench render benchmark. TracerBench includes many non-configurable defaults in this category.
+      dle-tasks,--disable-breakpad,--disable-notifications,--disable-hang-monitor,--safebrowsing-disable-auto-update,--ign
+      ore-certificate-errors,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the TracerBench 
+      render benchmark. TracerBench includes many non-configurable defaults in this category.
 
   --config=config
       Specify an alternative directory rather than the project root for the tbconfig.json. This explicit config will 
@@ -273,11 +273,18 @@ USAGE
   $ tracerbench create-archive
 
 OPTIONS
-  --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output folder path for all
-                                     tracerbench results
+  --browserArgs=browserArgs
+      (required) [default: 
+      --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-dev-shm-usage,--disable-cache,--disable-v8-i
+      dle-tasks,--disable-breakpad,--disable-notifications,--disable-hang-monitor,--safebrowsing-disable-auto-update,--ign
+      ore-certificate-errors,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the TracerBench 
+      render benchmark. TracerBench includes many non-configurable defaults in this category.
 
-  --url=url                          (required) [default: http://localhost:8000/] URL to visit for create-archive,
-                                     timings & trace commands
+  --tbResultsFolder=tbResultsFolder
+      (required) [default: ./tracerbench-results] The output folder path for all tracerbench results
+
+  --url=url
+      (required) [default: http://localhost:8000/] URL to visit for create-archive, timings & trace commands
 ```
 
 ## `tracerbench help [COMMAND]`
