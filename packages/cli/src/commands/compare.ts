@@ -139,7 +139,7 @@ export default class Compare extends Command {
 
     const runner = new Runner([benchmarks.control, benchmarks.experiment]);
     await runner
-      .run(this.compareFlags.fidelity)
+      .run(this.compareFlags.fidelity, this.log)
       .then((results: any) => {
         if (!results[0].samples[0]) {
           this.error(
@@ -180,7 +180,7 @@ export default class Compare extends Command {
           );
         }
 
-        // if we want to run the Report without calling a seperate command
+        // if we want to run the Report without calling a separate command
         if (this.parsedConfig.report) {
           this.log('RUNNING A REPORT');
           Report.run([

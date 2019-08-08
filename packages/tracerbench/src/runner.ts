@@ -21,7 +21,13 @@ export interface IBenchmark<State, Result> {
 export class Runner<R, S> {
   constructor(private benchmarks: Array<IBenchmark<S, R>>) {}
 
-  public async run(iterations: number): Promise<R[]> {
+  /**
+   * Shuffle when to run the benchmarks
+   *
+   * @param iterations - Number of iterations to run for each Benchmark
+   * @param logger - If CLI command is using this, a log function (this.log) can be passed and will be used to indicate progress
+   */
+  public async run(iterations: number, logger?: (msg: string) => void): Promise<R[]> {
     try {
       let states = await this.inSequence(benchmark => benchmark.setup());
 
@@ -29,6 +35,10 @@ export class Runner<R, S> {
         states = await this.shuffled((benchmark, i) =>
           benchmark.perform(states[i], iteration)
         );
+
+        if (logger) {
+          logger(`Finished ${iteration} of ${iterations} runs.`);
+        }
       }
 
       return this.inSequence((benchmark, i) => benchmark.finalize(states[i]));
