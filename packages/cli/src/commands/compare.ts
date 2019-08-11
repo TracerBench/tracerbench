@@ -37,6 +37,7 @@ import {
 } from '../command-config/default-flag-args';
 import { logCompareResults } from '../helpers/log-compare-results';
 import {
+  chalkScheme,
   checkEnvironmentSpecificOverride,
   parseMarkers,
 } from '../helpers/utils';
@@ -175,7 +176,7 @@ export default class Compare extends Command {
 
         // if we want to run the Report without calling a separate command
         if (this.parsedConfig.report) {
-          this.log('RUNNING A REPORT');
+          this.log(chalkScheme.tbBranding.aqua('\nRUNNING A REPORT'));
           Report.run([
             '--tbResultsFolder',
             `${this.parsedConfig.tbResultsFolder}`,
@@ -354,7 +355,7 @@ export default class Compare extends Command {
         `${this.compareFlags.tbResultsFolder}/traces/experiment${i}.json`,
       url: path.join(
         this.compareFlags.experimentURL +
-          this.compareFlags.tracingLocationSearch
+        this.compareFlags.tracingLocationSearch
       ),
     };
 
