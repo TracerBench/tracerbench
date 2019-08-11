@@ -37,7 +37,7 @@ export class Runner<R, S> {
         );
 
         if (logger) {
-          logger(`Finished ${iteration} of ${iterations} runs.`);
+          logger(`Finished ${iteration + 1} of ${iterations} runs.`);
         }
       }
 
