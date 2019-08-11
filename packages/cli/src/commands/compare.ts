@@ -152,14 +152,7 @@ export default class Compare extends Command {
           JSON.stringify(results, null, 2)
         );
 
-        fs.writeFileSync(
-          `${this.parsedConfig.tbResultsFolder}/compare-stat-results.json`,
-          JSON.stringify(
-            logCompareResults(results, this.compareFlags, this),
-            null,
-            2
-          )
-        );
+        logCompareResults(results, this.compareFlags, this);
 
         // with debug flag output three files
         // on config specifics

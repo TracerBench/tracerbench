@@ -124,6 +124,4 @@ export function logCompareResults(
     // WILL ONLY STDOUT JSON. NO TABLES OR SPARKLINE
     cli.log(JSON.stringify(jsonResults));
   }
-  // RETURN JSON FOR ONLY FILE OUTPUT
-  return JSON.stringify(jsonResults);
 }
