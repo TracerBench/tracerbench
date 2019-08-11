@@ -355,7 +355,7 @@ export default class Compare extends Command {
         `${this.compareFlags.tbResultsFolder}/traces/experiment${i}.json`,
       url: path.join(
         this.compareFlags.experimentURL +
-        this.compareFlags.tracingLocationSearch
+          this.compareFlags.tracingLocationSearch
       ),
     };
 
