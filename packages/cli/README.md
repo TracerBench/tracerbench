@@ -24,7 +24,7 @@ $ npm install -g tracerbench
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench/2.0.5 darwin-x64 node-v10.16.0
+tracerbench/2.0.6 darwin-x64 node-v10.16.0
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
@@ -236,9 +236,6 @@ OPTIONS
   --headless
       Run with headless chrome flags
 
-  --json
-      If supported output the command stdout with json rather than formatted results
-
   --markers=markers
       (required) [default: domComplete] User Timing Markers
 
@@ -357,9 +354,6 @@ OPTIONS
 
   --iterations=iterations
       (required) [default: 1] Number of runs
-
-  --json
-      If supported output the command stdout with json rather than formatted results
 
   --locations=locations
       include locations in names
