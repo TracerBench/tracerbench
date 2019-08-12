@@ -67,7 +67,7 @@ describe('compare regression: fixture: A/B', () => {
           '--headless',
         ]);
 
-        chai.expect(ctx.stdout).to.contain(`that there IS sufficient`);
+        chai.expect(ctx.stdout).to.contain(`duration phase results are  SIGNIFICANT  `);
       }
     );
 });
