@@ -28,7 +28,7 @@ export interface ITracerBenchTraceResult {
   set: string;
 }
 
-interface HTMLSectionRenderData {
+export interface HTMLSectionRenderData {
   isSignificant: boolean;
   ciMin: number;
   ciMax: number;
@@ -45,7 +45,7 @@ interface ValuesByPhase {
  [key: string]: number[]
 }
 
-const PAGE_LOAD_TIME = 'duration';
+export const PAGE_LOAD_TIME = 'duration';
 
 const CHART_CSS_PATH = path.join(__dirname, '../static/chart-bootstrap.css');
 const CHART_JS_PATH = path.join(

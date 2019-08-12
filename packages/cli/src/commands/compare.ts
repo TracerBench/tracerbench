@@ -20,7 +20,6 @@ import {
   tbResultsFolder,
   tracingLocationSearch,
   runtimeStats,
-  json,
   debug,
   emulateDevice,
   emulateDeviceOrientation,
@@ -37,6 +36,7 @@ import {
 } from '../command-config/default-flag-args';
 import { logCompareResults } from '../helpers/log-compare-results';
 import {
+  chalkScheme,
   checkEnvironmentSpecificOverride,
   parseMarkers,
 } from '../helpers/utils';
@@ -63,7 +63,6 @@ export interface ICompareFlags {
   emulateDevice?: string;
   emulateDeviceOrientation?: string;
   socksPorts?: [string, string] | [number, number] | undefined;
-  json: boolean;
   debug: boolean;
   regressionThreshold?: number;
   headless: boolean;
@@ -91,7 +90,6 @@ export default class Compare extends Command {
     config: config(),
     runtimeStats,
     report,
-    json,
     debug,
     headless,
   };
@@ -152,14 +150,7 @@ export default class Compare extends Command {
           JSON.stringify(results, null, 2)
         );
 
-        fs.writeFileSync(
-          `${this.parsedConfig.tbResultsFolder}/compare-stat-results.json`,
-          JSON.stringify(
-            logCompareResults(results, this.compareFlags, this),
-            null,
-            2
-          )
-        );
+        logCompareResults(results, this.compareFlags, this);
 
         // with debug flag output three files
         // on config specifics
@@ -182,7 +173,7 @@ export default class Compare extends Command {
 
         // if we want to run the Report without calling a separate command
         if (this.parsedConfig.report) {
-          this.log('RUNNING A REPORT');
+          this.log(chalkScheme.tbBranding.aqua('\nRUNNING A REPORT'));
           Report.run([
             '--tbResultsFolder',
             `${this.parsedConfig.tbResultsFolder}`,

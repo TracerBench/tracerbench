@@ -9,6 +9,7 @@ import createConsumeableHTML, {
 } from '../helpers/create-consumable-html';
 import { tbResultsFolder, config } from '../helpers/flags';
 import printToPDF from '../helpers/print-to-pdf';
+import { chalkScheme } from '../helpers/utils';
 
 const ARTIFACT_FILE_NAME = 'artifact';
 
@@ -106,7 +107,7 @@ export default class Report extends Command {
     await printToPDF(`file://${absPathToHTML}`, absOutputPath);
 
     this.log(
-      `The PDF and HTML reports are available here: ${absPathToHTML} and here: ${absOutputPath}`
+      `The PDF and HTML reports are available here: ${chalkScheme.tbBranding.lime.underline.bold(absPathToHTML)} and here: ${chalkScheme.tbBranding.blue.underline.bold(absOutputPath)}`
     );
   }
   private async parseFlags() {

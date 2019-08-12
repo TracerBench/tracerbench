@@ -5,16 +5,39 @@ import { test } from '@oclif/test';
 
 import * as path from 'path';
 
-const results = path.join(
-  `${process.cwd()}/test/fixtures/results/compare.json`
-);
-const markers = [
-  {
-    start: 'domComplete',
-    label: 'domComplete',
-  },
-];
-const tbResultsFolder = path.join(`${process.cwd()}/${tmpDir}`);
+const sampleTrace = {
+  'duration': 6260696,
+  'js': 5310439,
+  'phases': [
+    {
+      'phase': 'load',
+      'start': 0,
+      'duration': 1807839,
+    },
+    {
+      'phase': 'boot',
+      'start': 1807839,
+      'duration': 973172,
+    },
+    {
+      'phase': 'transition',
+      'start': 2781011,
+      'duration': 1540986,
+    },
+    {
+      'phase': 'render',
+      'start': 4321997,
+      'duration': 1905528,
+    },
+    {
+      'phase': 'paint',
+      'start': 6227525,
+      'duration': 33171,
+    },
+  ]
+};
+
+const tbResultsFolder = path.join(`${process.cwd()}/${tmpDir}/compare.json`);
 const scope = console;
 const network = {
   offline: false,
@@ -27,7 +50,6 @@ const flags = {
   browserArgs: [''],
   cpuThrottleRate: 2,
   fidelity: 2,
-  markers,
   network,
   tbResultsFolder,
   controlURL: '',
@@ -41,9 +63,16 @@ const flags = {
 
 describe('log-compare-results', () => {
   test.stdout().it(`stdout`, ctx => {
-    const json = logCompareResults(results, flags, scope);
-    const pJSON = JSON.parse(json);
+    const testResults = [{
+      set: 'control',
+      samples: [sampleTrace, sampleTrace, sampleTrace, sampleTrace]
+    }, {
+      set: 'experiment',
+      samples: [sampleTrace, sampleTrace, sampleTrace, sampleTrace]
+    }];
+    // @ts-ignore
+    logCompareResults(testResults, flags, scope);
     expect(ctx.stdout).to.contain(`Success`);
-    expect(pJSON.message).to.contain(`Success`);
+    expect(ctx.stdout).to.contain(`NOT SIGNIFICANT`);
   });
 });

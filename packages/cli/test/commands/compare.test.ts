@@ -63,11 +63,10 @@ describe('compare regression: fixture: A/B', () => {
           regressionThreshold,
           '--tbResultsFolder',
           TB_RESULTS_FOLDER,
-          '--json',
-          '--headless',
+          '--headless'
         ]);
 
-        chai.expect(ctx.stdout).to.contain(`that there IS sufficient`);
+        chai.expect(ctx.stdout).to.contain(`duration phase results are  SIGNIFICANT  `);
       }
     );
 });

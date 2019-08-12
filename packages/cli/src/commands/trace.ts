@@ -15,7 +15,6 @@ import {
   network,
   url,
   insights,
-  json,
   locations,
 } from '../helpers/flags';
 import {
@@ -34,8 +33,7 @@ export default class Trace extends Command {
     url: url({ required: true }),
     iterations: iterations({ required: true }),
     locations: locations(),
-    insights,
-    json,
+    insights
   };
 
   public async run() {
@@ -45,7 +43,6 @@ export default class Trace extends Command {
       cpuThrottleRate,
       tbResultsFolder,
       insights,
-      json,
       locations,
     } = flags;
     const network = 'none';
@@ -114,12 +111,6 @@ export default class Trace extends Command {
       rawTraceData,
       report,
     });
-
-    if (json) {
-      return {
-        // handle json response
-      };
-    }
 
     if (insights) {
       // js-eval-time

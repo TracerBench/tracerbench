@@ -78,9 +78,9 @@ export default class TBTable {
             colSpan: 1,
             content: 'Sample Counts:',
           },
-          `Control: ${stat.sampleCount.control}`,
+          `${chalkScheme.tbBranding.lime('Control')}: ${stat.sampleCount.control}`,
         ],
-        [`Experiment: ${stat.sampleCount.experiment}`],
+        [`${chalkScheme.tbBranding.aqua('Experiment')}: ${stat.sampleCount.experiment}`],
         [],
         [
           {
