@@ -66,7 +66,7 @@ describe('compare regression: fixture: A/B', () => {
           '--headless'
         ]);
 
-        chai.expect(ctx.stdout).to.contain(`duration phase results are  SIGNIFICANT  `);
+        chai.expect(ctx.stdout).to.contain(`duration phase has an estimated difference of`);
       }
     );
 });

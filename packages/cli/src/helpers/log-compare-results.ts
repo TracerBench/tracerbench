@@ -78,22 +78,24 @@ function outputRunMetaMessagesAndWarnings(cli: Command, cliFlags: ICompareFlags,
  */
 function outputSummaryReport(cli: Command, phaseResultsFormatted: HTMLSectionRenderData[]) {
   cli.log(chalk.bgWhiteBright(chalkScheme.tbBranding.dkBlue('\n    =========== Benchmark Results Summary ===========    ')));
-  cli.log('Red color means there was a regression. Green color means there was an improvement. You can view more details about the phases above.\n');
+  cli.log(`${chalk.red('Red')} color means there was a regression. ${chalk.green('Green')} color means there was an improvement. You can view more statistical details about the phases above.\n`);
   phaseResultsFormatted.forEach((phaseData: HTMLSectionRenderData) => {
-    let msg = `${chalk.bold(phaseData.phase)} phase results are `;
+    let msg = `${chalk.bold(phaseData.phase)} phase has `;
 
     if (phaseData.isSignificant) {
       let coloredDiff;
+
+      msg += 'an estimated difference of ';
+
       if (phaseData.hlDiff < 0) {
-        msg += `${chalk.black.bgRed(' SIGNIFICANT ')}`;
-        coloredDiff = chalk.red(`+${Math.abs(phaseData.hlDiff)}`);
+        coloredDiff = chalk.red(`+${Math.abs(phaseData.hlDiff)}ms`);
       } else {
-        msg += `${chalk.black.bgGreen(' SIGNIFICANT ')}`;
-        coloredDiff = chalk.green(`-${Math.abs(phaseData.hlDiff)}`);
+        coloredDiff = chalk.green(`-${Math.abs(phaseData.hlDiff)}ms`);
       }
-      msg += ` with an estimated difference of ${coloredDiff}ms`;
+
+      msg += `${coloredDiff}`;
     } else {
-      msg += `${chalk.black.bgWhite(' NOT SIGNIFICANT ')}`;
+      msg += `${chalk.grey('no difference')}`;
     }
 
     msg += '. \n';

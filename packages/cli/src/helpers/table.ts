@@ -1,3 +1,5 @@
+import chalk from 'chalk';
+
 import * as Table from 'cli-table3';
 import { Stats, ISevenFigureSummary } from './statistics/stats';
 import { chalkScheme } from './utils';
@@ -23,6 +25,7 @@ export default class TBTable {
   public estimatorDeltas: number[];
   public isSigArray: string[];
   private heading: string;
+
   constructor(heading: string) {
     this.heading = heading;
     this.config = this.initConfig();
@@ -31,6 +34,7 @@ export default class TBTable {
     this.isSigArray = [];
     this.estimatorDeltas = [];
   }
+
   // return table data for --json flag
   public getData(): ICompareJSONResults[] {
     const a: ICompareJSONResults[] = [];
@@ -61,13 +65,29 @@ export default class TBTable {
   }
 
   private setTableData() {
+    const controlLabelWithColor = chalkScheme.tbBranding.lime('Control');
+    const experimentLabelWithColor = chalkScheme.tbBranding.aqua('Experiment');
     this.display.forEach(stat => {
+      const estimatorForDisplay = stat.estimator * -1;
+      let hlDeltaWithColor;
+
+
+      if (stat.confidenceInterval.isSig === 'Yes') {
+        if (estimatorForDisplay > 0) {
+          hlDeltaWithColor = chalk.red(`${estimatorForDisplay}ms`);
+        } else {
+          hlDeltaWithColor = chalk.green(`${estimatorForDisplay}ms`);
+        }
+      } else {
+        hlDeltaWithColor = chalk.grey(`${estimatorForDisplay}ms`);
+      }
+
       this.table.push(
         [
           {
             colSpan: 2,
             content: `${chalkScheme.tbBranding.blue(
-              `${this.heading} : ${stat.name}`
+              `${this.heading} : ${stat.name}`,
             )}`,
           },
         ],
@@ -78,16 +98,16 @@ export default class TBTable {
             colSpan: 1,
             content: 'Sample Counts:',
           },
-          `${chalkScheme.tbBranding.lime('Control')}: ${stat.sampleCount.control}`,
+          `${controlLabelWithColor}: ${stat.sampleCount.control}`,
         ],
-        [`${chalkScheme.tbBranding.aqua('Experiment')}: ${stat.sampleCount.experiment}`],
+        [`${experimentLabelWithColor}: ${stat.sampleCount.experiment}`],
         [],
         [
           {
             vAlign: 'center',
             rowSpan: 7,
             colSpan: 1,
-            content: 'Control Seven Figure Summary:',
+            content: `${controlLabelWithColor} Seven Figure Summary:`,
           },
           `MIN: ${stat.sevenFigureSummary.control.min}ms`,
         ],
@@ -103,7 +123,7 @@ export default class TBTable {
             vAlign: 'center',
             rowSpan: 7,
             colSpan: 1,
-            content: 'Experiment Seven Figure Summary:',
+            content: `${experimentLabelWithColor} Seven Figure Summary:`,
           },
           `MIN: ${stat.sevenFigureSummary.experiment.min}ms`,
         ],
@@ -118,7 +138,8 @@ export default class TBTable {
           {
             content: 'Hodges–Lehmann estimated delta:',
           },
-          { content: `${stat.estimator}ms` },
+          // Reverse the signs when displaying
+          { content: `${hlDeltaWithColor}` },
         ],
         [],
         [
@@ -126,7 +147,8 @@ export default class TBTable {
             content: `95% confident the delta is between:`,
           },
           {
-            content: `${stat.confidenceInterval.min}ms to ${stat.confidenceInterval.max}ms`,
+            // For display flip the min and max
+            content: `${stat.confidenceInterval.max * -1}ms to ${stat.confidenceInterval.min * -1}ms`,
           },
         ],
         [],
@@ -141,10 +163,11 @@ export default class TBTable {
           {
             content: `${stat.sparkLine.experiment}`,
           },
-        ]
+        ],
       );
     });
   }
+
   private initConfig() {
     return {
       colWidths: [40, 30],

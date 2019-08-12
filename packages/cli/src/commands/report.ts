@@ -107,7 +107,7 @@ export default class Report extends Command {
     await printToPDF(`file://${absPathToHTML}`, absOutputPath);
 
     this.log(
-      `The PDF and HTML reports are available here: ${chalkScheme.tbBranding.lime.underline.bold(absPathToHTML)} and here: ${chalkScheme.tbBranding.blue.underline.bold(absOutputPath)}`
+      `The PDF and HTML reports are available here: ${chalkScheme.tbBranding.lime.underline.bold(absPathToHTML)} and here: ${chalkScheme.tbBranding.blue.underline.bold(absOutputPath)}\n`
     );
   }
   private async parseFlags() {
