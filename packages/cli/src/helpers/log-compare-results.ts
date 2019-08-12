@@ -84,12 +84,12 @@ function outputSummaryReport(cli: Command, phaseResultsFormatted: HTMLSectionRen
 
     if (phaseData.isSignificant) {
       let coloredDiff;
-      if (phaseData.hlDiff > 0) {
+      if (phaseData.hlDiff < 0) {
         msg += `${chalk.black.bgRed(' SIGNIFICANT ')}`;
-        coloredDiff = chalk.red(`${phaseData.hlDiff}`);
+        coloredDiff = chalk.red(`+${Math.abs(phaseData.hlDiff)}`);
       } else {
         msg += `${chalk.black.bgGreen(' SIGNIFICANT ')}`;
-        coloredDiff = chalk.green(`${phaseData.hlDiff}`);
+        coloredDiff = chalk.green(`-${Math.abs(phaseData.hlDiff)}`);
       }
       msg += ` with an estimated difference of ${coloredDiff}ms`;
     } else {
