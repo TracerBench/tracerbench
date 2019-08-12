@@ -50,11 +50,6 @@ export const insights = flags.boolean({
   default: false,
 });
 
-export const json = flags.boolean({
-  description: `If supported output the command stdout with json rather than formatted results`,
-  default: false,
-});
-
 export const debug = flags.boolean({
   description: `Debug flag per command. Will output noisy command`,
   default: false,

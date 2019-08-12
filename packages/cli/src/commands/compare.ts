@@ -20,7 +20,6 @@ import {
   tbResultsFolder,
   tracingLocationSearch,
   runtimeStats,
-  json,
   debug,
   emulateDevice,
   emulateDeviceOrientation,
@@ -64,7 +63,6 @@ export interface ICompareFlags {
   emulateDevice?: string;
   emulateDeviceOrientation?: string;
   socksPorts?: [string, string] | [number, number] | undefined;
-  json: boolean;
   debug: boolean;
   regressionThreshold?: number;
   headless: boolean;
@@ -92,7 +90,6 @@ export default class Compare extends Command {
     config: config(),
     runtimeStats,
     report,
-    json,
     debug,
     headless,
   };

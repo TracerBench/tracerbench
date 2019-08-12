@@ -26,8 +26,7 @@ describe('report: creates html', () => {
           '--fidelity',
           fidelity,
           '--config',
-          TB_CONFIG_FILE,
-          '--json'
+          TB_CONFIG_FILE
         ]);
 
         await Report.run(['--tbResultsFolder', `${TB_RESULTS_FOLDER}`, '--config', `${TB_CONFIG_FILE}`]);
