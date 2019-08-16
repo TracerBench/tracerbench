@@ -12,3 +12,4 @@ tmp/
 /packages/har/index.d.ts
 .idea/*
 .vscode/
+/packages/cli/bin/run.js

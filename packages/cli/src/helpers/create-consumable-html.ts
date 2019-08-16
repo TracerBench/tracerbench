@@ -264,6 +264,7 @@ export default function createConsumeableHTML(
     durationSection,
     reportTitles,
     subPhaseSections,
+    configsSJSONString: JSON.stringify(tbConfig, null, 4),
     sectionFormattedDataJson: JSON.stringify(subPhaseSections)
   });
 }
