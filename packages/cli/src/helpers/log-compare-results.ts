@@ -5,7 +5,7 @@ import { bucketPhaseValues, formatPhaseData, HTMLSectionRenderData, ITracerBench
 import { Stats } from './statistics/stats';
 import TBTable from './table';
 import { ICompareFlags } from '../commands/compare';
-import { fidelityLookup } from '../command-config/default-flag-args';
+import { fidelityLookup } from '../command-config';
 import { chalkScheme } from './utils';
 
 /**
@@ -23,10 +23,10 @@ function anyResultsSignificant(fidelity: number, benchmarkIsSigArray: string[], 
   return false;
 }
 
-function anyBelowRegressionThreshold(cliFlags: ICompareFlags, areResultsSignificant: boolean, benchmarkTable: TBTable, phaseTable: TBTable): boolean {
+function anyBelowRegressionThreshold(cliFlags: Partial<ICompareFlags>, areResultsSignificant: boolean, benchmarkTable: TBTable, phaseTable: TBTable): boolean {
   const { fidelity, regressionThreshold } = cliFlags;
 
-  if (fidelity >= fidelityLookup.low && regressionThreshold && areResultsSignificant) {
+  if (fidelity as number >= fidelityLookup.low && regressionThreshold && areResultsSignificant) {
     const deltas = benchmarkTable.estimatorDeltas.concat(phaseTable.estimatorDeltas);
     return deltas.every(x => x > regressionThreshold);
   }
@@ -42,23 +42,12 @@ const LOW_FIDELITY_WARNING = 'The fidelity setting was set below the recommended
  * @param cliFlags - This is expected to be CLI flags from the "compare" command
  * @param isBelowRegressionThreshold - Boolean indicating if there were any deltas below "regressionThreshold" flag
  */
-function outputRunMetaMessagesAndWarnings(cli: Command, cliFlags: ICompareFlags, isBelowRegressionThreshold: any) {
+function outputRunMetaMessagesAndWarnings(cli: Command, cliFlags: Partial<ICompareFlags>, isBelowRegressionThreshold: any) {
   const {
     fidelity,
-    tbResultsFolder,
-    browserArgs,
-    regressionThreshold,
-    report
+    regressionThreshold
   } = cliFlags;
-  const browser = browserArgs.includes('--headless') ? 'Headless-Chrome' : 'Chrome';
-  // tslint:disable-next-line: max-line-length
-  let message = `${chalk.black.bgGreen(' Success! ')} ${fidelity} test samples were run with ${browser}. The JSON file with results from the compare test are available here: ${tbResultsFolder}/compare.json.`;
-  if (!report) {
-    message += `\nTo generate a pdf report run "tracerbench report --tbResultsFolder ${tbResultsFolder}"`;
-  }
-  cli.log(`\n${message}`);
-
-  if (fidelity < 10) {
+  if ((fidelity as number) < 10) {
     cli.log(`\n${chalk.black.bgYellow(' WARNING ')} ${LOW_FIDELITY_WARNING}\n`);
   }
 
@@ -110,7 +99,7 @@ function outputSummaryReport(cli: Command, phaseResultsFormatted: HTMLSectionRen
  * @param flags - This is expected to be CLI flags from the "compare" command
  * @param cli - This is expected to be a "compare" Command instance
  */
-export function logCompareResults(results: ITracerBenchTraceResult[], flags: ICompareFlags, cli: Command) {
+export function logCompareResults(results: ITracerBenchTraceResult[], flags: Partial<ICompareFlags>, cli: Command) {
   const {
     fidelity,
   } = flags;
@@ -150,7 +139,7 @@ export function logCompareResults(results: ITracerBenchTraceResult[], flags: ICo
     phaseResultsFormatted.push(formatPhaseData(valuesByPhaseControl[phase], valuesByPhaseExperiment[phase], phase));
   });
 
-  const areResultsSignificant = anyResultsSignificant(fidelity, benchmarkTable.isSigArray, phaseTable.isSigArray);
+  const areResultsSignificant = anyResultsSignificant(fidelity as number, benchmarkTable.isSigArray, phaseTable.isSigArray);
   const isBelowRegressionThreshold = anyBelowRegressionThreshold(flags, areResultsSignificant, benchmarkTable, phaseTable);
 
   cli.log(`\n\n${benchmarkTable.render()}`);

@@ -78,7 +78,12 @@
     "bin": "tracerbench",
     "plugins": [
       "@oclif/plugin-help"
-    ]
+    ],
+    "topics": {
+      "compare:analyze": {
+        "description": "Run an analysis of a benchmark run from a results json file and output to terminal"
+      }
+    }
   },
   "scripts": {
     "lint": "tslint -p tsconfig.json",

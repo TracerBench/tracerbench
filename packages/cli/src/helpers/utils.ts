@@ -54,8 +54,7 @@ export function mergeLeft(
   Object.keys(right).forEach(key => {
     const leftValue = left[key];
     const rightValue = left[key];
-    const matchingObjectType =
-      typeof leftValue === 'object' && typeof rightValue === 'object';
+    const matchingObjectType = typeof leftValue === 'object' && typeof rightValue === 'object';
     const isOneArray = Array.isArray(leftValue) || Array.isArray(rightValue);
 
     if (matchingObjectType && (left[key] || right[key]) && !isOneArray) {
@@ -220,6 +219,7 @@ export const chalkScheme = {
   phase: chalk.rgb(225, 225, 225),
   faint: chalk.rgb(80, 80, 80),
   checkmark: chalk.rgb(133, 153, 36)(`${logSymbols.success}`),
+  blackBgGreen: chalk.green.bgGreen,
   tbBranding: {
     lime: chalk.rgb(199, 241, 106),
     blue: chalk.rgb(24, 132, 228),
