@@ -183,6 +183,7 @@ s?: TRACE_EVENT_SCOPE;
 
 <!-- commands -->
 * [`tracerbench compare`](#tracerbench-compare)
+* [`tracerbench compare:analyze RESULTSFILE`](#tracerbench-compareanalyze-resultsfile)
 * [`tracerbench create-archive`](#tracerbench-create-archive)
 * [`tracerbench help [COMMAND]`](#tracerbench-help-command)
 * [`tracerbench marker-timings`](#tracerbench-marker-timings)
@@ -236,6 +237,9 @@ OPTIONS
   --headless
       Run with headless chrome flags
 
+  --hideAnalysis
+      Hide the the analysis output in terminal
+
   --markers=markers
       (required) [default: domComplete] User Timing Markers
 
@@ -259,6 +263,25 @@ OPTIONS
 
   --tracingLocationSearch=tracingLocationSearch
       (required) [default: ?tracing] The document location search param.
+```
+
+## `tracerbench compare:analyze RESULTSFILE`
+
+Run an analysis of a benchmark run from a results json file and output to terminal
+
+```
+USAGE
+  $ tracerbench compare:analyze RESULTSFILE
+
+ARGUMENTS
+  RESULTSFILE  Results JSON file
+
+OPTIONS
+  --fidelity=fidelity                (required) [default: low] Directly correlates to the number of samples per trace.
+                                     High is the longest trace time.
+
+  --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output folder path for all
+                                     tracerbench results
 ```
 
 ## `tracerbench create-archive`

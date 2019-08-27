@@ -1,7 +1,7 @@
 import { test } from '@oclif/test';
 import * as chai from 'chai';
 import Compare from '../../src/commands/compare';
-import { defaultFlagArgs } from '../../src/command-config/default-flag-args';
+import { defaultFlagArgs } from '../../src/command-config';
 import { FIXTURE_APP, TB_RESULTS_FOLDER } from '../test-helpers';
 
 const fidelity = 'test';

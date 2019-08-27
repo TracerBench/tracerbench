@@ -22,7 +22,7 @@ const serverFileKeys = ['har', 'dist'] as const;
 function getCommandDefaults(flags: any) {
   const f = flags;
   Object.entries(f).forEach(([key]) => {
-    f[key] = getDefaultValue(key);
+    f[key] = getDefaultValue(key) || flags[key];
   });
 
   // this will return a bunch of flags that don't have values

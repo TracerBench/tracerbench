@@ -1,7 +1,7 @@
 import Protocol from 'devtools-protocol';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { Command } from '@oclif/command';
+import { Command, flags } from '@oclif/command';
 import {
   IInitialRenderBenchmarkParams,
   InitialRenderBenchmark,
@@ -28,28 +28,30 @@ import {
   headless,
   config,
   report,
-} from '../helpers/flags';
+} from '../../helpers/flags';
 import {
   fidelityLookup,
   headlessFlags,
   defaultFlagArgs,
-} from '../command-config/default-flag-args';
-import { logCompareResults } from '../helpers/log-compare-results';
+} from '../../command-config/default-flag-args';
 import {
   chalkScheme,
   checkEnvironmentSpecificOverride,
   parseMarkers,
-} from '../helpers/utils';
-import { getEmulateDeviceSettingForKeyAndOrientation } from '../helpers/simulate-device-options';
+} from '../../helpers/utils';
+import { getEmulateDeviceSettingForKeyAndOrientation } from '../../helpers/simulate-device-options';
 import {
   CONTROL_ENV_OVERRIDE_ATTR,
   EXPERIMENT_ENV_OVERRIDE_ATTR,
   ITBConfig,
-} from '../command-config/tb-config';
-import Report from './report';
+} from '../../command-config/tb-config';
 import { IConfig } from '@oclif/config';
-import { getConfig } from '../command-config/build-config';
+import { getConfig } from '../../command-config';
+import CompareAnalyze from './analyze';
+import Report from '../report';
+
 export interface ICompareFlags {
+  hideAnalysis: boolean;
   browserArgs: string[];
   cpuThrottleRate: number;
   fidelity: number;
@@ -71,9 +73,9 @@ export interface ICompareFlags {
 }
 
 export default class Compare extends Command {
-  public static description =
-    'Compare the performance delta between an experiment and control';
+  public static description = 'Compare the performance delta between an experiment and control';
   public static flags = {
+    hideAnalysis: flags.boolean({ default: false, description: 'Hide the the analysis output in terminal' }),
     browserArgs: browserArgs({ required: true }),
     cpuThrottleRate: cpuThrottleRate({ required: true }),
     fidelity: fidelity({ required: true }),
@@ -116,6 +118,7 @@ export default class Compare extends Command {
   }
 
   public async run() {
+    const { hideAnalysis } = this.compareFlags;
     const [
       controlSettings,
       experimentSettings,
@@ -144,13 +147,33 @@ export default class Compare extends Command {
             `Could not sample from provided urls\nCONTROL: ${this.parsedConfig.controlURL}\nEXPERIMENT: ${this.parsedConfig.experimentURL}.`
           );
         }
+        const resultJSONPath = `${this.parsedConfig.tbResultsFolder}/compare.json`;
 
-        fs.writeFileSync(
-          `${this.parsedConfig.tbResultsFolder}/compare.json`,
-          JSON.stringify(results, null, 2)
-        );
+        fs.writeFileSync(resultJSONPath, JSON.stringify(results, null, 2));
+        // tslint:disable-next-line: max-line-length
+        const message = `${chalkScheme.blackBgGreen(' Success! ')} ${fidelity} test samples were taken. The JSON file with results from the compare test are available here: ${tbResultsFolder}/compare.json.`;
+        this.log(`\n${message}`);
 
-        logCompareResults(results, this.compareFlags, this);
+        if (!hideAnalysis) {
+          CompareAnalyze.run([
+            resultJSONPath,
+            '--fidelity',
+            `${this.parsedConfig.fidelity}`,
+            '--tbResultsFolder',
+            `${this.parsedConfig.tbResultsFolder}`
+          ]);
+        }
+
+        // if we want to run the Report without calling a separate command
+        if (this.parsedConfig.report) {
+          this.log(chalkScheme.tbBranding.aqua('\nRUNNING A REPORT'));
+          Report.run([
+            '--tbResultsFolder',
+            `${this.parsedConfig.tbResultsFolder}`,
+            '--config',
+            `${this.parsedConfig.config}`,
+          ]);
+        }
 
         // with debug flag output three files
         // on config specifics
@@ -169,17 +192,6 @@ export default class Compare extends Command {
             `${this.parsedConfig.tbResultsFolder}/compare-flags-settings.json`,
             JSON.stringify(Object.assign(this.parsedConfig), null, 2)
           );
-        }
-
-        // if we want to run the Report without calling a separate command
-        if (this.parsedConfig.report) {
-          this.log(chalkScheme.tbBranding.aqua('\nRUNNING A REPORT'));
-          Report.run([
-            '--tbResultsFolder',
-            `${this.parsedConfig.tbResultsFolder}`,
-            '--config',
-            `${this.parsedConfig.config}`,
-          ]);
         }
       })
       .catch((err: any) => {
@@ -238,7 +250,7 @@ export default class Compare extends Command {
   private generateControlExperimentServerConfig(): [
     IInitialRenderBenchmarkParams,
     IInitialRenderBenchmarkParams
-  ] {
+    ] {
     // delay in ms times the number of samples. this improves variance.
     // eg 100 total samples X 200ms per sample = 20 seconds total added to the trace time
     const delay = 200;
@@ -352,7 +364,7 @@ export default class Compare extends Command {
         `${this.compareFlags.tbResultsFolder}/traces/experiment${i}.json`,
       url: path.join(
         this.compareFlags.experimentURL +
-          this.compareFlags.tracingLocationSearch
+        this.compareFlags.tracingLocationSearch
       ),
     };
 
