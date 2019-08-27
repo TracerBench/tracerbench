@@ -267,7 +267,7 @@ OPTIONS
 
 ## `tracerbench compare:analyze RESULTSFILE`
 
-Compare the performance delta between an experiment and control
+Run an analysis of a benchmark run from a results json file and output to terminal
 
 ```
 USAGE
@@ -277,13 +277,11 @@ ARGUMENTS
   RESULTSFILE  Results JSON file
 
 OPTIONS
-  --fidelity=fidelity                        (required) [default: low] Directly correlates to the number of samples per
-                                             trace. High is the longest trace time.
+  --fidelity=fidelity                (required) [default: low] Directly correlates to the number of samples per trace.
+                                     High is the longest trace time.
 
-  --regressionThreshold=regressionThreshold  [default: 0ms] Regression threshold in negative milliseconds. eg -100ms
-
-  --tbResultsFolder=tbResultsFolder          (required) [default: ./tracerbench-results] The output folder path for all
-                                             tracerbench results
+  --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output folder path for all
+                                     tracerbench results
 ```
 
 ## `tracerbench create-archive`

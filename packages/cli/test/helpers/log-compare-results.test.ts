@@ -72,7 +72,6 @@ describe('log-compare-results', () => {
     }];
     // @ts-ignore
     logCompareResults(testResults, flags, scope);
-    expect(ctx.stdout).to.contain(`Success`);
     expect(ctx.stdout).to.contain(`has no difference`);
   });
 });
