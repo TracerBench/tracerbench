@@ -2,20 +2,12 @@
   "name": "tracerbench",
   "version": "2.1.0",
   "description": "CLI for Tracerbench",
-  "keywords": [
-    "oclif"
-  ],
+  "keywords": ["oclif"],
   "homepage": "https://github.com/TracerBench/tracerbench",
   "bugs": "https://github.com/TracerBench/tracerbench/issues",
   "license": "BSD-2-Clause",
   "author": "Kris Selden @krisselden",
-  "files": [
-    "bin",
-    "dist",
-    "src",
-    "oclif.manifest.json",
-    "tb-schema.json"
-  ],
+  "files": ["bin", "dist", "src", "oclif.manifest.json", "tb-schema.json"],
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "bin": {
@@ -54,14 +46,13 @@
     "@types/json-query": "^2.2.0",
     "@types/json5": "*",
     "@types/log-symbols": "^3.0.0",
-    "@types/mocha": "^5.2.5",
     "@types/mock-fs": "3.6.30",
     "@types/node": "^10.12.18",
     "chai": "^4.2.0",
     "chai-fs": "^2.0.0",
-    "mocha": "^5.2.0",
+    "mocha": "^6.2.0",
     "mock-fs": "^4.10.1",
-    "nyc": "^13.1.0",
+    "nyc": "^14.1.1",
     "prettier": "^1.16.4",
     "ts-node": "^8.0.3",
     "tslint": "^5.14.0",
@@ -76,9 +67,7 @@
   "oclif": {
     "commands": "./dist/src/commands",
     "bin": "tracerbench",
-    "plugins": [
-      "@oclif/plugin-help"
-    ],
+    "plugins": ["@oclif/plugin-help"],
     "topics": {
       "compare:analyze": {
         "description": "Run an analysis of a benchmark run from a results json file and output to terminal"
