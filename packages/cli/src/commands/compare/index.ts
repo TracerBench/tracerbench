@@ -151,7 +151,7 @@ export default class Compare extends Command {
 
         fs.writeFileSync(resultJSONPath, JSON.stringify(results, null, 2));
         // tslint:disable-next-line: max-line-length
-        const message = `${chalkScheme.blackBgGreen(' Success! ')} ${fidelity} test samples were taken. The JSON file with results from the compare test are available here: ${tbResultsFolder}/compare.json.`;
+        const message = `${chalkScheme.blackBgGreen(' Success! ')} ${this.parsedConfig.fidelity} test samples were taken. The JSON file with results from the compare test are available here: ${this.parsedConfig.tbResultsFolder}/compare.json.`;
         this.log(`\n${message}`);
 
         if (!hideAnalysis) {
