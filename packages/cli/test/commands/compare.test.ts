@@ -1,8 +1,9 @@
 import { test } from '@oclif/test';
-import * as chai from 'chai';
+import { expect } from 'chai';
 import Compare from '../../src/commands/compare';
 import { defaultFlagArgs } from '../../src/command-config';
 import { FIXTURE_APP, TB_RESULTS_FOLDER } from '../test-helpers';
+import { ICompareJSONResults } from '../../src/helpers/log-compare-results';
 
 const fidelity = 'test';
 const emulateDevice = 'iphone-4';
@@ -30,16 +31,16 @@ describe('compare fixture: A/A', () => {
           '--debug',
         ]);
 
-        chai.expect(ctx.stdout).to.contain(`Success`);
-        chai
-          .expect(`${TB_RESULTS_FOLDER}/server-control-settings.json`)
-          .to.be.a.file();
-        chai
-          .expect(`${TB_RESULTS_FOLDER}/server-experiment-settings.json`)
-          .to.be.a.file();
-        chai
-          .expect(`${TB_RESULTS_FOLDER}/compare-flags-settings.json`)
-          .to.be.a.file();
+        expect(ctx.stdout).to.contain(`Success`);
+        expect(
+          `${TB_RESULTS_FOLDER}/server-control-settings.json`
+        ).to.be.a.file();
+        expect(
+          `${TB_RESULTS_FOLDER}/server-experiment-settings.json`
+        ).to.be.a.file();
+        expect(
+          `${TB_RESULTS_FOLDER}/compare-flags-settings.json`
+        ).to.be.a.file();
       }
     );
 });
@@ -52,7 +53,7 @@ describe('compare regression: fixture: A/B', () => {
         defaultFlagArgs.tracingLocationSearch} --experimentURL ${FIXTURE_APP.regression +
         defaultFlagArgs.tracingLocationSearch} --fidelity=low --tbResultsFolder ${TB_RESULTS_FOLDER} --regressionThreshold ${regressionThreshold} --cpuThrottleRate=1 --headless`,
       async ctx => {
-        await Compare.run([
+        const results = await Compare.run([
           '--controlURL',
           FIXTURE_APP.control,
           '--experimentURL',
@@ -63,10 +64,16 @@ describe('compare regression: fixture: A/B', () => {
           regressionThreshold,
           '--tbResultsFolder',
           TB_RESULTS_FOLDER,
-          '--headless'
+          '--headless',
         ]);
 
-        chai.expect(ctx.stdout).to.contain(`duration phase has an estimated difference of`);
+        const resultsJSON: ICompareJSONResults = JSON.parse(results);
+
+        expect(ctx.stdout).to.contain(
+          `duration phase has an estimated difference of`
+        );
+        // tslint:disable-next-line: no-unused-expression
+        expect(resultsJSON.areResultsSignificant).to.be.true;
       }
     );
 });
@@ -94,7 +101,7 @@ describe('compare mobile horizontal: fixture: A/A', () => {
           '--headless',
         ]);
 
-        chai.expect(ctx.stdout).to.contain(`Success`);
+        expect(ctx.stdout).to.contain(`Success`);
       }
     );
 });
@@ -122,7 +129,7 @@ describe('compare mobile vertical: fixture: A/A', () => {
           '--headless',
         ]);
 
-        chai.expect(ctx.stdout).to.contain(`Success`);
+        expect(ctx.stdout).to.contain(`Success`);
       }
     );
 });
@@ -150,7 +157,7 @@ describe('compare mobile vertical: fixture: A/A', () => {
           '--headless',
         ]);
 
-        chai.expect(ctx.stdout).to.contain(`Success`);
+        expect(ctx.stdout).to.contain(`Success`);
       }
     );
 });
