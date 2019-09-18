@@ -45,7 +45,7 @@ describe('compare fixture: A/A', () => {
     );
 });
 
-describe('compare regression: fixture: A/B', () => {
+describe('compare regression with JSON out: fixture: A/B', () => {
   test
     .stdout()
     .it(
@@ -69,9 +69,7 @@ describe('compare regression: fixture: A/B', () => {
 
         const resultsJSON: ICompareJSONResults = JSON.parse(results);
 
-        expect(ctx.stdout).to.contain(
-          `duration phase has an estimated difference of`
-        );
+        expect(ctx.stdout).to.contain(`Success!`);
         // tslint:disable-next-line: no-unused-expression
         expect(resultsJSON.areResultsSignificant).to.be.true;
       }
