@@ -73,9 +73,13 @@ export interface ICompareFlags {
 }
 
 export default class Compare extends Command {
-  public static description = 'Compare the performance delta between an experiment and control';
+  public static description =
+    'Compare the performance delta between an experiment and control';
   public static flags = {
-    hideAnalysis: flags.boolean({ default: false, description: 'Hide the the analysis output in terminal' }),
+    hideAnalysis: flags.boolean({
+      default: false,
+      description: 'Hide the the analysis output in terminal',
+    }),
     browserArgs: browserArgs({ required: true }),
     cpuThrottleRate: cpuThrottleRate({ required: true }),
     fidelity: fidelity({ required: true }),
@@ -100,10 +104,10 @@ export default class Compare extends Command {
   // flags explicitly specified within the cli when
   // running the command. these will override all
   public explicitFlags: string[];
+  public analyzedJSONString: string = '';
   constructor(argv: string[], config: IConfig) {
     super(argv, config);
     const { flags } = this.parse(Compare);
-
     this.explicitFlags = argv;
     this.compareFlags = flags;
   }
@@ -112,12 +116,11 @@ export default class Compare extends Command {
   public async init() {
     const { flags } = this.parse(Compare);
     this.parsedConfig = getConfig(flags.config, flags, this.explicitFlags);
-
     this.compareFlags = flags;
     await this.parseFlags();
   }
 
-  public async run() {
+  public async run(): Promise<string> {
     const { hideAnalysis } = this.compareFlags;
     const [
       controlSettings,
@@ -141,7 +144,7 @@ export default class Compare extends Command {
     const runner = new Runner([benchmarks.control, benchmarks.experiment]);
     await runner
       .run(this.compareFlags.fidelity, this.log)
-      .then((results: any) => {
+      .then(async (results: any) => {
         if (!results[0].samples[0]) {
           this.error(
             `Could not sample from provided urls\nCONTROL: ${this.parsedConfig.controlURL}\nEXPERIMENT: ${this.parsedConfig.experimentURL}.`
@@ -151,16 +154,20 @@ export default class Compare extends Command {
 
         fs.writeFileSync(resultJSONPath, JSON.stringify(results, null, 2));
         // tslint:disable-next-line: max-line-length
-        const message = `${chalkScheme.blackBgGreen(' Success! ')} ${this.parsedConfig.fidelity} test samples were taken. The JSON file with results from the compare test are available here: ${this.parsedConfig.tbResultsFolder}/compare.json.`;
+        const message = `${chalkScheme.blackBgGreen(' Success! ')} ${
+          this.parsedConfig.fidelity
+        } test samples were taken. The JSON file with results from the compare test are available here: ${
+          this.parsedConfig.tbResultsFolder
+        }/compare.json.`;
         this.log(`\n${message}`);
 
         if (!hideAnalysis) {
-          CompareAnalyze.run([
+          this.analyzedJSONString = await CompareAnalyze.run([
             resultJSONPath,
             '--fidelity',
             `${this.parsedConfig.fidelity}`,
             '--tbResultsFolder',
-            `${this.parsedConfig.tbResultsFolder}`
+            `${this.parsedConfig.tbResultsFolder}`,
           ]);
         }
 
@@ -197,6 +204,8 @@ export default class Compare extends Command {
       .catch((err: any) => {
         this.error(err);
       });
+
+    return this.analyzedJSONString;
   }
 
   private async parseFlags() {
@@ -250,7 +259,7 @@ export default class Compare extends Command {
   private generateControlExperimentServerConfig(): [
     IInitialRenderBenchmarkParams,
     IInitialRenderBenchmarkParams
-    ] {
+  ] {
     // delay in ms times the number of samples. this improves variance.
     // eg 100 total samples X 200ms per sample = 20 seconds total added to the trace time
     const delay = 200;
@@ -364,7 +373,7 @@ export default class Compare extends Command {
         `${this.compareFlags.tbResultsFolder}/traces/experiment${i}.json`,
       url: path.join(
         this.compareFlags.experimentURL +
-        this.compareFlags.tracingLocationSearch
+          this.compareFlags.tracingLocationSearch
       ),
     };
 

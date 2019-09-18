@@ -1,22 +1,9 @@
 import chalk from 'chalk';
 
 import * as Table from 'cli-table3';
-import { Stats, ISevenFigureSummary } from './statistics/stats';
+import { Stats } from './statistics/stats';
 import { chalkScheme } from './utils';
-
-export interface ICompareJSONResults {
-  heading: string;
-  statName: string;
-  isSignificant: 'Yes' | 'No';
-  estimatorDelta: string;
-  controlSampleCount: number;
-  experimentSampleCount: number;
-  confidenceIntervalMin: string;
-  confidenceIntervalMax: string;
-  confidenceIntervalIsSig: 'Yes' | 'No' | string;
-  controlSevenFigureSummary: ISevenFigureSummary;
-  experimentSevenFigureSummary: ISevenFigureSummary;
-}
+import { ICompareJSONResult } from './log-compare-results';
 
 export default class TBTable {
   public config: Table.TableConstructorOptions;
@@ -35,20 +22,21 @@ export default class TBTable {
     this.estimatorDeltas = [];
   }
 
-  // return table data for --json flag
-  public getData(): ICompareJSONResults[] {
-    const a: ICompareJSONResults[] = [];
+  // return table data for JSON results
+  public getData(): ICompareJSONResult[] {
+    const a: ICompareJSONResult[] = [];
     this.display.forEach(stat => {
       a.push({
         heading: this.heading,
-        statName: stat.name,
+        phaseName: stat.name,
         isSignificant: stat.confidenceInterval.isSig,
         estimatorDelta: `${stat.estimator}ms`,
         controlSampleCount: stat.sampleCount.control,
         experimentSampleCount: stat.sampleCount.experiment,
-        confidenceIntervalMin: `${stat.confidenceInterval.min}ms`,
-        confidenceIntervalMax: `${stat.confidenceInterval.max}ms`,
-        confidenceIntervalIsSig: `${stat.confidenceInterval.isSig}`,
+        confidenceInterval: [
+          `${stat.confidenceInterval.min}ms`,
+          `${stat.confidenceInterval.max}ms`,
+        ],
         controlSevenFigureSummary: stat.sevenFigureSummary.control,
         experimentSevenFigureSummary: stat.sevenFigureSummary.experiment,
       });
@@ -71,7 +59,6 @@ export default class TBTable {
       const estimatorForDisplay = stat.estimator * -1;
       let hlDeltaWithColor;
 
-
       if (stat.confidenceInterval.isSig === 'Yes') {
         if (estimatorForDisplay > 0) {
           hlDeltaWithColor = chalk.red(`${estimatorForDisplay}ms`);
@@ -87,7 +74,7 @@ export default class TBTable {
           {
             colSpan: 2,
             content: `${chalkScheme.tbBranding.blue(
-              `${this.heading} : ${stat.name}`,
+              `${this.heading} : ${stat.name}`
             )}`,
           },
         ],
@@ -148,7 +135,8 @@ export default class TBTable {
           },
           {
             // For display flip the min and max
-            content: `${stat.confidenceInterval.max * -1}ms to ${stat.confidenceInterval.min * -1}ms`,
+            content: `${stat.confidenceInterval.max * -1}ms to ${stat
+              .confidenceInterval.min * -1}ms`,
           },
         ],
         [],
@@ -163,7 +151,7 @@ export default class TBTable {
           {
             content: `${stat.sparkLine.experiment}`,
           },
-        ],
+        ]
       );
     });
   }

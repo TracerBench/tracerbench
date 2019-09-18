@@ -146,9 +146,6 @@
                 "number"
             ]
         },
-        "json": {
-            "type": "boolean"
-        },
         "locations": {
             "type": "string"
         },
