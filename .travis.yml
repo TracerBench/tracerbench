@@ -3,25 +3,17 @@ node_js:
   - 'stable'
 cache: yarn
 sudo: required
-dist: trusty
+dist: xenial
 addons:
   apt:
     sources:
       - google-chrome
-      - r-packages-trusty
-      - sourceline: 'ppa:marutter/rrutter'
-      - sourceline: 'ppa:marutter/c2d4u'
     packages:
       - google-chrome-stable
-      - r-recommended
-      - r-cran-jsonlite
-      - r-cran-r6
 env:
-  - CHROME_PATH=/usr/bin/google-chrome-stable R_LIBS_USER=~/R/Library
+  - CHROME_PATH=/usr/bin/google-chrome-stable
 install:
   - yarn install
-  - mkdir -p ~/R/Library
-  - Rscript --version
 script:
   - yarn test
   - yarn lint
@@ -29,7 +21,6 @@ after_script:
   - yarn lerna run report
 before_install:
   - export CHROME_BIN=/usr/bin/google-chrome-stable
-  - sh -e /etc/init.d/xvfb start
   - sudo apt-get update
   - sudo apt-get install -y libappindicator1 fonts-liberation
   - wget https://dl.google.com/linux/direct/google-chrome-unstable_current_amd64.deb
