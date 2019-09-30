@@ -2,20 +2,12 @@
   "name": "tracerbench",
   "version": "2.2.0",
   "description": "CLI for Tracerbench",
-  "keywords": [
-    "oclif"
-  ],
+  "keywords": ["oclif"],
   "homepage": "https://github.com/TracerBench/tracerbench",
   "bugs": "https://github.com/TracerBench/tracerbench/issues",
   "license": "BSD-2-Clause",
   "author": "Kris Selden @krisselden",
-  "files": [
-    "bin",
-    "dist",
-    "src",
-    "oclif.manifest.json",
-    "tb-schema.json"
-  ],
+  "files": ["bin", "dist", "src", "oclif.manifest.json", "tb-schema.json"],
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "bin": {
@@ -75,9 +67,7 @@
   "oclif": {
     "commands": "./dist/src/commands",
     "bin": "tracerbench",
-    "plugins": [
-      "@oclif/plugin-help"
-    ],
+    "plugins": ["@oclif/plugin-help"],
     "topics": {
       "compare:analyze": {
         "description": "Run an analysis of a benchmark run from a results json file and output to terminal"
@@ -88,7 +78,7 @@
     "lint": "tslint -p tsconfig.json",
     "postpack": "rm -f oclif.manifest.json",
     "prepare": "yarn build && yarn build:schema",
-    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "prepack": "yarn build && oclif-dev manifest && oclif-dev readme",
     "test": "yarn lint && nyc --extension .ts mocha \"test/commands/**/*.test.ts\" \"test/helpers/**/*.test.ts\" \"test/command-config/**/*.test.ts\"",
     "test:helpers": "nyc --extension .ts mocha \"test/helpers/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md",
