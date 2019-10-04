@@ -6,17 +6,17 @@ import { chalkScheme } from './utils';
 import { ICompareJSONResult } from './log-compare-results';
 
 export default class TBTable {
-  public config: Table.TableConstructorOptions;
   public table: any;
   public display: Stats[];
   public estimatorDeltas: number[];
-  public isSigArray: string[];
+  public isSigArray: boolean[];
   private heading: string;
 
   constructor(heading: string) {
     this.heading = heading;
-    this.config = this.initConfig();
-    this.table = new Table(this.config) as Table.HorizontalTable;
+    this.table = new Table({
+      colWidths: [40, 30],
+    }) as Table.HorizontalTable;
     this.display = [];
     this.isSigArray = [];
     this.estimatorDeltas = [];
@@ -59,7 +59,7 @@ export default class TBTable {
       const estimatorForDisplay = stat.estimator * -1;
       let hlDeltaWithColor;
 
-      if (stat.confidenceInterval.isSig === 'Yes') {
+      if (stat.confidenceInterval.isSig) {
         if (estimatorForDisplay > 0) {
           hlDeltaWithColor = chalk.red(`${estimatorForDisplay}ms`);
         } else {
@@ -154,11 +154,5 @@ export default class TBTable {
         ]
       );
     });
-  }
-
-  private initConfig() {
-    return {
-      colWidths: [40, 30],
-    };
   }
 }

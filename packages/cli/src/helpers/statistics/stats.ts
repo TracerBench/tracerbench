@@ -19,16 +19,18 @@ export interface IStatsOptions {
   name: string;
 }
 
+export interface IConfidenceInterval {
+  min: number;
+  max: number;
+  isSig: boolean;
+}
+
 // ! all stats assume microseconds from tracerbench and round to milliseconds
 export class Stats {
   public readonly name: string;
   public readonly estimator: number;
   public readonly sparkLine: { control: string; experiment: string };
-  public readonly confidenceInterval: {
-    min: number;
-    max: number;
-    isSig: 'Yes' | 'No';
-  };
+  public readonly confidenceInterval: IConfidenceInterval;
   public readonly sevenFigureSummary: {
     control: ISevenFigureSummary;
     experiment: ISevenFigureSummary;
@@ -78,7 +80,7 @@ export class Stats {
   private getConfidenceInterval(
     control: number[],
     experiment: number[]
-  ): { min: number; max: number; isSig: 'Yes' | 'No' } {
+  ): IConfidenceInterval {
     const sigVal = 0.05;
     const interval = 1 - sigVal;
     const ci = confidenceInterval(control, experiment, interval);
@@ -86,8 +88,8 @@ export class Stats {
       (ci[0] < 0 && 0 < ci[1]) ||
       (ci[0] > 0 && 0 > ci[1]) ||
       (ci[0] === 0 && ci[1] === 0)
-        ? 'No'
-        : 'Yes';
+        ? false
+        : true;
     return {
       min: Math.round(Math.ceil(ci[0] * 100) / 100),
       max: Math.round(Math.ceil(ci[1] * 100) / 100),

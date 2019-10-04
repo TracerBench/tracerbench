@@ -69,7 +69,7 @@ describe('stats', () => {
   it(`confidenceInterval()`, () => {
     expect(stats.confidenceInterval.min).to.equal(-1081);
     expect(stats.confidenceInterval.max).to.equal(-1078);
-    expect(stats.confidenceInterval.isSig).to.equal('Yes');
+    expect(stats.confidenceInterval.isSig).to.equal(true);
   });
 
   it(`sevenFigureSummary()`, () => {
@@ -93,12 +93,16 @@ describe('stats', () => {
 
     const controlSetForHl = [15000, 17000, 18000];
     const experimentSetForHl = [70000, 80000, 60000];
-    const statsForHl = new Stats({ control: controlSetForHl, experiment: experimentSetForHl, name: '2' });
+    const statsForHl = new Stats({
+      control: controlSetForHl,
+      experiment: experimentSetForHl,
+      name: '2',
+    });
     expect(statsForHl.estimator).to.equal(-53);
   });
 
   it(`isSigWilcoxonRankSumTest()`, () => {
-    expect(stats.confidenceInterval.isSig).to.equal('Yes');
+    expect(stats.confidenceInterval.isSig).to.equal(true);
   });
 
   it(`getSparkline()`, () => {

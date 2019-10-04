@@ -1,6 +1,8 @@
 import {
   logCompareResults,
   ICompareJSONResults,
+  anyResultsSignificant,
+  allBelowRegressionThreshold,
 } from '../../src/helpers/log-compare-results';
 import { expect } from 'chai';
 import { tmpDir } from '../setup';
@@ -87,5 +89,53 @@ describe('log-compare-results', () => {
     const resultsJSON: ICompareJSONResults = JSON.parse(results);
     expect(ctx.stdout).to.contain(`has no difference`);
     expect(resultsJSON).to.have.all.keys(jsonResults);
+  });
+});
+
+describe('anyResultsSignificant', () => {
+  const fidelity = 20;
+  const truthyArr = [true, true, false];
+  const falsyArr = [false, false, false];
+  it(`stat-sig results are significant`, () => {
+    const isSig = anyResultsSignificant(fidelity, truthyArr, falsyArr);
+    // tslint:disable-next-line: no-unused-expression
+    expect(isSig).to.be.true;
+  });
+  it(`stat-sig results are not significant`, () => {
+    const isSig = anyResultsSignificant(fidelity, falsyArr, falsyArr);
+    // tslint:disable-next-line: no-unused-expression
+    expect(isSig).to.be.false;
+  });
+});
+
+describe('allBelowRegressionThreshold', () => {
+  const improvementDeltas = [100, 50, 200];
+  const regressionDeltas = [-200, -300, -400];
+  it(`is below regression threshold`, () => {
+    const isBelowThreshold = allBelowRegressionThreshold(
+      -100,
+      improvementDeltas,
+      improvementDeltas
+    );
+    // tslint:disable-next-line: no-unused-expression
+    expect(isBelowThreshold).to.be.true;
+  });
+  it(`is above regression threshold`, () => {
+    const isBelowThreshold = allBelowRegressionThreshold(
+      -100,
+      improvementDeltas,
+      regressionDeltas
+    );
+    // tslint:disable-next-line: no-unused-expression
+    expect(isBelowThreshold).to.be.false;
+  });
+  it(`no regression threshold set`, () => {
+    const isBelowThreshold = allBelowRegressionThreshold(
+      undefined,
+      improvementDeltas,
+      regressionDeltas
+    );
+    // tslint:disable-next-line: no-unused-expression
+    expect(isBelowThreshold).to.be.true;
   });
 });

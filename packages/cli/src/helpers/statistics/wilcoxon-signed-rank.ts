@@ -65,7 +65,7 @@ export function getTPlusVal(rankedSamples: ISample[]): number {
 export function getWilcoxonSignedRankTest(
   control: number[],
   experiment: number[]
-): string {
+): boolean {
   const N = control.length;
   const samples = getSamples(control, experiment);
   const sortedSamples = sortSamples(samples);
@@ -77,7 +77,7 @@ export function getWilcoxonSignedRankTest(
   try {
     const wCrit = wilcoxonSignedRanksTable[N];
     // !! important this is lt not gt
-    return wStat < wCrit ? 'Yes' : 'No';
+    return wStat < wCrit;
   } catch (e) {
     throw new Error(
       `Sample sizes greater than 50 are not supported. Your sample size is ${N}`

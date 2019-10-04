@@ -52,6 +52,6 @@ describe('wilcoxon signed rank', () => {
   });
 
   it(`getWilcoxonSignedRankTest()`, () => {
-    expect(isSigWilcoxonSignedRankTest).to.equal('Yes');
+    expect(isSigWilcoxonSignedRankTest).to.equal(true);
   });
 });

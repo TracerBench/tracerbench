@@ -68,10 +68,16 @@ describe('compare regression with JSON out: fixture: A/B', () => {
         ]);
 
         const resultsJSON: ICompareJSONResults = JSON.parse(results);
-
+        // confirm with headless flag is logging the trace stream
+        expect(ctx.stdout).to.contain(`Finished 10`);
+        // successful trace
         expect(ctx.stdout).to.contain(`Success!`);
+        // results are json and are significant
         // tslint:disable-next-line: no-unused-expression
         expect(resultsJSON.areResultsSignificant).to.be.true;
+        // regression is over the allowable threshold
+        // tslint:disable-next-line: no-unused-expression
+        expect(resultsJSON.isBelowRegressionThreshold).to.be.false;
       }
     );
 });

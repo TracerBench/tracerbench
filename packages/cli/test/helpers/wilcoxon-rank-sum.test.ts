@@ -112,7 +112,7 @@ describe('wilcoxon rank sum', () => {
   });
 
   it(`getWilcoxonRankSumTest()`, () => {
-    expect(isSigWilcoxonRankSumTest).to.equal('Yes');
-    expect(isSigWilcoxonRankSumTestNon).to.equal('No');
+    expect(isSigWilcoxonRankSumTest).to.equal(true);
+    expect(isSigWilcoxonRankSumTestNon).to.equal(false);
   });
 });

@@ -70,7 +70,7 @@ export function getSampleUStat(rankSum: number, N: number): number {
 export function getWilcoxonRankSumTest(
   control: number[],
   experiment: number[]
-): string {
+): boolean {
   const N = control.length;
   const samplePool = getMergedSortedSamples(control, experiment);
   const controlSamples = getSamples(control, samplePool);
@@ -92,5 +92,5 @@ export function getWilcoxonRankSumTest(
   const uCrit = wilcoxonRankSumTable[N];
 
   // !! important this is lt not gt
-  return uStat < uCrit ? 'Yes' : 'No';
+  return uStat < uCrit;
 }

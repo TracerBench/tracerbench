@@ -17,7 +17,7 @@ import { chalkScheme } from './utils';
 export interface ICompareJSONResult {
   heading: string;
   phaseName: string;
-  isSignificant: 'Yes' | 'No';
+  isSignificant: boolean;
   estimatorDelta: string;
   controlSampleCount: number;
   experimentSampleCount: number;
@@ -42,44 +42,30 @@ export interface ICompareJSONResults {
  */
 export function anyResultsSignificant(
   fidelity: number,
-  benchmarkIsSigArray: string[],
-  phaseIsSigArray: string[]
+  benchmarkIsSigArray: boolean[],
+  phaseIsSigArray: boolean[]
 ): boolean {
   // if fidelity !== 'test'
   if (fidelity > fidelityLookup.test) {
-    console.log(benchmarkIsSigArray);
-    console.log(phaseIsSigArray);
-
-    return (
-      benchmarkIsSigArray.includes('Yes') || phaseIsSigArray.includes('Yes')
-    );
+    return benchmarkIsSigArray.includes(true) || phaseIsSigArray.includes(true);
   }
   return false;
 }
 
-export function anyBelowRegressionThreshold(
-  cliFlags: Partial<ICompareFlags>,
-  areResultsSignificant: boolean,
-  benchmarkTable: TBTable,
-  phaseTable: TBTable
+export function allBelowRegressionThreshold(
+  regressionThreshold: number | undefined,
+  benchmarkTableEstimatorDeltas: number[],
+  phaseTableEstimatorDeltas: number[]
 ): boolean {
-  const { fidelity, regressionThreshold } = cliFlags;
-
-  if (
-    (fidelity as number) >= fidelityLookup.low &&
-    regressionThreshold &&
-    areResultsSignificant
-  ) {
-    const deltas = benchmarkTable.estimatorDeltas.concat(
-      phaseTable.estimatorDeltas
+  if (regressionThreshold) {
+    const deltas: number[] = benchmarkTableEstimatorDeltas.concat(
+      phaseTableEstimatorDeltas
     );
+    // if regression is over the threshold this should return false;
     return deltas.every(x => x > regressionThreshold);
   }
   return true;
 }
-
-const LOW_FIDELITY_WARNING =
-  'The fidelity setting was set below the recommended for a viable result. Rerun TracerBench with at least "fidelity=low"';
 
 /**
  * Output meta data about the benchmark run and FYI messages to the user.
@@ -91,9 +77,12 @@ const LOW_FIDELITY_WARNING =
 export function outputRunMetaMessagesAndWarnings(
   cli: Command,
   cliFlags: Partial<ICompareFlags>,
-  isBelowRegressionThreshold: any
+  isBelowRegressionThreshold: boolean
 ) {
   const { fidelity, regressionThreshold } = cliFlags;
+  const LOW_FIDELITY_WARNING =
+    'The fidelity setting was set below the recommended for a viable result. Rerun TracerBench with at least "fidelity=low"';
+
   if ((fidelity as number) < 10) {
     cli.log(`\n${chalk.black.bgYellow(' WARNING ')} ${LOW_FIDELITY_WARNING}\n`);
   }
@@ -193,7 +182,7 @@ export function outputJSONResults(
  */
 export function logCompareResults(
   results: ITracerBenchTraceResult[],
-  flags: Partial<ICompareFlags>,
+  flags: Pick<ICompareFlags, 'fidelity'>,
   cli: Command
 ): string {
   const { fidelity } = flags;
@@ -251,6 +240,7 @@ export function logCompareResults(
     );
   });
 
+  let isBelowRegressionThreshold: boolean = true;
   const benchmarkTableData = benchmarkTable.getData();
   const phaseTableData = phaseTable.getData();
   const areResultsSignificant = anyResultsSignificant(
@@ -258,18 +248,20 @@ export function logCompareResults(
     benchmarkTable.isSigArray,
     phaseTable.isSigArray
   );
-  const isBelowRegressionThreshold = anyBelowRegressionThreshold(
-    flags,
-    areResultsSignificant,
-    benchmarkTable,
-    phaseTable
-  );
+  if (areResultsSignificant) {
+    isBelowRegressionThreshold = allBelowRegressionThreshold(
+      fidelity as number,
+      benchmarkTable.estimatorDeltas,
+      phaseTable.estimatorDeltas
+    );
+  }
 
   cli.log(`\n\n${benchmarkTable.render()}`);
   cli.log(`\n\n${phaseTable.render()}`);
 
   outputRunMetaMessagesAndWarnings(cli, flags, isBelowRegressionThreshold);
   outputSummaryReport(cli, phaseResultsFormatted);
+
   return outputJSONResults(
     benchmarkTableData,
     phaseTableData,
