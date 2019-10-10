@@ -78,7 +78,7 @@ $ tracerbench trace --url http://localhost:8000 --insights
 3. Now that you have "trace.har" and "trace.json" files you can benchmark for the list of timings:
 
 ```console
-$ tracerbench timeline:show --urlOrFrame http://localhost:8000
+$ tracerbench marker-timings --url http://localhost:8000
 ...
 
 ✔ Timings:       0.00 ms navigationStart
