@@ -1,13 +1,16 @@
-import {
-  getEmulateDeviceSettingForKeyAndOrientation
-} from '../../src/helpers/simulate-device-options';
+import { getEmulateDeviceSettingForKeyAndOrientation } from '../../src/helpers/simulate-device-options';
 import { expect } from 'chai';
-
 
 describe('simulate-device-options', () => {
   it(`getEmulateDeviceSettingForKeyAndOrientation() with non-existent device`, () => {
-    const result = getEmulateDeviceSettingForKeyAndOrientation('not-exist');
-    expect(result).to.equal(undefined);
+    const device = 'not-exist';
+    try {
+      getEmulateDeviceSettingForKeyAndOrientation(device);
+    } catch (error) {
+      expect(error.message).to.equal(
+        `Device emulation settings not found for device ${device}`
+      );
+    }
   });
 
   it(`getEmulateDeviceSettingForKeyAndOrientation() success path`, () => {

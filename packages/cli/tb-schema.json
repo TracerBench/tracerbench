@@ -88,6 +88,9 @@
         "controlURL": {
             "type": "string"
         },
+        "cookie": {
+            "type": "string"
+        },
         "cpuThrottleRate": {
             "type": [
                 "string",

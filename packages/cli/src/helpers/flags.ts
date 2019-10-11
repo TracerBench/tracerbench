@@ -8,7 +8,9 @@ import {
   getDefaultValue,
 } from '../command-config/default-flag-args';
 import { parseMarkers } from './utils';
-import deviceSettings from './simulate-device-options';
+import deviceSettings, {
+  EmulateDeviceSettingCliOption,
+} from './simulate-device-options';
 /*
 ! oclif flags.build#parse will only execute when the flag:string is passed directly
 ! from the cli. thus when passed via the tbconfig.json or the defaultFlagArgs
@@ -200,7 +202,9 @@ export const socksPorts = flags.build({
 export const emulateDevice = flags.build({
   default: () => getDefaultValue('emulateDevice'),
   description: `Emulate a mobile device screen size.`,
-  options: deviceSettings.map(setting => `${setting.typeable}`),
+  options: deviceSettings.map(
+    (setting: EmulateDeviceSettingCliOption) => `${setting.typeable}`
+  ),
 });
 
 export const emulateDeviceOrientation = flags.build({

@@ -1,3 +1,4 @@
+import { CLIError } from '@oclif/errors';
 import Protocol from 'devtools-protocol';
 import { convertToTypable } from './utils';
 import { deviceLookup } from './device-lookup';
@@ -21,11 +22,9 @@ export interface EmulateDeviceSettingBase {
 }
 
 export interface EmulateDeviceSetting
-  extends EmulateDeviceSettingBase,
-    Protocol.Emulation.SetDeviceMetricsOverrideRequest,
+  extends Protocol.Emulation.SetDeviceMetricsOverrideRequest,
     Protocol.Emulation.SetUserAgentOverrideRequest {
-  width: number;
-  height: number;
+  typeable: string;
 }
 
 export interface EmulateDeviceSettingCliOption
@@ -56,14 +55,14 @@ const deviceSettings: EmulateDeviceSettingCliOption[] = deviceLookup.map(
 export function getEmulateDeviceSettingForKeyAndOrientation(
   key: string,
   orientation: string = 'vertical'
-): EmulateDeviceSetting | undefined {
+): EmulateDeviceSetting {
   let deviceSetting;
 
   for (deviceSetting of deviceSettings) {
     if (key === deviceSetting.typeable) {
       if (!deviceSetting.screens[orientation!]) {
-        throw new Error(
-          `${orientation} orientation for ${key} does not exist.`
+        throw new CLIError(
+          `${orientation} orientation for ${key} does not exist`
         );
       }
       return {
@@ -76,6 +75,8 @@ export function getEmulateDeviceSettingForKeyAndOrientation(
       };
     }
   }
+
+  throw new CLIError(`Device emulation settings not found for device ${key}`);
 }
 
 export default deviceSettings;

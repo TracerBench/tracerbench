@@ -333,10 +333,12 @@ export default class Compare extends Command {
         this.parsedConfig
       ),
       delay,
-      emulateDeviceSettings: getEmulateDeviceSettingForKeyAndOrientation(
-        controlEmulateDevice,
-        controlEmulateDeviceOrientation
-      ),
+      emulateDeviceSettings: controlEmulateDevice
+        ? getEmulateDeviceSettingForKeyAndOrientation(
+            controlEmulateDevice,
+            controlEmulateDeviceOrientation
+          )
+        : undefined,
       markers: this.compareFlags.markers,
       networkConditions: controlNetwork
         ? networkConditions[controlNetwork as keyof typeof networkConditions]
@@ -359,10 +361,12 @@ export default class Compare extends Command {
         this.parsedConfig
       ),
       delay,
-      emulateDeviceSettings: getEmulateDeviceSettingForKeyAndOrientation(
-        experimentEmulateDevice,
-        experimentEmulateDeviceOrientation
-      ),
+      emulateDeviceSettings: experimentEmulateDevice
+        ? getEmulateDeviceSettingForKeyAndOrientation(
+            experimentEmulateDevice,
+            experimentEmulateDeviceOrientation
+          )
+        : undefined,
       markers: this.compareFlags.markers,
       networkConditions: experimentNetwork
         ? networkConditions[experimentNetwork as keyof typeof networkConditions]

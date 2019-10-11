@@ -29,8 +29,11 @@ export interface IEntry {
   response: IResponse;
 }
 
-export async function harTrace(url: string, additionalBrowserArgs: string[] = [], cookies: any = null) {
-
+export async function harTrace(
+  url: string,
+  additionalBrowserArgs: string[] = [],
+  cookies: any = null
+) {
   // the saving of the cookies should be a dif command
   // spawn browser > sign-in > done > save cookies
 
@@ -66,7 +69,9 @@ export async function harTrace(url: string, additionalBrowserArgs: string[] = []
 
     await client.send('Network.enable');
 
-    cookies = cookies ? cookies : await client.send('Network.getCookies', { urls });
+    cookies = cookies
+      ? cookies
+      : await client.send('Network.getCookies', { urls });
     await setCookies(client, cookies);
 
     await client.send('Page.enable');
@@ -79,7 +84,9 @@ export async function harTrace(url: string, additionalBrowserArgs: string[] = []
     for (let i = 0; i < requestIds.length; i++) {
       const requestId = requestIds[i];
       const response = responses[i];
-      const responseBody = await client.send('Network.getResponseBody', { requestId });
+      const responseBody = await client.send('Network.getResponseBody', {
+        requestId,
+      });
       const entry: IEntry = {
         request: { url: response.url },
         response: { content: { text: responseBody.body } },
