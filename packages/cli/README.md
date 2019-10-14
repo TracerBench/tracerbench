@@ -194,39 +194,13 @@ s?: TRACE_EVENT_SCOPE;
 
 <!-- commands -->
 
-- [`tracerbench`](#tracerbench-)
 - [`tracerbench compare`](#tracerbench-compare)
 - [`tracerbench compare:analyze RESULTSFILE`](#tracerbench-compareanalyze-resultsfile)
-- [`tracerbench create-archive`](#tracerbench-create-archive)
 - [`tracerbench help [COMMAND]`](#tracerbench-help-command)
 - [`tracerbench marker-timings`](#tracerbench-marker-timings)
+- [`tracerbench record-har`](#tracerbench-record-har)
 - [`tracerbench report`](#tracerbench-report)
 - [`tracerbench trace`](#tracerbench-trace)
-
-## `tracerbench`
-
-Creates an automated HAR file from a URL.
-
-```
-USAGE
-  $ tracerbench
-
-OPTIONS
-  --browserArgs=browserArgs
-      (required) [default:
-      --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-dev-shm-usage,--disable-cache,--disable-v8-i
-      dle-tasks,--disable-breakpad,--disable-notifications,--disable-hang-monitor,--safebrowsing-disable-auto-update,--ign
-      ore-certificate-errors,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the TracerBench
-      render benchmark. TracerBench includes many non-configurable defaults in this category.
-
-  --tbResultsFolder=tbResultsFolder
-      (required) [default: ./tracerbench-results] The output folder path for all tracerbench results
-
-  --url=url
-      (required) [default: http://localhost:8000/] URL to visit for create-archive, timings & trace commands
-```
-
-_See code: [dist/src/commands/index.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/index.ts)_
 
 ## `tracerbench compare`
 
@@ -324,33 +298,6 @@ OPTIONS
                                      tracerbench results
 ```
 
-_See code: [dist/src/commands/compare/analyze.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/compare/analyze.ts)_
-
-## `tracerbench create-archive`
-
-Creates an automated HAR file from a URL.
-
-```
-USAGE
-  $ tracerbench create-archive
-
-OPTIONS
-  --browserArgs=browserArgs
-      (required) [default:
-      --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-dev-shm-usage,--disable-cache,--disable-v8-i
-      dle-tasks,--disable-breakpad,--disable-notifications,--disable-hang-monitor,--safebrowsing-disable-auto-update,--ign
-      ore-certificate-errors,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the TracerBench
-      render benchmark. TracerBench includes many non-configurable defaults in this category.
-
-  --tbResultsFolder=tbResultsFolder
-      (required) [default: ./tracerbench-results] The output folder path for all tracerbench results
-
-  --url=url
-      (required) [default: http://localhost:8000/] URL to visit for create-archive, timings & trace commands
-```
-
-_See code: [dist/src/commands/create-archive.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/create-archive.ts)_
-
 ## `tracerbench help [COMMAND]`
 
 display help for tracerbench
@@ -384,8 +331,27 @@ OPTIONS
 
   --traceFrame=traceFrame            Specify a trace insights frame
 
-  --url=url                          (required) [default: http://localhost:8000/] URL to visit for create-archive,
-                                     timings & trace commands
+  --url=url                          (required) [default: http://localhost:8000/] URL to visit for record-har, timings &
+                                     trace commands
+```
+
+## `tracerbench record-har`
+
+Generates a HAR file from a URL.
+
+```
+USAGE
+  $ tracerbench record-har
+
+OPTIONS
+  --cookiespath=cookiespath  (required) The path to a JSON file containing cookies to authenticate against the
+                             correlated URL
+
+  --dest=dest                (required) The destination path for the generated file
+
+  --filename=filename        (required) [default: tracerbench] The filename for the generated file
+
+  --url=url                  (required) URL to visit for record-har, timings & trace commands
 ```
 
 _See code: [dist/src/commands/marker-timings.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/marker-timings.ts)_
@@ -417,8 +383,14 @@ USAGE
   $ tracerbench trace
 
 OPTIONS
+  --cookiespath=cookiespath
+      (required) The path to a JSON file containing cookies to authenticate against the correlated URL
+
   --cpuThrottleRate=cpuThrottleRate
       (required) [default: 2] CPU throttle multiplier
+
+  --harpath=harpath
+      (required) The path to the HTTP Archive File (HAR)
 
   --insights
       Analyze insights from command.
@@ -436,7 +408,7 @@ OPTIONS
       (required) [default: ./tracerbench-results] The output folder path for all tracerbench results
 
   --url=url
-      (required) [default: http://localhost:8000/] URL to visit for create-archive, timings & trace commands
+      (required) [default: http://localhost:8000/] URL to visit for record-har, timings & trace commands
 ```
 
 _See code: [dist/src/commands/trace.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/trace.ts)_

@@ -1,4 +1,5 @@
 import { pathToFileURL } from 'url';
+import { writeFileSync, mkdirpSync } from 'fs-extra';
 import { tmpDir } from './setup';
 import { join, resolve } from 'path';
 
@@ -23,4 +24,34 @@ export const HAR_PATH = resolve(
   join(process.cwd(), '/test/fixtures/fixture.har')
 );
 export const URL = 'https://www.tracerbench.com';
-export const TRACE = resolve(join(process.cwd(), '/test/fixtures/trace.json'));
+
+export interface FileStructure {
+  [key: string]: string | FileStructure;
+}
+
+/**
+ * Recursively build the file structure according to the tree passed
+ *
+ * @param structure - File structure to generate. Any values that are non strings are considered another folder
+ * @param rootFolder - Generate the file structure in this folder
+ */
+export function generateFileStructure(
+  structure: FileStructure,
+  rootFolder: string
+) {
+  const names = Object.keys(structure);
+
+  names.forEach((name: string) => {
+    const pathForName = join(rootFolder, name);
+    if (typeof structure[name] === 'string') {
+      writeFileSync(pathForName, structure[name]);
+    } else if (
+      typeof structure[name] === 'object' &&
+      Object.keys(structure[name]).length
+    ) {
+      mkdirpSync(pathForName);
+      // @ts-ignore
+      generateFileStructure(structure[name], pathForName);
+    }
+  });
+}

@@ -1,12 +1,13 @@
 import { TBBaseCommand } from '../command-config';
-import * as fs from 'fs-extra';
+import { readJson } from 'fs-extra';
 import * as path from 'path';
 import {
   liveTrace,
-  harTrace,
   analyze,
   loadTrace,
   ITraceEvent,
+  IConditions,
+  IAnalyze,
 } from '@tracerbench/core';
 import {
   tbResultsFolder,
@@ -16,12 +17,13 @@ import {
   url,
   insights,
   locations,
+  harpath,
+  cookiespath,
 } from '../helpers/flags';
 import {
-  getCookiesFromHAR,
   normalizeFnName,
   isCommitLoad,
-  loadTraceFile,
+  setTraceEvents,
 } from '../helpers/utils';
 
 export default class Trace extends TBBaseCommand {
@@ -29,8 +31,10 @@ export default class Trace extends TBBaseCommand {
   public static flags = {
     cpuThrottleRate: cpuThrottleRate({ required: true }),
     tbResultsFolder: tbResultsFolder({ required: true }),
+    harpath: harpath({ required: true }),
     network: network(),
     url: url({ required: true }),
+    cookiespath: cookiespath({ required: true }),
     iterations: iterations({ required: true }),
     locations: locations(),
     insights,
@@ -41,76 +45,36 @@ export default class Trace extends TBBaseCommand {
     const {
       url,
       cpuThrottleRate,
+      cookiespath,
       tbResultsFolder,
       insights,
       locations,
-    } = flags;
-    const network = 'none';
-    const cpu = cpuThrottleRate;
-    const file = tbResultsFolder;
-    const event = undefined;
-    const report = undefined;
-    const methods = [''];
-    const traceJSON = path.join(tbResultsFolder, 'trace.json');
-    const traceHAR = path.join(tbResultsFolder, 'trace.har');
-    const cookiesJSON = path.join(tbResultsFolder, 'cookies.json');
-
-    let archiveFile;
-    let rawTraceData;
-    let cookies: any = '';
-
-    // if trace can't find a HAR then go and record one
-    if (!fs.existsSync(traceHAR)) {
-      [cookies, archiveFile] = await harTrace(url);
-
-      fs.writeFileSync(cookiesJSON, JSON.stringify(cookies));
-      fs.writeFileSync(traceHAR, JSON.stringify(archiveFile));
-    }
-
-    try {
-      cookies = JSON.parse(fs.readFileSync(cookiesJSON, 'utf8'));
-    } catch (error) {
-      try {
-        cookies = getCookiesFromHAR(
-          JSON.parse(fs.readFileSync(traceHAR, 'utf8'))
-        );
-      } catch (error) {
-        this.error(
-          `Could not extract cookies from cookies.json or HAR file at path ${traceHAR}, ${error}`
-        );
-        cookies = null;
-      }
-    }
-
-    await liveTrace(url, traceJSON, cookies, {
-      cpu,
       network,
-    });
+      harpath,
+    } = flags;
 
-    try {
-      rawTraceData = JSON.parse(fs.readFileSync(traceJSON, 'utf8'));
-    } catch (error) {
-      this.error(
-        `Could not extract trace events from '${traceJSON}', ${error}`
-      );
-    }
+    const methods = [''];
 
-    try {
-      archiveFile = JSON.parse(fs.readFileSync(traceHAR, 'utf8'));
-    } catch (error) {
-      this.error(
-        `Could not find trace har file at path: ${traceHAR}, ${error}`
-      );
-    }
-
-    await analyze({
-      archiveFile,
-      event,
-      file,
+    const traceJSONFile = path.resolve(tbResultsFolder, 'trace.json');
+    const traceJSON = await readJson(traceJSONFile);
+    const cookiesJSON = await readJson(path.resolve(cookiespath));
+    const traceHAR = path.resolve(harpath);
+    const traceHARJSON = await readJson(traceHAR);
+    const conditions: IConditions = {
+      cpu: cpuThrottleRate,
+      network,
+    };
+    const analyzeOptions: IAnalyze = {
+      traceJSON,
+      traceHARJSON,
       methods,
-      rawTraceData,
-      report,
-    });
+    };
+
+    // run the liveTrace
+    await liveTrace(url, traceJSONFile, cookiesJSON, conditions);
+
+    // analyze the liveTrace
+    await analyze(analyzeOptions);
 
     if (insights) {
       // js-eval-time
@@ -121,7 +85,7 @@ export default class Trace extends TBBaseCommand {
       const methods = new Set();
 
       try {
-        trace = loadTraceFile(rawTraceData);
+        trace = setTraceEvents(traceJSON);
       } catch (error) {
         this.error(`${error}`);
       }
@@ -184,13 +148,8 @@ export default class Trace extends TBBaseCommand {
         this.error(error);
       }
 
-      // // list-functions
-      // methods.forEach(method =>
-      //   this.log(`Successfully listed method: ${method}`)
-      // );
-
       try {
-        trace = loadTraceFile(rawTraceData);
+        trace = setTraceEvents(traceJSON);
         const traceLoad = trace.filter(isCommitLoad);
         traceLoad.forEach(
           ({

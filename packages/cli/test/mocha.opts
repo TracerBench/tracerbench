@@ -5,5 +5,5 @@
 --reporter spec
 --timeout 60000
 --file ./test/setup.ts
---file ./test/commands/create-archive.ts
+--file ./test/commands/record-har.ts
 --file ./test/commands/trace.ts

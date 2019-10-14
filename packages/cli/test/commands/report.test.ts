@@ -4,8 +4,8 @@ import Compare from '../../src/commands/compare';
 import Report from '../../src/commands/report';
 import {
   FIXTURE_APP,
-  TB_RESULTS_FOLDER,
   TB_CONFIG_FILE,
+  TB_RESULTS_FOLDER,
 } from '../test-helpers';
 
 const fidelity = 'test';

@@ -31,7 +31,7 @@ export async function liveTrace(
   cookies: Protocol.Network.CookieParam[],
   conditions: IConditions
 ) {
-  const browser = await createBrowser();
+  const browser = await createBrowser([`--crash-dumps-dir=/tmp`]);
   try {
     const client = await getTab(browser.connection);
     await emulate(client, conditions);
@@ -72,12 +72,12 @@ export async function liveTrace(
     });
     await Promise.all([
       client.until('Page.loadEventFired'),
-      client.send('Page.navigate', { url })
+      client.send('Page.navigate', { url }),
     ]);
 
     const [result] = await Promise.all([
       client.until('Tracing.tracingComplete'),
-      client.send('Tracing.end')
+      client.send('Tracing.end'),
     ]);
 
     const handle = result.stream as string;

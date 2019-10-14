@@ -29,26 +29,17 @@ export interface IEntry {
   response: IResponse;
 }
 
-export async function harTrace(
+export async function recordHARClient(
   url: string,
-  additionalBrowserArgs: string[] = [],
-  cookies: any = null
-) {
-  // the saving of the cookies should be a dif command
-  // spawn browser > sign-in > done > save cookies
-
-  // passing in the cookies file needs to be more
-  // explicit (especially as its pertained to automation)
-
-  // in the instance we are passing in the cookies
-
-  const browser = await createBrowser(additionalBrowserArgs);
+  browserArgs: string[],
+  cookies: Protocol.Network.CookieParam[]
+): Promise<IArchive> {
+  const browser = await createBrowser(browserArgs);
   try {
     const client = await getTab(browser.connection);
 
     const requestIds: string[] = [];
     const responses: Protocol.Network.Response[] = [];
-    const urls = [url];
 
     client.on('Network.responseReceived', ({ requestId, response }) => {
       if (
@@ -69,9 +60,6 @@ export async function harTrace(
 
     await client.send('Network.enable');
 
-    cookies = cookies
-      ? cookies
-      : await client.send('Network.getCookies', { urls });
     await setCookies(client, cookies);
 
     await client.send('Page.enable');
@@ -93,7 +81,7 @@ export async function harTrace(
       };
       archive.log.entries.push(entry);
     }
-    return [cookies, archive];
+    return archive;
   } finally {
     await browser.dispose();
   }

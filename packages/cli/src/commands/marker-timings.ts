@@ -13,7 +13,7 @@ import {
   isFrameNavigationStart,
   isMark,
   isUserMark,
-  loadTraceFile,
+  setTraceEvents,
 } from '../helpers/utils';
 
 export default class MarkerTimings extends TBBaseCommand {
@@ -51,7 +51,7 @@ export default class MarkerTimings extends TBBaseCommand {
     }
 
     try {
-      trace = loadTraceFile(rawTraceData);
+      trace = setTraceEvents(rawTraceData);
     } catch (error) {
       this.error(`${error}`);
     }

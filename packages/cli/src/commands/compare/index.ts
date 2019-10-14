@@ -105,6 +105,7 @@ export default class Compare extends TBBaseCommand {
   public explicitFlags: string[];
   public analyzedJSONString: string = '';
   constructor(argv: string[], config: IConfig) {
+    // config === oclif config NOT tbconfig
     super(argv, config);
     const { flags } = this.parse(Compare);
     this.explicitFlags = argv;
