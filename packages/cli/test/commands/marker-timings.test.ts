@@ -4,8 +4,6 @@ import * as path from 'path';
 import MarkerTimings from '../../src/commands/marker-timings';
 import { tmpDir } from '../setup';
 
-chai.use(require('chai-fs'));
-
 const tbResultsFolder = path.join(`${process.cwd()}/${tmpDir}`);
 const url = 'https://www.tracerbench.com';
 

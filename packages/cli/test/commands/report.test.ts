@@ -1,5 +1,5 @@
 import { test } from '@oclif/test';
-import { expect } from 'chai';
+import { expect, use } from 'chai';
 import Compare from '../../src/commands/compare';
 import Report from '../../src/commands/report';
 import {
@@ -7,8 +7,11 @@ import {
   TB_RESULTS_FOLDER,
   TB_CONFIG_FILE,
 } from '../test-helpers';
+const chaiFiles = require('chai-files');
+use(chaiFiles);
 
 const fidelity = 'test';
+const file = chaiFiles.file;
 
 describe('report: creates html', () => {
   test
@@ -41,8 +44,10 @@ describe('report: creates html', () => {
         expect(ctx.stdout).to.contain(
           `The PDF and HTML reports are available here`
         );
-        expect(`${TB_RESULTS_FOLDER}/artifact-1.html`).to.be.a.file();
-        expect(`${TB_RESULTS_FOLDER}/artifact-1.pdf`).to.be.a.file();
+        // tslint:disable-next-line: no-unused-expression
+        expect(file(`${TB_RESULTS_FOLDER}/artifact-1.html`)).to.exist;
+        // tslint:disable-next-line: no-unused-expression
+        expect(file(`${TB_RESULTS_FOLDER}/artifact-1.pdf`)).to.exist;
       }
     );
 });

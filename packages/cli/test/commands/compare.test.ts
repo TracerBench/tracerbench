@@ -1,13 +1,16 @@
 import { test } from '@oclif/test';
-import { expect } from 'chai';
+import { expect, use } from 'chai';
 import Compare from '../../src/commands/compare';
 import { defaultFlagArgs } from '../../src/command-config';
 import { FIXTURE_APP, TB_RESULTS_FOLDER } from '../test-helpers';
 import { ICompareJSONResults } from '../../src/helpers/log-compare-results';
+const chaiFiles = require('chai-files');
+use(chaiFiles);
 
 const fidelity = 'test';
 const emulateDevice = 'iphone-4';
 const regressionThreshold = '-100ms';
+const file = chaiFiles.file;
 
 describe('compare fixture: A/A', () => {
   test
@@ -32,15 +35,15 @@ describe('compare fixture: A/A', () => {
         ]);
 
         expect(ctx.stdout).to.contain(`Success`);
-        expect(
-          `${TB_RESULTS_FOLDER}/server-control-settings.json`
-        ).to.be.a.file();
-        expect(
-          `${TB_RESULTS_FOLDER}/server-experiment-settings.json`
-        ).to.be.a.file();
-        expect(
-          `${TB_RESULTS_FOLDER}/compare-flags-settings.json`
-        ).to.be.a.file();
+        // tslint:disable-next-line: no-unused-expression
+        expect(file(`${TB_RESULTS_FOLDER}/server-control-settings.json`)).to
+          .exist;
+        // tslint:disable-next-line: no-unused-expression
+        expect(file(`${TB_RESULTS_FOLDER}/server-experiment-settings.json`)).to
+          .exist;
+        // tslint:disable-next-line: no-unused-expression
+        expect(file(`${TB_RESULTS_FOLDER}/compare-flags-settings.json`)).to
+          .exist;
       }
     );
 });

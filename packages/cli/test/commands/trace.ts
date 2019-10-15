@@ -1,14 +1,16 @@
 import { test } from '@oclif/test';
-import * as chai from 'chai';
+import { use, expect } from 'chai';
 import * as path from 'path';
 import Trace from '../../src/commands/trace';
 import { tmpDir } from '../setup';
 
-chai.use(require('chai-fs'));
+const chaiFiles = require('chai-files');
+use(chaiFiles);
 
 const tbResultsFolder = path.join(`${process.cwd()}/${tmpDir}`);
 const url = 'https://www.tracerbench.com';
 const cpuThrottleRate = '1';
+const file = chaiFiles.file;
 
 describe('trace', () => {
   test
@@ -24,9 +26,10 @@ describe('trace', () => {
           '--cpuThrottleRate',
           cpuThrottleRate,
         ]);
-        chai.expect(ctx.stdout).to.contain(`Trace`);
-        chai.expect(ctx.stdout).to.contain(`Subtotal`);
-        chai.expect(`${tbResultsFolder}/trace.json`).to.be.a.file();
+        expect(ctx.stdout).to.contain(`Trace`);
+        expect(ctx.stdout).to.contain(`Subtotal`);
+        // tslint:disable-next-line: no-unused-expression
+        expect(file(`${tbResultsFolder}/trace.json`)).to.exist;
       }
     );
 });
@@ -46,10 +49,10 @@ describe('trace: insights', () => {
           cpuThrottleRate,
           '--insights',
         ]);
-        chai.expect(ctx.stdout).to.contain(`.js`);
-        chai.expect(ctx.stdout).to.contain(`.css`);
-        chai.expect(ctx.stdout).to.contain(`Frame-URL:`);
-        chai.expect(ctx.stdout).to.contain(`Frame-ID:`);
+        expect(ctx.stdout).to.contain(`.js`);
+        expect(ctx.stdout).to.contain(`.css`);
+        expect(ctx.stdout).to.contain(`Frame-URL:`);
+        expect(ctx.stdout).to.contain(`Frame-ID:`);
       }
     );
 });

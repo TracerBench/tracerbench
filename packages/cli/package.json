@@ -2,72 +2,66 @@
   "name": "tracerbench",
   "version": "2.2.4",
   "description": "CLI for Tracerbench",
-  "keywords": [
-    "oclif"
-  ],
+  "keywords": ["oclif"],
   "homepage": "https://github.com/TracerBench/tracerbench",
   "bugs": "https://github.com/TracerBench/tracerbench/issues",
   "license": "BSD-2-Clause",
   "author": "Kris Selden @krisselden",
-  "files": [
-    "bin",
-    "dist",
-    "src",
-    "oclif.manifest.json",
-    "tb-schema.json"
-  ],
+  "files": ["bin", "dist", "src", "oclif.manifest.json", "tb-schema.json"],
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "bin": {
     "tracerbench": "./bin/run"
   },
   "dependencies": {
-    "@oclif/command": "^1.5.8",
-    "@oclif/config": "^1.12.0",
-    "@oclif/plugin-help": "^2.1.4",
+    "@oclif/command": "^1.5.19",
+    "@oclif/config": "^1.13.3",
+    "@oclif/plugin-help": "^2.2.1",
     "@tracerbench/core": "^2.2.4",
     "chalk": "^2.4.2",
     "cli-table3": "^0.5.1",
-    "d3-array": "^2.0.3",
-    "d3-scale": "^3.0.0",
+    "d3-array": "^2.3.2",
+    "d3-scale": "^3.1.0",
     "devtools-protocol": "0.0.665395",
-    "execa": "^2.0.3",
-    "fs-extra": "^7.0.1",
-    "handlebars": "^4.1.2",
+    "execa": "^3.1.0",
+    "fs-extra": "^8.1.0",
+    "handlebars": "^4.4.3",
     "json-query": "^2.2.2",
-    "json5": "^2.1.0",
-    "jstat": "^1.9.0",
+    "json5": "^2.1.1",
+    "jstat": "^1.9.1",
     "log-symbols": "^3.0.0",
     "path": "0.12.7",
-    "tslib": "^1.10.0"
+    "tmp": "^0.1.0",
+    "tslib": "^1.10.0",
+    "tough-cookie": "^3.0.1"
   },
   "devDependencies": {
-    "@oclif/dev-cli": "^1.21.0",
-    "@oclif/test": "^1.2.2",
+    "@oclif/dev-cli": "^1.22.2",
+    "@oclif/test": "^1.2.5",
     "@oclif/tslint": "^3.1.1",
-    "@types/chai": "^4.1.7",
-    "@types/chai-fs": "^2.0.1",
+    "@types/chai": "^4.2.3",
+    "chai-files": "^1.4.0",
     "@types/chalk": "^2.2.0",
-    "@types/d3-array": "^1.2.6",
+    "@types/d3-array": "^2.0.0",
     "@types/d3-scale": "^2.1.1",
-    "@types/fs-extra": "^5.0.4",
+    "@types/fs-extra": "^8.0.0",
     "@types/json-query": "^2.2.0",
     "@types/json5": "*",
     "@types/log-symbols": "^3.0.0",
     "@types/mock-fs": "3.6.30",
-    "@types/node": "^10.12.18",
+    "@types/node": "^12.11.0",
     "chai": "^4.2.0",
-    "chai-fs": "^2.0.0",
-    "mocha": "^6.2.0",
+    "mocha": "^6.2.1",
     "mock-fs": "^4.10.1",
     "nyc": "^14.1.1",
-    "prettier": "^1.16.4",
+    "prettier": "^1.18.2",
     "ts-node": "^8.4.1",
     "tslint": "^5.20.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.0.1",
-    "typescript": "^3.6.3",
-    "typescript-json-schema": "^0.37.0"
+    "typescript": "^3.6.4",
+    "typescript-json-schema": "^0.40.0",
+    "@types/tmp": "^0.1.0"
   },
   "engines": {
     "node": ">=10.0.0"
@@ -75,9 +69,7 @@
   "oclif": {
     "commands": "./dist/src/commands",
     "bin": "tracerbench",
-    "plugins": [
-      "@oclif/plugin-help"
-    ],
+    "plugins": ["@oclif/plugin-help"],
     "topics": {
       "compare:analyze": {
         "description": "Run an analysis of a benchmark run from a results json file and output to terminal"
