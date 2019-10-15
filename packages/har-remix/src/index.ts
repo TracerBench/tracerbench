@@ -46,7 +46,11 @@ export default class ArchiveServer {
     const { status, content } = entry.response;
     if (content && status >= 200 && status < 300) {
       let { text } = content;
-      const { encoding, mimeType } = content;
+      const { encoding, mimeType } = content as {
+        encoding: BufferEncoding;
+        mimeType: string;
+      };
+
       let body: Buffer | undefined;
 
       if (text === undefined) {
