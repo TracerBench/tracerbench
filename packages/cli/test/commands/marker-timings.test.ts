@@ -1,25 +1,21 @@
 import { test } from '@oclif/test';
-import * as chai from 'chai';
-import * as path from 'path';
+import { expect } from 'chai';
 import MarkerTimings from '../../src/commands/marker-timings';
-import { tmpDir } from '../setup';
-
-const tbResultsFolder = path.join(`${process.cwd()}/${tmpDir}`);
-const url = 'https://www.tracerbench.com';
+import { URL, TB_RESULTS_FOLDER } from '../test-helpers';
 
 describe('marker-timings', () => {
   test
     .stdout()
     .it(
-      `runs marker-timings --url ${url} --tbResultsFolder ${tbResultsFolder}`,
+      `runs marker-timings --url ${URL} --tbResultsFolder ${TB_RESULTS_FOLDER}`,
       async ctx => {
         await MarkerTimings.run([
           '--url',
-          url,
+          URL,
           '--tbResultsFolder',
-          tbResultsFolder,
+          TB_RESULTS_FOLDER,
         ]);
-        chai.expect(ctx.stdout).to.contain(`Marker Timings:`);
+        expect(ctx.stdout).to.contain(`Marker Timings:`);
       }
     );
 });

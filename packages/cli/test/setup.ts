@@ -1,15 +1,15 @@
-import * as fs from 'fs-extra';
+import { existsSync, mkdirSync, removeSync } from 'fs-extra';
 
 export const tmpDir = 'test/tb-tmp';
 
 before(() => {
-  if (!fs.existsSync(tmpDir)) {
-    fs.mkdirSync(tmpDir);
+  if (!existsSync(tmpDir)) {
+    mkdirSync(tmpDir);
   }
 });
 
 after(() => {
-  if (fs.existsSync(tmpDir)) {
-    fs.removeSync(tmpDir);
+  if (existsSync(tmpDir)) {
+    removeSync(tmpDir);
   }
 });

@@ -1,16 +1,13 @@
 import { test } from '@oclif/test';
-import { expect, use } from 'chai';
+import { expect, assert } from 'chai';
 import Compare from '../../src/commands/compare';
 import { defaultFlagArgs } from '../../src/command-config';
 import { FIXTURE_APP, TB_RESULTS_FOLDER } from '../test-helpers';
 import { ICompareJSONResults } from '../../src/helpers/log-compare-results';
-const chaiFiles = require('chai-files');
-use(chaiFiles);
 
 const fidelity = 'test';
 const emulateDevice = 'iphone-4';
 const regressionThreshold = '-100ms';
-const file = chaiFiles.file;
 
 describe('compare fixture: A/A', () => {
   test
@@ -35,15 +32,9 @@ describe('compare fixture: A/A', () => {
         ]);
 
         expect(ctx.stdout).to.contain(`Success`);
-        // tslint:disable-next-line: no-unused-expression
-        expect(file(`${TB_RESULTS_FOLDER}/server-control-settings.json`)).to
-          .exist;
-        // tslint:disable-next-line: no-unused-expression
-        expect(file(`${TB_RESULTS_FOLDER}/server-experiment-settings.json`)).to
-          .exist;
-        // tslint:disable-next-line: no-unused-expression
-        expect(file(`${TB_RESULTS_FOLDER}/compare-flags-settings.json`)).to
-          .exist;
+        assert.exists(`${TB_RESULTS_FOLDER}/server-control-settings.json`);
+        assert.exists(`${TB_RESULTS_FOLDER}/server-experiment-settings.json`);
+        assert.exists(`${TB_RESULTS_FOLDER}/compare-flags-settings.json`);
       }
     );
 });
@@ -76,11 +67,9 @@ describe('compare regression with JSON out: fixture: A/B', () => {
         // successful trace
         expect(ctx.stdout).to.contain(`Success!`);
         // results are json and are significant
-        // tslint:disable-next-line: no-unused-expression
-        expect(resultsJSON.areResultsSignificant).to.be.true;
+        assert.isTrue(resultsJSON.areResultsSignificant);
         // regression is over the allowable threshold
-        // tslint:disable-next-line: no-unused-expression
-        expect(resultsJSON.isBelowRegressionThreshold).to.be.false;
+        assert.isFalse(resultsJSON.isBelowRegressionThreshold);
       }
     );
 });
@@ -92,34 +81,6 @@ describe('compare mobile horizontal: fixture: A/A', () => {
       `runs compare --controlURL ${FIXTURE_APP.control +
         defaultFlagArgs.tracingLocationSearch} --experimentURL ${FIXTURE_APP.experiment +
         defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER} --emulateDevice ${emulateDevice} --emulateDeviceOrientation horizontal --cpuThrottleRate=6 --headless`,
-      async ctx => {
-        await Compare.run([
-          '--controlURL',
-          FIXTURE_APP.control,
-          '--experimentURL',
-          FIXTURE_APP.experiment,
-          '--fidelity',
-          fidelity,
-          '--tbResultsFolder',
-          TB_RESULTS_FOLDER,
-          '--emulateDevice',
-          emulateDevice,
-          '--cpuThrottleRate=6',
-          '--headless',
-        ]);
-
-        expect(ctx.stdout).to.contain(`Success`);
-      }
-    );
-});
-
-describe('compare mobile vertical: fixture: A/A', () => {
-  test
-    .stdout()
-    .it(
-      `runs compare --controlURL ${FIXTURE_APP.control +
-        defaultFlagArgs.tracingLocationSearch} --experimentURL ${FIXTURE_APP.experiment +
-        defaultFlagArgs.tracingLocationSearch} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER} --emulateDevice ${emulateDevice} --emulateDeviceOrientation vertical --cpuThrottleRate=6 --headless`,
       async ctx => {
         await Compare.run([
           '--controlURL',

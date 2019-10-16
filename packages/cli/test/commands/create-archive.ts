@@ -1,33 +1,24 @@
 import { test } from '@oclif/test';
-import { expect, use } from 'chai';
-import * as path from 'path';
+import { expect, assert } from 'chai';
 import CreateArchive from '../../src/commands/create-archive';
-import { tmpDir } from '../setup';
-
-const chaiFiles = require('chai-files');
-use(chaiFiles);
-
-const url = 'https://www.tracerbench.com';
-const tbResultsFolder = path.join(`${process.cwd()}/${tmpDir}`);
-const file = chaiFiles.file;
+import { URL, TB_RESULTS_FOLDER } from '../test-helpers';
 
 describe('create-archive', () => {
   test
     .stdout()
     .it(
-      `runs create-archive --url ${url} --tbResultsFolder ${tbResultsFolder}`,
+      `runs create-archive --url ${URL} --tbResultsFolder ${TB_RESULTS_FOLDER}`,
       async ctx => {
         await CreateArchive.run([
           '--url',
-          url,
+          URL,
           '--tbResultsFolder',
-          tbResultsFolder,
+          TB_RESULTS_FOLDER,
         ]);
         expect(ctx.stdout).to.contain(
           `HAR & cookies.json successfully generated`
         );
-        // tslint:disable-next-line: no-unused-expression
-        expect(file(`${tbResultsFolder}/trace.har`)).to.exist;
+        assert.exists(`${TB_RESULTS_FOLDER}/trace.har`);
       }
     );
 });

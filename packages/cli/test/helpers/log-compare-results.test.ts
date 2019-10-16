@@ -8,7 +8,7 @@ import { expect } from 'chai';
 import { tmpDir } from '../setup';
 import { test } from '@oclif/test';
 
-import * as path from 'path';
+import { join } from 'path';
 
 const sampleTrace = {
   duration: 6260696,
@@ -42,7 +42,7 @@ const sampleTrace = {
   ],
 };
 
-const tbResultsFolder = path.join(`${process.cwd()}/${tmpDir}/compare.json`);
+const tbResultsFolder = join(`${process.cwd()}/${tmpDir}/compare.json`);
 const scope = console;
 const network = {
   offline: false,
