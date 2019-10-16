@@ -6,3 +6,4 @@ export {
   PerformanceTimingMark,
 } from './command-config';
 export * from './helpers';
+export * from './commands';
