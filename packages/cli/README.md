@@ -194,6 +194,7 @@ s?: TRACE_EVENT_SCOPE;
 
 <!-- commands -->
 
+- [`tracerbench`](#tracerbench-)
 - [`tracerbench compare`](#tracerbench-compare)
 - [`tracerbench compare:analyze RESULTSFILE`](#tracerbench-compareanalyze-resultsfile)
 - [`tracerbench help [COMMAND]`](#tracerbench-help-command)
@@ -201,6 +202,29 @@ s?: TRACE_EVENT_SCOPE;
 - [`tracerbench record-har`](#tracerbench-record-har)
 - [`tracerbench report`](#tracerbench-report)
 - [`tracerbench trace`](#tracerbench-trace)
+
+## `tracerbench`
+
+Creates an automated HAR file from a URL.
+
+```
+USAGE
+  $ tracerbench
+
+OPTIONS
+  --browserArgs=browserArgs
+      (required) [default:
+      --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-dev-shm-usage,--disable-cache,--disable-v8-i
+      dle-tasks,--disable-breakpad,--disable-notifications,--disable-hang-monitor,--safebrowsing-disable-auto-update,--ign
+      ore-certificate-errors,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the TracerBench
+      render benchmark. TracerBench includes many non-configurable defaults in this category.
+
+  --tbResultsFolder=tbResultsFolder
+      (required) [default: ./tracerbench-results] The output folder path for all tracerbench results
+
+  --url=url
+      (required) [default: http://localhost:8000/] URL to visit for create-archive, timings & trace commands
+```
 
 ## `tracerbench compare`
 
