@@ -1,33 +1,27 @@
 import { test } from '@oclif/test';
-import { use, expect } from 'chai';
+import { assert, expect } from 'chai';
 import Trace from '../../src/commands/trace';
-import { COOKIES, TB_RESULTS_FOLDER, URL, HAR_PATH } from '../test-helpers';
+import { TB_RESULTS_FOLDER, URL } from '../test-helpers';
 
-const chaiFiles = require('chai-files');
-use(chaiFiles);
-
-const file = chaiFiles.file;
+const cpuThrottleRate = '1';
 
 describe('trace', () => {
   test
     .stdout()
     .it(
-      `runs trace --url ${URL} --tbResultsFolder ${TB_RESULTS_FOLDER} --harpath ${HAR_PATH} --cookiespath ${COOKIES}`,
+      `runs trace --url ${URL} --tbResultsFolder ${TB_RESULTS_FOLDER} --cpuThrottleRate ${cpuThrottleRate}`,
       async ctx => {
         await Trace.run([
           '--url',
           URL,
           '--tbResultsFolder',
           TB_RESULTS_FOLDER,
-          '--harpath',
-          HAR_PATH,
-          '--cookiespath',
-          COOKIES,
+          '--cpuThrottleRate',
+          cpuThrottleRate,
         ]);
         expect(ctx.stdout).to.contain(`Trace`);
         expect(ctx.stdout).to.contain(`Subtotal`);
-        // tslint:disable-next-line: no-unused-expression
-        expect(file(`${TB_RESULTS_FOLDER}/trace.json`)).to.exist;
+        assert.exists(`${TB_RESULTS_FOLDER}/trace.json`);
       }
     );
 });
@@ -36,17 +30,15 @@ describe('trace: insights', () => {
   test
     .stdout()
     .it(
-      `runs trace --url ${URL} --tbResultsFolder ${TB_RESULTS_FOLDER} --harpath ${HAR_PATH} --cookiespath ${COOKIES} --insights`,
+      `runs trace --url ${URL} --tbResultsFolder ${TB_RESULTS_FOLDER} --cpuThrottleRate ${cpuThrottleRate} --insights`,
       async ctx => {
         await Trace.run([
           '--url',
           URL,
           '--tbResultsFolder',
           TB_RESULTS_FOLDER,
-          '--harpath',
-          HAR_PATH,
-          '--cookiespath',
-          COOKIES,
+          '--cpuThrottleRate',
+          cpuThrottleRate,
           '--insights',
         ]);
         expect(ctx.stdout).to.contain(`.js`);

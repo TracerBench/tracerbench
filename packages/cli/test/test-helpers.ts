@@ -1,5 +1,4 @@
 import { pathToFileURL } from 'url';
-import { writeFileSync, mkdirpSync } from 'fs-extra';
 import { tmpDir } from './setup';
 import { join, resolve } from 'path';
 
@@ -55,3 +54,4 @@ export function generateFileStructure(
     }
   });
 }
+export const TRACE = resolve(join(process.cwd(), '/test/fixtures/trace.json'));
