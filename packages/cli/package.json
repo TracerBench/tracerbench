@@ -1,13 +1,21 @@
 {
   "name": "tracerbench",
-  "version": "2.2.4",
+  "version": "2.3.0",
   "description": "CLI for Tracerbench",
-  "keywords": ["oclif"],
+  "keywords": [
+    "oclif"
+  ],
   "homepage": "https://github.com/TracerBench/tracerbench",
   "bugs": "https://github.com/TracerBench/tracerbench/issues",
   "license": "BSD-2-Clause",
   "author": "Kris Selden @krisselden",
-  "files": ["bin", "dist", "src", "oclif.manifest.json", "tb-schema.json"],
+  "files": [
+    "bin",
+    "dist",
+    "src",
+    "oclif.manifest.json",
+    "tb-schema.json"
+  ],
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "bin": {
@@ -17,7 +25,7 @@
     "@oclif/command": "^1.5.19",
     "@oclif/config": "^1.13.3",
     "@oclif/plugin-help": "^2.2.1",
-    "@tracerbench/core": "^2.2.4",
+    "@tracerbench/core": "^2.3.0",
     "chalk": "^2.4.2",
     "cli-table3": "^0.5.1",
     "d3-array": "^2.3.2",
@@ -32,15 +40,14 @@
     "log-symbols": "^3.0.0",
     "path": "0.12.7",
     "tmp": "^0.1.0",
-    "tslib": "^1.10.0",
-    "tough-cookie": "^3.0.1"
+    "tough-cookie": "^3.0.1",
+    "tslib": "^1.10.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
     "@oclif/test": "^1.2.5",
     "@oclif/tslint": "^3.1.1",
     "@types/chai": "^4.2.3",
-    "chai-files": "^1.4.0",
     "@types/chalk": "^2.2.0",
     "@types/d3-array": "^2.0.0",
     "@types/d3-scale": "^2.1.1",
@@ -50,7 +57,9 @@
     "@types/log-symbols": "^3.0.0",
     "@types/mock-fs": "3.6.30",
     "@types/node": "^12.11.0",
+    "@types/tmp": "^0.1.0",
     "chai": "^4.2.0",
+    "chai-files": "^1.4.0",
     "mocha": "^6.2.1",
     "mock-fs": "^4.10.1",
     "nyc": "^14.1.1",
@@ -60,8 +69,7 @@
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.0.1",
     "typescript": "^3.6.4",
-    "typescript-json-schema": "^0.40.0",
-    "@types/tmp": "^0.1.0"
+    "typescript-json-schema": "^0.40.0"
   },
   "engines": {
     "node": ">=10.0.0"
@@ -69,7 +77,9 @@
   "oclif": {
     "commands": "./dist/src/commands",
     "bin": "tracerbench",
-    "plugins": ["@oclif/plugin-help"],
+    "plugins": [
+      "@oclif/plugin-help"
+    ],
     "topics": {
       "compare:analyze": {
         "description": "Run an analysis of a benchmark run from a results json file and output to terminal"
