@@ -5,7 +5,8 @@
   "keywords": [
     "oclif"
   ],
-  "homepage": "https://github.com/TracerBench/tracerbench",
+  "repository": "https://github.com/TracerBench/tracerbench/tree/master/packages/cli",
+  "homepage": "https://www.tracerbench.com",
   "bugs": "https://github.com/TracerBench/tracerbench/issues",
   "license": "BSD-2-Clause",
   "author": "Kris Selden @krisselden",

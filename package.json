@@ -6,7 +6,8 @@
     "lint": "lerna run lint --stream",
     "prepare": "lerna run prepare --stream",
     "test": "lerna run test --stream",
-    "prepack": "lerna run prepack --stream"
+    "prepack": "lerna run prepack --stream",
+    "lerna-changelog": "lerna-changelog"
   },
   "husky": {
     "hooks": {
@@ -15,6 +16,21 @@
   },
   "devDependencies": {
     "lerna": "^3.18.0",
-    "husky": "^3.0.9"
+    "husky": "^3.0.9",
+    "lerna-changelog": "^0.8.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tracerbench/tracerbench.git"
+  },
+  "changelog": {
+    "repo": "TracerBench/cli",
+    "labels": {
+      "breaking": ":boom: Breaking Change",
+      "enhancement": ":rocket: Enhancement",
+      "bug": ":bug: Bug Fix",
+      "documentation": ":memo: Documentation",
+      "internal": ":house: Internal"
+    }
   }
 }

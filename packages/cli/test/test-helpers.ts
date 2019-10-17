@@ -2,20 +2,16 @@ import { pathToFileURL } from 'url';
 import { tmpDir } from './setup';
 import { join, resolve } from 'path';
 
-const appControlFilePath = pathToFileURL(
-  `${join(process.cwd(), '/test/fixtures/release/index.html')}`
-).toString();
-const appRegressionFilePath = pathToFileURL(
-  `${join(process.cwd(), '/test/fixtures/regression/index.html')}`
-).toString();
-const appExperimentFilePath = pathToFileURL(
-  `${join(process.cwd(), '/test/fixtures/experiment/index.html')}`
-).toString();
-
 export const FIXTURE_APP = {
-  control: appControlFilePath,
-  experiment: appExperimentFilePath,
-  regression: appRegressionFilePath,
+  control: pathToFileURL(
+    `${join(process.cwd(), '/test/fixtures/release/index.html')}`
+  ).toString(),
+  experiment: pathToFileURL(
+    `${join(process.cwd(), '/test/fixtures/experiment/index.html')}`
+  ).toString(),
+  regression: pathToFileURL(
+    `${join(process.cwd(), '/test/fixtures/regression/index.html')}`
+  ).toString(),
 };
 
 export const TB_RESULTS_FOLDER = join(process.cwd(), `${tmpDir}`);
