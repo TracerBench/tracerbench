@@ -1,9 +1,7 @@
 import { test } from '@oclif/test';
-import * as chai from 'chai';
+import { expect, assert } from 'chai';
 import RecordHAR from '../../src/commands/record-har';
 import { COOKIES, TB_RESULTS_FOLDER, URL } from '../test-helpers';
-
-chai.use(require('chai-fs'));
 
 const FILENAME = 'foo';
 
@@ -23,8 +21,8 @@ describe('record-har', () => {
           '--filename',
           FILENAME,
         ]);
-        chai.expect(ctx.stdout).to.contain(`HAR recorded and available here:`);
-        chai.expect(`${TB_RESULTS_FOLDER}/${FILENAME}.har`).to.be.a.file();
+        expect(ctx.stdout).to.contain(`HAR recorded and available here:`);
+        assert.exists(`${TB_RESULTS_FOLDER}/${FILENAME}.har`);
       }
     );
 });
