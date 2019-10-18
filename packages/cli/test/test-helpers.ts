@@ -1,6 +1,7 @@
+import { dirSync } from 'tmp';
 import { pathToFileURL } from 'url';
-import { tmpDir } from './setup';
 import { join, resolve } from 'path';
+import { mkdirpSync, writeFileSync } from 'fs-extra';
 
 export const FIXTURE_APP = {
   control: pathToFileURL(
@@ -14,15 +15,18 @@ export const FIXTURE_APP = {
   ).toString(),
 };
 
-export const TB_RESULTS_FOLDER = join(process.cwd(), `${tmpDir}`);
+export const TB_RESULTS_FOLDER = dirSync().name;
 export const TB_CONFIG_FILE = join(process.cwd(), '/test/tbconfig.json');
 export const COOKIES = resolve(
   join(process.cwd(), '/test/fixtures/results/mock-cookies.json')
 );
 export const HAR_PATH = resolve(
-  join(process.cwd(), '/test/fixtures/fixture.har')
+  join(process.cwd(), '/test/fixtures/results/fixture.har')
 );
 export const URL = 'https://www.tracerbench.com';
+export const COMPARE_JSON = resolve(
+  join(process.cwd(), '/test/fixtures/results/compare.json')
+);
 
 export interface FileStructure {
   [key: string]: string | FileStructure;

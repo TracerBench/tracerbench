@@ -2,11 +2,11 @@ import { Command } from '@oclif/command';
 import { recordHARClient } from '@tracerbench/core';
 import { readJson, writeFileSync } from 'fs-extra';
 import * as path from 'path';
-import * as tmp from 'tmp';
+import { setGracefulCleanup, dirSync } from 'tmp';
 
 import { dest, url, cookiespath, filename } from '../helpers/flags';
 
-tmp.setGracefulCleanup();
+setGracefulCleanup();
 
 export default class RecordHAR extends Command {
   public static description = 'Generates a HAR file from a URL.';
@@ -48,7 +48,7 @@ function getBrowserArgs(): string[] {
     userAgent: string | undefined;
   }
 
-  const tmpDir = tmp.dirSync({
+  const tmpDir = dirSync({
     unsafeCleanup: true,
   });
 

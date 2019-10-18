@@ -205,25 +205,21 @@ s?: TRACE_EVENT_SCOPE;
 
 ## `tracerbench`
 
-Creates an automated HAR file from a URL.
+Generates a HAR file from a URL.
 
 ```
 USAGE
   $ tracerbench
 
 OPTIONS
-  --browserArgs=browserArgs
-      (required) [default:
-      --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-dev-shm-usage,--disable-cache,--disable-v8-i
-      dle-tasks,--disable-breakpad,--disable-notifications,--disable-hang-monitor,--safebrowsing-disable-auto-update,--ign
-      ore-certificate-errors,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the TracerBench
-      render benchmark. TracerBench includes many non-configurable defaults in this category.
+  --cookiespath=cookiespath  (required) The path to a JSON file containing cookies to authenticate against the
+                             correlated URL
 
-  --tbResultsFolder=tbResultsFolder
-      (required) [default: ./tracerbench-results] The output folder path for all tracerbench results
+  --dest=dest                (required) The destination path for the generated file
 
-  --url=url
-      (required) [default: http://localhost:8000/] URL to visit for create-archive, timings & trace commands
+  --filename=filename        (required) [default: tracerbench] The filename for the generated file
+
+  --url=url                  (required) URL to visit for record-har, timings & trace commands
 ```
 
 ## `tracerbench compare`
@@ -247,7 +243,7 @@ OPTIONS
       overwrite all.
 
   --controlURL=controlURL
-      (required) [default: http://localhost:8000/] Control URL to visit for compare command
+      (required) Control URL to visit for compare command
 
   --cpuThrottleRate=cpuThrottleRate
       (required) [default: 2] CPU throttle multiplier
@@ -265,7 +261,7 @@ OPTIONS
       [default: vertical] Expected to be either "vertical" or "horizontal". Dictates orientation of device screen.
 
   --experimentURL=experimentURL
-      (required) [default: http://localhost:8001/] Experiment URL to visit for compare command
+      (required) Experiment URL to visit for compare command
 
   --fidelity=fidelity
       (required) [default: low] Directly correlates to the number of samples per trace. High is the longest trace time.
@@ -355,8 +351,7 @@ OPTIONS
 
   --traceFrame=traceFrame            Specify a trace insights frame
 
-  --url=url                          (required) [default: http://localhost:8000/] URL to visit for record-har, timings &
-                                     trace commands
+  --url=url                          (required) URL to visit for record-har, timings & trace commands
 ```
 
 ## `tracerbench record-har`
@@ -432,7 +427,7 @@ OPTIONS
       (required) [default: ./tracerbench-results] The output folder path for all tracerbench results
 
   --url=url
-      (required) [default: http://localhost:8000/] URL to visit for record-har, timings & trace commands
+      (required) URL to visit for record-har, timings & trace commands
 ```
 
 _See code: [dist/src/commands/trace.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/trace.ts)_

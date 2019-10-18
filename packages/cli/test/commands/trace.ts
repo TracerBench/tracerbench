@@ -1,27 +1,43 @@
 import { test } from '@oclif/test';
-import { assert, expect } from 'chai';
-import Trace from '../../src/commands/trace';
-import { TB_RESULTS_FOLDER, URL } from '../test-helpers';
+import { expect } from 'chai';
+import { readJsonSync } from 'fs-extra';
+import { join } from 'path';
 
-const cpuThrottleRate = '1';
+import Trace from '../../src/commands/trace';
+import {
+  COOKIES,
+  HAR_PATH,
+  TB_RESULTS_FOLDER,
+  URL,
+  generateFileStructure,
+} from '../test-helpers';
+
+const TRACE_JSON = {
+  'trace.json': JSON.stringify(
+    readJsonSync(join(process.cwd(), '/test/fixtures/results/trace.json'))
+  ),
+};
+
+generateFileStructure(TRACE_JSON, TB_RESULTS_FOLDER);
 
 describe('trace', () => {
   test
     .stdout()
     .it(
-      `runs trace --url ${URL} --tbResultsFolder ${TB_RESULTS_FOLDER} --cpuThrottleRate ${cpuThrottleRate}`,
+      `runs trace --url ${URL} --tbResultsFolder ${TB_RESULTS_FOLDER}`,
       async ctx => {
         await Trace.run([
           '--url',
           URL,
           '--tbResultsFolder',
           TB_RESULTS_FOLDER,
-          '--cpuThrottleRate',
-          cpuThrottleRate,
+          '--harpath',
+          HAR_PATH,
+          '--cookiespath',
+          COOKIES,
         ]);
         expect(ctx.stdout).to.contain(`Trace`);
         expect(ctx.stdout).to.contain(`Subtotal`);
-        assert.exists(`${TB_RESULTS_FOLDER}/trace.json`);
       }
     );
 });
@@ -30,15 +46,13 @@ describe('trace: insights', () => {
   test
     .stdout()
     .it(
-      `runs trace --url ${URL} --tbResultsFolder ${TB_RESULTS_FOLDER} --cpuThrottleRate ${cpuThrottleRate} --insights`,
+      `runs trace --url ${URL} --tbResultsFolder ${TB_RESULTS_FOLDER} --insights`,
       async ctx => {
         await Trace.run([
           '--url',
           URL,
           '--tbResultsFolder',
           TB_RESULTS_FOLDER,
-          '--cpuThrottleRate',
-          cpuThrottleRate,
           '--insights',
         ]);
         expect(ctx.stdout).to.contain(`.js`);

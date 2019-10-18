@@ -1,36 +1,26 @@
 import { test } from '@oclif/test';
 import { expect, assert } from 'chai';
-import Compare from '../../src/commands/compare';
+import { readJsonSync } from 'fs-extra';
+
 import Report from '../../src/commands/report';
 import {
-  FIXTURE_APP,
   TB_CONFIG_FILE,
   TB_RESULTS_FOLDER,
+  COMPARE_JSON,
+  generateFileStructure,
 } from '../test-helpers';
 
-const fidelity = 'test';
+const COMPARE = {
+  'compare.json': JSON.stringify(readJsonSync(COMPARE_JSON)),
+};
 
 describe('report: creates html', () => {
+  generateFileStructure(COMPARE, TB_RESULTS_FOLDER);
   test
     .stdout()
     .it(
-      `runs report --inputFilePath ${TB_RESULTS_FOLDER}/compare.json --tbResultsFolder ${TB_RESULTS_FOLDER} --headless --fidelity ${fidelity} --config ${TB_CONFIG_FILE}`,
+      `runs report --config ${TB_CONFIG_FILE} --tbResultsFolder ${TB_RESULTS_FOLDER} `,
       async ctx => {
-        await Compare.run([
-          '--controlURL',
-          FIXTURE_APP.control,
-          '--experimentURL',
-          FIXTURE_APP.regression,
-          '--tbResultsFolder',
-          TB_RESULTS_FOLDER,
-          '--cpuThrottleRate=1',
-          '--headless',
-          '--fidelity',
-          fidelity,
-          '--config',
-          TB_CONFIG_FILE,
-        ]);
-
         await Report.run([
           '--tbResultsFolder',
           `${TB_RESULTS_FOLDER}`,
