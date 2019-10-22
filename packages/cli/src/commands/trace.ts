@@ -25,7 +25,7 @@ import {
 } from '../helpers/utils';
 
 export default class Trace extends Command {
-  public static description = `Parses a CPU profile and aggregates time across heuristics. Can optinally be vertically sliced with event names.`;
+  public static description = `Parses a CPU profile and aggregates time across heuristics. Can optionally be vertically sliced with event names.`;
   public static flags = {
     cpuThrottleRate: cpuThrottleRate({ required: true }),
     tbResultsFolder: tbResultsFolder({ required: true }),
