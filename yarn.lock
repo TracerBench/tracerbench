@@ -1061,6 +1061,11 @@
   resolved "https://registry.yarnpkg.com/@tracerbench/message-transport/-/message-transport-1.0.1.tgz#30d48ddda07882d917841709e25a425452c26a81"
   integrity sha512-W/dMlbNFLv1c2StqZbBYPI1lXgChThBlrCquk3asGrbu9q/g7fDvCZcMxMg+r8KORf+PJu9aV48LSinDJ72XkQ==
 
+"@tracerbench/message-transport@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@tracerbench/message-transport/-/message-transport-1.1.0.tgz#ba5f45706b109f734b9404db9ad9bc06043e91f9"
+  integrity sha512-fI7+wuvcEWuqiRRraeejNTr3x9mvykfArN1Pu2K9IhEb8Li7mj9XpXgt5fPBCWcBXNTB1amaQsCaxLgknzohPQ==
+
 "@tracerbench/protocol-connection@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@tracerbench/protocol-connection/-/protocol-connection-1.0.3.tgz#6dace6de858bd41f1b472029e22ccf6dc8987f2e"
@@ -1070,12 +1075,29 @@
     "@tracerbench/protocol-transport" "^1.0.2"
     race-cancellation "^0.4.1"
 
+"@tracerbench/protocol-connection@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@tracerbench/protocol-connection/-/protocol-connection-1.1.0.tgz#18fa2c7226db58be90e3683f62310917b5ee01ef"
+  integrity sha512-rE3NoUQzLATy2GY24cbSZa91eYtUr3LlaE2ACLVSmZ4S1WZfX0mUMGpV66NkUneCmiP81h9fEukPmMIB7Nujlg==
+  dependencies:
+    "@tracerbench/message-transport" "^1.1.0"
+    "@tracerbench/protocol-transport" "^1.1.0"
+    race-cancellation "^0.4.1"
+
 "@tracerbench/protocol-transport@^1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@tracerbench/protocol-transport/-/protocol-transport-1.0.2.tgz#642cba23c41560d75309735a0ef693471ed9c981"
   integrity sha512-BuU8grUy/ZaoV9XZ3XevsoSZQwJfz+Ydlx+hZAkeLvr6akss95c1kHEul7HQlO3QiMk7y3KWOWS2yJI7H/DouQ==
   dependencies:
     "@tracerbench/message-transport" "^1.0.1"
+    race-cancellation "^0.4.1"
+
+"@tracerbench/protocol-transport@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@tracerbench/protocol-transport/-/protocol-transport-1.1.0.tgz#41168f1cd871f314de3908880a86856f25f369ae"
+  integrity sha512-plbZuOemj8kTQUUnygrqZ6zw7RKzC8gjrddmZsDqQd8qeri1RkjR6TWMETkg0/CneN883bs8OuhJQ4bTlZcxsA==
+  dependencies:
+    "@tracerbench/message-transport" "^1.1.0"
     race-cancellation "^0.4.1"
 
 "@tracerbench/spawn-chrome@^1.0.3":

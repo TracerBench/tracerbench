@@ -232,3 +232,8 @@ export const dest = flags.build({
 export const filename = flags.build({
   description: `The filename for the generated file`,
 });
+
+export const marker = flags.build({
+  description: `The last marker before ending recording`,
+  default: 'domComplete',
+});

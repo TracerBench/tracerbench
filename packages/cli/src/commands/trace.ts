@@ -166,5 +166,6 @@ export default class Trace extends TBBaseCommand {
         this.error(`${error}`);
       }
     }
+    return this.log(`${traceJSON}`);
   }
 }

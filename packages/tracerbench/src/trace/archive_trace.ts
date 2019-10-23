@@ -2,87 +2,176 @@
 
 import Protocol from 'devtools-protocol';
 import { createBrowser, getTab, setCookies } from './trace-utils';
+import {
+  Archive as IArchive,
+  Log as ILog,
+  Page as IPage,
+  PageTimings as IPageTimings,
+  Request as IRequest,
+  Response as IResponse,
+  Header as IHeaders,
+  Content as IContent,
+  Entry as IEntry,
+} from '@tracerbench/har';
 
-// Represents a subset of a HAR
-export interface IArchive {
-  log: ILog;
-}
-
-export interface ILog {
-  entries: IEntry[];
-}
-
-export interface IRequest {
-  url: string;
-}
-
-export interface IResponse {
-  content: IContent;
-}
-
-export interface IContent {
-  text: string;
-}
-
-export interface IEntry {
-  request: IRequest;
-  response: IResponse;
-}
+export {
+  IArchive,
+  ILog,
+  IPage,
+  IPageTimings,
+  IRequest,
+  IResponse,
+  IHeaders,
+  IContent,
+  IEntry,
+};
 
 export async function recordHARClient(
   url: string,
   browserArgs: string[],
-  cookies: Protocol.Network.CookieParam[]
+  cookies: Protocol.Network.CookieParam[],
+  marker: string
 ): Promise<IArchive> {
+  const networkRequests: Protocol.Network.ResponseReceivedEvent[] = [];
+  const archive: IArchive = {
+    log: {
+      version: '0.0.0',
+      creator: {
+        name: 'TracerBench',
+        version: '0.0.0',
+      },
+      entries: [],
+    },
+  };
   const browser = await createBrowser(browserArgs);
+  const chrome = await getTab(browser.connection);
+
   try {
-    const client = await getTab(browser.connection);
+    chrome.on('Network.requestWillBeSent', params => {
+      console.log(
+        `RECORDING-REQUEST :: ${params.request.method} :: ${params.type} :: ${params.request.url}`
+      );
+    });
 
-    const requestIds: string[] = [];
-    const responses: Protocol.Network.Response[] = [];
+    chrome.on('Network.responseReceived', params => {
+      networkRequests.push(params);
+    });
 
-    client.on('Network.responseReceived', ({ requestId, response }) => {
-      if (
-        response.mimeType === 'text/html' ||
-        response.mimeType === 'text/javascript' ||
-        response.mimeType === 'application/javascript'
-      ) {
-        requestIds.push(requestId);
-        responses.push(response);
+    // enable Network / Page / Runtime
+    await Promise.all([
+      chrome.send('Page.enable'),
+      chrome.send('Network.enable'),
+      chrome.send('Runtime.enable'),
+    ]); // clear and disable cache
+    await chrome.send('Network.clearBrowserCache');
+    // disable cache
+    await chrome.send('Network.setCacheDisabled', { cacheDisabled: true });
+    // set cookies
+    await setCookies(chrome, cookies);
+    // add performance observer script to eval
+    await chrome.send('Page.addScriptToEvaluateOnNewDocument', {
+      source: `
+        self.__TBMarkerPromise = new Promise(resolve => {
+          const observer = new PerformanceObserver((list) => {
+            if (list.getEntriesByName('${marker}').length > 0) {
+              resolve();
+            }
+        });
+        observer.observe({ entryTypes: ["mark"] });
+        });`,
+    });
+
+    // navigate to the url
+    await chrome.send('Page.navigate', { url });
+
+    // eval
+    const evalPromise = chrome.send('Runtime.evaluate', {
+      expression: `__TBMarkerPromise`,
+      awaitPromise: true,
+    });
+
+    let timeoutId: NodeJS.Timeout;
+    const timeout = new Promise(reject => {
+      timeoutId = setTimeout(() => {
+        clearTimeout(timeoutId);
+        reject('Promise timed out after waiting for 10 seconds');
+      }, 10000);
+    });
+
+    await Promise.race([evalPromise, timeout]).then(() => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
       }
     });
 
-    const archive: IArchive = {
-      log: {
-        entries: [],
-      },
-    };
-
-    await client.send('Network.enable');
-
-    await setCookies(client, cookies);
-
-    await client.send('Page.enable');
+    archive.log.entries = await processEntries(networkRequests, chrome);
 
     await Promise.all([
-      client.until('Page.loadEventFired'),
-      client.send('Page.navigate', { url }),
+      chrome.send('Network.disable'),
+      chrome.send('Runtime.disable'),
     ]);
 
-    for (let i = 0; i < requestIds.length; i++) {
-      const requestId = requestIds[i];
-      const response = responses[i];
-      const responseBody = await client.send('Network.getResponseBody', {
-        requestId,
-      });
-      const entry: IEntry = {
-        request: { url: response.url },
-        response: { content: { text: responseBody.body } },
-      };
-      archive.log.entries.push(entry);
-    }
-    return archive;
+    await chrome.send('Page.close');
+  } catch (e) {
+    throw new Error('Network Request could not be captured. ' + e);
   } finally {
-    await browser.dispose();
+    if (browser) {
+      await browser.dispose();
+    }
   }
+
+  return archive;
+}
+
+export async function processEntries(
+  networkRequests: Protocol.Network.ResponseReceivedEvent[],
+  chrome: any
+) {
+  const entries = [];
+  for (let i = 0; i < networkRequests.length; i++) {
+    console.log(`BUILDING-HAR-ENTRY-FOR :: ${networkRequests[i].response.url}`);
+    const requestId = networkRequests[i].requestId;
+    const response = networkRequests[i].response;
+    const responseBody = await chrome.send('Network.getResponseBody', {
+      requestId,
+    });
+    const entry: IEntry = {
+      request: {
+        url: response.url,
+        method: '',
+        httpVersion: '',
+        cookies: [],
+        headers: [],
+        queryString: [],
+        headersSize: 0,
+        bodySize: 0,
+      },
+      response: {
+        status: response.status,
+        statusText: response.statusText,
+        httpVersion: '',
+        cookies: [],
+        headers: [],
+        redirectURL: '',
+        headersSize: 0,
+        bodySize: 0,
+        content: {
+          text: responseBody.body,
+          size: 0,
+          mimeType: '',
+        },
+      },
+      time: 0,
+      cache: {},
+      timings: {
+        send: 0,
+        wait: 0,
+        receive: 0,
+      },
+      startedDateTime: '',
+    };
+    entries.push(entry);
+  }
+
+  return entries;
 }

@@ -1,7 +1,6 @@
 {
   "version": "0.2.0",
-  "configurations": [
-    {
+  "configurations": [{
       "name": "Test PP",
       "type": "node",
       "request": "launch",
@@ -14,15 +13,86 @@
       "sourceMaps": true
     },
     {
-      "name": "Test CLI",
       "type": "node",
       "request": "launch",
-      "protocol": "inspector",
-      "cwd": "${workspaceFolder}/packages/cli",
+      "name": "All CLI Tests",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
-      "args": ["test/**/*.ts"],
-      "sourceMaps": true
+      "args": [
+        "--no-timeout",
+        "${workspaceFolder}/packages/cli/test/commands/**/*.test.ts",
+        "${workspaceFolder}/packages/cli/test/helpers/**/*.test.ts",
+        "${workspaceFolder}/packages/cli/test/command-config/**/*.test.ts"
+      ],
+      "sourceMaps": true,
+      "cwd": "${workspaceFolder}/packages/cli",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "protocol": "inspector"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Only CLI Commands",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+      "args": [
+        "--no-timeout",
+        "${workspaceFolder}/packages/cli/test/commands/**/*.test.ts",
+      ],
+      "sourceMaps": true,
+      "cwd": "${workspaceFolder}/packages/cli",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "protocol": "inspector"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Only CLI Helpers",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+      "args": [
+        "--no-timeout",
+        "${workspaceFolder}/packages/cli/test/helpers/**/*.test.ts",
+      ],
+      "sourceMaps": true,
+      "cwd": "${workspaceFolder}/packages/cli",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "protocol": "inspector"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Only CLI Cmd-Configs",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+      "args": [
+        "--no-timeout",
+        "${workspaceFolder}/packages/cli/test/command-config/**/*.test.ts"
+      ],
+      "sourceMaps": true,
+      "cwd": "${workspaceFolder}/packages/cli",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "protocol": "inspector"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Only CLI RecordHAR",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+      "args": [
+        "--no-timeout",
+        "${workspaceFolder}/packages/cli/test/commands/record-har.test.ts"
+      ],
+      "sourceMaps": true,
+      "cwd": "${workspaceFolder}/packages/cli",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "protocol": "inspector"
     }
   ]
 }

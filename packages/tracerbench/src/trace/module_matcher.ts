@@ -47,7 +47,9 @@ export class ModuleMatcher {
       return file.moduleNameFor(callFrame);
     }
 
-    file = this.parsedFiles[url] = new ParsedFile(this.contentFor(url));
+    file = this.parsedFiles[url] = new ParsedFile(this.contentFor(
+      url
+    ) as string);
     return file.moduleNameFor(callFrame);
   }
 

@@ -1,10 +1,10 @@
 import { Command } from '@oclif/command';
-import { recordHARClient } from '@tracerbench/core';
 import { readJson, writeFileSync } from 'fs-extra';
 import * as path from 'path';
 import { setGracefulCleanup, dirSync } from 'tmp';
+import { recordHARClient } from '@tracerbench/core';
 
-import { dest, url, cookiespath, filename } from '../helpers/flags';
+import { dest, url, cookiespath, filename, marker } from '../helpers/flags';
 
 setGracefulCleanup();
 
@@ -15,17 +15,23 @@ export default class RecordHAR extends Command {
     dest: dest({ required: true }),
     cookiespath: cookiespath({ required: true }),
     filename: filename({ required: true, default: 'tracerbench' }),
+    marker: marker({ required: true }),
   };
 
   public async run() {
     const { flags } = this.parse(RecordHAR);
-    const { url, dest, cookiespath, filename } = flags;
+    const { url, dest, cookiespath, filename, marker } = flags;
 
     // grab the auth cookies
     const cookies = await readJson(path.resolve(cookiespath));
 
     // record the actual HAR and return the archive file
-    const harArchive = await recordHARClient(url, getBrowserArgs(), cookies);
+    const harArchive = await recordHARClient(
+      url,
+      getBrowserArgs(),
+      cookies,
+      marker
+    );
 
     writeFileSync(
       path.join(dest, `${filename}.har`),

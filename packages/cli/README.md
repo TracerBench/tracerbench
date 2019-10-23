@@ -219,6 +219,8 @@ OPTIONS
 
   --filename=filename        (required) [default: tracerbench] The filename for the generated file
 
+  --marker=marker            (required) [default: domComplete] The last marker before ending recording
+
   --url=url                  (required) URL to visit for record-har, timings & trace commands
 ```
 
@@ -369,6 +371,8 @@ OPTIONS
   --dest=dest                (required) The destination path for the generated file
 
   --filename=filename        (required) [default: tracerbench] The filename for the generated file
+
+  --marker=marker            (required) [default: domComplete] The last marker before ending recording
 
   --url=url                  (required) URL to visit for record-har, timings & trace commands
 ```

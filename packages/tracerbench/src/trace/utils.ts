@@ -92,7 +92,7 @@ export function addRemainingModules(
         functionName: '.*',
         functionNameRegex: /.*/,
         moduleName,
-        moduleNameRegex: new RegExp(`^${moduleName}$`)
+        moduleNameRegex: new RegExp(`^${moduleName}$`),
       };
       locators.push(newLocator);
       categories[AUTO_ADD_CAT].push(newLocator);
@@ -179,10 +179,16 @@ export function formatCategories(
         functionName: method,
         functionNameRegex: new RegExp(`^${method}$`),
         moduleName: '*',
-        moduleNameRegex: /.*/
+        moduleNameRegex: /.*/,
       };
     });
 
     return { 'Auto Added Module Paths': addHocLocators };
   }
+}
+
+export async function wait(dur: number) {
+  return new Promise(resolve => {
+    setTimeout(resolve, dur);
+  });
 }
