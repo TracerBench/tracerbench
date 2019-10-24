@@ -180,11 +180,11 @@ export function outputJSONResults(
  * @param flags - This is expected to be CLI flags from the "compare" command
  * @param cli - This is expected to be a "compare" Command instance
  */
-export function logCompareResults(
+export async function logCompareResults(
   results: ITracerBenchTraceResult[],
   flags: Pick<ICompareFlags, 'fidelity'>,
   cli: Command
-): string {
+): Promise<string> {
   const { fidelity } = flags;
   const benchmarkTable = new TBTable('Initial Render');
   const phaseTable = new TBTable('Sub Phase of Duration');

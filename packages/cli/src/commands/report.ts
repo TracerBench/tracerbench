@@ -1,9 +1,13 @@
 import * as fs from 'fs-extra';
 import { join, resolve } from 'path';
 
-import { Command } from '@oclif/command';
 import { IConfig } from '@oclif/config';
-import { ITBConfig, defaultFlagArgs, getConfig } from '../command-config';
+import {
+  ITBConfig,
+  defaultFlagArgs,
+  getConfig,
+  TBBaseCommand,
+} from '../command-config';
 import createConsumeableHTML, {
   ITracerBenchTraceResult,
 } from '../helpers/create-consumable-html';
@@ -18,7 +22,7 @@ export interface IReportFlags {
   config?: string;
 }
 
-export default class Report extends Command {
+export default class Report extends TBBaseCommand {
   public static description = `Parses the output json from tracerbench and formats it into pdf and html`;
   public static flags = {
     tbResultsFolder: tbResultsFolder({ required: true }),
@@ -107,7 +111,11 @@ export default class Report extends Command {
     await printToPDF(`file://${absPathToHTML}`, absOutputPath);
 
     this.log(
-      `The PDF and HTML reports are available here: ${chalkScheme.tbBranding.lime.underline.bold(absPathToHTML)} and here: ${chalkScheme.tbBranding.blue.underline.bold(absOutputPath)}\n`
+      `The PDF and HTML reports are available here: ${chalkScheme.tbBranding.lime.underline.bold(
+        absPathToHTML
+      )} and here: ${chalkScheme.tbBranding.blue.underline.bold(
+        absOutputPath
+      )}\n`
     );
   }
   private async parseFlags() {

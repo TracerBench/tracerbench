@@ -1,7 +1,7 @@
 import Protocol from 'devtools-protocol';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { Command, flags } from '@oclif/command';
+import { TBBaseCommand, flags, getConfig } from '../../command-config';
 import {
   IInitialRenderBenchmarkParams,
   InitialRenderBenchmark,
@@ -46,7 +46,6 @@ import {
   ITBConfig,
 } from '../../command-config/tb-config';
 import { IConfig } from '@oclif/config';
-import { getConfig } from '../../command-config';
 import CompareAnalyze from './analyze';
 import Report from '../report';
 
@@ -72,7 +71,7 @@ export interface ICompareFlags {
   report?: boolean;
 }
 
-export default class Compare extends Command {
+export default class Compare extends TBBaseCommand {
   public static description =
     'Compare the performance delta between an experiment and control';
   public static flags = {
