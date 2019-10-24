@@ -1,15 +1,15 @@
-import { Command } from '@oclif/command';
+import { TBBaseCommand } from '../command-config';
 import { harTrace } from '@tracerbench/core';
 import { browserArgs, tbResultsFolder, url } from '../helpers/flags';
 import * as path from 'path';
 import * as fs from 'fs-extra';
 
-export default class CreateArchive extends Command {
+export default class CreateArchive extends TBBaseCommand {
   public static description = 'Creates an automated HAR file from a URL.';
   public static flags = {
     browserArgs: browserArgs({ required: true }),
     tbResultsFolder: tbResultsFolder({ required: true }),
-    url: url({ required: true })
+    url: url({ required: true }),
   };
 
   public async run() {
@@ -28,7 +28,9 @@ export default class CreateArchive extends Command {
     fs.writeFileSync(cookiesJSON, JSON.stringify(cookies));
     fs.writeFileSync(archiveOutput, JSON.stringify(harArchive));
 
-    this.log(`Captured ${harArchive.log.entries.length} request responses in har file.`);
+    this.log(
+      `Captured ${harArchive.log.entries.length} request responses in har file.`
+    );
     return this.log(
       `HAR & cookies.json successfully generated from ${url} and available here: ${archiveOutput} and ${cookiesJSON}`
     );

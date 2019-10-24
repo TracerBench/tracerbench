@@ -1,9 +1,9 @@
-import { Command } from '@oclif/command';
+import { TBBaseCommand } from '../../command-config';
 import { logCompareResults } from '../../helpers/log-compare-results';
-import * as fs from 'fs-extra';
+import { readJsonSync } from 'fs-extra';
 import { fidelity, tbResultsFolder } from '../../helpers/flags';
 
-export default class CompareAnalyze extends Command {
+export default class CompareAnalyze extends TBBaseCommand {
   public static description =
     'Run an analysis of a benchmark run from a results json file and output to terminal';
   public static args = [
@@ -16,7 +16,7 @@ export default class CompareAnalyze extends Command {
 
   public async run(): Promise<string> {
     const { args, flags } = this.parse(CompareAnalyze);
-    const results = fs.readJsonSync(args.resultsFile);
-    return logCompareResults(results, flags, this);
+    const results = readJsonSync(args.resultsFile);
+    return await logCompareResults(results, flags, this);
   }
 }

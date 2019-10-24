@@ -73,7 +73,7 @@ const jsonResults = {
 };
 
 describe('log-compare-results', () => {
-  test.stdout().it(`stdout`, ctx => {
+  test.stdout().it(`stdout`, async ctx => {
     const testResults = [
       {
         set: 'control',
@@ -85,7 +85,7 @@ describe('log-compare-results', () => {
       },
     ];
     // @ts-ignore
-    const results = logCompareResults(testResults, flags, scope);
+    const results = await logCompareResults(testResults, flags, scope);
     const resultsJSON: ICompareJSONResults = JSON.parse(results);
     expect(ctx.stdout).to.contain(`has no difference`);
     expect(resultsJSON).to.have.all.keys(jsonResults);

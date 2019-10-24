@@ -1,4 +1,4 @@
-import { Command } from '@oclif/command';
+import { TBBaseCommand } from '../command-config';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import {
@@ -24,7 +24,7 @@ import {
   loadTraceFile,
 } from '../helpers/utils';
 
-export default class Trace extends Command {
+export default class Trace extends TBBaseCommand {
   public static description = `Parses a CPU profile and aggregates time across heuristics. Can optinally be vertically sliced with event names.`;
   public static flags = {
     cpuThrottleRate: cpuThrottleRate({ required: true }),
@@ -33,7 +33,7 @@ export default class Trace extends Command {
     url: url({ required: true }),
     iterations: iterations({ required: true }),
     locations: locations(),
-    insights
+    insights,
   };
 
   public async run() {

@@ -1,4 +1,4 @@
-import { Command } from '@oclif/command';
+import { TBBaseCommand } from '../command-config';
 import * as fs from 'fs-extra';
 import * as path from 'path';
 import { ITraceEvent } from '@tracerbench/core';
@@ -16,7 +16,7 @@ import {
   loadTraceFile,
 } from '../helpers/utils';
 
-export default class MarkerTimings extends Command {
+export default class MarkerTimings extends TBBaseCommand {
   public static description = 'Get list of all user-timings from trace';
 
   public static flags = {
