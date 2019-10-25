@@ -27,6 +27,7 @@ export const URL = 'https://www.tracerbench.com';
 export const COMPARE_JSON = resolve(
   join(process.cwd(), '/test/fixtures/results/compare.json')
 );
+export const TRACE = resolve(join(process.cwd(), '/test/fixtures/trace.json'));
 
 export interface FileStructure {
   [key: string]: string | FileStructure;
@@ -58,4 +59,3 @@ export function generateFileStructure(
     }
   });
 }
-export const TRACE = resolve(join(process.cwd(), '/test/fixtures/trace.json'));

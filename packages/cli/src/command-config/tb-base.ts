@@ -7,7 +7,4 @@ export default abstract class TBBaseCommand extends Command {
   constructor(argv: string[], config: IConfig) {
     super(argv, config);
   }
-  public async init() {
-    //
-  }
 }

@@ -1,14 +1,14 @@
-import { Command } from '@oclif/command';
 import { readJson, writeFileSync } from 'fs-extra';
-import * as path from 'path';
+import { resolve, join } from 'path';
 import { setGracefulCleanup, dirSync } from 'tmp';
 import { recordHARClient } from '@tracerbench/core';
 
+import { TBBaseCommand } from '../command-config';
 import { dest, url, cookiespath, filename, marker } from '../helpers/flags';
 
 setGracefulCleanup();
 
-export default class RecordHAR extends Command {
+export default class RecordHAR extends TBBaseCommand {
   public static description = 'Generates a HAR file from a URL.';
   public static flags = {
     url: url({ required: true, default: undefined }),
@@ -23,7 +23,7 @@ export default class RecordHAR extends Command {
     const { url, dest, cookiespath, filename, marker } = flags;
 
     // grab the auth cookies
-    const cookies = await readJson(path.resolve(cookiespath));
+    const cookies = await readJson(resolve(cookiespath));
 
     // record the actual HAR and return the archive file
     const harArchive = await recordHARClient(
@@ -33,14 +33,11 @@ export default class RecordHAR extends Command {
       marker
     );
 
-    writeFileSync(
-      path.join(dest, `${filename}.har`),
-      JSON.stringify(harArchive)
-    );
+    const harPath = join(dest, `${filename}.har`);
 
-    this.log(
-      `HAR recorded and available here: ${path.join(dest, filename)}.har`
-    );
+    writeFileSync(harPath, JSON.stringify(harArchive));
+
+    this.log(`HAR recorded and available here: ${harPath}`);
   }
 }
 
