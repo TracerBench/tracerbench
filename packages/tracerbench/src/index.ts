@@ -30,5 +30,14 @@ export {
   ITraceEvent,
   IAnalyze,
   IConditions,
+  IArchive,
+  ILog,
+  IPage,
+  IPageTimings,
+  IRequest,
+  IResponse,
+  IHeaders,
+  IContent,
+  IEntry,
 } from './trace';
 export * from './util';

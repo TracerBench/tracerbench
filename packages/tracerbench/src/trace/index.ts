@@ -3,7 +3,7 @@ export { default as Process } from './process';
 export { default as Trace } from './trace';
 export { default as Thread } from './thread';
 export { analyze, IAnalyze } from './analyze';
-export { recordHARClient } from './archive_trace';
+export * from './archive_trace';
 export { loadTrace } from './load_trace';
 export { liveTrace } from './live_trace';
 export { networkConditions, IConditions } from './conditions';
