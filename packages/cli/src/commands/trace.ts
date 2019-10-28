@@ -19,6 +19,7 @@ import {
   locations,
   harpath,
   cookiespath,
+  marker,
 } from '../helpers/flags';
 import {
   normalizeFnName,
@@ -37,6 +38,7 @@ export default class Trace extends TBBaseCommand {
     cookiespath: cookiespath({ required: true }),
     iterations: iterations({ required: true }),
     locations: locations(),
+    marker: marker({ required: true }),
     insights,
   };
 
@@ -51,12 +53,11 @@ export default class Trace extends TBBaseCommand {
       locations,
       network,
       harpath,
+      marker,
     } = flags;
 
     const methods = [''];
 
-    const traceJSONFile = path.resolve(tbResultsFolder, 'trace.json');
-    const traceJSON = await readJson(traceJSONFile);
     const cookiesJSON = await readJson(path.resolve(cookiespath));
     const traceHAR = path.resolve(harpath);
     const traceHARJSON = await readJson(traceHAR);
@@ -64,14 +65,23 @@ export default class Trace extends TBBaseCommand {
       cpu: cpuThrottleRate,
       network,
     };
+
+    console.log(`running live trace`);
+
+    // run the liveTrace
+    const { traceEvents } = await liveTrace(
+      url,
+      tbResultsFolder,
+      cookiesJSON,
+      conditions,
+      marker
+    );
+
     const analyzeOptions: IAnalyze = {
-      traceJSON,
+      traceEvents,
       traceHARJSON,
       methods,
     };
-
-    // run the liveTrace
-    await liveTrace(url, traceJSONFile, cookiesJSON, conditions);
 
     // analyze the liveTrace
     await analyze(analyzeOptions);
@@ -85,7 +95,7 @@ export default class Trace extends TBBaseCommand {
       const methods = new Set();
 
       try {
-        trace = setTraceEvents(traceJSON);
+        trace = setTraceEvents(traceEvents);
       } catch (error) {
         this.error(`${error}`);
       }
@@ -149,7 +159,7 @@ export default class Trace extends TBBaseCommand {
       }
 
       try {
-        trace = setTraceEvents(traceJSON);
+        trace = setTraceEvents(traceEvents);
         const traceLoad = trace.filter(isCommitLoad);
         traceLoad.forEach(
           ({
@@ -166,6 +176,6 @@ export default class Trace extends TBBaseCommand {
         this.error(`${error}`);
       }
     }
-    return this.log(`${traceJSON}`);
+    return this.log(`${traceEvents}`);
   }
 }

@@ -1,13 +1,12 @@
 // tslint:disable:no-console
-
-import debug from 'debug';
 import Protocol from 'devtools-protocol';
-import * as fs from 'fs';
-
-const debugCallback = debug('tracerbench:trace');
+import { join, resolve } from 'path';
+import { openSync, readJSONSync, writeSync, closeSync } from 'fs-extra';
 
 import { IConditions } from './conditions';
 import { createBrowser, getTab, emulate, setCookies } from './trace-utils';
+import { getBrowserArgs } from './utils';
+import { ITraceEvent } from '../trace';
 
 const DEVTOOLS_CATEGORIES = [
   '-*',
@@ -25,68 +24,96 @@ const DEVTOOLS_CATEGORIES = [
   'disabled-by-default-v8.cpu_profiler.hires',
 ];
 
+interface ITraceEvents {
+  traceEvents: ITraceEvent[];
+}
+
 export async function liveTrace(
   url: string,
-  out: string,
+  tbResultsFolder: string,
   cookies: Protocol.Network.CookieParam[],
-  conditions: IConditions
-) {
-  const browser = await createBrowser([`--crash-dumps-dir=/tmp`]);
+  conditions: IConditions,
+  marker: string
+): Promise<ITraceEvents> {
+  const browserArgs = getBrowserArgs();
+  const browser = await createBrowser(browserArgs);
+  const traceFile = join(tbResultsFolder, 'trace.json');
+  let traceJSON;
   try {
-    const client = await getTab(browser.connection);
-    await emulate(client, conditions);
-    await setCookies(client, cookies);
+    const chrome = await getTab(browser.connection);
 
-    const tree = await client.send('Page.getFrameTree');
-    const mainFrameId = tree.frameTree.frame.id;
+    // enable Network / Page / Runtime
+    await Promise.all([
+      chrome.send('Page.enable'),
+      chrome.send('Network.enable'),
+      chrome.send('Runtime.enable'),
+    ]);
+    // clear and disable cache
+    await chrome.send('Network.clearBrowserCache');
 
-    debugCallback('frame tree', tree);
+    // disable cache
+    await chrome.send('Network.setCacheDisabled', { cacheDisabled: true });
 
-    await client.send('Page.enable');
+    await emulate(chrome, conditions);
+    await setCookies(chrome, cookies);
 
-    // these can be leveraged and commented in/out
-    client.on('Page.frameStartedLoading', evt => {
-      if (mainFrameId === evt.frameId) {
-        debugCallback('frameStartedLoading', evt);
-      }
+    // add performance observer script to eval
+    await chrome.send('Page.addScriptToEvaluateOnNewDocument', {
+      source: `
+            self.__TBMarkerPromise = new Promise(resolve => {
+              const observer = new PerformanceObserver((list) => {
+                if (list.getEntriesByName('${marker}').length > 0) {
+                  resolve();
+                }
+            });
+            observer.observe({ entryTypes: ["mark"] });
+            });`,
     });
 
-    client.on('Page.frameScheduledNavigation', evt => {
-      if (mainFrameId === evt.frameId) {
-        debugCallback('frameScheduledNavigation', evt);
-      }
-    });
-
-    client.on('Page.frameNavigated', evt => {
-      if (mainFrameId === evt.frame.id) {
-        debugCallback('frameNavigated', evt);
-      }
-    });
-
-    debugCallback(`starting trace`);
-
-    await client.send('Tracing.start', {
-      categories: DEVTOOLS_CATEGORIES.join(','),
+    await chrome.send('Tracing.start', {
       transferMode: 'ReturnAsStream',
       streamCompression: 'none',
+      traceConfig: {
+        recordMode: 'recordAsMuchAsPossible',
+        includedCategories: DEVTOOLS_CATEGORIES,
+      },
     });
-    await Promise.all([
-      client.until('Page.loadEventFired'),
-      client.send('Page.navigate', { url }),
-    ]);
+
+    await chrome.send('Page.navigate', { url });
+
+    // eval
+    const evalPromise = chrome.send('Runtime.evaluate', {
+      expression: `__TBMarkerPromise`,
+      awaitPromise: true,
+    });
+
+    let timeoutId: NodeJS.Timeout;
+    const timeout = new Promise(reject => {
+      timeoutId = setTimeout(() => {
+        clearTimeout(timeoutId);
+        reject('Promise timed out after waiting for 10 seconds');
+      }, 10000);
+    });
+
+    await Promise.race([evalPromise, timeout]).then(() => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+    });
 
     const [result] = await Promise.all([
-      client.until('Tracing.tracingComplete'),
-      client.send('Tracing.end'),
+      chrome.until('Tracing.tracingComplete'),
+      chrome.send('Tracing.end'),
     ]);
 
     const handle = result.stream as string;
-    const file = fs.openSync(out, 'w');
+    const file = openSync(traceFile, 'w');
+
     try {
       let read: Protocol.IO.ReadResponse;
       do {
-        read = await client.send('IO.read', { handle });
-        fs.writeSync(
+        read = await chrome.send('IO.read', { handle });
+        writeSync(
           file,
           read.base64Encoded
             ? Buffer.from(read.data, 'base64')
@@ -94,10 +121,18 @@ export async function liveTrace(
         );
       } while (!read.eof);
     } finally {
-      fs.closeSync(file);
-      await client.send('IO.close', { handle });
+      closeSync(file);
+      await chrome.send('IO.close', { handle });
+      traceJSON = readJSONSync(resolve(traceFile));
+      await chrome.send('Page.close');
     }
+  } catch (e) {
+    throw new Error(`Live Trace could not be captured. ${e}`);
   } finally {
-    await browser.dispose();
+    if (browser) {
+      await browser.dispose();
+    }
   }
+
+  return traceJSON;
 }

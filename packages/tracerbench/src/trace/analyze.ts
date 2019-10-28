@@ -26,7 +26,7 @@ import {
 } from '../trace';
 
 export interface IAnalyze {
-  traceJSON: ITraceEvent[] | ITrace;
+  traceEvents: ITraceEvent[] | ITrace;
   traceHARJSON: IArchive;
   methods: string[];
   filename?: string;
@@ -36,13 +36,20 @@ export interface IAnalyze {
 }
 
 export async function analyze(options: IAnalyze) {
-  const { traceHARJSON, event, filename, traceJSON, report, methods } = options;
-  const trace = loadTrace(traceJSON);
+  const {
+    traceHARJSON,
+    event,
+    filename,
+    traceEvents,
+    report,
+    methods,
+  } = options;
+  const trace = loadTrace(traceEvents);
   const profile = getCPUProfile(trace, event)!;
   const { hierarchy } = profile;
 
   const modMatcher = new ModuleMatcher(hierarchy, traceHARJSON);
-  exportHierarchy(traceJSON, hierarchy, trace, filename, modMatcher);
+  exportHierarchy(traceEvents, hierarchy, trace, filename, modMatcher);
 
   const categories = formatCategories(report, methods);
   const allMethods = methodsFromCategories(categories);

@@ -39,5 +39,6 @@ export {
   IHeaders,
   IContent,
   IEntry,
+  getBrowserArgs,
 } from './trace';
 export * from './util';

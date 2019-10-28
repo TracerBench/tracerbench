@@ -44,9 +44,10 @@ export async function recordHARClient(
     },
   };
   const browser = await createBrowser(browserArgs);
-  const chrome = await getTab(browser.connection);
 
   try {
+    const chrome = await getTab(browser.connection);
+
     chrome.on('Network.requestWillBeSent', params => {
       console.log(
         `RECORDING-REQUEST :: ${params.request.method} :: ${params.type} :: ${params.request.url}`
@@ -66,6 +67,10 @@ export async function recordHARClient(
     await chrome.send('Network.clearBrowserCache');
     // disable cache
     await chrome.send('Network.setCacheDisabled', { cacheDisabled: true });
+
+    // !todo add device emulation flag/args
+    // await emulate(chrome, conditions);
+
     // set cookies
     await setCookies(chrome, cookies);
     // add performance observer script to eval
@@ -113,7 +118,7 @@ export async function recordHARClient(
 
     await chrome.send('Page.close');
   } catch (e) {
-    throw new Error('Network Request could not be captured. ' + e);
+    throw new Error(`Network Request could not be captured. ${e}`);
   } finally {
     if (browser) {
       await browser.dispose();
