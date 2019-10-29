@@ -141,31 +141,33 @@ export async function processEntries(
     console.log(`BUILDING-HAR-ENTRY-FOR :: ${networkRequests[i].response.url}`);
     const requestId = networkRequests[i].requestId;
     const response = networkRequests[i].response;
-    const responseBody = await chrome.send('Network.getResponseBody', {
+    const { body } = await chrome.send('Network.getResponseBody', {
       requestId,
     });
+    const { url, requestHeaders, status, statusText, headers } = response;
+
     const entry: IEntry = {
       request: {
-        url: response.url,
+        url,
         method: '',
         httpVersion: '',
         cookies: [],
-        headers: [],
+        headers: handleHeaders(requestHeaders),
         queryString: [],
         headersSize: 0,
         bodySize: 0,
       },
       response: {
-        status: response.status,
-        statusText: response.statusText,
+        status,
+        statusText,
         httpVersion: '',
         cookies: [],
-        headers: [],
+        headers: handleHeaders(headers),
         redirectURL: '',
         headersSize: 0,
         bodySize: 0,
         content: {
-          text: responseBody.body,
+          text: body,
           size: 0,
           mimeType: '',
         },
@@ -183,4 +185,14 @@ export async function processEntries(
   }
 
   return entries;
+}
+
+export function handleHeaders(headers?: Protocol.Network.Headers): IHeaders[] {
+  if (!headers) {
+    return [{ name: '', value: '' }];
+  }
+
+  return Object.entries(headers).map(e => {
+    return { name: e[0], value: e[1] };
+  });
 }

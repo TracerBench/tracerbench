@@ -109,6 +109,20 @@
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "protocol": "inspector"
+    },
+    {
+      "name": "TS-Node SCRATCH.ts",
+      "type": "node",
+      "request": "launch",
+      "args": ["${workspaceRoot}/SCRATCH.ts"],
+      "runtimeArgs": ["-r", "ts-node/register"],
+      "cwd": "${workspaceRoot}",
+      "protocol": "inspector",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "env": {
+        "TS_NODE_IGNORE": "false"
+      }
     }
   ]
 }

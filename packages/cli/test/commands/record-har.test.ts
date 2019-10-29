@@ -31,6 +31,8 @@ describe('record-har', () => {
         expect(ctx.stdout).to.contain(`HAR recorded and available here:`);
         expect(harJSON.log.entries.length).to.be.gt(1);
         expect(harJSON.log.entries[0].request.url).to.contain(`${URL}`);
+        expect(harJSON.log.entries[0].request.headers.length).to.be.gt(1);
+        expect(harJSON.log.entries[0].response.headers.length).to.be.gt(1);
 
         assert.exists(harFile);
         assert.equal(harJSON.log.creator.name, 'TracerBench');
