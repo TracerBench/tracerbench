@@ -1,7 +1,10 @@
 import { readJson, writeFileSync } from 'fs-extra';
 import { resolve, join } from 'path';
-import { setGracefulCleanup } from 'tmp';
-import { recordHARClient, getBrowserArgs } from '@tracerbench/core';
+import {
+  recordHARClient,
+  getBrowserArgs,
+  IConditions,
+} from '@tracerbench/core';
 
 import { TBBaseCommand, getConfig } from '../command-config';
 import {
@@ -12,8 +15,6 @@ import {
   marker,
   config,
 } from '../helpers/flags';
-
-setGracefulCleanup();
 
 export default class RecordHAR extends TBBaseCommand {
   public static description = 'Generates a HAR file from a URL.';
@@ -33,14 +34,11 @@ export default class RecordHAR extends TBBaseCommand {
   public async run() {
     const { flags } = this.parse(RecordHAR);
     const { url, dest, cookiespath, filename, marker } = flags;
-    let browserArgs;
-
-    try {
-      browserArgs = this.parsedConfig.browserArgs;
-    } catch (e) {
-      //
-    }
-
+    const { network, cpuThrottleRate, browserArgs } = this.parsedConfig;
+    const conditions: IConditions = {
+      network: network ? network : 'none',
+      cpu: cpuThrottleRate ? parseInt(cpuThrottleRate as string, 10) : 1,
+    };
     // grab the auth cookies
     const cookies = await readJson(resolve(cookiespath));
 
@@ -49,6 +47,7 @@ export default class RecordHAR extends TBBaseCommand {
       url,
       cookies,
       marker,
+      conditions,
       getBrowserArgs(browserArgs)
     );
 

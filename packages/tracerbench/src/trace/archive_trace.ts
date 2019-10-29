@@ -1,9 +1,9 @@
 // tslint:disable:no-console
 
 import Protocol from 'devtools-protocol';
-import { createBrowser, getTab, setCookies } from './trace-utils';
+import { createBrowser, getTab, setCookies, emulate } from './trace-utils';
 import { getBrowserArgs } from './utils';
-
+import { IConditions } from './conditions';
 import {
   Archive as IArchive,
   Log as ILog,
@@ -32,6 +32,7 @@ export async function recordHARClient(
   url: string,
   cookies: Protocol.Network.CookieParam[],
   marker: string,
+  conditions: IConditions,
   altBrowserArgs?: string[]
 ): Promise<IArchive> {
   const networkRequests: Protocol.Network.ResponseReceivedEvent[] = [];
@@ -45,6 +46,7 @@ export async function recordHARClient(
       entries: [],
     },
   };
+
   const browserArgs = getBrowserArgs(altBrowserArgs);
   const browser = await createBrowser(browserArgs);
 
@@ -71,8 +73,7 @@ export async function recordHARClient(
     // disable cache
     await chrome.send('Network.setCacheDisabled', { cacheDisabled: true });
 
-    // !todo add device emulation flag/args
-    // await emulate(chrome, conditions);
+    await emulate(chrome, conditions);
 
     // set cookies
     await setCookies(chrome, cookies);
