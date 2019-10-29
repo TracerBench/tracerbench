@@ -7,10 +7,14 @@ import { IConditions } from './conditions';
 import { createBrowser, getTab, emulate, setCookies } from './trace-utils';
 import { getBrowserArgs } from './utils';
 import { ITraceEvent } from '../trace';
-
 const DEVTOOLS_CATEGORIES = [
   '-*',
   'devtools.timeline',
+  'viz',
+  'benchmark',
+  'blink',
+  'cc',
+  'gpu',
   'v8',
   'v8.execute',
   'disabled-by-default-devtools.timeline',
@@ -19,9 +23,12 @@ const DEVTOOLS_CATEGORIES = [
   'blink.console',
   'blink.user_timing',
   'latencyInfo',
-  'disabled-by-default-devtools.timeline.stack',
   'disabled-by-default-v8.cpu_profiler',
-  'disabled-by-default-v8.cpu_profiler.hires',
+  'disabled-by-default-v8.cpu_profiler',
+  'disabled-by-default.cpu_profiler',
+  'disabled-by-default.cpu_profiler.debug',
+  'renderer',
+  'cpu_profiler',
 ];
 
 interface ITraceEvents {
@@ -74,8 +81,8 @@ export async function liveTrace(
       transferMode: 'ReturnAsStream',
       streamCompression: 'none',
       traceConfig: {
-        recordMode: 'recordAsMuchAsPossible',
         includedCategories: DEVTOOLS_CATEGORIES,
+        recordMode: 'recordUntilFull',
       },
     });
 
@@ -91,8 +98,8 @@ export async function liveTrace(
     const timeout = new Promise(reject => {
       timeoutId = setTimeout(() => {
         clearTimeout(timeoutId);
-        reject('Promise timed out after waiting for 10 seconds');
-      }, 10000);
+        reject('Promise timed out after waiting for 15 seconds');
+      }, 15000);
     });
 
     await Promise.race([evalPromise, timeout]).then(() => {

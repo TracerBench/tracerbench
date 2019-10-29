@@ -3,8 +3,15 @@ import { resolve, join } from 'path';
 import { setGracefulCleanup } from 'tmp';
 import { recordHARClient, getBrowserArgs } from '@tracerbench/core';
 
-import { TBBaseCommand } from '../command-config';
-import { dest, url, cookiespath, filename, marker } from '../helpers/flags';
+import { TBBaseCommand, getConfig } from '../command-config';
+import {
+  dest,
+  url,
+  cookiespath,
+  filename,
+  marker,
+  config,
+} from '../helpers/flags';
 
 setGracefulCleanup();
 
@@ -16,11 +23,23 @@ export default class RecordHAR extends TBBaseCommand {
     cookiespath: cookiespath({ required: true }),
     filename: filename({ required: true, default: 'tracerbench' }),
     marker: marker({ required: true }),
+    config: config(),
   };
+  public async init() {
+    const { flags } = this.parse(RecordHAR);
+    this.parsedConfig = getConfig(flags.config, flags, this.explicitFlags);
+  }
 
   public async run() {
     const { flags } = this.parse(RecordHAR);
     const { url, dest, cookiespath, filename, marker } = flags;
+    let browserArgs;
+
+    try {
+      browserArgs = this.parsedConfig.browserArgs;
+    } catch (e) {
+      //
+    }
 
     // grab the auth cookies
     const cookies = await readJson(resolve(cookiespath));
@@ -28,9 +47,9 @@ export default class RecordHAR extends TBBaseCommand {
     // record the actual HAR and return the archive file
     const harArchive = await recordHARClient(
       url,
-      getBrowserArgs(),
       cookies,
-      marker
+      marker,
+      getBrowserArgs(browserArgs)
     );
 
     const harPath = join(dest, `${filename}.har`);

@@ -208,6 +208,9 @@ USAGE
   $ tracerbench
 
 OPTIONS
+  --config=config            Specify an alternative directory rather than the project root for the tbconfig.json. This
+                             explicit config will overwrite all.
+
   --cookiespath=cookiespath  (required) The path to a JSON file containing cookies to authenticate against the
                              correlated URL
 
@@ -367,6 +370,9 @@ USAGE
   $ tracerbench record-har
 
 OPTIONS
+  --config=config            Specify an alternative directory rather than the project root for the tbconfig.json. This
+                             explicit config will overwrite all.
+
   --cookiespath=cookiespath  (required) The path to a JSON file containing cookies to authenticate against the
                              correlated URL
 

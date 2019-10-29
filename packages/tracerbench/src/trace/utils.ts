@@ -194,7 +194,7 @@ export async function wait(dur: number) {
   });
 }
 
-export function getBrowserArgs(): string[] {
+export function getBrowserArgs(explictArgs?: string[]): string[] {
   interface IViewOptions {
     windowSize: {
       width: number;
@@ -217,7 +217,7 @@ export function getBrowserArgs(): string[] {
     userAgent: undefined,
   };
 
-  return [
+  const defaultFlags = [
     `--crash-dumps-dir=${tmpDir.name}`,
     '--disable-background-networking',
     '--disable-background-timer-throttling',
@@ -238,7 +238,6 @@ export function getBrowserArgs(): string[] {
     '--disable-translate',
     '--disable-v8-idle-tasks',
     `--device-scale-factor=${options.deviceScaleFactor}`,
-    '--ignore-certificate-errors-spki-list=uU0W87bsSHNaY+g/o8S9PmyxIgf92JepLWrPg5bYb+s=',
     '--metrics-recording-only',
     '--no-pings',
     '--no-first-run',
@@ -254,4 +253,6 @@ export function getBrowserArgs(): string[] {
     `--window-size=${options.windowSize.width},${options.windowSize.height}`,
     '--headless',
   ];
+
+  return explictArgs ? explictArgs.concat(defaultFlags) : defaultFlags;
 }

@@ -2,6 +2,8 @@
 
 import Protocol from 'devtools-protocol';
 import { createBrowser, getTab, setCookies } from './trace-utils';
+import { getBrowserArgs } from './utils';
+
 import {
   Archive as IArchive,
   Log as ILog,
@@ -28,9 +30,9 @@ export {
 
 export async function recordHARClient(
   url: string,
-  browserArgs: string[],
   cookies: Protocol.Network.CookieParam[],
-  marker: string
+  marker: string,
+  altBrowserArgs?: string[]
 ): Promise<IArchive> {
   const networkRequests: Protocol.Network.ResponseReceivedEvent[] = [];
   const archive: IArchive = {
@@ -43,6 +45,7 @@ export async function recordHARClient(
       entries: [],
     },
   };
+  const browserArgs = getBrowserArgs(altBrowserArgs);
   const browser = await createBrowser(browserArgs);
 
   try {
