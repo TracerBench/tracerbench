@@ -65,7 +65,7 @@ export async function recordHARClient(
               resolve();
             }
         });
-        observer.observe({ entryTypes: ["mark"] });
+        observer.observe({ entryTypes: ["mark", "navigation"] });
         });`,
     });
 
