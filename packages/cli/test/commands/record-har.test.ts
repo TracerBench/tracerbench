@@ -1,5 +1,5 @@
 import { test } from '@oclif/test';
-import { IArchive } from '@tracerbench/core';
+import { Archive } from '@tracerbench/har';
 import { expect, assert } from 'chai';
 import { readJSONSync } from 'fs-extra';
 import { join } from 'path';
@@ -26,7 +26,7 @@ describe('record-har', () => {
         ]);
 
         const harFile = join(TB_RESULTS_FOLDER, `${FILENAME}.har`);
-        const harJSON: IArchive = readJSONSync(harFile);
+        const harJSON: Archive = readJSONSync(harFile);
 
         expect(ctx.stdout).to.contain(`HAR recorded and available here:`);
         expect(harJSON.log.entries.length).to.be.gt(1);
