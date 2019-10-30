@@ -1,32 +1,11 @@
 // tslint:disable:no-console
 
 import Protocol from 'devtools-protocol';
+import { Archive, Header, Entry } from '@tracerbench/har';
+
 import { createBrowser, getTab, setCookies, emulate } from './trace-utils';
 import { getBrowserArgs } from './utils';
 import { IConditions } from './conditions';
-import {
-  Archive as IArchive,
-  Log as ILog,
-  Page as IPage,
-  PageTimings as IPageTimings,
-  Request as IRequest,
-  Response as IResponse,
-  Header as IHeaders,
-  Content as IContent,
-  Entry as IEntry,
-} from '@tracerbench/har';
-
-export {
-  IArchive,
-  ILog,
-  IPage,
-  IPageTimings,
-  IRequest,
-  IResponse,
-  IHeaders,
-  IContent,
-  IEntry,
-};
 
 export async function recordHARClient(
   url: string,
@@ -34,9 +13,9 @@ export async function recordHARClient(
   marker: string,
   conditions: IConditions,
   altBrowserArgs?: string[]
-): Promise<IArchive> {
+): Promise<Archive> {
   const networkRequests: Protocol.Network.ResponseReceivedEvent[] = [];
-  const archive: IArchive = {
+  const archive: Archive = {
     log: {
       version: '0.0.0',
       creator: {
@@ -146,7 +125,7 @@ export async function processEntries(
     });
     const { url, requestHeaders, status, statusText, headers } = response;
 
-    const entry: IEntry = {
+    const entry: Entry = {
       request: {
         url,
         method: '',
@@ -187,7 +166,7 @@ export async function processEntries(
   return entries;
 }
 
-export function handleHeaders(headers?: Protocol.Network.Headers): IHeaders[] {
+export function handleHeaders(headers?: Protocol.Network.Headers): Header[] {
   if (!headers) {
     return [{ name: '', value: '' }];
   }

@@ -1,9 +1,9 @@
 // tslint:disable:member-ordering
 
 import { HierarchyNode } from 'd3-hierarchy';
+import { Archive } from '@tracerbench/har';
 
 import { ICallFrame, ICpuProfileNode } from '../trace';
-import { IArchive } from './archive_trace';
 import { ParsedFile } from './metadata';
 import { ModuleMatcher } from './module_matcher';
 import { ICategories, ILocator } from './utils';
@@ -49,7 +49,7 @@ export function categorizeAggregations(
   categories: ICategories
 ) {
   const categorized: ICategorized = {
-    unknown: [aggregations.unknown]
+    unknown: [aggregations.unknown],
   };
 
   Object.keys(categories).forEach(category => {
@@ -83,12 +83,12 @@ class AggregrationCollector {
   private modMatcher: ModuleMatcher;
   public matcher: RegExp | undefined;
   public parsedFiles: IParsedFiles = {};
-  public archive: IArchive;
+  public archive: Archive;
   public hierarchy: HierarchyNode<ICpuProfileNode>;
 
   constructor(
     locators: ILocator[],
-    archive: IArchive,
+    archive: Archive,
     hierarchy: HierarchyNode<ICpuProfileNode>,
     modMatcher: ModuleMatcher
   ) {
@@ -104,7 +104,7 @@ class AggregrationCollector {
         attributed: 0,
         functionName,
         moduleName,
-        callframes: []
+        callframes: [],
       };
     });
 
@@ -114,7 +114,7 @@ class AggregrationCollector {
       attributed: 0,
       functionName: 'unknown',
       moduleName: 'unknown',
-      callframes: []
+      callframes: [],
     };
   }
 
@@ -223,7 +223,7 @@ export function collapseCallFrames(aggregations: IAggregations) {
 export function aggregate(
   hierarchy: HierarchyNode<ICpuProfileNode>,
   locators: ILocator[],
-  archive: IArchive,
+  archive: Archive,
   modMatcher: ModuleMatcher
 ) {
   const aggregations = new AggregrationCollector(
@@ -244,7 +244,7 @@ export function aggregate(
         if (canonicalLocator) {
           const {
             functionName: canonicalizeName,
-            moduleName: canonicalizeModName
+            moduleName: canonicalizeModName,
           } = canonicalLocator;
           if (!containerNode) {
             aggregations.addToAttributed(

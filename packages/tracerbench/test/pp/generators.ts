@@ -1,5 +1,5 @@
 // tslint:disable:max-classes-per-file
-import { IArchive } from '../../src/trace/archive_trace';
+import { Archive } from '@tracerbench/har';
 
 import {
   ICallFrame,
@@ -193,7 +193,7 @@ export class LocatorGenerator {
 }
 
 export class ArchiveGenerator {
-  public generate(content: string = ''): IArchive {
+  public generate(content: string = ''): Archive {
     return {
       log: {
         version: '0.0.0',

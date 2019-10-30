@@ -1,5 +1,6 @@
 import { HierarchyNode } from 'd3-hierarchy';
 import { writeFileSync } from 'fs';
+import { Archive } from '@tracerbench/har';
 
 import { ITrace, loadTrace } from './load_trace';
 import {
@@ -8,7 +9,6 @@ import {
   collapseCallFrames,
   verifyMethods,
 } from './aggregator';
-import { IArchive } from './archive_trace';
 import { report as reporter } from './reporter';
 import {
   addRemainingModules,
@@ -27,7 +27,7 @@ import {
 
 export interface IAnalyze {
   traceEvents: ITraceEvent[] | ITrace;
-  traceHARJSON: IArchive;
+  traceHARJSON: Archive;
   methods: string[];
   filename?: string;
   event?: string;

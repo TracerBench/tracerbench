@@ -1,7 +1,7 @@
 import { HierarchyNode } from 'd3-hierarchy';
+import { Archive } from '@tracerbench/har';
 
 import { ICallFrame, ICpuProfileNode } from '../trace';
-import { IArchive } from './archive_trace';
 import { ParsedFile } from './metadata';
 
 export interface IParsedFiles {
@@ -10,10 +10,10 @@ export interface IParsedFiles {
 
 export class ModuleMatcher {
   private parsedFiles: IParsedFiles = {};
-  private archive: IArchive;
+  private archive: Archive;
   private moduleSet = new Set<string>();
 
-  constructor(hierarchy: HierarchyNode<ICpuProfileNode>, archive: IArchive) {
+  constructor(hierarchy: HierarchyNode<ICpuProfileNode>, archive: Archive) {
     this.archive = archive;
     hierarchy.each((node: HierarchyNode<ICpuProfileNode>) => {
       const moduleName = this.findModuleName(node.data.callFrame);
@@ -54,7 +54,9 @@ export class ModuleMatcher {
   }
 
   private contentFor(url: string) {
-    const entry = this.archive.log.entries.find(e => e.request.url === url);
+    const entry = this.archive.log.entries.find(
+      (e: any) => e.request.url === url
+    );
 
     if (!entry) {
       throw new Error(`Could not find "${url}" in the archive file.`);
