@@ -73,7 +73,7 @@ export async function liveTrace(
                   resolve();
                 }
             });
-            observer.observe({ entryTypes: ["mark"] });
+            observer.observe({ entryTypes: ["mark", "navigation"] });
             });`,
     });
 
