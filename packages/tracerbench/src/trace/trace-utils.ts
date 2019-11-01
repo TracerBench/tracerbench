@@ -5,13 +5,9 @@ import Protocol from 'devtools-protocol';
 import { IConditions, networkConditions } from './conditions';
 import { filterObjectByKeys } from './utils';
 
-const DEFAULT_BROWSER_ARGS = ['--crash-dumps-dir=/tmp'];
-
-export async function createBrowser(additionalBrowserArgs: string[] = []) {
-  const mergedBrowserArgs = additionalBrowserArgs.concat(DEFAULT_BROWSER_ARGS);
-
+export async function createBrowser(browserArgs: string[] = []) {
   const browser = await spawnChrome({
-    additionalArguments: mergedBrowserArgs,
+    additionalArguments: browserArgs,
     stdio: 'inherit',
     chromeExecutable: undefined,
     userDataDir: undefined,

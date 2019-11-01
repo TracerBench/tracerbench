@@ -1,5 +1,5 @@
 // tslint:disable:max-classes-per-file
-import { IArchive } from '../../src/trace/archive_trace';
+import { Archive } from '@tracerbench/har';
 
 import {
   ICallFrame,
@@ -9,7 +9,7 @@ import {
   TRACE_EVENT_NAME,
   TRACE_EVENT_PHASE_COMPLETE,
   TRACE_EVENT_PHASE_BEGIN,
-  TRACE_EVENT_PHASE_END
+  TRACE_EVENT_PHASE_END,
 } from '../../src/trace/trace_event';
 
 interface INode {
@@ -42,7 +42,7 @@ class RootCPUProfileNode implements INode {
       lineNumber: -1,
       columnNumber: -1,
       scriptId: 0,
-      url: 'script'
+      url: 'script',
     };
     (Object as any).assign(this.callFrame, options);
   }
@@ -68,7 +68,7 @@ class RootCPUProfileNode implements INode {
       min,
       children,
       sampleCount,
-      total
+      total,
     } = this;
     return {
       id,
@@ -78,7 +78,7 @@ class RootCPUProfileNode implements INode {
       max,
       children,
       sampleCount,
-      total
+      total,
     };
   }
 }
@@ -142,7 +142,7 @@ export class ProfileGenerator {
       dur: duration,
       cat: '',
       name,
-      args: {}
+      args: {},
     };
     this.events.push(event);
   }
@@ -157,7 +157,7 @@ export class ProfileGenerator {
         ph: isStart ? TRACE_EVENT_PHASE_BEGIN : TRACE_EVENT_PHASE_END,
         cat: '',
         name,
-        args: {}
+        args: {},
       };
     } else {
       throw Error('Trying to create an unknown event in test');
@@ -174,7 +174,7 @@ export class ProfileGenerator {
       duration,
       timeDeltas,
       nodes: nodes.map(node => node.toJSON()),
-      samples
+      samples,
     };
   }
 }
@@ -186,27 +186,59 @@ export class LocatorGenerator {
         functionName: m[0],
         functionNameRegex: new RegExp(`^${m[0]}$`),
         moduleName: m[1],
-        moduleNameRegex: new RegExp(`^${m[1]}$`)
+        moduleNameRegex: new RegExp(`^${m[1]}$`),
       };
     });
   }
 }
 
 export class ArchiveGenerator {
-  public generate(content: string = ''): IArchive {
+  public generate(content: string = ''): Archive {
     return {
       log: {
+        version: '0.0.0',
+        creator: {
+          name: 'TracerBench',
+          version: '0.0.0',
+        },
         entries: [
           {
-            request: { url: 'https://www.example.com/a.js' },
+            request: {
+              url: 'https://www.example.com/a.js',
+              method: '',
+              httpVersion: '',
+              cookies: [],
+              headers: [],
+              queryString: [],
+              headersSize: 0,
+              bodySize: 0,
+            },
             response: {
+              status: 0,
+              statusText: '',
+              httpVersion: '',
+              cookies: [],
+              headers: [],
+              redirectURL: '',
+              headersSize: 0,
+              bodySize: 0,
               content: {
-                text: content
-              }
-            }
-          }
-        ]
-      }
+                text: content,
+                size: 0,
+                mimeType: '',
+              },
+            },
+            time: 0,
+            cache: {},
+            timings: {
+              send: 0,
+              wait: 0,
+              receive: 0,
+            },
+            startedDateTime: '',
+          },
+        ],
+      },
     };
   }
 }
