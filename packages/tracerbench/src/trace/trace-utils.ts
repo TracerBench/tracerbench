@@ -5,7 +5,10 @@ import Protocol from 'devtools-protocol';
 import { IConditions, networkConditions } from './conditions';
 import { filterObjectByKeys } from './utils';
 
-export async function createBrowser(browserArgs: string[] = []) {
+export async function createBrowser(
+  browserArgs: string[] = [],
+  headless: boolean = true
+) {
   const browser = await spawnChrome({
     additionalArguments: browserArgs,
     stdio: 'inherit',
@@ -14,10 +17,20 @@ export async function createBrowser(browserArgs: string[] = []) {
     userDataRoot: undefined,
     url: undefined,
     disableDefaultArguments: false,
-    headless: true,
+    headless,
   });
 
   return browser;
+}
+
+export async function newTab(
+  browser: ProtocolConnection,
+  url: string = 'about:blank'
+) {
+  const { targetId } = await browser.send('Target.createTarget', {
+    url,
+  });
+  return await browser.attachToTarget(targetId);
 }
 
 export async function getTab(browser: ProtocolConnection) {

@@ -23,7 +23,6 @@ export { Runner, IBenchmark } from './runner';
 export { ITab } from './tab';
 export {
   analyze,
-  recordHARClient,
   loadTrace,
   liveTrace,
   networkConditions,
@@ -31,5 +30,6 @@ export {
   getBrowserArgs,
   IConditions,
   IAnalyze,
+  harTrace,
 } from './trace';
 export * from './util';
