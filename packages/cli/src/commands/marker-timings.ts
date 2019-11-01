@@ -1,8 +1,8 @@
 import { TBBaseCommand } from '../command-config';
-import * as fs from 'fs-extra';
+import { readJSONSync } from 'fs-extra';
 import * as path from 'path';
 import { ITraceEvent } from '@tracerbench/core';
-import { filter, tbResultsFolder, url, traceFrame } from '../helpers/flags';
+import { filter, tracepath, url, traceFrame } from '../helpers/flags';
 import {
   byTime,
   collect,
@@ -13,14 +13,14 @@ import {
   isFrameNavigationStart,
   isMark,
   isUserMark,
-  loadTraceFile,
+  setTraceEvents,
 } from '../helpers/utils';
 
 export default class MarkerTimings extends TBBaseCommand {
   public static description = 'Get list of all user-timings from trace';
 
   public static flags = {
-    tbResultsFolder: tbResultsFolder({ required: true }),
+    tracepath: tracepath({ required: true }),
     filter: filter(),
     url: url({ required: true }),
     traceFrame: traceFrame(),
@@ -28,32 +28,29 @@ export default class MarkerTimings extends TBBaseCommand {
 
   public async run() {
     const { flags } = this.parse(MarkerTimings);
-    const { tbResultsFolder } = flags;
+    const { tracepath } = flags;
     const filter = collect(flags.filter, []);
     const traceFrame: any = flags.traceFrame ? flags.traceFrame : flags.url;
-    const traceJSON = path.join(tbResultsFolder, 'trace.json');
 
     let frame: any = null;
     let startTime = -1;
     let rawTraceData: any = null;
     let trace: any = null;
 
-    if (!traceFrame) {
+    if (!traceFrame && !url) {
       this.error(`Either a traceFrame or url are required flags.`);
     }
 
     try {
-      rawTraceData = JSON.parse(fs.readFileSync(traceJSON, 'utf8'));
-    } catch (error) {
-      this.error(
-        `Could not extract trace events from '${traceJSON}', ${error}`
-      );
+      rawTraceData = readJSONSync(path.resolve(tracepath));
+    } catch (e) {
+      this.error(e);
     }
 
     try {
-      trace = loadTraceFile(rawTraceData);
-    } catch (error) {
-      this.error(`${error}`);
+      trace = setTraceEvents(rawTraceData);
+    } catch (e) {
+      this.error(e);
     }
 
     if (traceFrame.startsWith('http')) {

@@ -2,12 +2,7 @@ import * as fs from 'fs-extra';
 import { join, resolve } from 'path';
 
 import { IConfig } from '@oclif/config';
-import {
-  ITBConfig,
-  defaultFlagArgs,
-  getConfig,
-  TBBaseCommand,
-} from '../command-config';
+import { getConfig, TBBaseCommand } from '../command-config';
 import createConsumeableHTML, {
   ITracerBenchTraceResult,
 } from '../helpers/create-consumable-html';
@@ -29,16 +24,11 @@ export default class Report extends TBBaseCommand {
     config: config(),
   };
   public reportFlags: IReportFlags;
-  public parsedConfig: ITBConfig = defaultFlagArgs;
-  // flags explicitly specified within the cli when
-  // running the command. these will override all
-  public explicitFlags: string[];
 
   constructor(argv: string[], config: IConfig) {
     super(argv, config);
     const { flags } = this.parse(Report);
 
-    this.explicitFlags = argv;
     this.reportFlags = flags;
   }
   // instantiated before this.run()

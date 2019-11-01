@@ -1,14 +1,14 @@
 import { expect } from 'chai';
 import 'mocha';
+import { Archive } from '@tracerbench/har';
 
 import CpuProfile from '../../src/trace/cpu-profile';
 import {
   aggregate,
   IAggregations,
   categorizeAggregations,
-  verifyMethods
+  verifyMethods,
 } from '../../src/trace/aggregator';
-import { IArchive } from '../../src/trace/archive_trace';
 import { ModuleMatcher } from '../../src/trace/module_matcher';
 import { addRemainingModules } from '../../src/trace/utils';
 import { TRACE_EVENT_NAME } from '../../src/trace/trace_event';
@@ -16,11 +16,11 @@ import { TRACE_EVENT_NAME } from '../../src/trace/trace_event';
 import {
   ArchiveGenerator,
   LocatorGenerator,
-  ProfileGenerator
+  ProfileGenerator,
 } from './generators';
 
 describe('aggregate', () => {
-  let archive: IArchive;
+  let archive: Archive;
   beforeEach(() => {
     const content = `
       define("module/1",["exports"],function(e) {
@@ -64,7 +64,7 @@ describe('aggregate', () => {
       ['a', '.*'],
       ['c', '.*'],
       ['d', '.*'],
-      ['f', '.*']
+      ['f', '.*'],
     ]);
     const modMatcher = new ModuleMatcher(profile.hierarchy, archive);
     const aggregations = aggregate(
@@ -118,7 +118,7 @@ describe('aggregate', () => {
       ['a', '.*'],
       ['c', '.*'],
       ['d', '.*'],
-      ['f', '.*']
+      ['f', '.*'],
     ]);
     const modMatcher = new ModuleMatcher(profile.hierarchy, archive);
     const aggregations = aggregate(
@@ -155,7 +155,7 @@ describe('aggregate', () => {
       lineNumber: 1,
       columnNumber: 2,
       scriptId: 1,
-      url: 'https://www.example.com/a.js'
+      url: 'https://www.example.com/a.js',
     });
     generator.tick(100);
     generator.appendNode(a, {
@@ -163,7 +163,7 @@ describe('aggregate', () => {
       lineNumber: 1,
       columnNumber: 6,
       scriptId: 1,
-      url: 'https://www.example.com/a.js'
+      url: 'https://www.example.com/a.js',
     });
     generator.tick(50);
     generator.appendNode(a, {
@@ -171,7 +171,7 @@ describe('aggregate', () => {
       lineNumber: 4,
       columnNumber: 2,
       scriptId: 1,
-      url: 'https://www.example.com/a.js'
+      url: 'https://www.example.com/a.js',
     });
     generator.tick(75);
     generator.appendNode(root, { functionName: 'd' });
@@ -183,7 +183,7 @@ describe('aggregate', () => {
 
     const locators = new LocatorGenerator().generate([
       ['.*', 'module/1'],
-      ['.*', 'module/2']
+      ['.*', 'module/2'],
     ]);
 
     const profile = new CpuProfile(json, generator.events, -1, -1);
@@ -216,7 +216,7 @@ describe('aggregate', () => {
       lineNumber: 1,
       columnNumber: 2,
       scriptId: 1,
-      url: 'https://www.example.com/a.js'
+      url: 'https://www.example.com/a.js',
     });
     generator.tick(100);
     generator.appendNode(a, {
@@ -224,7 +224,7 @@ describe('aggregate', () => {
       lineNumber: 1,
       columnNumber: 6,
       scriptId: 1,
-      url: 'https://www.example.com/a.js'
+      url: 'https://www.example.com/a.js',
     });
     generator.tick(50);
     generator.appendNode(a, {
@@ -232,7 +232,7 @@ describe('aggregate', () => {
       lineNumber: 4,
       columnNumber: 2,
       scriptId: 1,
-      url: 'https://www.example.com/a.js'
+      url: 'https://www.example.com/a.js',
     });
     generator.tick(75);
     generator.appendNode(root, { functionName: 'd' });
@@ -276,7 +276,7 @@ describe('aggregate', () => {
       lineNumber: 1,
       columnNumber: 2,
       scriptId: 1,
-      url: 'https://www.example.com/a.js'
+      url: 'https://www.example.com/a.js',
     });
     generator.tick(100);
     generator.appendNode(a, {
@@ -284,7 +284,7 @@ describe('aggregate', () => {
       lineNumber: 1,
       columnNumber: 6,
       scriptId: 1,
-      url: 'https://www.example.com/a.js'
+      url: 'https://www.example.com/a.js',
     });
     generator.tick(50);
     generator.appendNode(a, {
@@ -292,7 +292,7 @@ describe('aggregate', () => {
       lineNumber: 4,
       columnNumber: 2,
       scriptId: 1,
-      url: 'https://www.example.com/a.js'
+      url: 'https://www.example.com/a.js',
     });
     generator.tick(75);
     generator.appendNode(root, { functionName: 'd' });
@@ -339,7 +339,7 @@ describe('aggregate', () => {
       lineNumber: 1,
       columnNumber: 2,
       scriptId: 1,
-      url: 'https://www.example.com/a.js'
+      url: 'https://www.example.com/a.js',
     });
     generator.tick(100);
     generator.appendNode(a, {
@@ -347,7 +347,7 @@ describe('aggregate', () => {
       lineNumber: 1,
       columnNumber: 6,
       scriptId: 1,
-      url: 'https://www.example.com/a.js'
+      url: 'https://www.example.com/a.js',
     });
     generator.tick(25);
     generator.appendRenderEvent(
@@ -360,7 +360,7 @@ describe('aggregate', () => {
       lineNumber: 4,
       columnNumber: 2,
       scriptId: 1,
-      url: 'https://www.example.com/a.js'
+      url: 'https://www.example.com/a.js',
     });
     generator.tick(75);
     generator.appendEvent(TRACE_EVENT_NAME.V8_EXECUTE, false);
@@ -368,7 +368,7 @@ describe('aggregate', () => {
 
     const locators = new LocatorGenerator().generate([
       ['.*', 'module/1'],
-      ['.*', 'module/2']
+      ['.*', 'module/2'],
     ]);
 
     const profile = new CpuProfile(json, generator.events, -1, -1);
@@ -390,7 +390,7 @@ describe('aggregate', () => {
 
 describe('categorizeAggregations', () => {
   let aggregations: IAggregations;
-  let archive: IArchive;
+  let archive: Archive;
   beforeEach(() => {
     archive = new ArchiveGenerator().generate();
   });
@@ -423,7 +423,7 @@ describe('categorizeAggregations', () => {
       ['a', '.*'],
       ['c', '.*'],
       ['d', '.*'],
-      ['f', '.*']
+      ['f', '.*'],
     ]);
     const modMatcher = new ModuleMatcher(profile.hierarchy, archive);
     aggregations = aggregate(profile.hierarchy, locators, archive, modMatcher);
@@ -437,7 +437,7 @@ describe('categorizeAggregations', () => {
     const categorized = categorizeAggregations(aggregations, {
       cat1: cat1Locators,
       cat2: cat2Locators,
-      cat3: cat3Locators
+      cat3: cat3Locators,
     });
 
     expect(categorized.cat1.length).to.equal(2);
@@ -446,7 +446,7 @@ describe('categorizeAggregations', () => {
 
     expect(categorized.cat1.map(a => a.functionName).sort()).to.deep.equal([
       'a',
-      'c'
+      'c',
     ]);
     expect(categorized.cat2[0].functionName).to.deep.equal('d');
     expect(categorized.cat3[0].functionName).to.deep.equal('f');
@@ -458,7 +458,7 @@ describe('verifyMethods', () => {
     // tslint:disable:no-unused-expression
     const locators = new LocatorGenerator().generate([
       ['a', '.*'],
-      ['c', '.*']
+      ['c', '.*'],
     ]);
     expect(() => verifyMethods(locators)).to.throw;
   });
@@ -468,7 +468,7 @@ describe('verifyMethods', () => {
     const locators = new LocatorGenerator().generate([
       ['a', '.*'],
       ['c', '.*'],
-      ['d', '.*']
+      ['d', '.*'],
     ]);
     expect(() => verifyMethods(locators)).to.not.throw;
   });
