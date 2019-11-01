@@ -54,16 +54,13 @@ export const defaultFlagArgs: ITBConfig = {
   ],
   methods: '""',
   tbResultsFolder: './tracerbench-results',
-  url: 'http://localhost:8000/',
-  controlURL: 'http://localhost:8000/',
-  experimentURL: 'http://localhost:8001/',
   iterations: 1,
   tracingLocationSearch: '?tracing',
   network: 'none',
   emulateDevice: '',
   emulateDeviceOrientation: 'vertical',
   regressionThreshold: '0ms',
-  cookie: '',
+  dest: '',
 };
 
 // specify with --headless flag

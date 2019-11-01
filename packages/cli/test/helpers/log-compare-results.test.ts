@@ -1,14 +1,14 @@
+import { expect } from 'chai';
+import { test } from '@oclif/test';
+
 import {
   logCompareResults,
   ICompareJSONResults,
   anyResultsSignificant,
   allBelowRegressionThreshold,
 } from '../../src/helpers/log-compare-results';
-import { expect } from 'chai';
-import { tmpDir } from '../setup';
-import { test } from '@oclif/test';
 
-import { join } from 'path';
+import { COMPARE_JSON } from '../test-helpers';
 
 const sampleTrace = {
   duration: 6260696,
@@ -42,7 +42,7 @@ const sampleTrace = {
   ],
 };
 
-const tbResultsFolder = join(`${process.cwd()}/${tmpDir}/compare.json`);
+const tbResultsFolder = COMPARE_JSON;
 const scope = console;
 const network = {
   offline: false,

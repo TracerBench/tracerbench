@@ -1,0 +1,682 @@
+[
+  {
+    "meta": {
+      "browserVersion": "Chrome/76.0.3784.1",
+      "cpus": [
+        "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz",
+        "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz",
+        "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz",
+        "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz",
+        "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz",
+        "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz",
+        "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz",
+        "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz"
+      ]
+    },
+    "samples": [
+      {
+        "duration": 67749,
+        "js": 1054,
+        "phases": [
+          {
+            "phase": "domComplete",
+            "start": 0,
+            "duration": 67749
+          }
+        ],
+        "gc": [],
+        "blinkGC": [],
+        "runtimeCallStats": {
+          "Blink C++": {
+            "FunctionCallback": {
+              "count": 7,
+              "time": 33
+            },
+            "AccessorGetterCallback": {
+              "count": 1,
+              "time": 1
+            },
+            "NamedGetterCallback": {
+              "count": 1,
+              "time": 2
+            }
+          },
+          "V8 C++": {
+            "Invoke": {
+              "count": 3,
+              "time": 3
+            },
+            "InvokeApiFunction": {
+              "count": 6,
+              "time": 9
+            },
+            "Map_SetPrototype": {
+              "count": 3,
+              "time": 1
+            },
+            "Map_TransitionToAccessorProperty": {
+              "count": 1,
+              "time": 6
+            },
+            "FunctionPrototypeGetter": {
+              "count": 1,
+              "time": 0
+            },
+            "LoadAccessorProperty": {
+              "count": 1,
+              "time": 0
+            },
+            "ConsoleDebug": {
+              "count": 1,
+              "time": 268
+            }
+          },
+          "API": {
+            "API_Function_NewInstance": {
+              "count": 2,
+              "time": 1
+            },
+            "API_Function_Call": {
+              "count": 1,
+              "time": 0
+            },
+            "API_FunctionTemplate_GetFunction": {
+              "count": 1,
+              "time": 8
+            },
+            "API_FunctionTemplate_New": {
+              "count": 1,
+              "time": 1
+            },
+            "API_Object_Get": {
+              "count": 1,
+              "time": 0
+            },
+            "API_ObjectTemplate_New": {
+              "count": 2,
+              "time": 0
+            },
+            "API_Persistent_New": {
+              "count": 3,
+              "time": 0
+            },
+            "API_String_NewFromOneByte": {
+              "count": 3,
+              "time": 1
+            },
+            "API_String_Write": {
+              "count": 4,
+              "time": 1
+            },
+            "API_TracedGlobal_New": {
+              "count": 2,
+              "time": 0
+            }
+          },
+          "Compile": {
+            "CompileAnalyse": {
+              "count": 1,
+              "time": 0
+            },
+            "CompileFunction": {
+              "count": 1,
+              "time": 20
+            },
+            "CompileIgnition": {
+              "count": 1,
+              "time": 16
+            },
+            "CompileIgnitionFinalization": {
+              "count": 1,
+              "time": 1
+            },
+            "CompileRewriteReturnResult": {
+              "count": 1,
+              "time": 0
+            },
+            "CompileScopeAnalysis": {
+              "count": 1,
+              "time": 2
+            },
+            "CompileLazy": {
+              "count": 1,
+              "time": 2
+            }
+          },
+          "JavaScript": {
+            "JS_Execution": {
+              "count": 1,
+              "time": 12
+            }
+          },
+          "Parse": {
+            "ParseFunction": {
+              "count": 1,
+              "time": 5
+            },
+            "ParseFunctionLiteral": {
+              "count": 1,
+              "time": 228
+            }
+          },
+          "IC": {
+            "LoadGlobalIC_Miss": {
+              "count": 1,
+              "time": 3
+            },
+            "LoadIC_LoadApiGetterFromPrototypeDH": {
+              "count": 1,
+              "time": 4
+            },
+            "LoadIC_Premonomorphic": {
+              "count": 4,
+              "time": 209
+            }
+          }
+        }
+      },
+      {
+        "duration": 69296,
+        "js": 975,
+        "phases": [
+          {
+            "phase": "domComplete",
+            "start": 0,
+            "duration": 69296
+          }
+        ],
+        "gc": [],
+        "blinkGC": [],
+        "runtimeCallStats": {
+          "Blink C++": {
+            "FunctionCallback": {
+              "count": 7,
+              "time": 32
+            },
+            "AccessorGetterCallback": {
+              "count": 1,
+              "time": 0
+            },
+            "NamedGetterCallback": {
+              "count": 1,
+              "time": 3
+            }
+          },
+          "V8 C++": {
+            "Invoke": {
+              "count": 3,
+              "time": 3
+            },
+            "InvokeApiFunction": {
+              "count": 6,
+              "time": 11
+            },
+            "Map_SetPrototype": {
+              "count": 3,
+              "time": 2
+            },
+            "Map_TransitionToAccessorProperty": {
+              "count": 1,
+              "time": 5
+            },
+            "FunctionPrototypeGetter": {
+              "count": 1,
+              "time": 0
+            },
+            "LoadAccessorProperty": {
+              "count": 1,
+              "time": 0
+            },
+            "ConsoleDebug": {
+              "count": 1,
+              "time": 269
+            }
+          },
+          "API": {
+            "API_Function_NewInstance": {
+              "count": 2,
+              "time": 1
+            },
+            "API_Function_Call": {
+              "count": 1,
+              "time": 1
+            },
+            "API_FunctionTemplate_GetFunction": {
+              "count": 1,
+              "time": 6
+            },
+            "API_FunctionTemplate_New": {
+              "count": 1,
+              "time": 464
+            },
+            "API_Object_Get": {
+              "count": 1,
+              "time": 1
+            },
+            "API_ObjectTemplate_New": {
+              "count": 2,
+              "time": 0
+            },
+            "API_Persistent_New": {
+              "count": 3,
+              "time": 2
+            },
+            "API_String_NewFromOneByte": {
+              "count": 3,
+              "time": 2
+            },
+            "API_String_Write": {
+              "count": 4,
+              "time": 2
+            },
+            "API_TracedGlobal_New": {
+              "count": 2,
+              "time": 1
+            }
+          },
+          "Compile": {
+            "CompileAnalyse": {
+              "count": 1,
+              "time": 0
+            },
+            "CompileFunction": {
+              "count": 1,
+              "time": 18
+            },
+            "CompileIgnition": {
+              "count": 1,
+              "time": 18
+            },
+            "CompileIgnitionFinalization": {
+              "count": 1,
+              "time": 2
+            },
+            "CompileRewriteReturnResult": {
+              "count": 1,
+              "time": 0
+            },
+            "CompileScopeAnalysis": {
+              "count": 1,
+              "time": 2
+            },
+            "CompileLazy": {
+              "count": 1,
+              "time": 2
+            }
+          },
+          "JavaScript": {
+            "JS_Execution": {
+              "count": 1,
+              "time": 13
+            }
+          },
+          "Parse": {
+            "ParseFunction": {
+              "count": 1,
+              "time": 4
+            },
+            "ParseFunctionLiteral": {
+              "count": 1,
+              "time": 20
+            }
+          },
+          "IC": {
+            "LoadGlobalIC_Miss": {
+              "count": 1,
+              "time": 3
+            },
+            "LoadIC_LoadApiGetterFromPrototypeDH": {
+              "count": 1,
+              "time": 3
+            },
+            "LoadIC_Premonomorphic": {
+              "count": 4,
+              "time": 5
+            }
+          }
+        }
+      }
+    ],
+    "set": "control"
+  },
+  {
+    "meta": {
+      "browserVersion": "Chrome/76.0.3784.1",
+      "cpus": [
+        "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz",
+        "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz",
+        "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz",
+        "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz",
+        "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz",
+        "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz",
+        "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz",
+        "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz"
+      ]
+    },
+    "samples": [
+      {
+        "duration": 16617,
+        "js": 496,
+        "phases": [
+          {
+            "phase": "domComplete",
+            "start": 0,
+            "duration": 16617
+          }
+        ],
+        "gc": [],
+        "blinkGC": [],
+        "runtimeCallStats": {
+          "Blink C++": {
+            "FunctionCallback": {
+              "count": 7,
+              "time": 41
+            },
+            "AccessorGetterCallback": {
+              "count": 1,
+              "time": 0
+            },
+            "NamedGetterCallback": {
+              "count": 1,
+              "time": 3
+            }
+          },
+          "V8 C++": {
+            "Invoke": {
+              "count": 3,
+              "time": 15
+            },
+            "InvokeApiFunction": {
+              "count": 6,
+              "time": 25
+            },
+            "Map_SetPrototype": {
+              "count": 3,
+              "time": 1
+            },
+            "Map_TransitionToAccessorProperty": {
+              "count": 1,
+              "time": 4
+            },
+            "FunctionPrototypeGetter": {
+              "count": 1,
+              "time": 0
+            },
+            "LoadAccessorProperty": {
+              "count": 1,
+              "time": 0
+            },
+            "ConsoleDebug": {
+              "count": 1,
+              "time": 39
+            }
+          },
+          "API": {
+            "API_Function_NewInstance": {
+              "count": 2,
+              "time": 1
+            },
+            "API_Function_Call": {
+              "count": 1,
+              "time": 1
+            },
+            "API_FunctionTemplate_GetFunction": {
+              "count": 1,
+              "time": 7
+            },
+            "API_FunctionTemplate_New": {
+              "count": 1,
+              "time": 2
+            },
+            "API_Object_Get": {
+              "count": 1,
+              "time": 1
+            },
+            "API_ObjectTemplate_New": {
+              "count": 2,
+              "time": 1
+            },
+            "API_Persistent_New": {
+              "count": 3,
+              "time": 2
+            },
+            "API_String_NewFromOneByte": {
+              "count": 3,
+              "time": 1
+            },
+            "API_String_Write": {
+              "count": 4,
+              "time": 2
+            },
+            "API_TracedGlobal_New": {
+              "count": 2,
+              "time": 1
+            }
+          },
+          "Compile": {
+            "CompileAnalyse": {
+              "count": 1,
+              "time": 0
+            },
+            "CompileFunction": {
+              "count": 1,
+              "time": 19
+            },
+            "CompileIgnition": {
+              "count": 1,
+              "time": 54
+            },
+            "CompileIgnitionFinalization": {
+              "count": 1,
+              "time": 2
+            },
+            "CompileRewriteReturnResult": {
+              "count": 1,
+              "time": 1
+            },
+            "CompileScopeAnalysis": {
+              "count": 1,
+              "time": 25
+            },
+            "CompileLazy": {
+              "count": 1,
+              "time": 2
+            }
+          },
+          "JavaScript": {
+            "JS_Execution": {
+              "count": 1,
+              "time": 25
+            }
+          },
+          "Parse": {
+            "ParseFunction": {
+              "count": 1,
+              "time": 23
+            },
+            "ParseFunctionLiteral": {
+              "count": 1,
+              "time": 33
+            }
+          },
+          "IC": {
+            "LoadGlobalIC_Miss": {
+              "count": 1,
+              "time": 3
+            },
+            "LoadIC_LoadApiGetterFromPrototypeDH": {
+              "count": 1,
+              "time": 3
+            },
+            "LoadIC_Premonomorphic": {
+              "count": 4,
+              "time": 23
+            }
+          }
+        }
+      },
+      {
+        "duration": 17280,
+        "js": 417,
+        "phases": [
+          {
+            "phase": "domComplete",
+            "start": 0,
+            "duration": 17280
+          }
+        ],
+        "gc": [],
+        "blinkGC": [],
+        "runtimeCallStats": {
+          "Blink C++": {
+            "FunctionCallback": {
+              "count": 7,
+              "time": 46
+            },
+            "AccessorGetterCallback": {
+              "count": 1,
+              "time": 1
+            },
+            "NamedGetterCallback": {
+              "count": 1,
+              "time": 2
+            }
+          },
+          "V8 C++": {
+            "Invoke": {
+              "count": 3,
+              "time": 2
+            },
+            "InvokeApiFunction": {
+              "count": 6,
+              "time": 23
+            },
+            "Map_SetPrototype": {
+              "count": 3,
+              "time": 1
+            },
+            "Map_TransitionToAccessorProperty": {
+              "count": 1,
+              "time": 5
+            },
+            "FunctionPrototypeGetter": {
+              "count": 1,
+              "time": 0
+            },
+            "LoadAccessorProperty": {
+              "count": 1,
+              "time": 1
+            },
+            "ConsoleDebug": {
+              "count": 1,
+              "time": 89
+            }
+          },
+          "API": {
+            "API_Function_NewInstance": {
+              "count": 2,
+              "time": 1
+            },
+            "API_Function_Call": {
+              "count": 1,
+              "time": 0
+            },
+            "API_FunctionTemplate_GetFunction": {
+              "count": 1,
+              "time": 7
+            },
+            "API_FunctionTemplate_New": {
+              "count": 1,
+              "time": 2
+            },
+            "API_Object_Get": {
+              "count": 1,
+              "time": 0
+            },
+            "API_ObjectTemplate_New": {
+              "count": 2,
+              "time": 0
+            },
+            "API_Persistent_New": {
+              "count": 3,
+              "time": 0
+            },
+            "API_String_NewFromOneByte": {
+              "count": 3,
+              "time": 1
+            },
+            "API_String_Write": {
+              "count": 4,
+              "time": 1
+            },
+            "API_TracedGlobal_New": {
+              "count": 2,
+              "time": 1
+            }
+          },
+          "Compile": {
+            "CompileAnalyse": {
+              "count": 1,
+              "time": 0
+            },
+            "CompileFunction": {
+              "count": 1,
+              "time": 20
+            },
+            "CompileIgnition": {
+              "count": 1,
+              "time": 16
+            },
+            "CompileIgnitionFinalization": {
+              "count": 1,
+              "time": 2
+            },
+            "CompileRewriteReturnResult": {
+              "count": 1,
+              "time": 1
+            },
+            "CompileScopeAnalysis": {
+              "count": 1,
+              "time": 1
+            },
+            "CompileLazy": {
+              "count": 1,
+              "time": 7
+            }
+          },
+          "JavaScript": {
+            "JS_Execution": {
+              "count": 1,
+              "time": 14
+            }
+          },
+          "Parse": {
+            "ParseFunction": {
+              "count": 1,
+              "time": 3
+            },
+            "ParseFunctionLiteral": {
+              "count": 1,
+              "time": 20
+            }
+          },
+          "IC": {
+            "LoadGlobalIC_Miss": {
+              "count": 1,
+              "time": 2
+            },
+            "LoadIC_LoadApiGetterFromPrototypeDH": {
+              "count": 1,
+              "time": 3
+            },
+            "LoadIC_Premonomorphic": {
+              "count": 4,
+              "time": 7
+            }
+          }
+        }
+      }
+    ],
+    "set": "experiment"
+  }
+]
