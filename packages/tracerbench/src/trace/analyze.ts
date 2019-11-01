@@ -8,7 +8,7 @@ import {
   collapseCallFrames,
   verifyMethods,
 } from './aggregator';
-import { IArchive } from './archive_trace';
+import { Archive as IArchive } from '@tracerbench/har';
 import { ModuleMatcher } from './module_matcher';
 import { report as reporter } from './reporter';
 import {
@@ -19,7 +19,7 @@ import {
   methodsFromCategories,
 } from './utils';
 
-interface IAnalyze {
+export interface IAnalyze {
   rawTraceData: ITraceEvent[] | ITrace;
   archiveFile: IArchive;
   methods: string[];

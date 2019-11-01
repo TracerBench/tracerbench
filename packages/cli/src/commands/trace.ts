@@ -1,13 +1,7 @@
 import { TBBaseCommand } from '../command-config';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import {
-  liveTrace,
-  harTrace,
-  analyze,
-  loadTrace,
-  ITraceEvent,
-} from '@tracerbench/core';
+import { liveTrace, analyze, loadTrace, ITraceEvent } from '@tracerbench/core';
 import {
   tbResultsFolder,
   cpuThrottleRate,
@@ -21,7 +15,7 @@ import {
   getCookiesFromHAR,
   normalizeFnName,
   isCommitLoad,
-  loadTraceFile,
+  setTraceEvents,
 } from '../helpers/utils';
 
 export default class Trace extends TBBaseCommand {
@@ -58,14 +52,6 @@ export default class Trace extends TBBaseCommand {
     let archiveFile;
     let rawTraceData;
     let cookies: any = '';
-
-    // if trace can't find a HAR then go and record one
-    if (!fs.existsSync(traceHAR)) {
-      [cookies, archiveFile] = await harTrace(url);
-
-      fs.writeFileSync(cookiesJSON, JSON.stringify(cookies));
-      fs.writeFileSync(traceHAR, JSON.stringify(archiveFile));
-    }
 
     try {
       cookies = JSON.parse(fs.readFileSync(cookiesJSON, 'utf8'));
@@ -121,7 +107,7 @@ export default class Trace extends TBBaseCommand {
       const methods = new Set();
 
       try {
-        trace = loadTraceFile(rawTraceData);
+        trace = setTraceEvents(rawTraceData);
       } catch (error) {
         this.error(`${error}`);
       }
@@ -184,13 +170,8 @@ export default class Trace extends TBBaseCommand {
         this.error(error);
       }
 
-      // // list-functions
-      // methods.forEach(method =>
-      //   this.log(`Successfully listed method: ${method}`)
-      // );
-
       try {
-        trace = loadTraceFile(rawTraceData);
+        trace = setTraceEvents(rawTraceData);
         const traceLoad = trace.filter(isCommitLoad);
         traceLoad.forEach(
           ({

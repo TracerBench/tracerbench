@@ -410,14 +410,8 @@ USAGE
   $ tracerbench trace
 
 OPTIONS
-  --cookiespath=cookiespath
-      (required) The path to a JSON file containing cookies to authenticate against the correlated URL
-
   --cpuThrottleRate=cpuThrottleRate
       (required) [default: 2] CPU throttle multiplier
-
-  --harpath=harpath
-      (required) The path to the HTTP Archive File (HAR)
 
   --insights
       Analyze insights from command.
@@ -427,9 +421,6 @@ OPTIONS
 
   --locations=locations
       include locations in names
-
-  --marker=marker
-      (required) [default: domComplete] The last marker before ending recording
 
   --network=none | offline | dialup | 2g | edge | slow-3g | em-3g | dsl | 3g | fast-3g | 4g | cable | LTE | FIOS
       [default: none] Simulated network conditions.
