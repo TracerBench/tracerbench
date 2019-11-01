@@ -1,5 +1,4 @@
 /* tslint:disable:no-console*/
-
 import { flags } from '@oclif/command';
 import { networkConditions } from '@tracerbench/core';
 import Protocol from 'devtools-protocol';
@@ -155,7 +154,7 @@ export const tbResultsFolder = flags.build({
 
 export const url = flags.build({
   default: () => getDefaultValue('url'),
-  description: 'URL to visit for create-archive, timings & trace commands',
+  description: 'URL to visit for record-har, timings & trace commands',
 });
 
 export const controlURL = flags.build({
@@ -211,4 +210,34 @@ export const emulateDeviceOrientation = flags.build({
   default: () => getDefaultValue('emulateDeviceOrientation'),
   description: `Expected to be either "vertical" or "horizontal". Dictates orientation of device screen.`,
   options: ['horizontal', 'vertical'],
+});
+
+export const cookiespath = flags.build({
+  description: `The path to a JSON file containing cookies to authenticate against the correlated URL`,
+});
+
+export const tbconfigpath = flags.build({
+  description: `The path to a TracerBench configuration file (tbconfig.json)`,
+});
+
+export const harpath = flags.build({
+  description: `The path to the HTTP Archive File (HAR)`,
+});
+
+export const tracepath = flags.build({
+  description: `The path to the generated trace.json file`,
+});
+
+export const dest = flags.build({
+  default: () => getDefaultValue('dest'),
+  description: `The destination path for the generated file`,
+});
+
+export const filename = flags.build({
+  description: `The filename for the generated file`,
+});
+
+export const marker = flags.build({
+  description: `The last marker before ending recording`,
+  default: 'domComplete',
 });

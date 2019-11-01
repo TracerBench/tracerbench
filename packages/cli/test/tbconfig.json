@@ -1,4 +1,4 @@
 {
   "$schema": "https://raw.githubusercontent.com/TracerBench/tracerbench/master/packages/cli/tb-schema.json",
-  "extends": "./tbconfig_base.json",
+  "extends": "./tbconfig_base.json"
 }

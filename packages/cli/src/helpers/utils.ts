@@ -54,7 +54,8 @@ export function mergeLeft(
   Object.keys(right).forEach(key => {
     const leftValue = left[key];
     const rightValue = left[key];
-    const matchingObjectType = typeof leftValue === 'object' && typeof rightValue === 'object';
+    const matchingObjectType =
+      typeof leftValue === 'object' && typeof rightValue === 'object';
     const isOneArray = Array.isArray(leftValue) || Array.isArray(rightValue);
 
     if (matchingObjectType && (left[key] || right[key]) && !isOneArray) {
@@ -94,7 +95,9 @@ export function normalizeFnName(name: string) {
   return name;
 }
 
-export function loadTraceFile(file: any) {
+export function setTraceEvents(
+  file: ITraceEvent[] | { metadata: {}; traceEvents: ITraceEvent[] }
+) {
   if (!Array.isArray(file)) {
     file = file.traceEvents;
   }
