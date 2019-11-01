@@ -224,6 +224,10 @@ export const harpath = flags.build({
   description: `The path to the HTTP Archive File (HAR)`,
 });
 
+export const tracepath = flags.build({
+  description: `The path to the generated trace.json file`,
+});
+
 export const dest = flags.build({
   default: () => getDefaultValue('dest'),
   description: `The destination path for the generated file`,

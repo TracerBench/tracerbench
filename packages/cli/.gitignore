@@ -1,8 +1,7 @@
 *trace-processed.json
 cookies.json
 *tracerbench-results*
-*trace.json
+trace.json
 *tsconfig.tsbuildinfo
 *tb-tmp*
-*scratch*
 events_output.json

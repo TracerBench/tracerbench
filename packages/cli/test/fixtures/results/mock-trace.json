@@ -1,0 +1,262 @@
+{
+  "traceEvents": [{
+      "pid": 68210,
+      "tid": 37635,
+      "ts": 50482038680,
+      "ph": "M",
+      "cat": "__metadata",
+      "name": "process_name",
+      "tts": 5110,
+      "args": {
+        "name": "HeadlessBrowser"
+      }
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50481764772,
+      "ph": "R",
+      "cat": "blink.user_timing",
+      "name": "requestStart",
+      "tts": 175663,
+      "args": {}
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50481707171,
+      "ph": "R",
+      "cat": "blink.user_timing",
+      "name": "navigationStart",
+      "tts": 176413,
+      "args": {
+        "frame": "E995042AF2BB98205CA33613EACE4456",
+        "data": {
+          "documentLoaderURL": "https://www.tracerbench.com/",
+          "isLoadingMainFrame": true,
+          "navigationId": "150ACE5DC7B97051C2979E57E6E79109"
+        }
+      }
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50481707349,
+      "ph": "R",
+      "cat": "blink.user_timing",
+      "name": "fetchStart",
+      "tts": 176421,
+      "args": {
+        "frame": "E995042AF2BB98205CA33613EACE4456"
+      }
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50481784310,
+      "ph": "R",
+      "cat": "blink.user_timing,rail",
+      "name": "domLoading",
+      "tts": 177600,
+      "args": {
+        "frame": "E995042AF2BB98205CA33613EACE4456"
+      }
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50481784589,
+      "ph": "X",
+      "cat": "devtools.timeline",
+      "name": "CommitLoad",
+      "dur": 96,
+      "tdur": 97,
+      "tts": 177878,
+      "args": {
+        "data": {
+          "isMainFrame": true,
+          "page": "E995042AF2BB98205CA33613EACE4456",
+          "frame": "E995042AF2BB98205CA33613EACE4456",
+          "url": "https://www.tracerbench.com/",
+          "name": ""
+        }
+      }
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50481780400,
+      "ph": "R",
+      "cat": "blink.user_timing",
+      "name": "responseEnd",
+      "tts": 180423,
+      "args": {
+        "frame": "E995042AF2BB98205CA33613EACE4456"
+      }
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50481788077,
+      "ph": "R",
+      "cat": "blink.user_timing",
+      "name": "requestStart",
+      "tts": 186967,
+      "args": {}
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50481788511,
+      "ph": "R",
+      "cat": "blink.user_timing",
+      "name": "requestStart",
+      "tts": 191275,
+      "args": {}
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50481788769,
+      "ph": "R",
+      "cat": "blink.user_timing",
+      "name": "requestStart",
+      "tts": 191760,
+      "args": {}
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50481806917,
+      "ph": "R",
+      "cat": "blink.user_timing,rail",
+      "name": "firstLayout",
+      "tts": 193685,
+      "args": {
+        "frame": "E995042AF2BB98205CA33613EACE4456"
+      }
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50481788970,
+      "ph": "R",
+      "cat": "blink.user_timing",
+      "name": "requestStart",
+      "tts": 205340,
+      "args": {}
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50481920733,
+      "ph": "R",
+      "cat": "blink.user_timing,rail",
+      "name": "domLoading",
+      "tts": 294529,
+      "args": {
+        "frame": ""
+      }
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50482035858,
+      "ph": "R",
+      "cat": "blink.user_timing,rail",
+      "name": "domInteractive",
+      "tts": 408964,
+      "args": {
+        "frame": "E995042AF2BB98205CA33613EACE4456"
+      }
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50482035871,
+      "ph": "X",
+      "cat": "devtools.timeline",
+      "name": "EventDispatch",
+      "dur": 4,
+      "tdur": 4,
+      "tts": 408976,
+      "args": {
+        "data": {
+          "type": "readystatechange"
+        }
+      }
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50482035894,
+      "ph": "R",
+      "cat": "blink.user_timing,rail",
+      "name": "domContentLoadedEventStart",
+      "tts": 409000,
+      "args": {
+        "frame": "E995042AF2BB98205CA33613EACE4456"
+      }
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50482036896,
+      "ph": "R",
+      "cat": "blink.user_timing,rail",
+      "name": "domContentLoadedEventEnd",
+      "tts": 409997,
+      "args": {
+        "frame": "E995042AF2BB98205CA33613EACE4456"
+      }
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50482037000,
+      "ph": "R",
+      "cat": "blink.user_timing,rail",
+      "name": "domComplete",
+      "tts": 410097,
+      "args": {
+        "frame": "E995042AF2BB98205CA33613EACE4456"
+      }
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50482037020,
+      "ph": "R",
+      "cat": "blink.user_timing",
+      "name": "loadEventStart",
+      "tts": 410117,
+      "args": {
+        "frame": "E995042AF2BB98205CA33613EACE4456"
+      }
+    },
+    {
+      "pid": 68213,
+      "tid": 775,
+      "ts": 50482037290,
+      "ph": "R",
+      "cat": "blink.user_timing",
+      "name": "loadEventEnd",
+      "tts": 410386,
+      "args": {
+        "frame": "E995042AF2BB98205CA33613EACE4456"
+      }
+    },
+    {
+      "pid": 68211,
+      "tid": 23815,
+      "ts": 50482038738,
+      "ph": "M",
+      "cat": "__metadata",
+      "name": "process_name",
+      "tts": 1161,
+      "args": {
+        "name": "GPU Process"
+      }
+    }
+  ]
+}

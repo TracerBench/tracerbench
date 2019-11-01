@@ -349,14 +349,10 @@ USAGE
   $ tracerbench marker-timings
 
 OPTIONS
-  --filter=filter                    User timing marks start with
-
-  --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output folder path for all
-                                     tracerbench results
-
-  --traceFrame=traceFrame            Specify a trace insights frame
-
-  --url=url                          (required) URL to visit for record-har, timings & trace commands
+  --filter=filter          User timing marks start with
+  --traceFrame=traceFrame  Specify a trace insights frame
+  --tracepath=tracepath    (required) The path to the generated trace.json file
+  --url=url                (required) URL to visit for record-har, timings & trace commands
 ```
 
 _See code: [dist/src/commands/marker-timings.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/marker-timings.ts)_
