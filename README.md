@@ -4,7 +4,7 @@
 [![Version](https://img.shields.io/npm/v/tracerbench.svg)](https://npmjs.org/package/tracerbench)
 [![License](https://img.shields.io/npm/l/tracerbench.svg)](https://github.com/TracerBench/tracerbench/blob/master/package.json)
 
-As it pertains to data analysis, intuition almost always leads us astray. We see patterns in random data and jump to unwarranted conclusions. We need a guide. One that uses statistical rigor so that we can make valid conclusions based upon the data. TracerBench aims to be that guide. 
+As it pertains to data analysis, intuition almost always leads us astray. We see patterns in random data and jump to unwarranted conclusions. We need a guide. One that uses statistical rigor so that we can make valid conclusions based upon the data. TracerBench aims to be that guide.
 
 TracerBench is a controlled performance benchmarking tool for web applications. Providing clear, actionable and usable insights into performance deltas. By extracting metrics around response, animation, idle, and load through automated chrome traces and controlling that each of our samples is independent. TracerBench is able to provide low variance and reproducible performance data. TracerBench results are packageable and shareable allowing for replicated peer review.
 
@@ -16,8 +16,8 @@ The current approach for performance analysis for developers is running a single
 
 TracerBench has been greatly inspired by the Chromium benchmark tool [Telemetry](https://github.com/catapult-project/catapult/blob/master/telemetry/docs/run_benchmarks_locally.md).
 
-
 ## How does TracerBench compare to [Lighthouse](https://github.com/GoogleChrome/lighthouse)?
+
 When comparing TracerBench to the most popular tool Chrome Developer Tools Lighthouse. The primary difference is TracerBench is focused on getting a low variance for a metric across many samples versus getting a hard to replicate “Lighthouse performance report”. Lighthouse is essentially a black-box, with developers unable to customize performance parameters in-depth and lacking proper statistical rigor. TracerBench on the other hand, can be highly instrumented, provides statistical rigor and adequate sampling of data. Additionally, TracerBench instrumentation has minimal impact on the overhead of the application; as such TracerBench instrumentation can be "checked-in" and left in your application without worry of negative performance impacts.
 
 # User-Stories
@@ -51,13 +51,11 @@ Assuming the TracerBench-CLI is globally [installed](https://github.com/TracerBe
 1. Start by having TracerBench record a HAR:
 
 ```console
-$ tracerbench create-archive --url http://localhost:8000
-...
+$ tracerbench record-har --url http://localhost:8000 --cookies <path-to-cookies>
 
 ✔ DevTools listening on ws://<address>
 ✔ { timestamp: 241968.79908 }
 ✔ HAR successfully generated from http://localhost:8000 and available here: ./trace.har
-✔ Cookies successfully generated and available here: ./cookies.json
 ```
 
 2. Now have TracerBench record a Trace of that HAR:
@@ -109,7 +107,7 @@ In your app you must place a marker to let TracerBench know that you are done re
 function renderMyApp() {
   // basic "web application"
   // literally an app with a single empty p tag
-  const p = document.createElement("p");
+  const p = document.createElement('p');
   document.body.appendChild(p);
 }
 
@@ -164,8 +162,8 @@ const browser = {
     '--v8-cache-options=none',
     '--disable-cache',
     '--disable-v8-idle-tasks',
-    '--crash-dumps-dir=./tmp'
-  ]
+    '--crash-dumps-dir=./tmp',
+  ],
 };
 
 // name, url, markers and browser are all required options
@@ -178,7 +176,7 @@ const control = new InitialRenderBenchmark({
   markers,
   browser,
   // location to save only the control trace to
-  saveTraces: () => `./control-trace.json`
+  saveTraces: () => `./control-trace.json`,
 });
 
 const experiment = new InitialRenderBenchmark({
@@ -187,7 +185,7 @@ const experiment = new InitialRenderBenchmark({
   markers,
   browser,
   // location to save only the experiment trace to
-  saveTraces: () => `./experiment-trace.json`
+  saveTraces: () => `./experiment-trace.json`,
 });
 
 // the runner uses the config of each benchmark to test against
@@ -244,6 +242,7 @@ When running the TracerBench-CLI `compare` command, on a successful trace a stdo
 TracerBench also exposes an explicit `tracerbench report` command that takes a path to the folder containing your "trace-results.json" file and will create a PDF and HTML report.
 
 ### Understanding The Box-Plot Results
+
 ![box-plot-results](https://github.com/TracerBench/tracerbench/blob/master/docs/box-plot-transparent.png)
 
 ---

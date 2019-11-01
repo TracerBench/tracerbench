@@ -6,7 +6,7 @@
     "lint": "lerna run lint --stream",
     "prepare": "lerna run prepare --stream",
     "test": "lerna run test --stream",
-    "prepack": "lerna run prepack --stream && yarn changelog",
+    "prepack": "lerna run prepack --stream",
     "changelog": "conventional-changelog -i CHANGELOG.md -s"
   },
   "husky": {
