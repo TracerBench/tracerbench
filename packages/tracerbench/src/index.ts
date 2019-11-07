@@ -30,6 +30,6 @@ export {
   getBrowserArgs,
   IConditions,
   IAnalyze,
-  harTrace,
+  recordHARClient,
 } from './trace';
 export * from './util';
