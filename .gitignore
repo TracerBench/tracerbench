@@ -13,4 +13,4 @@ tmp/
 .idea/*
 .vscode/
 /packages/cli/bin/run.js
-SCRATCH.*
+**SCRATCH**

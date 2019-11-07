@@ -1,100 +1,177 @@
 // tslint:disable:no-console
 
 import Protocol from 'devtools-protocol';
-import { createBrowser, getTab, setCookies } from './trace-utils';
+import { Archive, Header, Entry } from '@tracerbench/har';
 
-// Represents a subset of a HAR
-export interface IArchive {
-  log: ILog;
-}
+import { createBrowser, getTab, setCookies, emulate } from './trace-utils';
+import { getBrowserArgs } from './utils';
+import { IConditions } from './conditions';
 
-export interface ILog {
-  entries: IEntry[];
-}
-
-export interface IRequest {
-  url: string;
-}
-
-export interface IResponse {
-  content: IContent;
-}
-
-export interface IContent {
-  text: string;
-}
-
-export interface IEntry {
-  request: IRequest;
-  response: IResponse;
-}
-
-export async function harTrace(
+export async function recordHARClient(
   url: string,
-  additionalBrowserArgs: string[] = [],
-  cookies: any = null
-) {
-  // the saving of the cookies should be a dif command
-  // spawn browser > sign-in > done > save cookies
+  cookies: Protocol.Network.CookieParam[],
+  marker: string,
+  conditions: IConditions,
+  altBrowserArgs?: string[]
+): Promise<Archive> {
+  const networkRequests: Protocol.Network.ResponseReceivedEvent[] = [];
+  const archive: Archive = {
+    log: {
+      version: '0.0.0',
+      creator: {
+        name: 'TracerBench',
+        version: '0.0.0',
+      },
+      entries: [],
+    },
+  };
 
-  // passing in the cookies file needs to be more
-  // explicit (especially as its pertained to automation)
+  const browserArgs = getBrowserArgs(altBrowserArgs);
+  const browser = await createBrowser(browserArgs);
 
-  // in the instance we are passing in the cookies
-
-  const browser = await createBrowser(additionalBrowserArgs);
   try {
-    const client = await getTab(browser.connection);
+    const chrome = await getTab(browser.connection);
 
-    const requestIds: string[] = [];
-    const responses: Protocol.Network.Response[] = [];
-    const urls = [url];
+    chrome.on('Network.requestWillBeSent', params => {
+      console.log(
+        `RECORDING-REQUEST :: ${params.request.method} :: ${params.type} :: ${params.request.url}`
+      );
+    });
 
-    client.on('Network.responseReceived', ({ requestId, response }) => {
-      if (
-        response.mimeType === 'text/html' ||
-        response.mimeType === 'text/javascript' ||
-        response.mimeType === 'application/javascript'
-      ) {
-        requestIds.push(requestId);
-        responses.push(response);
+    chrome.on('Network.responseReceived', params => {
+      networkRequests.push(params);
+    });
+
+    // enable Network / Page / Runtime
+    await Promise.all([
+      chrome.send('Page.enable'),
+      chrome.send('Network.enable'),
+      chrome.send('Runtime.enable'),
+    ]); // clear and disable cache
+    await chrome.send('Network.clearBrowserCache');
+    // disable cache
+    await chrome.send('Network.setCacheDisabled', { cacheDisabled: true });
+
+    await emulate(chrome, conditions);
+
+    // set cookies
+    await setCookies(chrome, cookies);
+    // add performance observer script to eval
+    await chrome.send('Page.addScriptToEvaluateOnNewDocument', {
+      source: `
+        self.__TBMarkerPromise = new Promise(resolve => {
+          const observer = new PerformanceObserver((list) => {
+            if (list.getEntriesByName('${marker}').length > 0) {
+              resolve();
+            }
+        });
+        observer.observe({ entryTypes: ["mark", "navigation"] });
+        });`,
+    });
+
+    // navigate to the url
+    await chrome.send('Page.navigate', { url });
+
+    // eval
+    const evalPromise = chrome.send('Runtime.evaluate', {
+      expression: `__TBMarkerPromise`,
+      awaitPromise: true,
+    });
+
+    let timeoutId: NodeJS.Timeout;
+    const timeout = new Promise(reject => {
+      timeoutId = setTimeout(() => {
+        clearTimeout(timeoutId);
+        reject('Promise timed out after waiting for 10 seconds');
+      }, 10000);
+    });
+
+    await Promise.race([evalPromise, timeout]).then(() => {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
       }
     });
 
-    const archive: IArchive = {
-      log: {
-        entries: [],
-      },
-    };
-
-    await client.send('Network.enable');
-
-    cookies = cookies
-      ? cookies
-      : await client.send('Network.getCookies', { urls });
-    await setCookies(client, cookies);
-
-    await client.send('Page.enable');
+    archive.log.entries = await processEntries(networkRequests, chrome);
 
     await Promise.all([
-      client.until('Page.loadEventFired'),
-      client.send('Page.navigate', { url }),
+      chrome.send('Network.disable'),
+      chrome.send('Runtime.disable'),
     ]);
 
-    for (let i = 0; i < requestIds.length; i++) {
-      const requestId = requestIds[i];
-      const response = responses[i];
-      const responseBody = await client.send('Network.getResponseBody', {
-        requestId,
-      });
-      const entry: IEntry = {
-        request: { url: response.url },
-        response: { content: { text: responseBody.body } },
-      };
-      archive.log.entries.push(entry);
-    }
-    return [cookies, archive];
+    await chrome.send('Page.close');
+  } catch (e) {
+    throw new Error(`Network Request could not be captured. ${e}`);
   } finally {
-    await browser.dispose();
+    if (browser) {
+      await browser.dispose();
+    }
   }
+
+  return archive;
+}
+
+export async function processEntries(
+  networkRequests: Protocol.Network.ResponseReceivedEvent[],
+  chrome: any
+) {
+  const entries = [];
+  for (let i = 0; i < networkRequests.length; i++) {
+    console.log(`BUILDING-HAR-ENTRY-FOR :: ${networkRequests[i].response.url}`);
+    const requestId = networkRequests[i].requestId;
+    const response = networkRequests[i].response;
+    const { body } = await chrome.send('Network.getResponseBody', {
+      requestId,
+    });
+    const { url, requestHeaders, status, statusText, headers } = response;
+
+    const entry: Entry = {
+      request: {
+        url,
+        method: '',
+        httpVersion: '',
+        cookies: [],
+        headers: handleHeaders(requestHeaders),
+        queryString: [],
+        headersSize: 0,
+        bodySize: 0,
+      },
+      response: {
+        status,
+        statusText,
+        httpVersion: '',
+        cookies: [],
+        headers: handleHeaders(headers),
+        redirectURL: '',
+        headersSize: 0,
+        bodySize: 0,
+        content: {
+          text: body,
+          size: 0,
+          mimeType: '',
+        },
+      },
+      time: 0,
+      cache: {},
+      timings: {
+        send: 0,
+        wait: 0,
+        receive: 0,
+      },
+      startedDateTime: '',
+    };
+    entries.push(entry);
+  }
+
+  return entries;
+}
+
+export function handleHeaders(headers?: Protocol.Network.Headers): Header[] {
+  if (!headers) {
+    return [{ name: '', value: '' }];
+  }
+
+  return Object.entries(headers).map(e => {
+    return { name: e[0], value: e[1] };
+  });
 }

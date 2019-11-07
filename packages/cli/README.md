@@ -400,14 +400,8 @@ USAGE
   $ tracerbench trace
 
 OPTIONS
-  --cookiespath=cookiespath
-      (required) The path to a JSON file containing cookies to authenticate against the correlated URL
-
   --cpuThrottleRate=cpuThrottleRate
       (required) [default: 2] CPU throttle multiplier
-
-  --harpath=harpath
-      (required) The path to the HTTP Archive File (HAR)
 
   --insights
       Analyze insights from command.
