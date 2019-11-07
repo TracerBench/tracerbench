@@ -50,7 +50,8 @@
     "devtools-protocol": "0.0.665395",
     "handlebars": "^4.4.3",
     "silent-error": "^1.1.1",
-    "tslib": "^1.10.0"
+    "tslib": "^1.10.0",
+    "lodash.clonedeep": "^4.5.0"
   },
   "devDependencies": {
     "@types/chai": "^4.2.3",
