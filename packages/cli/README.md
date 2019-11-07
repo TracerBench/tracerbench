@@ -193,34 +193,25 @@ s?: TRACE_EVENT_SCOPE;
 * [`tracerbench `](#tracerbench-)
 * [`tracerbench compare`](#tracerbench-compare)
 * [`tracerbench compare:analyze RESULTSFILE`](#tracerbench-compareanalyze-resultsfile)
+* [`tracerbench create-archive`](#tracerbench-create-archive)
 * [`tracerbench help [COMMAND]`](#tracerbench-help-command)
 * [`tracerbench marker-timings`](#tracerbench-marker-timings)
-* [`tracerbench record-har`](#tracerbench-record-har)
 * [`tracerbench report`](#tracerbench-report)
 * [`tracerbench trace`](#tracerbench-trace)
 
 ## `tracerbench `
 
-Generates a HAR file from a URL.
+Get list of all user-timings from trace
 
 ```
 USAGE
   $ tracerbench
 
 OPTIONS
-  --config=config            Specify an alternative directory rather than the project root for the tbconfig.json. This
-                             explicit config will overwrite all.
-
-  --cookiespath=cookiespath  (required) The path to a JSON file containing cookies to authenticate against the
-                             correlated URL
-
-  --dest=dest                (required) The destination path for the generated file
-
-  --filename=filename        (required) [default: tracerbench] The filename for the generated file
-
-  --marker=marker            (required) [default: domComplete] The last marker before ending recording
-
-  --url=url                  (required) URL to visit for record-har, timings & trace commands
+  --filter=filter          User timing marks start with
+  --traceFrame=traceFrame  Specify a trace insights frame
+  --tracepath=tracepath    (required) The path to the generated trace.json file
+  --url=url                (required) URL to visit for record-har, timings & trace commands
 ```
 
 _See code: [dist/src/commands/index.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/index.ts)_
@@ -323,6 +314,31 @@ OPTIONS
 
 _See code: [dist/src/commands/compare/analyze.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/compare/analyze.ts)_
 
+## `tracerbench create-archive`
+
+Creates an automated HAR file from a URL.
+
+```
+USAGE
+  $ tracerbench create-archive
+
+OPTIONS
+  --browserArgs=browserArgs
+      (required) [default: 
+      --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-dev-shm-usage,--disable-cache,--disable-v8-i
+      dle-tasks,--disable-breakpad,--disable-notifications,--disable-hang-monitor,--safebrowsing-disable-auto-update,--ign
+      ore-certificate-errors,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the TracerBench 
+      render benchmark. TracerBench includes many non-configurable defaults in this category.
+
+  --tbResultsFolder=tbResultsFolder
+      (required) [default: ./tracerbench-results] The output folder path for all tracerbench results
+
+  --url=url
+      (required) URL to visit for record-har, timings & trace commands
+```
+
+_See code: [dist/src/commands/create-archive.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/create-archive.ts)_
+
 ## `tracerbench help [COMMAND]`
 
 display help for tracerbench
@@ -357,32 +373,6 @@ OPTIONS
 
 _See code: [dist/src/commands/marker-timings.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/marker-timings.ts)_
 
-## `tracerbench record-har`
-
-Generates a HAR file from a URL.
-
-```
-USAGE
-  $ tracerbench record-har
-
-OPTIONS
-  --config=config            Specify an alternative directory rather than the project root for the tbconfig.json. This
-                             explicit config will overwrite all.
-
-  --cookiespath=cookiespath  (required) The path to a JSON file containing cookies to authenticate against the
-                             correlated URL
-
-  --dest=dest                (required) The destination path for the generated file
-
-  --filename=filename        (required) [default: tracerbench] The filename for the generated file
-
-  --marker=marker            (required) [default: domComplete] The last marker before ending recording
-
-  --url=url                  (required) URL to visit for record-har, timings & trace commands
-```
-
-_See code: [dist/src/commands/record-har.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/record-har.ts)_
-
 ## `tracerbench report`
 
 Parses the output json from tracerbench and formats it into pdf and html
@@ -403,7 +393,7 @@ _See code: [dist/src/commands/report.ts](https://github.com/TracerBench/tracerbe
 
 ## `tracerbench trace`
 
-Parses a CPU profile and aggregates time across heuristics. Can optinally be vertically sliced with event names.
+Parses a CPU profile and aggregates time across heuristics. Can be vertically sliced with event names.
 
 ```
 USAGE
@@ -427,9 +417,6 @@ OPTIONS
 
   --locations=locations
       include locations in names
-
-  --marker=marker
-      (required) [default: domComplete] The last marker before ending recording
 
   --network=none | offline | dialup | 2g | edge | slow-3g | em-3g | dsl | 3g | fast-3g | 4g | cable | LTE | FIOS
       [default: none] Simulated network conditions.

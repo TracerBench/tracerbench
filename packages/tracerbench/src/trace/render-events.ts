@@ -6,8 +6,9 @@ import {
   ITraceEvent,
   TRACE_EVENT_PHASE_COMPLETE,
   TRACE_EVENT_PHASE_NESTABLE_ASYNC_END,
-  TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN
+  TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN,
 } from '../trace';
+const cloneDeep = require('lodash.clonedeep');
 
 export function addRenderNodes(
   hierarchy: HierarchyNode<ICpuProfileNode>,
@@ -57,14 +58,14 @@ function insertRenderEvent(
       scriptId: -1,
       url: '',
       lineNumber: -1,
-      columnNumber: -1
+      columnNumber: -1,
     },
     children: [],
     sampleCount: -1,
     min: eventStart,
     max: eventEnd,
     total: 0,
-    self: 0
+    self: 0,
   };
 
   const children = getChildren(enclosingNode);
@@ -125,7 +126,7 @@ function splitChild(
   // Split node
   const left = node;
   const right = node.copy();
-  right.data = JSON.parse(JSON.stringify(node.data));
+  right.data = cloneDeep(node.data);
   right.children = [];
 
   left.data.max = splitTS;
@@ -177,7 +178,7 @@ function splitChild(
   // Return the resulting left/right split times, so parents can determine their own self times
   return {
     middleLeftTime: left.data.max - left.data.min,
-    middleRightTime: right.data.max - right.data.min
+    middleRightTime: right.data.max - right.data.min,
   };
 }
 
