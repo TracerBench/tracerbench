@@ -1,6 +1,6 @@
 {
   "name": "@tracerbench/core",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "description": "Benchmark runner for trace metrics",
   "keywords": [
     "chrome",
@@ -49,11 +49,13 @@
     "debug": "^4.1.1",
     "devtools-protocol": "0.0.665395",
     "handlebars": "^4.4.3",
+    "lodash.clonedeep": "^4.5.0",
     "silent-error": "^1.1.1",
-    "tslib": "^1.10.0",
-    "lodash.clonedeep": "^4.5.0"
+    "tslib": "^1.10.0"
   },
   "devDependencies": {
+    "@tracerbench/har": "^3.0.0",
+    "@tracerbench/protocol-connection": "^1.1.0",
     "@types/chai": "^4.2.3",
     "@types/debug": "^4.1.5",
     "@types/glob": "^7.1.1",
@@ -71,9 +73,7 @@
     "tslint": "^5.20.0",
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.0.1",
-    "typescript": "^3.6.4",
-    "@tracerbench/har": "^2.3.0",
-    "@tracerbench/protocol-connection": "^1.1.0"
+    "typescript": "^3.6.4"
   },
   "engine": "node >= 8",
   "gitHead": "142d4c4a60878c37fb056a06fccf9694bdeda259"
