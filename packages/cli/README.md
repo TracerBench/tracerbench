@@ -9,17 +9,19 @@
 https://github.com/TracerBench/tracerbench/blob/master/README.md
 
 <!-- toc -->
-* [TracerBench Core](#tracerbench-core)
-* [Usage](#usage)
-* [Optional Config](#optional-config)
-* [Example Travis-CI Integration](#example-travis-ci-integration)
-* [FAQ](#faq)
-* [Commands](#commands)
-<!-- tocstop -->
+
+- [TracerBench Core](#tracerbench-core)
+- [Usage](#usage)
+- [Optional Config](#optional-config)
+- [Example Travis-CI Integration](#example-travis-ci-integration)
+- [FAQ](#faq)
+- [Commands](#commands)
+  <!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
+
 ```sh-session
 $ npm install -g tracerbench
 $ tracerbench COMMAND
@@ -31,6 +33,7 @@ USAGE
   $ tracerbench COMMAND
 ...
 ```
+
 <!-- usagestop -->
 
 # Optional Config
@@ -49,7 +52,6 @@ The optional existance of a "tbconfig.json" file in the project root will be con
   "tracingLocationSearch": "?tracing",
   "regressionThreshold": "-100ms",
   "appName": "tracerbench",
-  "network": "cable",
   "cpuThrottleRate": 1,
   "network": "fast-3g",
   "emulateDevice": "iphone-x",
@@ -86,54 +88,29 @@ The optional existance of a "tbconfig.json" file in the project root will be con
   ],
   "socksPorts": [8880, 8881],
   "browserArgs": [
-    "--crash-dumps-dir=./tmp",
-    "--disable-background-timer-throttling",
-    "--disable-dev-shm-usage",
-    "--disable-notifications",
-    "--disable-hang-monitor",
-    "--safebrowsing-disable-auto-update",
-    "--disable-background-timer-throttling",
-    "--disable-backgrounding-occluded-windows",
-    "--disable-renderer-backgrounding",
-    "--disable-client-side-phishing-detection",
-    "--disable-v8-idle-tasks",
     "--disable-features=site-per-process,TranslateUI,BlinkGenPropertyTrees",
     "--disable-ipc-flooding-protection",
     "--v8-cache-options=none"
   ],
   "servers": [
     {
-      "name": "control tracerbench-build_1.0.1234",
+      "name": "control-tracerbench-build_1.0.1234",
       "url": "https://www.tracerbench.com/",
       "dist": "./relative-path-to-control-dist-files/",
-      "har": "./relative-path-location-to-control-har-file/",
+      "har": "./relative-path-location-to-har-file/",
       "socksPort": 8880
     },
     {
-      "name": "experiment tracerbench-build-2-78ffg6a678g95",
+      "name": "experiment-tracerbench-build_1.0.1234_v78gh95",
       "url": "https://www.tracerbench.com/",
       "dist": "./relative-path-to-experiment-dist-files/",
-      "har": "./relative-path-location-to-experiment-har-file/",
+      "har": "./relative-path-location-to-har-file/",
       "socksPort": 8881
     }
   ]
 }
 
 ```
-
-# Example Travis-CI Integration
-
-In this working example the `travis-script.js` would be called from the travis yml file `travis.yml` via `yarn run <script>` included within your applications package.json (not shown) eg: `yarn tracerbench:compare`.
-
-- [travis.yml](https://github.com/TracerBench/tracerbench/blob/master/docs/travis-example.yml)
-- [travis-script.js](https://github.com/TracerBench/tracerbench/blob/master/docs/travis-example.js)
-
-The results of this test would resolve in
-
-1. The results are statistically significant
-2. The results contained a regression, however the regression is below a set threshold from `tbconfig.json`. (For example to mitigate against false-positives).
-3. The results contained a regression and the delta was significant enough to cause concern. (Recommend running the test again with a higher sample size to confirm).
-4. The results are statistically insignificant. All is good.
 
 # FAQ
 
@@ -190,31 +167,14 @@ s?: TRACE_EVENT_SCOPE;
 # Commands
 
 <!-- commands -->
-* [`tracerbench `](#tracerbench-)
-* [`tracerbench compare`](#tracerbench-compare)
-* [`tracerbench compare:analyze RESULTSFILE`](#tracerbench-compareanalyze-resultsfile)
-* [`tracerbench create-archive`](#tracerbench-create-archive)
-* [`tracerbench help [COMMAND]`](#tracerbench-help-command)
-* [`tracerbench marker-timings`](#tracerbench-marker-timings)
-* [`tracerbench report`](#tracerbench-report)
-* [`tracerbench trace`](#tracerbench-trace)
 
-## `tracerbench `
-
-Get list of all user-timings from trace
-
-```
-USAGE
-  $ tracerbench
-
-OPTIONS
-  --filter=filter          User timing marks start with
-  --traceFrame=traceFrame  Specify a trace insights frame
-  --tracepath=tracepath    (required) The path to the generated trace.json file
-  --url=url                (required) URL to visit for record-har, timings & trace commands
-```
-
-_See code: [dist/src/commands/index.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/index.ts)_
+- [`tracerbench compare`](#tracerbench-compare)
+- [`tracerbench compare:analyze RESULTSFILE`](#tracerbench-compareanalyze-resultsfile)
+- [`tracerbench help [COMMAND]`](#tracerbench-help-command)
+- [`tracerbench marker-timings`](#tracerbench-marker-timings)
+- [`tracerbench record-har`](#tracerbench-record-har)
+- [`tracerbench report`](#tracerbench-report)
+- [`tracerbench trace`](#tracerbench-trace)
 
 ## `tracerbench compare`
 
@@ -226,14 +186,14 @@ USAGE
 
 OPTIONS
   --browserArgs=browserArgs
-      (required) [default: 
+      (required) [default:
       --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-dev-shm-usage,--disable-cache,--disable-v8-i
       dle-tasks,--disable-breakpad,--disable-notifications,--disable-hang-monitor,--safebrowsing-disable-auto-update,--ign
-      ore-certificate-errors,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the TracerBench 
+      ore-certificate-errors,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the TracerBench
       render benchmark. TracerBench includes many non-configurable defaults in this category.
 
   --config=config
-      Specify an alternative directory rather than the project root for the tbconfig.json. This explicit config will 
+      Specify an alternative directory rather than the project root for the tbconfig.json. This explicit config will
       overwrite all.
 
   --controlURL=controlURL
@@ -314,31 +274,6 @@ OPTIONS
 
 _See code: [dist/src/commands/compare/analyze.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/compare/analyze.ts)_
 
-## `tracerbench create-archive`
-
-Creates an automated HAR file from a URL.
-
-```
-USAGE
-  $ tracerbench create-archive
-
-OPTIONS
-  --browserArgs=browserArgs
-      (required) [default: 
-      --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-dev-shm-usage,--disable-cache,--disable-v8-i
-      dle-tasks,--disable-breakpad,--disable-notifications,--disable-hang-monitor,--safebrowsing-disable-auto-update,--ign
-      ore-certificate-errors,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the TracerBench 
-      render benchmark. TracerBench includes many non-configurable defaults in this category.
-
-  --tbResultsFolder=tbResultsFolder
-      (required) [default: ./tracerbench-results] The output folder path for all tracerbench results
-
-  --url=url
-      (required) URL to visit for record-har, timings & trace commands
-```
-
-_See code: [dist/src/commands/create-archive.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/create-archive.ts)_
-
 ## `tracerbench help [COMMAND]`
 
 display help for tracerbench
@@ -373,6 +308,32 @@ OPTIONS
 
 _See code: [dist/src/commands/marker-timings.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/marker-timings.ts)_
 
+## `tracerbench record-har`
+
+Generates a HAR file from a URL.
+
+```
+USAGE
+  $ tracerbench record-har
+
+OPTIONS
+  --config=config            Specify an alternative directory rather than the project root for the tbconfig.json. This
+                             explicit config will overwrite all.
+
+  --cookiespath=cookiespath  (required) The path to a JSON file containing cookies to authenticate against the
+                             correlated URL
+
+  --dest=dest                (required) The destination path for the generated file
+
+  --filename=filename        (required) [default: tracerbench] The filename for the generated file
+
+  --marker=marker            (required) [default: domComplete] The last marker before ending recording
+
+  --url=url                  (required) URL to visit for record-har, timings & trace commands
+```
+
+_See code: [dist/src/commands/record-har.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/record-har.ts)_
+
 ## `tracerbench report`
 
 Parses the output json from tracerbench and formats it into pdf and html
@@ -400,8 +361,14 @@ USAGE
   $ tracerbench trace
 
 OPTIONS
+  --cookiespath=cookiespath
+      (required) The path to a JSON file containing cookies to authenticate against the correlated URL
+
   --cpuThrottleRate=cpuThrottleRate
       (required) [default: 2] CPU throttle multiplier
+
+  --harpath=harpath
+      (required) The path to the HTTP Archive File (HAR)
 
   --insights
       Analyze insights from command.
@@ -423,4 +390,5 @@ OPTIONS
 ```
 
 _See code: [dist/src/commands/trace.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/trace.ts)_
+
 <!-- commandsstop -->
