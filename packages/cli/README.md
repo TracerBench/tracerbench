@@ -9,19 +9,16 @@
 https://github.com/TracerBench/tracerbench/blob/master/README.md
 
 <!-- toc -->
-
-- [TracerBench Core](#tracerbench-core)
-- [Usage](#usage)
-- [Optional Config](#optional-config)
-- [Example Travis-CI Integration](#example-travis-ci-integration)
-- [FAQ](#faq)
-- [Commands](#commands)
-  <!-- tocstop -->
+* [TracerBench Core](#tracerbench-core)
+* [Usage](#usage)
+* [Optional Config](#optional-config)
+* [FAQ](#faq)
+* [Commands](#commands)
+<!-- tocstop -->
 
 # Usage
 
 <!-- usage -->
-
 ```sh-session
 $ npm install -g tracerbench
 $ tracerbench COMMAND
@@ -33,7 +30,6 @@ USAGE
   $ tracerbench COMMAND
 ...
 ```
-
 <!-- usagestop -->
 
 # Optional Config
@@ -167,14 +163,13 @@ s?: TRACE_EVENT_SCOPE;
 # Commands
 
 <!-- commands -->
-
-- [`tracerbench compare`](#tracerbench-compare)
-- [`tracerbench compare:analyze RESULTSFILE`](#tracerbench-compareanalyze-resultsfile)
-- [`tracerbench help [COMMAND]`](#tracerbench-help-command)
-- [`tracerbench marker-timings`](#tracerbench-marker-timings)
-- [`tracerbench record-har`](#tracerbench-record-har)
-- [`tracerbench report`](#tracerbench-report)
-- [`tracerbench trace`](#tracerbench-trace)
+* [`tracerbench compare`](#tracerbench-compare)
+* [`tracerbench compare:analyze RESULTSFILE`](#tracerbench-compareanalyze-resultsfile)
+* [`tracerbench help [COMMAND]`](#tracerbench-help-command)
+* [`tracerbench marker-timings`](#tracerbench-marker-timings)
+* [`tracerbench record-har`](#tracerbench-record-har)
+* [`tracerbench report`](#tracerbench-report)
+* [`tracerbench trace`](#tracerbench-trace)
 
 ## `tracerbench compare`
 
@@ -186,14 +181,14 @@ USAGE
 
 OPTIONS
   --browserArgs=browserArgs
-      (required) [default:
+      (required) [default: 
       --crash-dumps-dir=./tmp,--disable-background-timer-throttling,--disable-dev-shm-usage,--disable-cache,--disable-v8-i
       dle-tasks,--disable-breakpad,--disable-notifications,--disable-hang-monitor,--safebrowsing-disable-auto-update,--ign
-      ore-certificate-errors,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the TracerBench
+      ore-certificate-errors,--v8-cache-options=none] (Default Recommended) Additional chrome flags for the TracerBench 
       render benchmark. TracerBench includes many non-configurable defaults in this category.
 
   --config=config
-      Specify an alternative directory rather than the project root for the tbconfig.json. This explicit config will
+      Specify an alternative directory rather than the project root for the tbconfig.json. This explicit config will 
       overwrite all.
 
   --controlURL=controlURL
@@ -390,5 +385,4 @@ OPTIONS
 ```
 
 _See code: [dist/src/commands/trace.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v2.3.0/dist/src/commands/trace.ts)_
-
 <!-- commandsstop -->
