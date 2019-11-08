@@ -192,7 +192,7 @@ OPTIONS
       overwrite all.
 
   --controlURL=controlURL
-      (required) Control URL to visit for compare command
+      Control URL to visit for compare command
 
   --cpuThrottleRate=cpuThrottleRate
       (required) [default: 2] CPU throttle multiplier
@@ -210,7 +210,7 @@ OPTIONS
       [default: vertical] Expected to be either "vertical" or "horizontal". Dictates orientation of device screen.
 
   --experimentURL=experimentURL
-      (required) Experiment URL to visit for compare command
+      Experiment URL to visit for compare command
 
   --fidelity=fidelity
       (required) [default: low] Directly correlates to the number of samples per trace. High is the longest trace time.
