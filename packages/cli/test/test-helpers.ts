@@ -13,6 +13,15 @@ export const FIXTURE_APP = {
   regression: pathToFileURL(
     `${join(process.cwd(), '/test/fixtures/regression/index.html')}`
   ).toString(),
+  controlConfig: join(process.cwd(), '/test/fixtures/release/tbconfig.json'),
+  experimentConfig: join(
+    process.cwd(),
+    '/test/fixtures/experiment/tbconfig.json'
+  ),
+  regressionConfig: join(
+    process.cwd(),
+    '/test/fixtures/regression/tbconfig.json'
+  ),
 };
 
 export const TB_RESULTS_FOLDER = dirSync().name;
