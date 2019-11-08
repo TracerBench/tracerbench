@@ -57,8 +57,8 @@ export interface ICompareFlags {
   markers: IMarker[];
   network: Protocol.Network.EmulateNetworkConditionsRequest;
   tbResultsFolder: string;
-  controlURL: string;
-  experimentURL: string;
+  controlURL: string | undefined;
+  experimentURL: string | undefined;
   tracingLocationSearch: string;
   runtimeStats: boolean;
   emulateDevice?: string;
@@ -85,8 +85,8 @@ export default class Compare extends TBBaseCommand {
     markers: markers({ required: true }),
     network: network({ required: true }),
     tbResultsFolder: tbResultsFolder({ required: true }),
-    controlURL: controlURL({ required: true }),
-    experimentURL: experimentURL({ required: true }),
+    controlURL: controlURL({ required: false }),
+    experimentURL: experimentURL({ required: false }),
     tracingLocationSearch: tracingLocationSearch({ required: true }),
     emulateDevice: emulateDevice(),
     emulateDeviceOrientation: emulateDeviceOrientation(),
@@ -214,6 +214,8 @@ export default class Compare extends TBBaseCommand {
       markers,
       regressionThreshold,
       headless,
+      controlURL,
+      experimentURL,
     } = (this.parsedConfig as unknown) as ICompareFlags;
 
     // modifies properties of flags that were not set
@@ -232,6 +234,18 @@ export default class Compare extends TBBaseCommand {
     if (typeof regressionThreshold === 'string') {
       this.parsedConfig.regressionThreshold = parseInt(regressionThreshold, 10);
     }
+    if (typeof controlURL === undefined) {
+      this.error(
+        'controlURL is required either in the tbconfig.json or as cli flag'
+      );
+    }
+
+    if (typeof experimentURL === undefined) {
+      this.error(
+        'experimentURL is required either in the tbconfig.json or as cli flag'
+      );
+    }
+
     // if headless flag is true include the headless flags
     if (headless) {
       this.parsedConfig.browserArgs = this.compareFlags.browserArgs.concat(
