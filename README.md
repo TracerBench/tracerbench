@@ -51,7 +51,7 @@ Assuming the TracerBench-CLI is globally [installed](https://github.com/TracerBe
 1. Start by having TracerBench record a HAR:
 
 ```console
-$ tracerbench record-har --url http://localhost:8000 --cookies <path-to-cookies>
+$ tracerbench create-archive --url http://localhost:8000
 
 ✔ DevTools listening on ws://<address>
 ✔ { timestamp: 241968.79908 }
