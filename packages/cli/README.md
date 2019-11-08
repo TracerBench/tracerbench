@@ -228,7 +228,7 @@ OPTIONS
       (required) [default: none] Simulated network conditions.
 
   --regressionThreshold=regressionThreshold
-      [default: 0ms] Regression threshold in negative milliseconds. eg -100ms
+      The upper limit the experiment can regress slower in milliseconds. eg 100
 
   --report
       Generate a PDF report directly after running the compare command.

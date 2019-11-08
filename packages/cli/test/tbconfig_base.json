@@ -8,11 +8,10 @@
   "experimentURL": "https://www.tracerbench.com/",
   "url": "https://www.tracerbench.com/",
   "tracingLocationSearch": "?tracing",
-  "regressionThreshold": "-100ms",
+  "regressionThreshold": "100",
   "appName": "tracerbench",
   "network": "cable",
-  "markers": [
-    {
+  "markers": [{
       "start": "fetchStart",
       "label": "jquery"
     },
@@ -54,8 +53,7 @@
     "--setIgnoreCertificateErrors=true",
     "--v8-cache-options=none"
   ],
-  "servers": [
-    {
+  "servers": [{
       "name": "control tracerbench-build_1.0.1234",
       "url": "https://www.tracerbench.com/",
       "dist": "./relative-path-to-control-dist-files/",

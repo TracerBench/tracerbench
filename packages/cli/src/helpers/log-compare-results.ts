@@ -52,17 +52,30 @@ export function anyResultsSignificant(
   return false;
 }
 
+/**
+ * If any phase of the experiment has regressed slower beyond the threshold limit returns false; otherwise true
+ *
+ * @param regressionThreshold - Positive number in milliseconds the experiment has regressed slower eg 100
+ * @param benchmarkTableEstimatorDeltas - Array of Estimator Deltas for the Benchmark Table
+ * @param phaseTableEstimatorDeltas - Array of Estimator Deltas for the Phase Table
+ */
 export function allBelowRegressionThreshold(
   regressionThreshold: number | undefined,
   benchmarkTableEstimatorDeltas: number[],
   phaseTableEstimatorDeltas: number[]
 ): boolean {
+  function isBelowThreshold(n: number, limit: number) {
+    // if the delta is a negative number and abs(delta) greater than threshold return false
+    return n < 0 && Math.abs(n) > limit ? false : true;
+  }
+
   if (regressionThreshold) {
+    // concat estimator deltas from all phases
     const deltas: number[] = benchmarkTableEstimatorDeltas.concat(
       phaseTableEstimatorDeltas
     );
-    // if regression is over the threshold this should return false;
-    return deltas.every(x => x > regressionThreshold);
+    // if the experiment is slower beyond the threshold return false;
+    return deltas.every(isBelowThreshold, regressionThreshold);
   }
   return true;
 }

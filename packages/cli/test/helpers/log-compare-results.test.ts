@@ -1,3 +1,5 @@
+// tslint:disable:no-unused-expression
+
 import { expect } from 'chai';
 import { test } from '@oclif/test';
 
@@ -97,37 +99,42 @@ describe('anyResultsSignificant', () => {
   const truthyArr = [true, true, false];
   const falsyArr = [false, false, false];
   it(`stat-sig results are significant`, () => {
-    const isSig = anyResultsSignificant(fidelity, truthyArr, falsyArr);
-    // tslint:disable-next-line: no-unused-expression
-    expect(isSig).to.be.true;
+    const isSigA = anyResultsSignificant(fidelity, truthyArr, falsyArr);
+    const isSigB = anyResultsSignificant(fidelity, falsyArr, truthyArr);
+    expect(isSigA).to.be.true;
+    expect(isSigB).to.be.true;
   });
   it(`stat-sig results are not significant`, () => {
-    const isSig = anyResultsSignificant(fidelity, falsyArr, falsyArr);
-    // tslint:disable-next-line: no-unused-expression
-    expect(isSig).to.be.false;
+    const isNotSig = anyResultsSignificant(fidelity, falsyArr, falsyArr);
+    expect(isNotSig).to.be.false;
   });
 });
 
 describe('allBelowRegressionThreshold', () => {
+  const threshold = 100;
   const improvementDeltas = [100, 50, 200];
   const regressionDeltas = [-200, -300, -400];
   it(`is below regression threshold`, () => {
     const isBelowThreshold = allBelowRegressionThreshold(
-      -100,
+      threshold,
       improvementDeltas,
       improvementDeltas
     );
-    // tslint:disable-next-line: no-unused-expression
     expect(isBelowThreshold).to.be.true;
   });
   it(`is above regression threshold`, () => {
-    const isBelowThreshold = allBelowRegressionThreshold(
-      -100,
+    const isBelowThresholdA = allBelowRegressionThreshold(
+      threshold,
       improvementDeltas,
       regressionDeltas
     );
-    // tslint:disable-next-line: no-unused-expression
-    expect(isBelowThreshold).to.be.false;
+    const isBelowThresholdB = allBelowRegressionThreshold(
+      threshold,
+      regressionDeltas,
+      improvementDeltas
+    );
+    expect(isBelowThresholdA).to.be.false;
+    expect(isBelowThresholdB).to.be.false;
   });
   it(`no regression threshold set`, () => {
     const isBelowThreshold = allBelowRegressionThreshold(
@@ -135,7 +142,6 @@ describe('allBelowRegressionThreshold', () => {
       improvementDeltas,
       regressionDeltas
     );
-    // tslint:disable-next-line: no-unused-expression
     expect(isBelowThreshold).to.be.true;
   });
 });

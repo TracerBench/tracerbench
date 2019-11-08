@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/TracerBench/tracerbench/master/packages/cli/tb-schema.json",
   "extends": "../../tbconfig_base.json",
   "plotTitle": "fixtures release",
-  "regressionThreshold": "-100ms",
+  "regressionThreshold": "100",
   "fidelity": "medium",
   "controlURL": "file:///Users/malynch/D/tracerbench/packages/cli/test/fixtures/release/index.html",
   "experimentURL": "file:///Users/malynch/D/tracerbench/packages/cli/test/fixtures/release/index.html"

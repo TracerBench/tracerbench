@@ -7,8 +7,8 @@ import { readConfig } from '../../src/command-config/build-config';
 
 describe('utils', () => {
   it(`getDefaultValue() from default`, () => {
-    const regressionThreshold = getDefaultValue('regressionThreshold');
-    expect(regressionThreshold).to.equal('0ms');
+    const plotTitle = getDefaultValue('plotTitle');
+    expect(plotTitle).to.equal('TracerBench');
   });
 });
 

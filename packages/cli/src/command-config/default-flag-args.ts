@@ -59,7 +59,6 @@ export const defaultFlagArgs: ITBConfig = {
   network: 'none',
   emulateDevice: '',
   emulateDeviceOrientation: 'vertical',
-  regressionThreshold: '0ms',
   dest: '',
 };
 
