@@ -28,9 +28,8 @@ describe('report: creates html', () => {
           `${TB_CONFIG_FILE}`,
         ]);
 
-        expect(ctx.stdout).to.contain(
-          `The PDF and HTML reports are available here`
-        );
+        expect(ctx.stdout).to.contain(`PDF:`);
+        expect(ctx.stdout).to.contain(`HTML:`);
         assert.exists(`${TB_RESULTS_FOLDER}/artifact-1.html`);
         assert.exists(`${TB_RESULTS_FOLDER}/artifact-1.pdf`);
       }

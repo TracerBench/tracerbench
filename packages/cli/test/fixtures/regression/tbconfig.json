@@ -1,4 +1,4 @@
 {
   "extends": "../../tbconfig_base.json",
-  "plotTitle": "fixtures regression",
+  "plotTitle": "fixtures regression"
 }

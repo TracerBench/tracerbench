@@ -102,7 +102,11 @@ export function outputRunMetaMessagesAndWarnings(
 
   if (!isBelowRegressionThreshold) {
     cli.log(
-      `A regression was found exceeding the set regression threshold of ${regressionThreshold}ms\n`
+      `\n${chalkScheme.blackBgRed(
+        `    ${chalkScheme.white('!! ALERT')}    `
+      )} ${chalkScheme.regress(
+        ` Regression found exceeding the set regression threshold of ${regressionThreshold}ms`
+      )}\n`
     );
   }
 }
@@ -123,17 +127,13 @@ export function outputSummaryReport(
   >
 ) {
   cli.log(
-    chalk.bgWhiteBright(
-      chalkScheme.tbBranding.dkBlue(
-        '\n    =========== Benchmark Results Summary ===========    '
-      )
-    )
+    `\n${chalkScheme.blackBgBlue(
+      `    ${chalkScheme.white('Benchmark Results Summary')}    `
+    )}`
   );
-  cli.log(
-    `${chalk.red('Red')} color means there was a regression. ${chalk.green(
-      'Green'
-    )} color means there was an improvement. You can view more statistical details about the phases above.\n`
-  );
+
+  cli.log(`\n${chalk.red('Red')} color means there was a regression.`);
+  cli.log(`${chalk.green('Green')} color means there was an improvement.\n`);
   phaseResultsFormatted.forEach(phaseData => {
     const { phase, hlDiff, isSignificant } = phaseData;
     let msg = `${chalk.bold(phase)} phase has `;
@@ -154,7 +154,7 @@ export function outputSummaryReport(
       msg += `${chalk.grey('no difference')}`;
     }
 
-    msg += '. \n';
+    msg += '.';
     cli.log(msg);
   });
 }
@@ -195,7 +195,7 @@ export function outputJSONResults(
  */
 export async function logCompareResults(
   results: ITracerBenchTraceResult[],
-  flags: Pick<ICompareFlags, 'fidelity'>,
+  flags: Pick<ICompareFlags, 'fidelity' | 'regressionThreshold'>,
   cli: Command
 ): Promise<string> {
   const { fidelity } = flags;

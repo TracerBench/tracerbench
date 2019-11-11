@@ -101,11 +101,10 @@ export default class Report extends TBBaseCommand {
     await printToPDF(`file://${absPathToHTML}`, absOutputPath);
 
     this.log(
-      `The PDF and HTML reports are available here: ${chalkScheme.tbBranding.lime.underline.bold(
-        absPathToHTML
-      )} and here: ${chalkScheme.tbBranding.blue.underline.bold(
-        absOutputPath
-      )}\n`
+      `\nPDF: ${chalkScheme.tbBranding.blue.underline.bold(absPathToHTML)}`
+    );
+    this.log(
+      `\nHTML: ${chalkScheme.tbBranding.blue.underline.bold(absOutputPath)}\n\n`
     );
   }
   private async parseFlags() {

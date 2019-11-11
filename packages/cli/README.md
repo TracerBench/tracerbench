@@ -260,11 +260,13 @@ ARGUMENTS
   RESULTSFILE  Results JSON file
 
 OPTIONS
-  --fidelity=fidelity                (required) [default: low] Directly correlates to the number of samples per trace.
-                                     High is the longest trace time.
+  --fidelity=fidelity                        (required) [default: low] Directly correlates to the number of samples per
+                                             trace. High is the longest trace time.
 
-  --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output folder path for all
-                                     tracerbench results
+  --regressionThreshold=regressionThreshold  The upper limit the experiment can regress slower in milliseconds. eg 100
+
+  --tbResultsFolder=tbResultsFolder          (required) [default: ./tracerbench-results] The output folder path for all
+                                             tracerbench results
 ```
 
 _See code: [dist/src/commands/compare/analyze.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.0.1/dist/src/commands/compare/analyze.ts)_

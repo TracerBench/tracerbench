@@ -153,11 +153,9 @@ export default class Compare extends TBBaseCommand {
 
         fs.writeFileSync(resultJSONPath, JSON.stringify(results, null, 2));
         // tslint:disable-next-line: max-line-length
-        const message = `${chalkScheme.blackBgGreen(' Success! ')} ${
-          this.parsedConfig.fidelity
-        } test samples were taken. The JSON file with results from the compare test are available here: ${
-          this.parsedConfig.tbResultsFolder
-        }/compare.json.`;
+        const message = `${chalkScheme.blackBgGreen(
+          `    ${chalkScheme.white('Success!')}    `
+        )} ${this.parsedConfig.fidelity} test samples were taken.`;
         this.log(`\n${message}`);
 
         if (!hideAnalysis) {
@@ -167,12 +165,25 @@ export default class Compare extends TBBaseCommand {
             `${this.parsedConfig.fidelity}`,
             '--tbResultsFolder',
             `${this.parsedConfig.tbResultsFolder}`,
+            '--regressionThreshold',
+            `${this.parsedConfig.regressionThreshold}`,
           ]);
         }
 
         // if we want to run the Report without calling a separate command
         if (this.parsedConfig.report) {
-          this.log(chalkScheme.tbBranding.aqua('\nRUNNING A REPORT'));
+          this.log(
+            `\n${chalkScheme.blackBgBlue(
+              `    ${chalkScheme.white('Benchmark Reports')}    `
+            )}\n`
+          );
+
+          this.log(
+            `JSON: ${chalkScheme.tbBranding.blue.underline.bold(
+              `${this.parsedConfig.tbResultsFolder}/compare.json`
+            )}`
+          );
+
           Report.run([
             '--tbResultsFolder',
             `${this.parsedConfig.tbResultsFolder}`,

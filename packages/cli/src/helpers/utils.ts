@@ -214,6 +214,7 @@ export function toNearestHundreth(n: number): number {
 }
 
 export const chalkScheme = {
+  white: chalk.rgb(255, 255, 255),
   header: chalk.rgb(255, 255, 255),
   regress: chalk.rgb(239, 100, 107),
   neutral: chalk.rgb(225, 225, 225),
@@ -223,6 +224,8 @@ export const chalkScheme = {
   faint: chalk.rgb(80, 80, 80),
   checkmark: chalk.rgb(133, 153, 36)(`${logSymbols.success}`),
   blackBgGreen: chalk.green.bgGreen,
+  blackBgRed: chalk.rgb(239, 100, 107).bgRed,
+  blackBgBlue: chalk.rgb(24, 132, 228).bgBlue,
   tbBranding: {
     lime: chalk.rgb(199, 241, 106),
     blue: chalk.rgb(24, 132, 228),

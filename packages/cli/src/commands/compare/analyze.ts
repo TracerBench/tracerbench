@@ -1,7 +1,11 @@
 import { TBBaseCommand } from '../../command-config';
 import { logCompareResults } from '../../helpers/log-compare-results';
 import { readJsonSync } from 'fs-extra';
-import { fidelity, tbResultsFolder } from '../../helpers/flags';
+import {
+  fidelity,
+  tbResultsFolder,
+  regressionThreshold,
+} from '../../helpers/flags';
 
 export default class CompareAnalyze extends TBBaseCommand {
   public static description =
@@ -12,6 +16,7 @@ export default class CompareAnalyze extends TBBaseCommand {
   public static flags = {
     fidelity: fidelity({ required: true }),
     tbResultsFolder: tbResultsFolder({ required: true }),
+    regressionThreshold: regressionThreshold(),
   };
 
   public async run(): Promise<string> {
