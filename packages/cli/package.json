@@ -42,7 +42,8 @@
     "path": "0.12.7",
     "tmp": "^0.1.0",
     "tough-cookie": "^3.0.1",
-    "tslib": "^1.10.0"
+    "tslib": "^1.10.0",
+    "ora": "^4.0.2"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",

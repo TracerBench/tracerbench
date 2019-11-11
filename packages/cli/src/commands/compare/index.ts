@@ -172,19 +172,7 @@ export default class Compare extends TBBaseCommand {
 
         // if we want to run the Report without calling a separate command
         if (this.parsedConfig.report) {
-          this.log(
-            `\n${chalkScheme.blackBgBlue(
-              `    ${chalkScheme.white('Benchmark Reports')}    `
-            )}\n`
-          );
-
-          this.log(
-            `JSON: ${chalkScheme.tbBranding.blue.underline.bold(
-              `${this.parsedConfig.tbResultsFolder}/compare.json`
-            )}`
-          );
-
-          Report.run([
+          await Report.run([
             '--tbResultsFolder',
             `${this.parsedConfig.tbResultsFolder}`,
             '--config',

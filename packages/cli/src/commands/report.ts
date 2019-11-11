@@ -1,6 +1,5 @@
 import * as fs from 'fs-extra';
 import { join, resolve } from 'path';
-
 import { IConfig } from '@oclif/config';
 import { getConfig, TBBaseCommand } from '../command-config';
 import createConsumeableHTML, {
@@ -99,12 +98,21 @@ export default class Report extends TBBaseCommand {
     absOutputPath = resolve(join(tbResultsFolder + `/${outputFileName}.pdf`));
 
     await printToPDF(`file://${absPathToHTML}`, absOutputPath);
-
+    this.log(
+      `\n${chalkScheme.blackBgBlue(
+        `    ${chalkScheme.white('Benchmark Reports')}    `
+      )}`
+    );
+    this.log(
+      `\nJSON: ${chalkScheme.tbBranding.blue.underline.bold(
+        `${this.parsedConfig.tbResultsFolder}/compare.json`
+      )}`
+    );
     this.log(
       `\nPDF: ${chalkScheme.tbBranding.blue.underline.bold(absPathToHTML)}`
     );
     this.log(
-      `\nHTML: ${chalkScheme.tbBranding.blue.underline.bold(absOutputPath)}\n\n`
+      `\nHTML: ${chalkScheme.tbBranding.blue.underline.bold(absOutputPath)}\n`
     );
   }
   private async parseFlags() {

@@ -1,4 +1,5 @@
-import * as fs from 'fs-extra';
+import { writeFileSync } from 'fs-extra';
+import * as ora from 'ora';
 
 import { spawnChrome } from 'chrome-debugging-client';
 
@@ -10,6 +11,7 @@ import { spawnChrome } from 'chrome-debugging-client';
  * @param outputPath - Output pdf to this file
  */
 export default async function printToPDF(url: string, outputPath: string) {
+  const spinner = ora('\n Generating Benchmark Reports').start();
   const chrome = spawnChrome({ headless: true });
   try {
     const browser = chrome.connection;
@@ -25,10 +27,11 @@ export default async function printToPDF(url: string, outputPath: string) {
     ]);
     const { data } = await page.send('Page.printToPDF', {});
 
-    fs.writeFileSync(outputPath, Buffer.from(data, 'base64'));
+    writeFileSync(outputPath, Buffer.from(data, 'base64'));
 
     await chrome.close();
   } finally {
+    await spinner.stop();
     await chrome.dispose();
   }
 }
