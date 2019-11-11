@@ -1,6 +1,6 @@
 import TBBaseCommand, { flags } from './tb-base';
 
-export { ITBConfig, INetworkConditions, IHARServer } from './tb-config';
+export { ITBConfig, IHARServer } from './tb-config';
 export {
   fidelityLookup,
   PerformanceTimingMark,

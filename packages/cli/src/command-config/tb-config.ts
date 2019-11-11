@@ -1,6 +1,5 @@
-import { IMarker } from '@tracerbench/core';
+import { IMarker, INetworkConditions } from '@tracerbench/core';
 import { PerformanceTimingMark } from './default-flag-args';
-import Protocol from 'devtools-protocol';
 
 export const CONTROL_ENV_OVERRIDE_ATTR = 'controlBenchmarkEnvironment';
 export const EXPERIMENT_ENV_OVERRIDE_ATTR = 'experimentBenchmarkEnvironment';
@@ -58,21 +57,4 @@ export interface IBenchmarkEnvironmentOverride {
   emulateDevice?: string;
   emulateDeviceOrientation?: string;
   [key: string]: any;
-}
-
-export interface INetworkConditions {
-  none: Protocol.Network.EmulateNetworkConditionsRequest;
-  dialup: Protocol.Network.EmulateNetworkConditionsRequest;
-  '2g': Protocol.Network.EmulateNetworkConditionsRequest;
-  '3g': Protocol.Network.EmulateNetworkConditionsRequest;
-  offline: Protocol.Network.EmulateNetworkConditionsRequest;
-  cable: Protocol.Network.EmulateNetworkConditionsRequest;
-  dsl: Protocol.Network.EmulateNetworkConditionsRequest;
-  edge: Protocol.Network.EmulateNetworkConditionsRequest;
-  'slow-3g': Protocol.Network.EmulateNetworkConditionsRequest;
-  'em-3g': Protocol.Network.EmulateNetworkConditionsRequest;
-  'fast-3g': Protocol.Network.EmulateNetworkConditionsRequest;
-  '4g': Protocol.Network.EmulateNetworkConditionsRequest;
-  LTE: Protocol.Network.EmulateNetworkConditionsRequest;
-  FIOS: Protocol.Network.EmulateNetworkConditionsRequest;
 }

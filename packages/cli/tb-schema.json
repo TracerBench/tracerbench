@@ -17,23 +17,10 @@
                     "type": "string"
                 },
                 "network": {
-                    "enum": [
-                        "2g",
-                        "3g",
-                        "4g",
-                        "FIOS",
-                        "LTE",
-                        "cable",
-                        "dialup",
-                        "dsl",
-                        "edge",
-                        "em-3g",
-                        "fast-3g",
-                        "none",
-                        "offline",
-                        "slow-3g"
-                    ],
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "number"
+                    ]
                 }
             },
             "type": "object"
@@ -215,23 +202,10 @@
             "type": "string"
         },
         "network": {
-            "enum": [
-                "2g",
-                "3g",
-                "4g",
-                "FIOS",
-                "LTE",
-                "cable",
-                "dialup",
-                "dsl",
-                "edge",
-                "em-3g",
-                "fast-3g",
-                "none",
-                "offline",
-                "slow-3g"
-            ],
-            "type": "string"
+            "type": [
+                "string",
+                "number"
+            ]
         },
         "outputFilePath": {
             "type": "string"

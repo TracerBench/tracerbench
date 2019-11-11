@@ -31,5 +31,6 @@ export {
   IConditions,
   IAnalyze,
   recordHARClient,
+  INetworkConditions,
 } from './trace';
 export * from './util';

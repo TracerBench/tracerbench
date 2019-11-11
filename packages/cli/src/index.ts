@@ -5,11 +5,6 @@ import Trace from './commands/trace';
 import Compare from './commands/compare';
 
 export { run } from '@oclif/command';
-export {
-  IHARServer,
-  INetworkConditions,
-  ITBConfig,
-  PerformanceTimingMark,
-} from './command-config';
+export { IHARServer, ITBConfig, PerformanceTimingMark } from './command-config';
 export * from './helpers';
 export { RecordHAR, MarkerTimings, Report, Trace, Compare };
