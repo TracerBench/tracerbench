@@ -7,9 +7,13 @@ import { createBrowser, getTab, setCookies, emulate } from './trace-utils';
 import { getBrowserArgs } from './utils';
 import { IConditions } from './conditions';
 
+export interface ICookies {
+  cookies: Protocol.Network.CookieParam[];
+}
+
 export async function recordHARClient(
   url: string,
-  cookies: Protocol.Network.CookieParam[],
+  cookies: ICookies,
   marker: string,
   conditions: IConditions,
   altBrowserArgs?: string[]
@@ -55,7 +59,7 @@ export async function recordHARClient(
     await emulate(chrome, conditions);
 
     // set cookies
-    await setCookies(chrome, cookies);
+    await setCookies(chrome, cookies.cookies);
     // add performance observer script to eval
     await chrome.send('Page.addScriptToEvaluateOnNewDocument', {
       source: `
@@ -82,8 +86,8 @@ export async function recordHARClient(
     const timeout = new Promise(reject => {
       timeoutId = setTimeout(() => {
         clearTimeout(timeoutId);
-        reject('Promise timed out after waiting for 10 seconds');
-      }, 10000);
+        reject('Promise timed out after waiting for 20 seconds');
+      }, 20000);
     });
 
     await Promise.race([evalPromise, timeout]).then(() => {

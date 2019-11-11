@@ -224,7 +224,8 @@ OPTIONS
   --markers=markers
       (required) [default: domComplete] User Timing Markers
 
-  --network=none | offline | dialup | 2g | edge | slow-3g | em-3g | dsl | 3g | fast-3g | 4g | cable | LTE | FIOS
+  --network=none | offline | dialup | slow-2g | 2g | slow-edge | edge | slow-3g | dsl | 3g | fast-3g | 4g | cable | LTE 
+  | FIOS
       (required) [default: none] Simulated network conditions.
 
   --regressionThreshold=regressionThreshold
@@ -376,7 +377,8 @@ OPTIONS
   --locations=locations
       include locations in names
 
-  --network=none | offline | dialup | 2g | edge | slow-3g | em-3g | dsl | 3g | fast-3g | 4g | cable | LTE | FIOS
+  --network=none | offline | dialup | slow-2g | 2g | slow-edge | edge | slow-3g | dsl | 3g | fast-3g | 4g | cable | LTE 
+  | FIOS
       [default: none] Simulated network conditions.
 
   --tbResultsFolder=tbResultsFolder
