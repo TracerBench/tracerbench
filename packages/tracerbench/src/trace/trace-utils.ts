@@ -101,6 +101,12 @@ export async function setCookies(
 ) {
   for (let i = 0; i < cookies.length; i++) {
     const cookie = filterObjectByKeys(cookies[i], ['name', 'value', 'domain']);
-    await page.send('Network.setCookie', cookie);
+    try {
+      await page.send('Network.setCookie', cookie);
+    } catch (error) {
+      throw new Error(
+        `${error}. CookieParam format invalid: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-CookieParam.`
+      );
+    }
   }
 }

@@ -1,24 +1,19 @@
 {
   "storeType": "MemoryCookieStore",
   "rejectPublicSuffixes": true,
-  "cookies": [
-    {
+  "cookies": [{
       "key": "tracerbench-fake",
+      "name": "tracerbench-fake",
       "value": "fake",
       "domain": "tracerbench.com",
-      "path": "/",
-      "hostOnly": true,
-      "creation": "2019-10-14T01:04:12.890Z",
-      "lastAccessed": "2019-10-14T21:52:44.981Z"
+      "path": "/"
     },
     {
       "key": "tracerbench-fake-app-session",
+      "name": "tracerbench-fake-app-session",
       "value": ".fsadfasdf-3ntBwHJwqI87ZZgfake",
       "domain": "tracerbench.com",
-      "path": "/",
-      "hostOnly": true,
-      "creation": "2019-10-14T01:04:12.890Z",
-      "lastAccessed": "2019-10-14T21:52:44.981Z"
+      "path": "/"
     }
   ]
 }
