@@ -8,38 +8,38 @@ export interface IConditions {
 }
 
 export interface INetworkConditions {
-  none: Protocol.Network.EmulateNetworkConditionsRequest;
-  dialup: Protocol.Network.EmulateNetworkConditionsRequest;
+  'none': Protocol.Network.EmulateNetworkConditionsRequest;
+  'dialup': Protocol.Network.EmulateNetworkConditionsRequest;
   'slow-2g': Protocol.Network.EmulateNetworkConditionsRequest;
   '2g': Protocol.Network.EmulateNetworkConditionsRequest;
   '3g': Protocol.Network.EmulateNetworkConditionsRequest;
-  offline: Protocol.Network.EmulateNetworkConditionsRequest;
-  cable: Protocol.Network.EmulateNetworkConditionsRequest;
-  dsl: Protocol.Network.EmulateNetworkConditionsRequest;
+  'offline': Protocol.Network.EmulateNetworkConditionsRequest;
+  'cable': Protocol.Network.EmulateNetworkConditionsRequest;
+  'dsl': Protocol.Network.EmulateNetworkConditionsRequest;
   'slow-edge': Protocol.Network.EmulateNetworkConditionsRequest;
-  edge: Protocol.Network.EmulateNetworkConditionsRequest;
+  'edge': Protocol.Network.EmulateNetworkConditionsRequest;
   'slow-3g': Protocol.Network.EmulateNetworkConditionsRequest;
   'fast-3g': Protocol.Network.EmulateNetworkConditionsRequest;
   '4g': Protocol.Network.EmulateNetworkConditionsRequest;
-  LTE: Protocol.Network.EmulateNetworkConditionsRequest;
-  FIOS: Protocol.Network.EmulateNetworkConditionsRequest;
+  'LTE': Protocol.Network.EmulateNetworkConditionsRequest;
+  'FIOS': Protocol.Network.EmulateNetworkConditionsRequest;
   [key: string]: Protocol.Network.EmulateNetworkConditionsRequest;
 }
 
 export const networkConditions: INetworkConditions = {
-  none: {
+  'none': {
     latency: 0,
     offline: false,
     downloadThroughput: -1,
     uploadThroughput: -1,
   },
-  offline: {
+  'offline': {
     offline: true,
     latency: 0,
     downloadThroughput: 0,
     uploadThroughput: 0,
   },
-  dialup: {
+  'dialup': {
     offline: false,
     latency: 120,
     downloadThroughput: 49000,
@@ -63,7 +63,7 @@ export const networkConditions: INetworkConditions = {
     downloadThroughput: 217600,
     uploadThroughput: 108800,
   },
-  edge: {
+  'edge': {
     offline: false,
     latency: 840,
     downloadThroughput: 240000,
@@ -75,7 +75,7 @@ export const networkConditions: INetworkConditions = {
     downloadThroughput: 400000,
     uploadThroughput: 400000,
   },
-  dsl: {
+  'dsl': {
     latency: 50,
     offline: false,
     downloadThroughput: 1500000,
@@ -99,19 +99,19 @@ export const networkConditions: INetworkConditions = {
     downloadThroughput: 9000000,
     uploadThroughput: 9000000,
   },
-  cable: {
+  'cable': {
     offline: false,
     latency: 28,
     downloadThroughput: 5000000,
     uploadThroughput: 1000000,
   },
-  LTE: {
+  'LTE': {
     offline: false,
     latency: 70,
     downloadThroughput: 12000000,
     uploadThroughput: 12000000,
   },
-  FIOS: {
+  'FIOS': {
     offline: false,
     latency: 4,
     downloadThroughput: 20000000,

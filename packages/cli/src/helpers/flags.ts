@@ -141,7 +141,7 @@ export const markers = flags.build({
 export const network = flags.build({
   default: () => getDefaultValue('network'),
   description: 'Simulated network conditions.',
-  options: [`${Object.keys(networkConditions).join(' | ')}`],
+  options: ['none', 'offline', 'dialup', 'slow-2g', '2g', 'slow-edge', 'edge', 'slow-3g', 'dsl', '3g', 'fast-3g', '4g', 'cable', 'LTE', 'FIOS'],
   parse: (n: string): Protocol.Network.EmulateNetworkConditionsRequest => {
     return networkConditions[n as keyof typeof networkConditions];
   },
