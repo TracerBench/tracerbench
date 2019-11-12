@@ -27,7 +27,6 @@
     "@oclif/config": "^1.13.3",
     "@oclif/plugin-help": "^2.2.1",
     "@oclif/plugin-warn-if-update-available": "^1.7.0",
-    "@oclif/plugin-autocomplete": "^0.1.4",
     "@tracerbench/core": "^3.0.5",
     "chalk": "^2.4.2",
     "cli-table3": "^0.5.1",
@@ -83,8 +82,7 @@
     "bin": "tracerbench",
     "plugins": [
       "@oclif/plugin-help",
-      "@oclif/plugin-warn-if-update-available",
-      "@oclif/plugin-autocomplete"
+      "@oclif/plugin-warn-if-update-available"
     ],
     "warn-if-update-available": {
       "registry": "https://www.npmjs.com/package/tracerbench"
