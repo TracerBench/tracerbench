@@ -99,5 +99,5 @@
     "build:schema": "typescript-json-schema \"src/command-config/tb-config.ts\" ITBConfig --out ./tb-schema.json",
     "copystatic": "cp -a ./src/static ./dist/src"
   },
-  "gitHead": "142d4c4a60878c37fb056a06fccf9694bdeda259"
+  "gitHead": "fb3fcdcb8573f028277985765f6f42fd680675d9"
 }
