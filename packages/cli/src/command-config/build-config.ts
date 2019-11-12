@@ -127,9 +127,6 @@ export function getConfig(
 
   const config = readConfig(configFileOrDir);
   if (config === undefined) {
-    console.log(
-      `A TracerBench config ${configFileOrDir} was not found. The config file is not required, however is strongly recommended.`
-    );
     return mergeLeft(commandDefaults, ef);
   }
 
