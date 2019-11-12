@@ -16,7 +16,6 @@ export interface Sample {
   }>;
   gc: any;
   blinkGC: any;
-  runtimeCallStats: any;
 }
 
 export interface ITracerBenchTraceResult {
@@ -114,7 +113,8 @@ Handlebars.registerHelper('absSort', (num1, num2, position) => {
  * Extract the phases and page load time latency into sorted buckets by phase
  *
  * @param samples - Array of "sample" objects
- * @param valueGen - Calls this function to extract the value from the phase. A "phase" is passed containing duration and start
+ * @param valueGen - Calls this function to extract the value from the phase. A
+ *   "phase" is passed containing duration and start
  */
 export function bucketPhaseValues(
   samples: Sample[],
@@ -138,12 +138,20 @@ export function bucketPhaseValues(
   return buckets;
 }
 
+export interface ParsedTitleConfigs {
+  servers: Array<{ name: string }>,
+  plotTitle: string | undefined,
+  browserVersion: string
+}
+
 /**
  * Override the default server and plot title attributes
  *
- * @param tbConfig - Concerned only about the "servers" and "plotTitle" attribute
+ * @param tbConfig - Concerned only about the "servers" and "plotTitle"
+ *   attribute
+ * @param version - Browser version
  */
-export function resolveTitles(tbConfig: Partial<ITBConfig>, version: string) {
+export function resolveTitles(tbConfig: Partial<ITBConfig>, version: string): ParsedTitleConfigs {
   const reportTitles = {
     servers: [{ name: 'Control' }, { name: 'Experiment' }],
     plotTitle: defaultFlagArgs.plotTitle,
@@ -151,14 +159,13 @@ export function resolveTitles(tbConfig: Partial<ITBConfig>, version: string) {
   };
 
   if (tbConfig.servers) {
-    reportTitles.servers = tbConfig.servers as any;
-    reportTitles.servers = reportTitles.servers.map((titleConfig, idx) => {
+    reportTitles.servers = tbConfig.servers.map((titleConfig, idx) => {
       if (idx === 0) {
         return { name: `Control: ${titleConfig.name}` };
       } else {
         return { name: `Experiment: ${titleConfig.name}` };
       }
-    }) as any;
+    });
   }
 
   if (tbConfig.plotTitle) {
@@ -169,7 +176,8 @@ export function resolveTitles(tbConfig: Partial<ITBConfig>, version: string) {
 }
 
 /**
- * Generate the HTML render data for the cumulative chart. Ensure to convert to milliseconds for presentation
+ * Generate the HTML render data for the cumulative chart. Ensure to convert to
+ * milliseconds for presentation
  *
  * @param controlData - Samples of the benchmark of control server
  * @param experimentData - Samples of the benchmark experiment server
@@ -195,13 +203,14 @@ export function buildCumulativeChartData(
   return {
     categories: JSON.stringify(phases),
     controlData: JSON.stringify(phases.map(k => valuesByPhaseControl[k])),
-    experimentData: JSON.stringify(phases.map(k => valuesByPhaseExperiment[k])),
+    experimentData: JSON.stringify(phases.map(k => valuesByPhaseExperiment[k]))
   };
 }
 
 /**
- * Call the stats helper functions to generate the confidence interval and Hodges–Lehmann estimator. Format the data into
- * HTMLSectionRenderData structure.
+ * Call the stats helper functions to generate the confidence interval and
+ * Hodges–Lehmann estimator. Format the data into HTMLSectionRenderData
+ * structure.
  *
  * @param controlValues - Values for the control for the phase
  * @param experimentValues - Values for the experiment for the phase
@@ -215,7 +224,7 @@ export function formatPhaseData(
   const stats = new Stats({
     control: controlValues,
     experiment: experimentValues,
-    name: 'output',
+    name: 'output'
   });
   const isNotSignificant =
     (stats.confidenceInterval.min < 0 && 0 < stats.confidenceInterval.max) ||
@@ -237,7 +246,7 @@ export function formatPhaseData(
     ciMin: stats.confidenceInterval.min,
     ciMax: stats.confidenceInterval.max,
     hlDiff: stats.estimator,
-    servers: undefined,
+    servers: undefined
   };
 }
 
@@ -269,39 +278,46 @@ export function phaseSorter(
   return 0;
 }
 
-export default function createConsumeableHTML(
-  controlData: ITracerBenchTraceResult,
-  experimentData: ITracerBenchTraceResult,
-  tbConfig: ITBConfig
-): string {
+export function generateDataForHTML(controlData: ITracerBenchTraceResult,
+                                    experimentData: ITracerBenchTraceResult,
+                                    reportTitles: ParsedTitleConfigs) {
   const valuesByPhaseControl = bucketPhaseValues(controlData.samples);
   const valuesByPhaseExperiment = bucketPhaseValues(experimentData.samples);
-  const subPhases = Object.keys(valuesByPhaseControl).filter(
-    k => k !== PAGE_LOAD_TIME
-  );
-  const subPhaseSections: HTMLSectionRenderData[] = [];
-  const reportTitles = resolveTitles(tbConfig, controlData.meta.browserVersion);
+  const subPhases = Object.keys(valuesByPhaseControl)
+    .filter(k => k !== PAGE_LOAD_TIME);
+
   const durationSection = formatPhaseData(
     valuesByPhaseControl[PAGE_LOAD_TIME],
     valuesByPhaseExperiment[PAGE_LOAD_TIME],
-    PAGE_LOAD_TIME
-  );
+    PAGE_LOAD_TIME);
 
-  durationSection.servers = reportTitles.servers;
-
-  subPhases.forEach(phase => {
+  const subPhaseSections: HTMLSectionRenderData[] = subPhases.map(phase => {
     const controlValues = valuesByPhaseControl[phase];
     const experimentValues = valuesByPhaseExperiment[phase];
     const renderDataForPhase = formatPhaseData(
       controlValues,
       experimentValues,
-      phase
-    );
+      phase);
+
     renderDataForPhase.servers = reportTitles.servers;
-    subPhaseSections.push(renderDataForPhase as HTMLSectionRenderData);
+    return renderDataForPhase as HTMLSectionRenderData;
   });
 
+  durationSection.servers = reportTitles.servers;
   subPhaseSections.sort(phaseSorter);
+  return { durationSection, subPhaseSections };
+}
+
+export default function createConsumeableHTML(
+  controlData: ITracerBenchTraceResult,
+  experimentData: ITracerBenchTraceResult,
+  tbConfig: ITBConfig
+): string {
+  const reportTitles = resolveTitles(tbConfig, controlData.meta.browserVersion);
+  const { durationSection, subPhaseSections } = generateDataForHTML(
+    controlData,
+    experimentData,
+    reportTitles);
 
   const template = Handlebars.compile(REPORT_TEMPLATE_RAW);
 
@@ -311,6 +327,6 @@ export default function createConsumeableHTML(
     reportTitles,
     subPhaseSections,
     configsSJSONString: JSON.stringify(tbConfig, null, 4),
-    sectionFormattedDataJson: JSON.stringify(subPhaseSections),
+    sectionFormattedDataJson: JSON.stringify(subPhaseSections)
   });
 }
