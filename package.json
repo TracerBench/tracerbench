@@ -11,13 +11,16 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "yarn lint && yarn prepack"
+      "pre-push": "yarn lint && yarn prepack",
+      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS"
     }
   },
   "devDependencies": {
     "lerna": "^3.18.0",
     "husky": "^3.0.9",
-    "conventional-changelog-cli": "^2.0.25"
+    "conventional-changelog-cli": "^2.0.25",
+    "@commitlint/config-conventional": "^8.2.0",
+    "@commitlint/cli": "^8.2.0"
   },
   "repository": {
     "type": "git",
