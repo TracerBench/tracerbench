@@ -43,7 +43,8 @@
     "path": "0.12.7",
     "tmp": "^0.1.0",
     "tough-cookie": "^3.0.1",
-    "tslib": "^1.10.0"
+    "tslib": "^1.10.0",
+    "@oclif/plugin-warn-if-update-available": "^1.7.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
@@ -80,7 +81,8 @@
     "commands": "./dist/src/commands",
     "bin": "tracerbench",
     "plugins": [
-      "@oclif/plugin-help"
+      "@oclif/plugin-help",
+      "@oclif/plugin-warn-if-update-available"
     ],
     "topics": {
       "compare:analyze": {
