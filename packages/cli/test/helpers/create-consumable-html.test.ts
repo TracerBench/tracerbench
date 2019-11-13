@@ -1,17 +1,19 @@
 import { bucketPhaseValues, resolveTitles, phaseSorter } from '../../src/helpers/create-consumable-html';
 import { expect } from 'chai';
-
+import { IHARServer } from '../../src/command-config'
 
 describe('create-consumable-html test', () => {
   it(`resolveTitles()`, () => {
+    const browserVersion = 'HeadlessChrome/80.0.3965.0';
+    const servers: [IHARServer, IHARServer] = [{ name: 'Hello World', url: '', dist: '', socksPort: 0, har: '' }, { name: 'Hello World 2', url: '', dist: '', socksPort: 0, har: '' }]
     const resolved = resolveTitles({
-      // @ts-ignore
-      servers: [{ name: 'Hello World' }, { name: 'Hello World 2' }],
-      plotTitle: 'Override',
-    });
+      servers,
+      plotTitle: 'Override'
+    }, browserVersion);
     expect(resolved.servers[0].name).to.equal('Control: Hello World');
     expect(resolved.servers[1].name).to.equal('Experiment: Hello World 2');
     expect(resolved.plotTitle).to.equal('Override');
+    expect(resolved.browserVersion).to.equal(browserVersion);
   });
 
   it(`bucketPhaseValues()`, () => {

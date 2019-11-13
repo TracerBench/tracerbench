@@ -33,7 +33,7 @@ describe('compare fixture: A/A', () => {
         ]);
 
         const resultsJSON: ICompareJSONResults = JSON.parse(results);
-        expect(ctx.stdout).to.contain(`Success`);
+        expect(ctx.stdout).to.contain(`SUCCESS!`);
         expect(ctx.stdout).to.contain(`Benchmark Reports`);
         assert.exists(`${TB_RESULTS_FOLDER}/server-control-settings.json`);
         assert.exists(`${TB_RESULTS_FOLDER}/server-experiment-settings.json`);
@@ -112,7 +112,7 @@ describe('compare mobile horizontal: fixture: A/A', () => {
           '--headless',
         ]);
 
-        expect(ctx.stdout).to.contain(`Success`);
+        expect(ctx.stdout).to.contain(`SUCCESS!`);
       }
     );
 });
