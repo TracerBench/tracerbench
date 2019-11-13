@@ -1,11 +1,91 @@
-import { bucketPhaseValues, resolveTitles, phaseSorter } from '../../src/helpers/create-consumable-html';
+import {
+  bucketPhaseValues,
+  generateDataForHTML,
+  resolveTitles,
+  phaseSorter,
+  Sample
+} from '../../src/helpers/create-consumable-html';
 import { expect } from 'chai';
-import { IHARServer } from '../../src/command-config'
+import { IHARServer } from '../../src/command-config';
+
+const TEST_SAMPLES: Sample[] = [
+  {
+    'gc': [],
+    'blinkGC': [],
+    'duration': 6260696,
+    'js': 5310439,
+    'phases': [
+      {
+        'phase': 'load',
+        'start': 0,
+        'duration': 1807839
+      },
+      {
+        'phase': 'boot',
+        'start': 1807839,
+        'duration': 973172
+      },
+      {
+        'phase': 'transition',
+        'start': 2781011,
+        'duration': 1540986
+      },
+      {
+        'phase': 'render',
+        'start': 4321997,
+        'duration': 1905528
+      },
+      {
+        'phase': 'paint',
+        'start': 6227525,
+        'duration': 33171
+      }
+    ]
+  }, {
+    'gc': [],
+    'blinkGC': [],
+    'duration': 6260696,
+    'js': 5310439,
+    'phases': [
+      {
+        'phase': 'load',
+        'start': 0,
+        'duration': 1807839
+      },
+      {
+        'phase': 'boot',
+        'start': 1807839,
+        'duration': 973172
+      },
+      {
+        'phase': 'transition',
+        'start': 2781011,
+        'duration': 1540986
+      },
+      {
+        'phase': 'render',
+        'start': 4321997,
+        'duration': 1905528
+      },
+      {
+        'phase': 'paint',
+        'start': 6227525,
+        'duration': 33171
+      }
+    ]
+  }
+];
 
 describe('create-consumable-html test', () => {
   it(`resolveTitles()`, () => {
     const browserVersion = 'HeadlessChrome/80.0.3965.0';
-    const servers: [IHARServer, IHARServer] = [{ name: 'Hello World', url: '', dist: '', socksPort: 0, har: '' }, { name: 'Hello World 2', url: '', dist: '', socksPort: 0, har: '' }]
+    const servers: [IHARServer, IHARServer] = [{
+      name: 'Hello World',
+      url: '',
+      dist: '',
+      socksPort: 0,
+      har: ''
+    }, { name: 'Hello World 2', url: '', dist: '', socksPort: 0, har: '' }];
     const resolved = resolveTitles({
       servers,
       plotTitle: 'Override'
@@ -17,71 +97,8 @@ describe('create-consumable-html test', () => {
   });
 
   it(`bucketPhaseValues()`, () => {
-    const testSamples = [
-      {
-        'duration': 6260696,
-        'js': 5310439,
-        'phases': [
-          {
-            'phase': 'load',
-            'start': 0,
-            'duration': 1807839,
-          },
-          {
-            'phase': 'boot',
-            'start': 1807839,
-            'duration': 973172,
-          },
-          {
-            'phase': 'transition',
-            'start': 2781011,
-            'duration': 1540986,
-          },
-          {
-            'phase': 'render',
-            'start': 4321997,
-            'duration': 1905528,
-          },
-          {
-            'phase': 'paint',
-            'start': 6227525,
-            'duration': 33171,
-          },
-        ]
-      }, {
-        'duration': 6260696,
-        'js': 5310439,
-        'phases': [
-          {
-            'phase': 'load',
-            'start': 0,
-            'duration': 1807839,
-          },
-          {
-            'phase': 'boot',
-            'start': 1807839,
-            'duration': 973172,
-          },
-          {
-            'phase': 'transition',
-            'start': 2781011,
-            'duration': 1540986,
-          },
-          {
-            'phase': 'render',
-            'start': 4321997,
-            'duration': 1905528,
-          },
-          {
-            'phase': 'paint',
-            'start': 6227525,
-            'duration': 33171,
-          },
-        ]
-      }
-    ];
     // @ts-ignore
-    const results = bucketPhaseValues(testSamples);
+    const results = bucketPhaseValues(TEST_SAMPLES);
     const keys = Object.keys(results);
     // Should be 5 phases + duration
     expect(keys.length).to.equal(6);
@@ -121,4 +138,37 @@ describe('create-consumable-html test', () => {
     expect(phaseSorter(inSignificant, fastest)).to.be.above(0);
   });
 
+  /**
+   * The mocked data is duplicated so the differences should be 0
+   */
+  it('generateDataForHTML()', () => {
+    const { durationSection, subPhaseSections } = generateDataForHTML(
+      {
+        samples: TEST_SAMPLES,
+        meta: {
+          'browserVersion': 'HeadlessChrome/78.0.3904.97',
+          'cpus': [
+            'Intel(R) Core(TM) i9-8950HK CPU @ 2.90GHz'
+          ]
+        },
+        set: 'control'
+      },
+      {
+        samples: TEST_SAMPLES,
+        meta: {
+          'browserVersion': 'HeadlessChrome/78.0.3904.97',
+          'cpus': [
+            'Intel(R) Core(TM) i9-8950HK CPU @ 2.90GHz'
+          ]
+        },
+        set: 'experiment'
+      },
+      {
+        servers: [],
+        plotTitle: 'Random Title',
+        browserVersion: '0.0.2'
+      });
+    expect(subPhaseSections).to.length(5);
+    expect(durationSection.hlDiff).to.equal(0);
+  });
 });
