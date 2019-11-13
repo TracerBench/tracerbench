@@ -143,10 +143,11 @@ export function bucketPhaseValues(
  *
  * @param tbConfig - Concerned only about the "servers" and "plotTitle" attribute
  */
-export function resolveTitles(tbConfig: Partial<ITBConfig>) {
+export function resolveTitles(tbConfig: Partial<ITBConfig>, version: string) {
   const reportTitles = {
     servers: [{ name: 'Control' }, { name: 'Experiment' }],
     plotTitle: defaultFlagArgs.plotTitle,
+    browserVersion: version
   };
 
   if (tbConfig.servers) {
@@ -279,7 +280,7 @@ export default function createConsumeableHTML(
     k => k !== PAGE_LOAD_TIME
   );
   const subPhaseSections: HTMLSectionRenderData[] = [];
-  const reportTitles = resolveTitles(tbConfig);
+  const reportTitles = resolveTitles(tbConfig, controlData.meta.browserVersion);
   const durationSection = formatPhaseData(
     valuesByPhaseControl[PAGE_LOAD_TIME],
     valuesByPhaseExperiment[PAGE_LOAD_TIME],
