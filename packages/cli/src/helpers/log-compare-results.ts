@@ -97,14 +97,20 @@ export function outputRunMetaMessagesAndWarnings(
     'The fidelity setting was set below the recommended for a viable result. Rerun TracerBench with at least "fidelity=low"';
 
   if ((fidelity as number) < 10) {
-    cli.log(`\n${chalk.black.bgYellow(' WARNING ')} ${LOW_FIDELITY_WARNING}\n`);
+    cli.log(
+      `\n${chalkScheme.blackBgYellow(
+        `    ${chalkScheme.white('WARNING')}    `
+      )} ${chalkScheme.warning(
+        ` ${LOW_FIDELITY_WARNING}`
+      )}\n`
+    );
   }
 
   if (!isBelowRegressionThreshold) {
     cli.log(
       `\n${chalkScheme.blackBgRed(
         `    ${chalkScheme.white('!! ALERT')}    `
-      )} ${chalkScheme.regress(
+      )} ${chalk.red(
         ` Regression found exceeding the set regression threshold of ${regressionThreshold}ms`
       )}\n`
     );

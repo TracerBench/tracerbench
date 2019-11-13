@@ -154,7 +154,7 @@ export default class Compare extends TBBaseCommand {
         fs.writeFileSync(resultJSONPath, JSON.stringify(results, null, 2));
         // tslint:disable-next-line: max-line-length
         const message = `${chalkScheme.blackBgGreen(
-          `    ${chalkScheme.white('Success!')}    `
+          `    ${chalkScheme.white('SUCCESS!')}    `
         )} ${this.parsedConfig.fidelity} test samples were taken.`;
         this.log(`\n${message}`);
 
@@ -347,9 +347,9 @@ export default class Compare extends TBBaseCommand {
       delay,
       emulateDeviceSettings: controlEmulateDevice
         ? getEmulateDeviceSettingForKeyAndOrientation(
-            controlEmulateDevice,
-            controlEmulateDeviceOrientation
-          )
+          controlEmulateDevice,
+          controlEmulateDeviceOrientation
+        )
         : undefined,
       markers: this.compareFlags.markers,
       networkConditions: controlNetwork
@@ -375,9 +375,9 @@ export default class Compare extends TBBaseCommand {
       delay,
       emulateDeviceSettings: experimentEmulateDevice
         ? getEmulateDeviceSettingForKeyAndOrientation(
-            experimentEmulateDevice,
-            experimentEmulateDeviceOrientation
-          )
+          experimentEmulateDevice,
+          experimentEmulateDeviceOrientation
+        )
         : undefined,
       markers: this.compareFlags.markers,
       networkConditions: experimentNetwork
@@ -389,7 +389,7 @@ export default class Compare extends TBBaseCommand {
         `${this.compareFlags.tbResultsFolder}/traces/experiment${i}.json`,
       url: path.join(
         this.compareFlags.experimentURL +
-          this.compareFlags.tracingLocationSearch
+        this.compareFlags.tracingLocationSearch
       ),
     };
 
