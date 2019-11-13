@@ -4,7 +4,6 @@ export { ITBConfig, IHARServer } from './tb-config';
 export {
   fidelityLookup,
   PerformanceTimingMark,
-  markerSets,
   defaultFlagArgs,
   getDefaultValue,
 } from './default-flag-args';

@@ -9,27 +9,6 @@ export const fidelityLookup = {
 
 export type PerformanceTimingMark = keyof PerformanceNavigationTiming;
 
-interface IMarkerSets {
-  ember: string[];
-  performanceTiming: PerformanceTimingMark[];
-}
-
-// todo: flesh these framework specific markers out
-// these are not currently integrated
-// the intention is angular/ember/react/vue etc
-// will have curated markers that are framework specific
-export const markerSets: IMarkerSets = {
-  ember: [
-    'fetchStart',
-    'emberLoaded',
-    'startRouting',
-    'willTransition',
-    'didTransition',
-    'renderEnd',
-  ],
-  performanceTiming: ['domComplete'],
-};
-
 // these default flag args are
 // auto documented in the README.md
 // in-addition to these we are defaulting
