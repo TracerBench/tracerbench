@@ -168,6 +168,11 @@ export default class Compare extends TBBaseCommand {
             '--regressionThreshold',
             `${this.parsedConfig.regressionThreshold}`,
           ]);
+
+          fs.writeFileSync(
+            `${this.parsedConfig.tbResultsFolder}/report.json`,
+            this.analyzedJSONString
+          );
         }
 
         // if we want to run the Report without calling a separate command
@@ -347,9 +352,9 @@ export default class Compare extends TBBaseCommand {
       delay,
       emulateDeviceSettings: controlEmulateDevice
         ? getEmulateDeviceSettingForKeyAndOrientation(
-          controlEmulateDevice,
-          controlEmulateDeviceOrientation
-        )
+            controlEmulateDevice,
+            controlEmulateDeviceOrientation
+          )
         : undefined,
       markers: this.compareFlags.markers,
       networkConditions: controlNetwork
@@ -375,9 +380,9 @@ export default class Compare extends TBBaseCommand {
       delay,
       emulateDeviceSettings: experimentEmulateDevice
         ? getEmulateDeviceSettingForKeyAndOrientation(
-          experimentEmulateDevice,
-          experimentEmulateDeviceOrientation
-        )
+            experimentEmulateDevice,
+            experimentEmulateDeviceOrientation
+          )
         : undefined,
       markers: this.compareFlags.markers,
       networkConditions: experimentNetwork
@@ -389,7 +394,7 @@ export default class Compare extends TBBaseCommand {
         `${this.compareFlags.tbResultsFolder}/traces/experiment${i}.json`,
       url: path.join(
         this.compareFlags.experimentURL +
-        this.compareFlags.tracingLocationSearch
+          this.compareFlags.tracingLocationSearch
       ),
     };
 
