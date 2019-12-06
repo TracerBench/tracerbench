@@ -109,10 +109,10 @@ export default class Report extends TBBaseCommand {
       )}`
     );
     this.log(
-      `\nPDF: ${chalkScheme.tbBranding.blue.underline.bold(absPathToHTML)}`
+      `\nPDF: ${chalkScheme.tbBranding.blue.underline.bold(absOutputPath)}`
     );
     this.log(
-      `\nHTML: ${chalkScheme.tbBranding.blue.underline.bold(absOutputPath)}\n`
+      `\nHTML: ${chalkScheme.tbBranding.blue.underline.bold(absPathToHTML)}\n`
     );
   }
   private async parseFlags() {
