@@ -1,7 +1,7 @@
 {
   "name": "tracerbench",
   "version": "3.0.8",
-  "description": "CLI for Tracerbench",
+  "description": "CLI for TracerBench",
   "keywords": [
     "oclif"
   ],
