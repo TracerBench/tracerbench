@@ -46,7 +46,7 @@ The optional existance of a "tbconfig.json" file in the project root will be con
   "experimentURL": "https://www.tracerbench.com/",
   "url": "https://www.tracerbench.com/",
   "tracingLocationSearch": "?tracing",
-  "regressionThreshold": "-100ms",
+  "regressionThreshold": "100",
   "appName": "tracerbench",
   "cpuThrottleRate": 1,
   "network": "fast-3g",

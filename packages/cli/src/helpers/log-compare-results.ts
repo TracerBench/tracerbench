@@ -64,18 +64,19 @@ export function allBelowRegressionThreshold(
   benchmarkTableEstimatorDeltas: number[],
   phaseTableEstimatorDeltas: number[]
 ): boolean {
-  function isBelowThreshold(n: number, limit: number) {
+  function isBelowThreshold(n: number) {
+    const limit = regressionThreshold as number;
     // if the delta is a negative number and abs(delta) greater than threshold return false
     return n < 0 && Math.abs(n) > limit ? false : true;
   }
 
-  if (regressionThreshold) {
+  if (typeof regressionThreshold === 'number') {
     // concat estimator deltas from all phases
     const deltas: number[] = benchmarkTableEstimatorDeltas.concat(
       phaseTableEstimatorDeltas
     );
     // if the experiment is slower beyond the threshold return false;
-    return deltas.every(isBelowThreshold, regressionThreshold);
+    return deltas.every(isBelowThreshold);
   }
   return true;
 }
@@ -100,9 +101,7 @@ export function outputRunMetaMessagesAndWarnings(
     cli.log(
       `\n${chalkScheme.blackBgYellow(
         `    ${chalkScheme.white('WARNING')}    `
-      )} ${chalkScheme.warning(
-        ` ${LOW_FIDELITY_WARNING}`
-      )}\n`
+      )} ${chalkScheme.warning(` ${LOW_FIDELITY_WARNING}`)}\n`
     );
   }
 
