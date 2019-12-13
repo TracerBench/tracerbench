@@ -128,7 +128,10 @@ export function outputRunMetaMessagesAndWarnings(
 export function outputSummaryReport(
   cli: Command,
   phaseResultsFormatted: Array<
-    Pick<HTMLSectionRenderData, 'phase' | 'hlDiff' | 'isSignificant'>
+    Pick<
+      HTMLSectionRenderData,
+      'phase' | 'hlDiff' | 'isSignificant' | 'ciMin' | 'ciMax'
+    >
   >
 ) {
   cli.log(
@@ -140,26 +143,28 @@ export function outputSummaryReport(
   cli.log(`\n${chalk.red('Red')} color means there was a regression.`);
   cli.log(`${chalk.green('Green')} color means there was an improvement.\n`);
   phaseResultsFormatted.forEach(phaseData => {
-    const { phase, hlDiff, isSignificant } = phaseData;
-    let msg = `${chalk.bold(phase)} phase has `;
+    const { phase, hlDiff, isSignificant, ciMin, ciMax } = phaseData;
+    let msg = `${chalk.bold(phase)} phase `;
 
-    if (isSignificant) {
+    if (isSignificant && Math.abs(hlDiff)) {
       let coloredDiff;
 
-      msg += 'an estimated difference of ';
+      msg += 'estimated difference ';
 
       if (hlDiff < 0) {
-        coloredDiff = chalk.red(`+${Math.abs(hlDiff)}ms`);
+        coloredDiff = chalk.red(
+          `+${Math.abs(hlDiff)}ms [${ciMax * -1}ms to ${ciMin * -1}ms]`
+        );
       } else {
-        coloredDiff = chalk.green(`-${Math.abs(hlDiff)}ms`);
+        coloredDiff = chalk.green(
+          `-${Math.abs(hlDiff)}ms [${ciMax * -1}ms to ${ciMin * -1}ms]`
+        );
       }
 
       msg += `${coloredDiff}`;
     } else {
       msg += `${chalk.grey('no difference')}`;
     }
-
-    msg += '.';
     cli.log(msg);
   });
 }
@@ -222,7 +227,10 @@ export async function logCompareResults(
     k => k !== PAGE_LOAD_TIME
   );
   const phaseResultsFormatted: Array<
-    Pick<HTMLSectionRenderData, 'phase' | 'hlDiff' | 'isSignificant'>
+    Pick<
+      HTMLSectionRenderData,
+      'phase' | 'hlDiff' | 'isSignificant' | 'ciMin' | 'ciMax'
+    >
   > = [];
 
   const durationStats = new Stats({

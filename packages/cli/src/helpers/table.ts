@@ -23,6 +23,10 @@ export default class TBTable {
   }
 
   // return table data for JSON results
+  // confidence interval and estimatorDelta are inverted
+  // to show a regression as a positive number
+  // and an improvement as a negative number ie (N * -1)
+  // JSON results, stdout, PDF, HTML have parity
   public getData(): ICompareJSONResult[] {
     const a: ICompareJSONResult[] = [];
     this.display.forEach(stat => {
@@ -30,12 +34,12 @@ export default class TBTable {
         heading: this.heading,
         phaseName: stat.name,
         isSignificant: stat.confidenceInterval.isSig,
-        estimatorDelta: `${stat.estimator}ms`,
+        estimatorDelta: `${stat.estimator * -1}ms`,
         controlSampleCount: stat.sampleCount.control,
         experimentSampleCount: stat.sampleCount.experiment,
         confidenceInterval: [
-          `${stat.confidenceInterval.min}ms`,
-          `${stat.confidenceInterval.max}ms`,
+          `${stat.confidenceInterval.max * -1}ms`,
+          `${stat.confidenceInterval.min * -1}ms`,
         ],
         controlSevenFigureSummary: stat.sevenFigureSummary.control,
         experimentSevenFigureSummary: stat.sevenFigureSummary.experiment,
@@ -56,12 +60,15 @@ export default class TBTable {
     const controlLabelWithColor = chalkScheme.tbBranding.lime('Control');
     const experimentLabelWithColor = chalkScheme.tbBranding.aqua('Experiment');
     this.display.forEach(stat => {
+      // setting the color for the Hodges–Lehmann estimated delta
       const estimatorForDisplay = stat.estimator * -1;
       let hlDeltaWithColor;
 
       if (stat.confidenceInterval.isSig) {
         if (estimatorForDisplay > 0) {
           hlDeltaWithColor = chalk.red(`${estimatorForDisplay}ms`);
+        } else if (!estimatorForDisplay) {
+          hlDeltaWithColor = chalk.grey(`${estimatorForDisplay}ms`);
         } else {
           hlDeltaWithColor = chalk.green(`${estimatorForDisplay}ms`);
         }

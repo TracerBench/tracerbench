@@ -74,12 +74,22 @@ describe('compare regression: fixture: A/B', () => {
           `    SUCCESS!     ${fidelityLow} test samples were taken`
         );
         // confirm with headless flag is logging the trace stream
-        expect(ctx.stdout).to.contain(
-          `duration phase has an estimated difference of +`
-        );
-        expect(ctx.stdout).to.contain(`ember phase has no difference`);
+        expect(ctx.stdout).to.contain(`duration phase estimated difference +`);
+        expect(ctx.stdout).to.contain(`ember phase no difference`);
         expect(ctx.stdout).to.contain(
           `    !! ALERT      Regression found exceeding the set regression threshold of ${regressionThreshold}ms`
+        );
+        assert.isAbove(
+          parseInt(resultsJSON.benchmarkTableData[0].estimatorDelta, 10),
+          500
+        );
+        assert.isAbove(
+          parseInt(resultsJSON.benchmarkTableData[0].confidenceInterval[0], 10),
+          500
+        );
+        assert.isAbove(
+          parseInt(resultsJSON.benchmarkTableData[0].confidenceInterval[1], 10),
+          500
         );
         // results are json and are significant
         assert.isTrue(resultsJSON.areResultsSignificant);

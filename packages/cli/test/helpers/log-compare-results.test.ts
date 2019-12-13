@@ -89,7 +89,7 @@ describe('log-compare-results', () => {
     // @ts-ignore
     const results = await logCompareResults(testResults, flags, scope);
     const resultsJSON: ICompareJSONResults = JSON.parse(results);
-    expect(ctx.stdout).to.contain(`has no difference`);
+    expect(ctx.stdout).to.contain(`no difference`);
     expect(resultsJSON).to.have.all.keys(jsonResults);
   });
 });
