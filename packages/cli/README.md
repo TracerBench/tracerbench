@@ -228,7 +228,7 @@ OPTIONS
       (required) [default: none] Simulated network conditions.
 
   --regressionThreshold=regressionThreshold
-      The upper limit the experiment can regress slower in milliseconds. eg 100
+      [default: 100] The upper limit the experiment can regress slower in milliseconds. eg 100
 
   --report
       Generate a PDF report directly after running the compare command.
@@ -263,7 +263,8 @@ OPTIONS
   --fidelity=fidelity                        (required) [default: low] Directly correlates to the number of samples per
                                              trace. High is the longest trace time.
 
-  --regressionThreshold=regressionThreshold  The upper limit the experiment can regress slower in milliseconds. eg 100
+  --regressionThreshold=regressionThreshold  [default: 100] The upper limit the experiment can regress slower in
+                                             milliseconds. eg 100
 
   --tbResultsFolder=tbResultsFolder          (required) [default: ./tracerbench-results] The output folder path for all
                                              tracerbench results
