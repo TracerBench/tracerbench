@@ -39,6 +39,7 @@ export const defaultFlagArgs: ITBConfig = {
   emulateDevice: '',
   emulateDeviceOrientation: 'vertical',
   dest: '',
+  regressionThreshold: 100,
 };
 
 // specify with --headless flag
