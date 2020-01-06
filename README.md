@@ -51,17 +51,17 @@ Assuming the TracerBench-CLI is globally [installed](https://github.com/TracerBe
 1. Start by having TracerBench record a HAR:
 
 ```console
-$ tracerbench record-har --url http://localhost:8000 --cookies <path-to-cookies>
+$ tracerbench record-har --url http://localhost:8000 --cookiespath <path-to-cookies>
 
 ✔ DevTools listening on ws://<address>
 ✔ { timestamp: 241968.79908 }
-✔ HAR successfully generated from http://localhost:8000 and available here: ./trace.har
+✔ HAR recorded and available here: tracerbench.har
 ```
 
 2. Now have TracerBench record a Trace of that HAR:
 
 ```console
-$ tracerbench trace --url http://localhost:8000 --insights
+$ tracerbench trace --url http://localhost:8000 --cookiespath <path-to-cookies> --harpath tracerbench.har --insights
 ...
 
 ✔ DevTools listening on ws://<address>
