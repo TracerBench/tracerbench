@@ -1,7 +1,9 @@
 {
   "name": "tracerbench-workspace",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "lint": "lerna run lint --stream",
     "prepare": "lerna run prepare --stream",
@@ -16,11 +18,11 @@
     }
   },
   "devDependencies": {
-    "lerna": "^3.18.0",
-    "husky": "^3.0.9",
-    "conventional-changelog-cli": "^2.0.25",
-    "@commitlint/config-conventional": "^8.2.0",
-    "@commitlint/cli": "^8.2.0"
+    "lerna": "^3.20.2",
+    "husky": "^4.0.10",
+    "conventional-changelog-cli": "^2.0.31",
+    "@commitlint/config-conventional": "^8.3.4",
+    "@commitlint/cli": "^8.3.5"
   },
   "repository": {
     "type": "git",
