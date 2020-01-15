@@ -17,7 +17,20 @@
     "no-console": false,
     "prefer-for-of": false,
     "whitespace": false,
-    "no-namespace": false
+    "no-namespace": false,
+    "prefer-const": false,
+    "object-literal-key-quotes": false,
+    "one-line": false,
+    "no-angle-bracket-type-assertion": false,
+    "curly": false,
+    "no-unused-expression": false,
+    "forin": false,
+    "member-access": false,
+    "no-arg": false,
+    "no-var-keyword": false,
+    "class-name": false,
+    "max-classes-per-file": false,
+    "no-empty": false
   },
   "rulesDirectory": []
 }
