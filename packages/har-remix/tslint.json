@@ -10,7 +10,15 @@
     "interface-name": false,
     "no-floating-promises": true,
     "no-duplicate-imports": true,
-    "no-import-side-effect": true
+    "no-import-side-effect": true,
+    "no-shadowed-variable": false,
+    "curly": false,
+    "member-access": false,
+    "prefer-const": false,
+    "object-literal-sort-keys": false,
+    "no-arg": false,
+    "no-angle-bracket-type-assertion": false,
+    "no-empty": false
   },
   "rulesDirectory": []
 }
