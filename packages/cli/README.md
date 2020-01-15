@@ -11,6 +11,7 @@ https://github.com/TracerBench/tracerbench/blob/master/README.md
 <!-- toc -->
 * [TracerBench Core](#tracerbench-core)
 * [Usage](#usage)
+* [Cookies](#cookies)
 * [Optional Config](#optional-config)
 * [FAQ](#faq)
 * [Commands](#commands)
@@ -31,6 +32,23 @@ USAGE
 ...
 ```
 <!-- usagestop -->
+
+# Cookies
+
+The cookies.json format takes an array of cookies: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-Cookie. The required keys are name, value, domain and path.
+
+```json
+{
+  "cookies": [
+    {
+      "name": "foo",
+      "value": "COOKIE-VALUE-HERE",
+      "domain": "www.foo.com",
+      "path": "/"
+    }
+  ]
+}
+```
 
 # Optional Config
 
