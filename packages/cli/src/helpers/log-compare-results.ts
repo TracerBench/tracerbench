@@ -1,5 +1,4 @@
-import chalk from 'chalk';
-
+import * as chalk from 'chalk';
 import { Command } from '@oclif/command';
 import {
   bucketPhaseValues,
@@ -226,12 +225,10 @@ export async function logCompareResults(
   const subPhases = Object.keys(valuesByPhaseControl).filter(
     k => k !== PAGE_LOAD_TIME
   );
-  const phaseResultsFormatted: Array<
-    Pick<
-      HTMLSectionRenderData,
-      'phase' | 'hlDiff' | 'isSignificant' | 'ciMin' | 'ciMax'
-    >
-  > = [];
+  const phaseResultsFormatted: Array<Pick<
+    HTMLSectionRenderData,
+    'phase' | 'hlDiff' | 'isSignificant' | 'ciMin' | 'ciMax'
+  >> = [];
 
   const durationStats = new Stats({
     control: valuesByPhaseControl.duration,

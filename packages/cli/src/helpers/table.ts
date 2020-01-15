@@ -1,5 +1,4 @@
-import chalk from 'chalk';
-
+import * as chalk from 'chalk';
 import * as Table from 'cli-table3';
 import { Stats } from './statistics/stats';
 import { chalkScheme } from './utils';

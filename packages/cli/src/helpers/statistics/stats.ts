@@ -56,10 +56,9 @@ export class Stats {
       experiment: this.getSparkline(this.getHistogram(this.range, experiment)),
     };
     this.confidenceInterval = this.getConfidenceInterval(control, experiment);
-    this.estimator = Math.round(this.getHodgesLehmann(
-      control,
-      experiment
-    ) as number);
+    this.estimator = Math.round(
+      this.getHodgesLehmann(control, experiment) as number
+    );
     this.sevenFigureSummary = {
       control: this.getSevenFigureSummary(control),
       experiment: this.getSevenFigureSummary(experiment),
@@ -97,8 +96,9 @@ export class Stats {
     };
   }
   private getHodgesLehmann(control: any[], experiment: any[]) {
-    let crossProduct = cross(control, experiment, (a, b) => a - b);
-    crossProduct = crossProduct.sort((a, b) => a - b);
+    const crossProduct = cross(control, experiment, (a, b) => a - b).sort(
+      (a, b) => a - b
+    );
     return quantile(crossProduct, 0.5);
   }
   private getRange(control: number[], experiment: number[]) {

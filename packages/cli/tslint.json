@@ -18,7 +18,8 @@
     "no-var-requires": false,
     "no-console": false,
     "max-line-length": [true, 200],
-    "no-debugger": false
+    "no-debugger": false,
+    "max-classes-per-file": false
   },
   "rulesDirectory": []
 }
