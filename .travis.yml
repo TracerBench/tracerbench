@@ -5,11 +5,7 @@ cache: yarn
 sudo: required
 dist: xenial
 addons:
-  apt:
-    sources:
-      - google-chrome
-    packages:
-      - google-chrome-stable
+  chrome: stable
 env:
   - CHROME_PATH=/usr/bin/google-chrome-stable
 install:
@@ -23,5 +19,3 @@ before_install:
   - export CHROME_BIN=/usr/bin/google-chrome-stable
   - sudo apt-get update
   - sudo apt-get install -y libappindicator1 fonts-liberation
-  - wget https://dl.google.com/linux/direct/google-chrome-unstable_current_amd64.deb
-  - sudo dpkg -i google-chrome*.deb
