@@ -21,7 +21,7 @@
   },
   "devDependencies": {
     "@krisselden/har-schema": "^0.1.0",
-    "json-schema-to-typescript": "^7.1.0"
+    "json-schema-to-typescript": "^8.0.1"
   },
   "gitHead": "e9e301b7d4a75ac252fe69cf533668e42432ea8d"
 }
