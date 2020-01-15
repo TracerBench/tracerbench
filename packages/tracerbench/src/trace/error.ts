@@ -1,6 +1,6 @@
 // tslint:disable:no-console
 
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 
 const error = chalk.bold.red;
 
