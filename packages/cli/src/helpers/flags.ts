@@ -17,6 +17,18 @@ import deviceSettings, {
 ! todo: mitigate above by either extending the flags oclif command calling parse
 ! and type checking in all circumstances
 */
+export const isCIEnv = flags.build({
+  description: `Provides a drastically slimmed down stdout report for CI workflows. However does NOT hide analysis.`,
+  default: () => getDefaultValue('isCIEnv'),
+  parse: (ci): boolean => {
+    // if boolean return
+    if (typeof ci === 'boolean') {
+      return ci;
+    }
+    // if string return boolean value
+    return ci === 'true';
+  },
+});
 
 export const runtimeStats = flags.boolean({
   description: `Compare command output deep-dive stats during run.`,
@@ -141,7 +153,23 @@ export const markers = flags.build({
 export const network = flags.build({
   default: () => getDefaultValue('network'),
   description: 'Simulated network conditions.',
-  options: ['none', 'offline', 'dialup', 'slow-2g', '2g', 'slow-edge', 'edge', 'slow-3g', 'dsl', '3g', 'fast-3g', '4g', 'cable', 'LTE', 'FIOS'],
+  options: [
+    'none',
+    'offline',
+    'dialup',
+    'slow-2g',
+    '2g',
+    'slow-edge',
+    'edge',
+    'slow-3g',
+    'dsl',
+    '3g',
+    'fast-3g',
+    '4g',
+    'cable',
+    'LTE',
+    'FIOS',
+  ],
   parse: (n: string): Protocol.Network.EmulateNetworkConditionsRequest => {
     return networkConditions[n as keyof typeof networkConditions];
   },

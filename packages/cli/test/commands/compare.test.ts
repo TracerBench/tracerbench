@@ -31,10 +31,7 @@ describe('compare fixture: A/A', () => {
           '--debug',
           '--report',
         ]);
-
         const resultsJSON: ICompareJSONResults = JSON.parse(results);
-        expect(ctx.stdout).to.contain(`SUCCESS!`);
-        expect(ctx.stdout).to.contain(`Benchmark Reports`);
         assert.exists(`${TB_RESULTS_FOLDER}/server-control-settings.json`);
         assert.exists(`${TB_RESULTS_FOLDER}/server-experiment-settings.json`);
         assert.exists(`${TB_RESULTS_FOLDER}/compare-flags-settings.json`);
@@ -42,6 +39,41 @@ describe('compare fixture: A/A', () => {
         assert.isFalse(resultsJSON.areResultsSignificant);
         // regression is below the threshold
         assert.isTrue(resultsJSON.isBelowRegressionThreshold);
+        expect(ctx.stdout).to.contain(`SUCCESS!`);
+        expect(ctx.stdout).to.contain(`Benchmark Reports`);
+      }
+    );
+});
+
+describe('compare fixture: A/A CI', () => {
+  test
+    .stdout()
+    .it(
+      `runs compare --controlURL ${FIXTURE_APP.control} --experimentURL ${FIXTURE_APP.control} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER} --cpuThrottleRate=1 --config ${FIXTURE_APP.controlConfig} --headless --isCIEnv=true`,
+      async ctx => {
+        await Compare.run([
+          '--controlURL',
+          FIXTURE_APP.control,
+          '--experimentURL',
+          FIXTURE_APP.control,
+          '--fidelity',
+          fidelity,
+          '--tbResultsFolder',
+          TB_RESULTS_FOLDER,
+          '--config',
+          FIXTURE_APP.controlConfig,
+          '--cpuThrottleRate=1',
+          '--headless',
+          '--isCIEnv=true',
+        ]);
+
+        expect(ctx.stdout).to.contain(`SUCCESS!`);
+        expect(ctx.stdout).to.contain(`Benchmark Results Summary`);
+
+        expect(ctx.stdout).to.not.contain('Benchmark Reports');
+        expect(ctx.stdout).to.not.contain('Seven Figure Summary');
+        expect(ctx.stdout).to.not.contain('Hodges–Lehmann estimated delta');
+        expect(ctx.stdout).to.not.contain('Sparkline');
       }
     );
 });
