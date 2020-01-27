@@ -28,6 +28,7 @@ import {
   headless,
   config,
   report,
+  isCIEnv,
 } from '../../helpers/flags';
 import {
   fidelityLookup,
@@ -69,6 +70,7 @@ export interface ICompareFlags {
   headless: boolean;
   config?: string;
   report?: boolean;
+  isCIEnv?: boolean;
 }
 
 export default class Compare extends TBBaseCommand {
@@ -97,6 +99,7 @@ export default class Compare extends TBBaseCommand {
     report,
     debug,
     headless,
+    isCIEnv: isCIEnv(),
   };
   public compareFlags: ICompareFlags;
   public parsedConfig: ITBConfig = defaultFlagArgs;
@@ -156,6 +159,7 @@ export default class Compare extends TBBaseCommand {
         const message = `${chalkScheme.blackBgGreen(
           `    ${chalkScheme.white('SUCCESS!')}    `
         )} ${this.parsedConfig.fidelity} test samples were taken.`;
+
         this.log(`\n${message}`);
 
         if (!hideAnalysis) {
@@ -167,6 +171,8 @@ export default class Compare extends TBBaseCommand {
             `${this.parsedConfig.tbResultsFolder}`,
             '--regressionThreshold',
             `${this.parsedConfig.regressionThreshold}`,
+            '--isCIEnv',
+            `${this.parsedConfig.isCIEnv}`,
           ]);
 
           fs.writeFileSync(

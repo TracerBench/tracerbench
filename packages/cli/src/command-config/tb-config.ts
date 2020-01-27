@@ -41,6 +41,7 @@ export interface ITBConfig {
   [EXPERIMENT_ENV_OVERRIDE_ATTR]?: IBenchmarkEnvironmentOverride;
   [key: string]: any;
   cookie?: string;
+  isCIEnv?: boolean | string;
 }
 
 export interface IHARServer {

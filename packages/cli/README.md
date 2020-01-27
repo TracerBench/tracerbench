@@ -239,6 +239,9 @@ OPTIONS
   --hideAnalysis
       Hide the the analysis output in terminal
 
+  --isCIEnv=isCIEnv
+      Provides a drastically slimmed down stdout report for CI workflows. However does NOT hide analysis.
+
   --markers=markers
       (required) [default: domComplete] User Timing Markers
 
@@ -280,6 +283,9 @@ ARGUMENTS
 OPTIONS
   --fidelity=fidelity                        (required) [default: low] Directly correlates to the number of samples per
                                              trace. High is the longest trace time.
+
+  --isCIEnv=isCIEnv                          (required) Provides a drastically slimmed down stdout report for CI
+                                             workflows. However does NOT hide analysis.
 
   --regressionThreshold=regressionThreshold  [default: 100] The upper limit the experiment can regress slower in
                                              milliseconds. eg 100

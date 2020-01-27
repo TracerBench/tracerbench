@@ -5,6 +5,7 @@ import {
   fidelity,
   tbResultsFolder,
   regressionThreshold,
+  isCIEnv,
 } from '../../helpers/flags';
 
 export default class CompareAnalyze extends TBBaseCommand {
@@ -17,6 +18,7 @@ export default class CompareAnalyze extends TBBaseCommand {
     fidelity: fidelity({ required: true }),
     tbResultsFolder: tbResultsFolder({ required: true }),
     regressionThreshold: regressionThreshold(),
+    isCIEnv: isCIEnv({ required: true }),
   };
 
   public async run(): Promise<string> {

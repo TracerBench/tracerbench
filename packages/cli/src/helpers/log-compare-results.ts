@@ -204,7 +204,7 @@ export function outputJSONResults(
  */
 export async function logCompareResults(
   results: ITracerBenchTraceResult[],
-  flags: Pick<ICompareFlags, 'fidelity' | 'regressionThreshold'>,
+  flags: Pick<ICompareFlags, 'fidelity' | 'regressionThreshold' | 'isCIEnv'>,
   cli: Command
 ): Promise<string> {
   const { fidelity } = flags;
@@ -279,8 +279,11 @@ export async function logCompareResults(
     );
   }
 
-  cli.log(`\n\n${benchmarkTable.render()}`);
-  cli.log(`\n\n${phaseTable.render()}`);
+  // only log the tables when NOT in a CI env
+  if (!flags.isCIEnv) {
+    cli.log(`\n\n${benchmarkTable.render()}`);
+    cli.log(`\n\n${phaseTable.render()}`);
+  }
 
   outputRunMetaMessagesAndWarnings(cli, flags, isBelowRegressionThreshold);
   outputSummaryReport(cli, phaseResultsFormatted);
