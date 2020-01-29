@@ -349,7 +349,9 @@ OPTIONS
 
   --filename=filename        (required) [default: tracerbench] The filename for the generated file
 
-  --marker=marker            (required) [default: domComplete] The last marker before ending recording
+  --headless                 Run with headless chrome flags
+
+  --marker=marker            (required) [default: loadEventEnd] The last marker before ending a HAR recording
 
   --url=url                  (required) URL to visit for record-har, timings & trace commands
 ```

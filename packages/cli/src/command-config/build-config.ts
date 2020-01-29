@@ -115,6 +115,12 @@ function handleExplicitFlags(flags: any, explicitFlags: string[]): {} {
   return obj as {};
 }
 
+/**
+ * Executes the pemberly-tracerbench serve:compare command with terminal stdout summary
+ * @param configFileOrDir - path to a tbconfig.json file (configuration file)
+ * @param flags - relative subset of flags for a given command
+ * @param explicitFlags - overwriting flags coming from the CLI session directly eg. --headless, --url etc.
+ */
 export function getConfig(
   configFileOrDir = 'tbconfig.json',
   flags: any,

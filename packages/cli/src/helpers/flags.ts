@@ -266,6 +266,6 @@ export const filename = flags.build({
 });
 
 export const marker = flags.build({
-  description: `The last marker before ending recording`,
-  default: 'domComplete',
+  description: `The last marker before ending a HAR recording`,
+  default: 'loadEventEnd',
 });

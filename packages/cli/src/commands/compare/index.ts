@@ -7,7 +7,7 @@ import {
   InitialRenderBenchmark,
   Runner,
   networkConditions,
-  IMarker,
+  IMarker
 } from '@tracerbench/core';
 import {
   browserArgs,
@@ -28,23 +28,23 @@ import {
   headless,
   config,
   report,
-  isCIEnv,
+  isCIEnv
 } from '../../helpers/flags';
 import {
   fidelityLookup,
   headlessFlags,
-  defaultFlagArgs,
+  defaultFlagArgs
 } from '../../command-config/default-flag-args';
 import {
   chalkScheme,
   checkEnvironmentSpecificOverride,
-  parseMarkers,
+  parseMarkers
 } from '../../helpers/utils';
 import { getEmulateDeviceSettingForKeyAndOrientation } from '../../helpers/simulate-device-options';
 import {
   CONTROL_ENV_OVERRIDE_ATTR,
   EXPERIMENT_ENV_OVERRIDE_ATTR,
-  ITBConfig,
+  ITBConfig
 } from '../../command-config/tb-config';
 import { IConfig } from '@oclif/config';
 import CompareAnalyze from './analyze';
@@ -79,7 +79,7 @@ export default class Compare extends TBBaseCommand {
   public static flags = {
     hideAnalysis: flags.boolean({
       default: false,
-      description: 'Hide the the analysis output in terminal',
+      description: 'Hide the the analysis output in terminal'
     }),
     browserArgs: browserArgs({ required: true }),
     cpuThrottleRate: cpuThrottleRate({ required: true }),
@@ -99,7 +99,7 @@ export default class Compare extends TBBaseCommand {
     report,
     debug,
     headless,
-    isCIEnv: isCIEnv(),
+    isCIEnv: isCIEnv()
   };
   public compareFlags: ICompareFlags;
   public parsedConfig: ITBConfig = defaultFlagArgs;
@@ -126,7 +126,7 @@ export default class Compare extends TBBaseCommand {
     const { hideAnalysis } = this.compareFlags;
     const [
       controlSettings,
-      experimentSettings,
+      experimentSettings
     ] = this.generateControlExperimentServerConfig();
 
     // this should be directly above the instantiation of the InitialRenderBenchmarks
@@ -140,7 +140,7 @@ export default class Compare extends TBBaseCommand {
 
     const benchmarks = {
       control: new InitialRenderBenchmark(controlSettings),
-      experiment: new InitialRenderBenchmark(experimentSettings),
+      experiment: new InitialRenderBenchmark(experimentSettings)
     };
 
     const runner = new Runner([benchmarks.control, benchmarks.experiment]);
@@ -172,7 +172,7 @@ export default class Compare extends TBBaseCommand {
             '--regressionThreshold',
             `${this.parsedConfig.regressionThreshold}`,
             '--isCIEnv',
-            `${this.parsedConfig.isCIEnv}`,
+            `${this.parsedConfig.isCIEnv}`
           ]);
 
           fs.writeFileSync(
@@ -187,7 +187,7 @@ export default class Compare extends TBBaseCommand {
             '--tbResultsFolder',
             `${this.parsedConfig.tbResultsFolder}`,
             '--config',
-            `${this.parsedConfig.config}`,
+            `${this.parsedConfig.config}`
           ]);
         }
 
@@ -225,7 +225,7 @@ export default class Compare extends TBBaseCommand {
       regressionThreshold,
       headless,
       controlURL,
-      experimentURL,
+      experimentURL
     } = (this.parsedConfig as unknown) as ICompareFlags;
 
     // modifies properties of flags that were not set
@@ -287,10 +287,10 @@ export default class Compare extends TBBaseCommand {
     // eg 100 total samples X 200ms per sample = 20 seconds total added to the trace time
     const delay = 200;
     const controlBrowser = {
-      additionalArguments: this.compareFlags.browserArgs,
+      additionalArguments: this.compareFlags.browserArgs
     };
     const experimentBrowser = {
-      additionalArguments: this.compareFlags.browserArgs,
+      additionalArguments: this.compareFlags.browserArgs
     };
     let controlNetwork: string;
     let experimentNetwork: string;
@@ -372,7 +372,7 @@ export default class Compare extends TBBaseCommand {
         `${this.compareFlags.tbResultsFolder}/traces/control${i}.json`,
       url: path.join(
         this.compareFlags.controlURL + this.compareFlags.tracingLocationSearch
-      ),
+      )
     };
 
     experimentSettings = {
@@ -401,7 +401,7 @@ export default class Compare extends TBBaseCommand {
       url: path.join(
         this.compareFlags.experimentURL +
           this.compareFlags.tracingLocationSearch
-      ),
+      )
     };
 
     return [controlSettings, experimentSettings];

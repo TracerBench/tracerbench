@@ -4,7 +4,7 @@ export const fidelityLookup = {
   test: 2,
   low: 20,
   medium: 30,
-  high: 50,
+  high: 50
 };
 
 export type PerformanceTimingMark = keyof PerformanceNavigationTiming;
@@ -18,6 +18,7 @@ export const defaultFlagArgs: ITBConfig = {
   cpuThrottleRate: 2,
   fidelity: 'low',
   markers: 'domComplete',
+  marker: 'loadEventEnd',
   browserArgs: [
     '--crash-dumps-dir=./tmp',
     '--disable-background-timer-throttling',
@@ -29,7 +30,7 @@ export const defaultFlagArgs: ITBConfig = {
     '--disable-hang-monitor',
     '--safebrowsing-disable-auto-update',
     '--ignore-certificate-errors',
-    '--v8-cache-options=none',
+    '--v8-cache-options=none'
   ],
   methods: '""',
   tbResultsFolder: './tracerbench-results',
@@ -40,7 +41,7 @@ export const defaultFlagArgs: ITBConfig = {
   emulateDeviceOrientation: 'vertical',
   dest: '',
   regressionThreshold: 100,
-  isCIEnv: false,
+  isCIEnv: false
 };
 
 // specify with --headless flag
@@ -50,7 +51,7 @@ export const headlessFlags = [
   '--disable-gpu',
   '--hide-scrollbars',
   '--mute-audio',
-  '--disable-logging',
+  '--disable-logging'
 ];
 
 export function getDefaultValue(key: string): any {

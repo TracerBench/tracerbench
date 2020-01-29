@@ -93,7 +93,7 @@ export function addRemainingModules(
         functionName: '.*',
         functionNameRegex: /.*/,
         moduleName,
-        moduleNameRegex: new RegExp(`^${moduleName}$`),
+        moduleNameRegex: new RegExp(`^${moduleName}$`)
       };
       locators.push(newLocator);
       categories[AUTO_ADD_CAT].push(newLocator);
@@ -180,7 +180,7 @@ export function formatCategories(
         functionName: method,
         functionNameRegex: new RegExp(`^${method}$`),
         moduleName: '*',
-        moduleNameRegex: /.*/,
+        moduleNameRegex: /.*/
       };
     });
 
@@ -205,19 +205,19 @@ export function getBrowserArgs(explictArgs?: string[]): string[] {
   }
 
   const tmpDir = dirSync({
-    unsafeCleanup: true,
+    unsafeCleanup: true
   });
 
   const options: IViewOptions = {
     windowSize: {
       width: 1280,
-      height: 800,
+      height: 800
     },
     deviceScaleFactor: 0,
-    userAgent: undefined,
+    userAgent: undefined
   };
 
-  const defaultFlags = [
+  let defaultFlags = [
     `--crash-dumps-dir=${tmpDir.name}`,
     '--disable-background-networking',
     '--disable-background-timer-throttling',
@@ -250,9 +250,10 @@ export function getBrowserArgs(explictArgs?: string[]): string[] {
     `--user-agent=${options.userAgent}`,
     `--user-data-dir=${tmpDir.name}`,
     '--v8-cache-options=none',
-    `--window-size=${options.windowSize.width},${options.windowSize.height}`,
-    '--headless',
+    `--window-size=${options.windowSize.width},${options.windowSize.height}`
   ];
 
-  return explictArgs ? explictArgs.concat(defaultFlags) : defaultFlags;
+  defaultFlags = explictArgs ? explictArgs.concat(defaultFlags) : defaultFlags;
+
+  return defaultFlags;
 }
