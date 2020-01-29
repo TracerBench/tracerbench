@@ -7,7 +7,7 @@ import { filterObjectByKeys } from './utils';
 
 export async function createBrowser(
   browserArgs: string[] = [],
-  headless: boolean = true
+  headless: boolean = false
 ) {
   const browser = await spawnChrome({
     additionalArguments: browserArgs,

@@ -75,7 +75,7 @@
         "controlURL": {
             "type": "string"
         },
-        "cookie": {
+        "cookiespath": {
             "type": "string"
         },
         "cpuThrottleRate": {
@@ -130,6 +130,12 @@
         "inputFilePath": {
             "type": "string"
         },
+        "isCIEnv": {
+            "type": [
+                "string",
+                "boolean"
+            ]
+        },
         "iterations": {
             "type": [
                 "string",
@@ -137,6 +143,9 @@
             ]
         },
         "locations": {
+            "type": "string"
+        },
+        "marker": {
             "type": "string"
         },
         "markers": {

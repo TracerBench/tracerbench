@@ -8,11 +8,11 @@ import { COOKIES, TB_RESULTS_FOLDER, URL } from '../test-helpers';
 
 const FILENAME = 'foo';
 
-describe('record-har', () => {
+describe('record-har headless', () => {
   test
     .stdout()
     .it(
-      `runs record-har --url ${URL} --dest ${TB_RESULTS_FOLDER} --cookiespath ${COOKIES} --filename ${FILENAME}`,
+      `runs record-har --url ${URL} --dest ${TB_RESULTS_FOLDER} --cookiespath ${COOKIES} --filename ${FILENAME} --headless`,
       async ctx => {
         await RecordHAR.run([
           '--url',
@@ -23,6 +23,7 @@ describe('record-har', () => {
           COOKIES,
           '--filename',
           FILENAME,
+          '--headless'
         ]);
 
         const harFile = join(TB_RESULTS_FOLDER, `${FILENAME}.har`);

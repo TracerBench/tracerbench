@@ -1,11 +1,7 @@
 import { readJson, writeFileSync } from 'fs-extra';
 import { resolve, join } from 'path';
-import {
-  recordHARClient,
-  getBrowserArgs,
-  IConditions,
-} from '@tracerbench/core';
-
+import { recordHARClient, IConditions } from '@tracerbench/core';
+import { headlessFlags } from '../command-config/default-flag-args';
 import { TBBaseCommand, getConfig } from '../command-config';
 import {
   dest,
@@ -14,6 +10,7 @@ import {
   filename,
   marker,
   config,
+  headless
 } from '../helpers/flags';
 
 export default class RecordHAR extends TBBaseCommand {
@@ -25,6 +22,7 @@ export default class RecordHAR extends TBBaseCommand {
     filename: filename({ required: true, default: 'tracerbench' }),
     marker: marker({ required: true }),
     config: config(),
+    headless
   };
   public async init() {
     const { flags } = this.parse(RecordHAR);
@@ -34,13 +32,21 @@ export default class RecordHAR extends TBBaseCommand {
   public async run() {
     const { flags } = this.parse(RecordHAR);
     const { url, dest, cookiespath, filename, marker } = flags;
-    const { network, cpuThrottleRate, browserArgs } = this.parsedConfig;
+    const { network, cpuThrottleRate, headless } = this.parsedConfig;
+    let { browserArgs } = this.parsedConfig;
     const conditions: IConditions = {
       network: network ? network : 'none',
-      cpu: cpuThrottleRate ? parseInt(cpuThrottleRate as string, 10) : 1,
+      cpu: cpuThrottleRate ? parseInt(cpuThrottleRate as string, 10) : 1
     };
     // grab the auth cookies
     const cookies = await readJson(resolve(cookiespath));
+
+    // if headless flag is true include the headless flags
+    if (headless) {
+      browserArgs = Array.isArray(browserArgs)
+        ? browserArgs.concat(headlessFlags)
+        : headlessFlags;
+    }
 
     // record the actual HAR and return the archive file
     const harArchive = await recordHARClient(
@@ -48,7 +54,7 @@ export default class RecordHAR extends TBBaseCommand {
       cookies,
       marker,
       conditions,
-      getBrowserArgs(browserArgs)
+      browserArgs
     );
 
     const harPath = join(dest, `${filename}.har`);
