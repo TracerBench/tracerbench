@@ -25,7 +25,7 @@ $ npm install -g tracerbench
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench/3.0.12 darwin-x64 node-v12.13.1
+tracerbench/3.0.13 darwin-x64 node-v12.13.1
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
@@ -267,7 +267,7 @@ OPTIONS
       (required) [default: ?tracing] The document location search param.
 ```
 
-_See code: [dist/src/commands/compare/index.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.0.12/dist/src/commands/compare/index.ts)_
+_See code: [dist/src/commands/compare/index.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.0.13/dist/src/commands/compare/index.ts)_
 
 ## `tracerbench compare:analyze RESULTSFILE`
 
@@ -294,7 +294,7 @@ OPTIONS
                                              tracerbench results
 ```
 
-_See code: [dist/src/commands/compare/analyze.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.0.12/dist/src/commands/compare/analyze.ts)_
+_See code: [dist/src/commands/compare/analyze.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.0.13/dist/src/commands/compare/analyze.ts)_
 
 ## `tracerbench help [COMMAND]`
 
@@ -328,7 +328,7 @@ OPTIONS
   --url=url                (required) URL to visit for record-har, timings & trace commands
 ```
 
-_See code: [dist/src/commands/marker-timings.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.0.12/dist/src/commands/marker-timings.ts)_
+_See code: [dist/src/commands/marker-timings.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.0.13/dist/src/commands/marker-timings.ts)_
 
 ## `tracerbench record-har`
 
@@ -356,7 +356,7 @@ OPTIONS
   --url=url                  (required) URL to visit for record-har, timings & trace commands
 ```
 
-_See code: [dist/src/commands/record-har.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.0.12/dist/src/commands/record-har.ts)_
+_See code: [dist/src/commands/record-har.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.0.13/dist/src/commands/record-har.ts)_
 
 ## `tracerbench report`
 
@@ -374,7 +374,7 @@ OPTIONS
                                      tracerbench results
 ```
 
-_See code: [dist/src/commands/report.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.0.12/dist/src/commands/report.ts)_
+_See code: [dist/src/commands/report.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.0.13/dist/src/commands/report.ts)_
 
 ## `tracerbench trace`
 
@@ -413,5 +413,5 @@ OPTIONS
       (required) URL to visit for record-har, timings & trace commands
 ```
 
-_See code: [dist/src/commands/trace.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.0.12/dist/src/commands/trace.ts)_
+_See code: [dist/src/commands/trace.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.0.13/dist/src/commands/trace.ts)_
 <!-- commandsstop -->
