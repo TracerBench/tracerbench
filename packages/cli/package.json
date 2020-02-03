@@ -32,7 +32,7 @@
     "cli-table3": "^0.5.1",
     "d3-array": "^2.4.0",
     "d3-scale": "^3.2.1",
-    "devtools-protocol": "0.0.731173",
+    "devtools-protocol": "^0.0.737833",
     "execa": "^4.0.0",
     "fs-extra": "^8.1.0",
     "handlebars": "^4.7.2",
