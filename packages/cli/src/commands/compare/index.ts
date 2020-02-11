@@ -50,6 +50,7 @@ import { IConfig } from '@oclif/config';
 import CompareAnalyze from './analyze';
 import Report from '../report';
 
+const archiver = require('archiver');
 export interface ICompareFlags {
   hideAnalysis: boolean;
   browserArgs: string[];
@@ -155,6 +156,18 @@ export default class Compare extends TBBaseCommand {
         const resultJSONPath = `${this.parsedConfig.tbResultsFolder}/compare.json`;
 
         fs.writeFileSync(resultJSONPath, JSON.stringify(results, null, 2));
+
+        const tracesDir = `${this.parsedConfig.tbResultsFolder}/traces`;
+        const zipOutput = fs.createWriteStream(
+          `${this.parsedConfig.tbResultsFolder}/traces.zip`
+        );
+        const archive = archiver('zip', {
+          zlib: { level: 9 }
+        });
+        archive.directory(tracesDir, 'traces');
+        archive.pipe(zipOutput);
+        archive.finalize();
+
         // tslint:disable-next-line: max-line-length
         const message = `${chalkScheme.blackBgGreen(
           `    ${chalkScheme.white('SUCCESS!')}    `
