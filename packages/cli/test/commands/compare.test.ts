@@ -29,12 +29,13 @@ describe('compare fixture: A/A', () => {
           '--cpuThrottleRate=1',
           '--headless',
           '--debug',
-          '--report',
+          '--report'
         ]);
         const resultsJSON: ICompareJSONResults = JSON.parse(results);
         assert.exists(`${TB_RESULTS_FOLDER}/server-control-settings.json`);
         assert.exists(`${TB_RESULTS_FOLDER}/server-experiment-settings.json`);
         assert.exists(`${TB_RESULTS_FOLDER}/compare-flags-settings.json`);
+        assert.exists(`${TB_RESULTS_FOLDER}/traces.zip`);
         // results are json and NOT significant
         assert.isFalse(resultsJSON.areResultsSignificant);
         // regression is below the threshold
@@ -64,7 +65,7 @@ describe('compare fixture: A/A CI', () => {
           FIXTURE_APP.controlConfig,
           '--cpuThrottleRate=1',
           '--headless',
-          '--isCIEnv=true',
+          '--isCIEnv=true'
         ]);
 
         expect(ctx.stdout).to.contain(`SUCCESS!`);
@@ -98,7 +99,7 @@ describe('compare regression: fixture: A/B', () => {
           FIXTURE_APP.regressionConfig,
           '--tbResultsFolder',
           TB_RESULTS_FOLDER,
-          '--headless',
+          '--headless'
         ]);
 
         const resultsJSON: ICompareJSONResults = JSON.parse(results);
@@ -151,7 +152,7 @@ describe('compare mobile horizontal: fixture: A/A', () => {
           '--emulateDeviceOrientation',
           'horizontal',
           '--cpuThrottleRate=6',
-          '--headless',
+          '--headless'
         ]);
 
         expect(ctx.stdout).to.contain(`SUCCESS!`);
