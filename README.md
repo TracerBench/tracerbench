@@ -45,7 +45,7 @@ The recommended way of consuming TracerBench is via the [TracerBench-CLI](https:
 
 # CLI Workflow
 
-Assuming the TracerBench-CLI is globally [installed](https://github.com/TracerBench/tracerbench/blob/master/packages/cli/README.md#usage) and you are leveraging the optional config file [tb-config](https://github.com/TracerBench/tracerbench/blob/master/packages/cli/README.md#optional-config).
+Assuming the TracerBench-CLI is globally [installed](https://github.com/TracerBench/tracerbench/blob/master/packages/cli/README.md#usage) and you are leveraging the optional config file [tbconfig.json](https://github.com/TracerBench/tracerbench/blob/master/packages/cli/README.md#optional-config).
 
 ### Basic Example of benchmarking for timings
 
