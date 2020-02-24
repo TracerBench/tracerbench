@@ -73,7 +73,7 @@
     "tslint": "^5.20.1",
     "tslint-config-prettier": "^1.18.0",
     "tslint-plugin-prettier": "^2.1.0",
-    "typescript": "^3.7.4"
+    "typescript": "^3.8.2"
   },
   "engine": "node >= 8",
   "gitHead": "fb3fcdcb8573f028277985765f6f42fd680675d9"
