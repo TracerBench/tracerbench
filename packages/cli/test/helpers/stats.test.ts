@@ -26,7 +26,7 @@ const control = [
   52954,
   54106,
   54194,
-  54893,
+  54893
 ];
 
 const experiment = [
@@ -54,7 +54,7 @@ const experiment = [
   1134401,
   1136150,
   1138230,
-  1138314,
+  1138314
 ];
 
 const name = 'stats-test';
@@ -73,6 +73,7 @@ describe('stats', () => {
   });
 
   it(`sevenFigureSummary()`, () => {
+    // ! all control & experiment numbers rounded
     const controlQuantiles = stats.sevenFigureSummary.control;
     const experimentQuantiles = stats.sevenFigureSummary.experiment;
 
@@ -96,7 +97,7 @@ describe('stats', () => {
     const statsForHl = new Stats({
       control: controlSetForHl,
       experiment: experimentSetForHl,
-      name: '2',
+      name: '2'
     });
     expect(statsForHl.estimator).to.equal(-53);
   });
@@ -108,5 +109,21 @@ describe('stats', () => {
   it(`getSparkline()`, () => {
     expect(stats.sparkLine.control).to.equal('█▁▁▁▁▁▁▁▁▁▁▁');
     expect(stats.sparkLine.experiment).to.equal('▁▁▁▁▁▁▁▁▁▁▁█');
+  });
+
+  it(`getOutliers()`, () => {
+    // ! all control & experiment numbers rounded
+    const controlOutliersObj = stats.outliers.control;
+    const experimentOutliersObj = stats.outliers.experiment;
+
+    expect(controlOutliersObj.IQR).to.equal(2);
+    expect(controlOutliersObj.lowerOutlier).to.equal(47);
+    expect(controlOutliersObj.upperOutlier).to.equal(55);
+    expect(controlOutliersObj.outliers).length(0);
+
+    expect(experimentOutliersObj.IQR).to.equal(3);
+    expect(experimentOutliersObj.lowerOutlier).to.equal(1125);
+    expect(experimentOutliersObj.upperOutlier).to.equal(1138);
+    expect(experimentOutliersObj.outliers).length(0);
   });
 });

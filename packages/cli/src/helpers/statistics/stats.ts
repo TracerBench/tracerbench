@@ -13,6 +13,13 @@ export interface ISevenFigureSummary {
   90: number;
 }
 
+export interface IOutliers {
+  IQR: number;
+  outliers: number[];
+  lowerOutlier: number;
+  upperOutlier: number;
+}
+
 export interface IStatsOptions {
   control: number[];
   experiment: number[];
@@ -35,16 +42,26 @@ export class Stats {
     control: ISevenFigureSummary;
     experiment: ISevenFigureSummary;
   };
+  public readonly outliers: {
+    control: IOutliers;
+    experiment: IOutliers;
+  }
   public readonly sampleCount: { control: number; experiment: number };
+  public readonly experimentSortedMS: number[];
+  public readonly controlSortedMS: number[];
   private range: { min: number; max: number };
   constructor(options: IStatsOptions) {
     const { name } = options;
     let { control, experiment } = options;
 
+    // sort, convert to MS and set both control/experiment
     control = control.sort((a, b) => a - b);
     experiment = experiment.sort((a, b) => a - b);
     control = control.map(x => convertMicrosecondsToMS(x));
     experiment = experiment.map(x => convertMicrosecondsToMS(x));
+    this.controlSortedMS = control;
+    this.experimentSortedMS = experiment;
+
     this.name = name;
     this.sampleCount = {
       control: control.length,
@@ -63,6 +80,29 @@ export class Stats {
       control: this.getSevenFigureSummary(control),
       experiment: this.getSevenFigureSummary(experiment),
     };
+    this.outliers = {
+      control: this.getOutliers(control, this.sevenFigureSummary.control),
+      experiment: this.getOutliers(experiment, this.sevenFigureSummary.experiment)
+    }
+  }
+
+  private getOutliers(a: number[], sevenFigSum: ISevenFigureSummary): IOutliers {
+    const IQR = sevenFigSum[75] - sevenFigSum[25];
+    const obj: IOutliers = {
+      IQR,
+      lowerOutlier: Math.floor(sevenFigSum[25] - (1.5 * IQR)),
+      upperOutlier: Math.round(sevenFigSum[75] + (1.5 * IQR)),
+      outliers: []
+    };
+
+    a.forEach((n) => {
+      const roundedN: number = Math.round(n);
+      if(roundedN < obj.lowerOutlier || roundedN > obj.upperOutlier) {
+        obj.outliers.push(roundedN);
+      }
+    });
+
+    return obj;
   }
 
   private getSevenFigureSummary(a: number[]): ISevenFigureSummary {
@@ -76,6 +116,7 @@ export class Stats {
       90: Math.round(quantile(a, 0.9) as number),
     };
   }
+
   private getConfidenceInterval(
     control: number[],
     experiment: number[]
@@ -95,16 +136,19 @@ export class Stats {
       isSig,
     };
   }
+
   private getHodgesLehmann(control: any[], experiment: any[]) {
     const crossProduct = cross(control, experiment, (a, b) => a - b).sort(
       (a, b) => a - b
     );
     return quantile(crossProduct, 0.5);
   }
+
   private getRange(control: number[], experiment: number[]) {
     const a = control.concat(experiment);
     return { min: Math.min(...a), max: Math.max(...a) };
   }
+
   private getHistogram(range: { min: number; max: number }, a: number[]) {
     const x: any = scaleLinear()
       .domain([range.min, range.max])
@@ -120,6 +164,7 @@ export class Stats {
       return i.length;
     });
   }
+
   private getSparkline(
     numbers: number[],
     min: number = Math.min.apply(null, numbers),
