@@ -27,6 +27,16 @@ export interface ITracerBenchTraceResult {
   set: string;
 }
 
+export interface IFormatedSamples {
+  min: number;
+  q1: number;
+  median: number;
+  q3: number;
+  max: number;
+  outliers: number[];
+  samplesMS: number[];
+}
+
 export interface HTMLSectionRenderData {
   isSignificant: boolean;
   ciMin: number;
@@ -34,10 +44,10 @@ export interface HTMLSectionRenderData {
   hlDiff: number;
   phase: string;
   identifierHash: string;
-  controlSamples: string;
-  experimentSamples: string;
   sampleCount: number;
   servers: any;
+  controlFormatedSamples: string;
+  experimentFormatedSamples: string;
 }
 
 interface ValuesByPhase {
@@ -49,7 +59,7 @@ export const PAGE_LOAD_TIME = 'duration';
 const CHART_CSS_PATH = path.join(__dirname, '../static/chart-bootstrap.css');
 const CHART_JS_PATH = path.join(
   __dirname,
-  '../static/chartjs-2.8.0-chart.min.js'
+  '../static/chartjs-2.9.3-chart.min.js'
 );
 const REPORT_PATH = path.join(__dirname, '../static/report-template.hbs');
 const PHASE_DETAIL_PARTIAL = path.join(
@@ -124,15 +134,12 @@ export function bucketPhaseValues(
 
   samples.forEach((sample: Sample) => {
     buckets[PAGE_LOAD_TIME].push(sample[PAGE_LOAD_TIME]);
+
     sample.phases.forEach(phaseData => {
       const bucket = buckets[phaseData.phase] || [];
       bucket.push(valueGen(phaseData));
       buckets[phaseData.phase] = bucket;
     });
-  });
-
-  Object.keys(buckets).forEach(phase => {
-    buckets[phase].sort();
   });
 
   return buckets;
@@ -188,6 +195,7 @@ export function buildCumulativeChartData(
 ) {
   const cumulativeValueFunc = (a: any) =>
     convertMicrosecondsToMS(a.start + a.duration);
+
   const valuesByPhaseControl = bucketPhaseValues(
     controlData.samples,
     cumulativeValueFunc
@@ -235,18 +243,29 @@ export function formatPhaseData(
     phase: phaseName,
     identifierHash: phaseName,
     isSignificant: !isNotSignificant,
-    // Ensure to convert to milliseconds for presentation
-    controlSamples: JSON.stringify(
-      controlValues.map(val => convertMicrosecondsToMS(val))
-    ),
-    experimentSamples: JSON.stringify(
-      experimentValues.map(val => convertMicrosecondsToMS(val))
-    ),
-    sampleCount: controlValues.length,
+    sampleCount: stats.sampleCount.control,
     ciMin: stats.confidenceInterval.min,
     ciMax: stats.confidenceInterval.max,
     hlDiff: stats.estimator,
-    servers: undefined
+    servers: undefined,
+    controlFormatedSamples: JSON.stringify({
+      min: stats.sevenFigureSummary.control.min,
+      q1: stats.sevenFigureSummary.control[25],
+      median: stats.sevenFigureSummary.control[50],
+      q3: stats.sevenFigureSummary.control[75],
+      max: stats.sevenFigureSummary.control.max,
+      outliers: stats.outliers.control.outliers,
+      samplesMS: stats.controlMS
+    }),
+    experimentFormatedSamples: JSON.stringify({
+      min: stats.sevenFigureSummary.experiment.min,
+      q1: stats.sevenFigureSummary.experiment[25],
+      median: stats.sevenFigureSummary.experiment[50],
+      q3: stats.sevenFigureSummary.experiment[75],
+      max: stats.sevenFigureSummary.experiment.max,
+      outliers: stats.outliers.experiment.outliers,
+      samplesMS: stats.experimentMS
+    })
   };
 }
 
@@ -304,7 +323,6 @@ export function generateDataForHTML(controlData: ITracerBenchTraceResult,
   });
 
   durationSection.servers = reportTitles.servers;
-  subPhaseSections.sort(phaseSorter);
   return { durationSection, subPhaseSections };
 }
 

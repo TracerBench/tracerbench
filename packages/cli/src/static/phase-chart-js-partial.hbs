@@ -9,19 +9,19 @@
         borderColor: '#0A2D46',
         backgroundColor: 'rgba(199, 241, 106, 0.50)',
         borderWidth: 2,
-        outlierColor: '#1884E4',
+        outlierColor: '#999999',
         itemRadius: 2,
         itemBackgroundColor: '#1884E4',
-        data: [{{{analysisForPhase.controlSamples}}}]
+        data: [{{{analysisForPhase.controlFormatedSamples}}}]
       }, {
         label: '{{analysisForPhase.servers.[1].name}}',
         borderColor: '#0A2D46',
         backgroundColor: 'rgba(56, 210, 211, 0.50)',
         borderWidth: 2,
-        outlierColor: '#1884E4',
+        outlierColor: '#999999',
         itemRadius: 2,
         itemBackgroundColor: '#1884E4',
-        data: [{{{analysisForPhase.experimentSamples}}}]
+        data: [{{{analysisForPhase.experimentFormatedSamples}}}]
       }]
     },
     options: {
@@ -32,6 +32,23 @@
       legend: {
         display: true,
         position: 'top'
+      },
+      tooltips: {
+        callbacks: {
+          boxplotLabel: function(item, data, stats, hoveredOutlierIndex) {
+            const datasetLabel = data.datasets[item.datasetIndex].label || '';
+            let label = `${datasetLabel} ${typeof item.xLabel === 'string' ? item.xLabel : item.yLabel}`;
+            if (!stats) {
+              return `${label}`;
+            }
+            if (hoveredOutlierIndex >= 0) {
+              const outlier = stats.outliers[hoveredOutlierIndex];
+              const traceIndex = stats.samplesMS.indexOf(outlier);
+              return `outlier: ${outlier} | trace-index: ${traceIndex}`;
+            }
+            return `min: ${stats.min} | q1: ${stats.q1} | median: ${stats.median} | q3: ${stats.q3} | max: ${stats.max}`;
+          }
+        }
       },
       scales: {
         xAxes: [{
