@@ -54,11 +54,15 @@ export class Stats {
   private range: { min: number; max: number };
   constructor(options: IStatsOptions) {
     const { name, control, experiment } = options;
+    // explicitly for NOT sorted
     this.controlMS = control.map(x => Math.round(convertMicrosecondsToMS(x)));
     this.experimentMS = experiment.map(x => Math.round(convertMicrosecondsToMS(x)));
-    // sort, convert to MS and set both control/experiment
-    this.controlSortedMS = this.controlMS.sort((a, b) => a - b);
-    this.experimentSortedMS = this.experimentMS.sort((a, b) => a - b);
+
+    // explicitly for sortedMS
+    const controlSortedMS = control.map(x => Math.round(convertMicrosecondsToMS(x)));
+    const experimentSortedMS = experiment.map(x => Math.round(convertMicrosecondsToMS(x)));
+    this.controlSortedMS = controlSortedMS.sort((a, b) => a - b);
+    this.experimentSortedMS = experimentSortedMS.sort((a, b) => a - b);
 
     this.name = name;
     this.sampleCount = {
@@ -81,7 +85,7 @@ export class Stats {
     this.outliers = {
       control: this.getOutliers(this.controlSortedMS, this.sevenFigureSummary.control),
       experiment: this.getOutliers(this.experimentSortedMS, this.sevenFigureSummary.experiment)
-    }
+    }    
   }
 
   private getOutliers(a: number[], sevenFigSum: ISevenFigureSummary): IOutliers {
