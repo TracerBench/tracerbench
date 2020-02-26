@@ -2,19 +2,13 @@ import { Stats } from '../../src/helpers/statistics/stats';
 import { expect } from 'chai';
 
 const control = [
-  48795,
-  48891,
-  48954,
-  49294,
-  49441,
-  49458,
-  50248,
-  50397,
-  50578,
-  51097,
+  54106,
   51389,
   51389,
   51822,
+  48795,
+  48891,
+  48954,
   51935,
   52039,
   52065,
@@ -24,27 +18,26 @@ const control = [
   52814,
   52901,
   52954,
-  54106,
   54194,
-  54893
+  54893,
+  49294,
+  49441,
+  49458,
+  50248,
+  50397,
+  50578,
+  51097,
 ];
 
 const experiment = [
+  1136150,
+  1130550,
+  1130841,
+  1130856,
   1124565,
   1125724,
   1126078,
   1126482,
-  1128269,
-  1129367,
-  1129836,
-  1130550,
-  1130841,
-  1130856,
-  1131026,
-  1131376,
-  1131391,
-  1131411,
-  1131419,
   1131473,
   1131611,
   1131770,
@@ -52,9 +45,16 @@ const experiment = [
   1133104,
   1133154,
   1134401,
-  1136150,
   1138230,
-  1138314
+  1138314,
+  1128269,
+  1129836,
+  1131026,
+  1131376,
+  1131391,
+  1131411,
+  1131419,
+  1129367
 ];
 
 const name = 'stats-test';
@@ -64,6 +64,22 @@ const stats = new Stats({ control, experiment, name });
 describe('stats', () => {
   it(`name()`, () => {
     expect(stats.name).to.equal('stats-test');
+  });
+
+  // samples converted to MS and sorted
+  it(`sortedSamplesMS()`, () => {
+    expect(stats.controlSortedMS[0]).to.equal(49);
+    expect(stats.controlSortedMS[24]).to.equal(55);
+    expect(stats.experimentSortedMS[0]).to.equal(1125);
+    expect(stats.experimentSortedMS[24]).to.equal(1138);
+  });
+
+  // samples converted to MS and NOT sorted
+  it(`samplesMS() NOT SORTED`, () => {
+    expect(stats.controlMS[0]).to.equal(54);
+    expect(stats.controlMS[24]).to.equal(51);
+    expect(stats.experimentMS[0]).to.equal(1136);
+    expect(stats.experimentMS[24]).to.equal(1129);
   });
 
   it(`confidenceInterval()`, () => {
