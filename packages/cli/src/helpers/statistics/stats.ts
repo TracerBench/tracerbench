@@ -47,42 +47,40 @@ export class Stats {
     experiment: IOutliers;
   }
   public readonly sampleCount: { control: number; experiment: number };
+  public readonly experimentMS: number[];
+  public readonly controlMS: number[];
   public readonly experimentSortedMS: number[];
   public readonly controlSortedMS: number[];
   private range: { min: number; max: number };
   constructor(options: IStatsOptions) {
-    const { name } = options;
-    let { control, experiment } = options;
-
+    const { name, control, experiment } = options;
+    this.controlMS = control.map(x => Math.round(convertMicrosecondsToMS(x)));
+    this.experimentMS = experiment.map(x => Math.round(convertMicrosecondsToMS(x)));
     // sort, convert to MS and set both control/experiment
-    control = control.sort((a, b) => a - b);
-    experiment = experiment.sort((a, b) => a - b);
-    control = control.map(x => convertMicrosecondsToMS(x));
-    experiment = experiment.map(x => convertMicrosecondsToMS(x));
-    this.controlSortedMS = control;
-    this.experimentSortedMS = experiment;
+    this.controlSortedMS = this.controlMS.sort((a, b) => a - b);
+    this.experimentSortedMS = this.experimentMS.sort((a, b) => a - b);
 
     this.name = name;
     this.sampleCount = {
-      control: control.length,
-      experiment: experiment.length,
+      control: this.controlSortedMS.length,
+      experiment: this.experimentSortedMS.length,
     };
-    this.range = this.getRange(control, experiment);
+    this.range = this.getRange(this.controlSortedMS, this.experimentSortedMS);
     this.sparkLine = {
-      control: this.getSparkline(this.getHistogram(this.range, control)),
-      experiment: this.getSparkline(this.getHistogram(this.range, experiment)),
+      control: this.getSparkline(this.getHistogram(this.range, this.controlSortedMS)),
+      experiment: this.getSparkline(this.getHistogram(this.range, this.experimentSortedMS)),
     };
-    this.confidenceInterval = this.getConfidenceInterval(control, experiment);
+    this.confidenceInterval = this.getConfidenceInterval(this.controlSortedMS, this.experimentSortedMS);
     this.estimator = Math.round(
-      this.getHodgesLehmann(control, experiment) as number
+      this.getHodgesLehmann(this.controlSortedMS, this.experimentSortedMS) as number
     );
     this.sevenFigureSummary = {
-      control: this.getSevenFigureSummary(control),
-      experiment: this.getSevenFigureSummary(experiment),
+      control: this.getSevenFigureSummary(this.controlSortedMS),
+      experiment: this.getSevenFigureSummary(this.experimentSortedMS),
     };
     this.outliers = {
-      control: this.getOutliers(control, this.sevenFigureSummary.control),
-      experiment: this.getOutliers(experiment, this.sevenFigureSummary.experiment)
+      control: this.getOutliers(this.controlSortedMS, this.sevenFigureSummary.control),
+      experiment: this.getOutliers(this.experimentSortedMS, this.sevenFigureSummary.experiment)
     }
   }
 
