@@ -22,7 +22,7 @@ export function getSamples(control: number[], experiment: number[]): ISample[] {
       e: experiment[i],
       diff: experiment[i] - c,
       absDiff: Math.abs(experiment[i] - c),
-      rank: 0,
+      rank: 0
     };
   });
 }

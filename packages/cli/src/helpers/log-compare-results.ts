@@ -1,13 +1,13 @@
 import * as chalk from 'chalk';
 import { Command } from '@oclif/command';
+import { Stats, ISevenFigureSummary } from '@tracerbench/stats';
 import {
   bucketPhaseValues,
   formatPhaseData,
   HTMLSectionRenderData,
   ITracerBenchTraceResult,
-  PAGE_LOAD_TIME,
+  PAGE_LOAD_TIME
 } from './create-consumable-html';
-import { Stats, ISevenFigureSummary } from './statistics/stats';
 import TBTable from './table';
 import { ICompareFlags } from '../commands/compare';
 import { fidelityLookup } from '../command-config';
@@ -190,7 +190,7 @@ export function outputJSONResults(
     benchmarkTableData,
     phaseTableData,
     areResultsSignificant,
-    isBelowRegressionThreshold,
+    isBelowRegressionThreshold
   };
   return JSON.stringify(jsonResults);
 }
@@ -233,7 +233,7 @@ export async function logCompareResults(
   const durationStats = new Stats({
     control: valuesByPhaseControl.duration,
     experiment: valuesByPhaseExperiment.duration,
-    name: 'duration',
+    name: 'duration'
   });
   benchmarkTable.display.push(durationStats);
   // @ts-ignore
@@ -250,7 +250,7 @@ export async function logCompareResults(
       new Stats({
         control: valuesByPhaseControl[phase],
         experiment: valuesByPhaseExperiment[phase],
-        name: phase,
+        name: phase
       })
     );
     // @ts-ignore

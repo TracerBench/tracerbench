@@ -59,6 +59,6 @@ export function confidenceInterval(
   const diffs = cartesianProduct(distributionOne, distributionTwo);
   return [
     diffs[ca - 1],
-    diffs[distributionOneLength * distributionTwoLength - ca],
+    diffs[distributionOneLength * distributionTwoLength - ca]
   ];
 }

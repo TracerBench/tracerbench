@@ -1,0 +1,7 @@
+--require ts-node/register
+--watch-extensions ts
+--recursive
+--forbid-only
+--reporter spec
+--timeout 60000
+--file ./test/setup.ts
