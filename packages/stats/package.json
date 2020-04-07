@@ -1,6 +1,6 @@
 {
   "name": "@tracerbench/stats",
-  "version": "3.0.14",
+  "version": "3.0.15",
   "description": "Stats class written in TS-Node",
   "keywords": [
     "statistics",
@@ -57,5 +57,6 @@
     "typescript": "^3.8.2",
     "typescript-json-schema": "^0.42.0"
   },
-  "engine": "node >= 10"
+  "engine": "node >= 10",
+  "gitHead": "30be10122ff4fcdf931eec6ecd8075ff6b2dc42f"
 }

@@ -1,6 +1,6 @@
 {
   "name": "tracerbench",
-  "version": "3.0.14",
+  "version": "3.0.15",
   "description": "CLI for TracerBench",
   "keywords": [
     "oclif"
@@ -27,8 +27,8 @@
     "@oclif/config": "^1.13.3",
     "@oclif/plugin-help": "^2.2.3",
     "@oclif/plugin-warn-if-update-available": "^1.7.0",
-    "@tracerbench/core": "^3.0.14",
-    "@tracerbench/stats": "^3.0.14",
+    "@tracerbench/core": "^3.0.15",
+    "@tracerbench/stats": "^3.0.15",
     "archiver": "^3.1.1",
     "chalk": "^3.0.0",
     "cli-table3": "^0.5.1",
@@ -99,5 +99,5 @@
     "build:schema": "typescript-json-schema \"src/command-config/tb-config.ts\" ITBConfig --out ./tb-schema.json",
     "copystatic": "cp -a ./src/static ./dist/src"
   },
-  "gitHead": "fb3fcdcb8573f028277985765f6f42fd680675d9"
+  "gitHead": "30be10122ff4fcdf931eec6ecd8075ff6b2dc42f"
 }
