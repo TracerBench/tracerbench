@@ -1,7 +1,7 @@
 import * as Handlebars from 'handlebars';
 import * as path from 'path';
+import { Stats } from '@tracerbench/stats';
 import { convertMicrosecondsToMS } from './utils';
-import { Stats } from './statistics/stats';
 import { readFileSync } from 'fs-extra';
 import { defaultFlagArgs } from '../command-config/default-flag-args';
 import { ITBConfig } from '../command-config';
@@ -146,9 +146,9 @@ export function bucketPhaseValues(
 }
 
 export interface ParsedTitleConfigs {
-  servers: Array<{ name: string }>,
-  plotTitle: string | undefined,
-  browserVersion: string
+  servers: Array<{ name: string }>;
+  plotTitle: string | undefined;
+  browserVersion: string;
 }
 
 /**
@@ -158,7 +158,10 @@ export interface ParsedTitleConfigs {
  *   attribute
  * @param version - Browser version
  */
-export function resolveTitles(tbConfig: Partial<ITBConfig>, version: string): ParsedTitleConfigs {
+export function resolveTitles(
+  tbConfig: Partial<ITBConfig>,
+  version: string
+): ParsedTitleConfigs {
   const reportTitles = {
     servers: [{ name: 'Control' }, { name: 'Experiment' }],
     plotTitle: defaultFlagArgs.plotTitle,
@@ -297,18 +300,22 @@ export function phaseSorter(
   return 0;
 }
 
-export function generateDataForHTML(controlData: ITracerBenchTraceResult,
-                                    experimentData: ITracerBenchTraceResult,
-                                    reportTitles: ParsedTitleConfigs) {
+export function generateDataForHTML(
+  controlData: ITracerBenchTraceResult,
+  experimentData: ITracerBenchTraceResult,
+  reportTitles: ParsedTitleConfigs
+) {
   const valuesByPhaseControl = bucketPhaseValues(controlData.samples);
   const valuesByPhaseExperiment = bucketPhaseValues(experimentData.samples);
-  const subPhases = Object.keys(valuesByPhaseControl)
-    .filter(k => k !== PAGE_LOAD_TIME);
+  const subPhases = Object.keys(valuesByPhaseControl).filter(
+    k => k !== PAGE_LOAD_TIME
+  );
 
   const durationSection = formatPhaseData(
     valuesByPhaseControl[PAGE_LOAD_TIME],
     valuesByPhaseExperiment[PAGE_LOAD_TIME],
-    PAGE_LOAD_TIME);
+    PAGE_LOAD_TIME
+  );
 
   const subPhaseSections: HTMLSectionRenderData[] = subPhases.map(phase => {
     const controlValues = valuesByPhaseControl[phase];
@@ -316,7 +323,8 @@ export function generateDataForHTML(controlData: ITracerBenchTraceResult,
     const renderDataForPhase = formatPhaseData(
       controlValues,
       experimentValues,
-      phase);
+      phase
+    );
 
     renderDataForPhase.servers = reportTitles.servers;
     return renderDataForPhase as HTMLSectionRenderData;
@@ -335,7 +343,8 @@ export default function createConsumeableHTML(
   const { durationSection, subPhaseSections } = generateDataForHTML(
     controlData,
     experimentData,
-    reportTitles);
+    reportTitles
+  );
 
   const template = Handlebars.compile(REPORT_TEMPLATE_RAW);
 

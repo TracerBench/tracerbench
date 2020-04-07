@@ -25,7 +25,7 @@ export function getSamples(a: number[], pool: number[]): ISample[] {
       val,
       rank: 0,
       pool,
-      samples: a,
+      samples: a
     };
   });
 }

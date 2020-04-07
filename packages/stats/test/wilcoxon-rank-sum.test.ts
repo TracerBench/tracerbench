@@ -5,20 +5,20 @@ import {
   rankSamples,
   getRankSum,
   getSampleUStat,
-  getWilcoxonRankSumTest,
-} from '../../src/helpers/statistics/wilcoxon-rank-sum';
+  getWilcoxonRankSumTest
+} from '../src/wilcoxon-rank-sum';
 
 import { expect } from 'chai';
 
 const data = {
   significant: {
     control: [3, 4, 2, 6, 2, 5],
-    experiment: [9, 7, 5, 10, 6, 8],
+    experiment: [9, 7, 5, 10, 6, 8]
   },
   nonSignificant: {
     control: [1, 1, 1, 1, 1, 2],
-    experiment: [2, 1, 1, 1, 1, 1],
-  },
+    experiment: [2, 1, 1, 1, 1, 1]
+  }
 };
 
 const { control: controlSig, experiment: experimentSig } = data.significant;

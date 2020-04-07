@@ -1,4 +1,4 @@
-import { Stats } from '../../src/helpers/statistics/stats';
+import { Stats } from '../src/stats';
 import { expect } from 'chai';
 
 const control = [
@@ -26,7 +26,7 @@ const control = [
   50248,
   50397,
   50578,
-  51097,
+  51097
 ];
 
 const experiment = [

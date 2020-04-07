@@ -4,8 +4,8 @@ import {
   rankSamples,
   getTMinusVal,
   getTPlusVal,
-  getWilcoxonSignedRankTest,
-} from '../../src/helpers/statistics/wilcoxon-signed-rank';
+  getWilcoxonSignedRankTest
+} from '../src/wilcoxon-signed-rank';
 
 import { expect } from 'chai';
 
