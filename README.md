@@ -242,8 +242,8 @@ When running the TracerBench-CLI `compare` command, on a successful trace a stdo
 
 TracerBench also exposes an explicit `tracerbench report` command that takes a path to the folder containing your "trace-results.json" file and will create a PDF and HTML report.
 
-### Understanding The Box-Plot Results
+### Understanding The Box-Plot Results & Stats
+
+TracerBench Statistics Primer available within the exported `Stats` class: https://github.com/TracerBench/tracerbench/tree/master/packages/stats
 
 ![box-plot-results](https://github.com/TracerBench/tracerbench/blob/master/docs/box-plot-transparent.png)
-
-### [Statistics Primer](https://github.com/TracerBench/tracerbench/tree/master/packages/stats#statistics-primer)
