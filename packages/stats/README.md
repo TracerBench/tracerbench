@@ -43,8 +43,7 @@ stats.sampleCount;        // => {control: 10, experiment: 10}
 stats.range;              // => { min: 959, max: 2112 }
 stats.sparkLine;          // => {control: "█▁▁▁▁▁▁▁▁▁▂", experiment: "█▁▁▁▁▁▁▁▁▁▁"}
 stats.confidenceInterval; // => {min: -46, max: 120, isSig: false}
-stats.estimator;          // => 9
-difference between those distributions.
+stats.estimator;          // => 9; the median difference between each input pairing (control vs experiment).
 stats.sevenFigureSummary; // => {
 //   control: {10: 1014, 25: 1040, 50: 1065, 75: 1140, 90: 2111, min: 988, max: 2112}
 //   experiment: {10: 1023, 25: 1037, 50: 1076, 75: 1091, 90: 1138, min: 959, max: 1453}
