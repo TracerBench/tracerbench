@@ -30,7 +30,8 @@
     "no-var-keyword": false,
     "class-name": false,
     "max-classes-per-file": false,
-    "no-empty": false
+    "no-empty": false,
+    "array-type": [true, "array-simple"]
   },
   "rulesDirectory": []
 }

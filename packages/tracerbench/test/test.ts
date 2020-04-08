@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-import * as mkdirp from 'mkdirp';
+import { writeFileSync } from 'fs';
+import { sync } from 'mkdirp';
 import { resolve } from 'path';
 import { InitialRenderBenchmark, Runner } from '@tracerbench/core';
 import { Stdio } from '@tracerbench/spawn';
@@ -10,22 +10,36 @@ const globSync: (glob: string) => string[] = require('glob').sync;
 
 const browserOpts = {
   additionalArguments: [
-    '--v8-cache-options=none',
-    '--disable-v8-idle-tasks',
     '--crash-dumps-dir=./tmp',
+    '--disable-background-timer-throttling',
+    '--disable-dev-shm-usage',
+    '--disable-cache',
+    '--disable-v8-idle-tasks',
+    '--disable-breakpad',
+    '--disable-notifications',
+    '--disable-hang-monitor',
+    '--safebrowsing-disable-auto-update',
+    '--ignore-certificate-errors',
+    '--v8-cache-options=none',
+    '--headless',
+    '--disable-gpu',
+    '--hide-scrollbars',
+    '--mute-audio',
+    '--disable-logging',
+    '--headless'
   ],
   stdio: 'inherit' as Stdio,
   chromeExecutable: undefined,
   userDataDir: undefined,
   userDataRoot: undefined,
   url: undefined,
-  disableDefaultArguments: false,
-  headless: true,
+  disableDefaultArguments: false
 };
 
 const tests = globSync('dist/test/*/index.html');
 
-mkdirp.sync('test/results');
+// make dir test and results
+sync('test/results');
 
 const benchmarks: InitialRenderBenchmark[] = [];
 
@@ -48,12 +62,12 @@ tests.forEach((indexFile: string) => {
         { start: 'startRouting', label: 'routing' },
         { start: 'willTransition', label: 'transition' },
         { start: 'didTransition', label: 'render' },
-        { start: 'renderEnd', label: 'afterRender' },
+        { start: 'renderEnd', label: 'afterRender' }
       ],
       name: version,
       runtimeStats: true,
       saveTraces: (i: any) => `test/results/trace-${version}-${i}.json`,
-      url,
+      url
     })
   );
 });
@@ -62,9 +76,11 @@ const runner = new Runner(benchmarks);
 
 /*tslint:disable:no-console*/
 runner
-  .run(4)
+  .run(4, (m) => {
+    console.log(`${m}`);
+  })
   .then((results: any) => {
-    fs.writeFileSync(
+    writeFileSync(
       'test/results/results.json',
       JSON.stringify(results, null, 2)
     );
