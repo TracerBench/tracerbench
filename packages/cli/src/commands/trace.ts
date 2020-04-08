@@ -1,5 +1,5 @@
 import { TBBaseCommand } from '../command-config';
-import { readJson } from 'fs-extra';
+import { readJson, writeFileSync, existsSync, mkdirSync } from 'fs-extra';
 import * as path from 'path';
 import {
   liveTrace,
@@ -7,7 +7,7 @@ import {
   loadTrace,
   ITraceEvent,
   IConditions,
-  IAnalyze,
+  IAnalyze
 } from '@tracerbench/core';
 import {
   tbResultsFolder,
@@ -18,12 +18,12 @@ import {
   insights,
   locations,
   harpath,
-  cookiespath,
+  cookiespath
 } from '../helpers/flags';
 import {
   normalizeFnName,
   isCommitLoad,
-  setTraceEvents,
+  setTraceEvents
 } from '../helpers/utils';
 
 export default class Trace extends TBBaseCommand {
@@ -37,7 +37,7 @@ export default class Trace extends TBBaseCommand {
     cookiespath: cookiespath({ required: true }),
     iterations: iterations({ required: true }),
     locations: locations(),
-    insights,
+    insights
   };
 
   public async run() {
@@ -50,7 +50,7 @@ export default class Trace extends TBBaseCommand {
       insights,
       locations,
       network,
-      harpath,
+      harpath
     } = flags;
 
     const methods = [''];
@@ -59,8 +59,22 @@ export default class Trace extends TBBaseCommand {
     const traceHARJSON = await readJson(traceHAR);
     const conditions: IConditions = {
       cpu: cpuThrottleRate,
-      network,
+      network
     };
+    // if the folder for the tracerbench results file
+    // does not exist then create it
+    try {
+      if (!existsSync(tbResultsFolder)) {
+        mkdirSync(tbResultsFolder);
+      }
+    } catch (error) {
+      this.error(error);
+    }
+    // write the trace.json
+    writeFileSync(
+      path.join(tbResultsFolder, 'trace.json'),
+      JSON.stringify(traceHARJSON, null, 2)
+    );
 
     // run the liveTrace
     const { traceEvents } = await liveTrace(
@@ -73,7 +87,7 @@ export default class Trace extends TBBaseCommand {
     const analyzeOptions: IAnalyze = {
       traceEvents,
       traceHARJSON,
-      methods,
+      methods
     };
 
     // analyze the liveTrace
@@ -133,7 +147,7 @@ export default class Trace extends TBBaseCommand {
               functionName,
               url,
               lineNumber,
-              columnNumber,
+              columnNumber
             } = node.callFrame;
 
             methods.add(
@@ -157,8 +171,8 @@ export default class Trace extends TBBaseCommand {
         traceLoad.forEach(
           ({
             args: {
-              data: { frame, url },
-            },
+              data: { frame, url }
+            }
           }: {
             args: { data: { frame: any; url: any } };
           }) => {
