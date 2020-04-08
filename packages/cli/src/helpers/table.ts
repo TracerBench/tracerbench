@@ -15,7 +15,7 @@ export default class TBTable {
     this.heading = heading;
     this.table = new Table({
       colWidths: [40, 30]
-    }) as Table.HorizontalTable;
+    });
     this.display = [];
     this.isSigArray = [];
     this.estimatorDeltas = [];

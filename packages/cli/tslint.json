@@ -19,7 +19,8 @@
     "no-console": false,
     "max-line-length": [true, 200],
     "no-debugger": false,
-    "max-classes-per-file": false
+    "max-classes-per-file": false,
+    "array-type": [true, "array-simple"]
   },
   "rulesDirectory": []
 }
