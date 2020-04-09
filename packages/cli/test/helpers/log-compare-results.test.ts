@@ -1,4 +1,4 @@
-// tslint:disable:no-unused-expression
+// eslint:disable:no-unused-expression
 
 import { expect } from 'chai';
 import { test } from '@oclif/test';
@@ -7,7 +7,7 @@ import {
   logCompareResults,
   ICompareJSONResults,
   anyResultsSignificant,
-  allBelowRegressionThreshold,
+  allBelowRegressionThreshold
 } from '../../src/helpers/log-compare-results';
 
 import { COMPARE_JSON } from '../test-helpers';
@@ -19,29 +19,29 @@ const sampleTrace = {
     {
       phase: 'load',
       start: 0,
-      duration: 1807839,
+      duration: 1807839
     },
     {
       phase: 'boot',
       start: 1807839,
-      duration: 973172,
+      duration: 973172
     },
     {
       phase: 'transition',
       start: 2781011,
-      duration: 1540986,
+      duration: 1540986
     },
     {
       phase: 'render',
       start: 4321997,
-      duration: 1905528,
+      duration: 1905528
     },
     {
       phase: 'paint',
       start: 6227525,
-      duration: 33171,
-    },
-  ],
+      duration: 33171
+    }
+  ]
 };
 
 const tbResultsFolder = COMPARE_JSON;
@@ -50,7 +50,7 @@ const network = {
   offline: false,
   latency: 0,
   downloadThroughput: 0,
-  uploadThroughput: 0,
+  uploadThroughput: 0
 };
 
 const flags = {
@@ -64,27 +64,27 @@ const flags = {
   tracingLocationSearch: '',
   runtimeStats: false,
   debug: false,
-  headless: false,
+  headless: false
 };
 
 const jsonResults = {
   areResultsSignificant: false,
   benchmarkTableData: [{}],
   isBelowRegressionThreshold: true,
-  phaseTableData: [{}],
+  phaseTableData: [{}]
 };
 
 describe('log-compare-results', () => {
-  test.stdout().it(`stdout`, async ctx => {
+  test.stdout().it(`stdout`, async (ctx) => {
     const testResults = [
       {
         set: 'control',
-        samples: [sampleTrace, sampleTrace, sampleTrace, sampleTrace],
+        samples: [sampleTrace, sampleTrace, sampleTrace, sampleTrace]
       },
       {
         set: 'experiment',
-        samples: [sampleTrace, sampleTrace, sampleTrace, sampleTrace],
-      },
+        samples: [sampleTrace, sampleTrace, sampleTrace, sampleTrace]
+      }
     ];
     // @ts-ignore
     const results = await logCompareResults(testResults, flags, scope);

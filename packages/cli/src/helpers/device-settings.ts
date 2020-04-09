@@ -1,7 +1,8 @@
-import { CLIError } from '@oclif/errors';
-import Protocol from 'devtools-protocol';
-import { convertToTypable } from './utils';
-import { deviceLookup } from './device-lookup';
+import { CLIError } from "@oclif/errors";
+import Protocol from "devtools-protocol";
+
+import { deviceLookup, IDeviceLookup } from "./device-lookup";
+import { convertToTypable } from "./utils";
 
 interface ScreenDimensions {
   width: number;
@@ -11,6 +12,7 @@ interface ScreenDimensions {
 export interface Screens {
   horizontal: ScreenDimensions;
   vertical?: ScreenDimensions;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 
@@ -33,12 +35,12 @@ export interface EmulateDeviceSettingCliOption
 }
 
 const deviceSettings: EmulateDeviceSettingCliOption[] = deviceLookup.map(
-  (item: any) => {
+  (item: IDeviceLookup) => {
     return {
       screens: item.device.screen,
-      deviceScaleFactor: item.device.screen['device-pixel-ratio'] || 0,
-      mobile: item.device.capabilities.indexOf('mobile') > -1,
-      userAgent: item.device['user-agent'],
+      deviceScaleFactor: item.device.screen["device-pixel-ratio"] || 0,
+      mobile: item.device.capabilities.indexOf("mobile") > -1,
+      userAgent: item.device["user-agent"],
       typeable: convertToTypable(item.device.title),
       name: item.device.title,
     };
@@ -54,20 +56,20 @@ const deviceSettings: EmulateDeviceSettingCliOption[] = deviceLookup.map(
  */
 export function getEmulateDeviceSettingForKeyAndOrientation(
   key: string,
-  orientation: string = 'vertical'
+  orientation = "vertical"
 ): EmulateDeviceSetting {
   let deviceSetting;
 
   for (deviceSetting of deviceSettings) {
     if (key === deviceSetting.typeable) {
-      if (!deviceSetting.screens[orientation!]) {
+      if (!deviceSetting.screens[orientation]) {
         throw new CLIError(
           `${orientation} orientation for ${key} does not exist`
         );
       }
       return {
-        width: deviceSetting.screens[orientation!].width,
-        height: deviceSetting.screens[orientation!].height,
+        width: deviceSetting.screens[orientation].width,
+        height: deviceSetting.screens[orientation].height,
         deviceScaleFactor: deviceSetting.deviceScaleFactor,
         mobile: deviceSetting.mobile,
         userAgent: deviceSetting.userAgent,

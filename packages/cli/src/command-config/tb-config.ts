@@ -1,16 +1,17 @@
-import { IMarker, INetworkConditions } from '@tracerbench/core';
-import { PerformanceTimingMark } from './default-flag-args';
+import { IMarker, INetworkConditions } from "@tracerbench/core";
 
-export const CONTROL_ENV_OVERRIDE_ATTR = 'controlBenchmarkEnvironment';
-export const EXPERIMENT_ENV_OVERRIDE_ATTR = 'experimentBenchmarkEnvironment';
-export const EXTENDS = 'extends';
+import { PerformanceTimingMark } from "./default-flag-args";
+
+export const CONTROL_ENV_OVERRIDE_ATTR = "controlBenchmarkEnvironment";
+export const EXPERIMENT_ENV_OVERRIDE_ATTR = "experimentBenchmarkEnvironment";
+export const EXTENDS = "extends";
 
 export interface ITBConfig {
   [EXTENDS]?: string;
   plotTitle?: string;
   methods?: string;
   cpuThrottleRate?: number | string;
-  fidelity?: 'test' | 'low' | 'medium' | 'high' | number;
+  fidelity?: "test" | "low" | "medium" | "high" | number;
   report?: string;
   event?: string;
   markers?: string | string[] | IMarker[] | PerformanceTimingMark[];

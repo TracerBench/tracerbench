@@ -1,9 +1,9 @@
-import { getEmulateDeviceSettingForKeyAndOrientation } from '../../src/helpers/simulate-device-options';
-import { expect } from 'chai';
+import { getEmulateDeviceSettingForKeyAndOrientation } from "../../src/helpers/device-settings";
+import { expect } from "chai";
 
-describe('simulate-device-options', () => {
+describe("simulate-device-options", () => {
   it(`getEmulateDeviceSettingForKeyAndOrientation() with non-existent device`, () => {
-    const device = 'not-exist';
+    const device = "not-exist";
     try {
       getEmulateDeviceSettingForKeyAndOrientation(device);
     } catch (error) {
@@ -14,8 +14,8 @@ describe('simulate-device-options', () => {
   });
 
   it(`getEmulateDeviceSettingForKeyAndOrientation() success path`, () => {
-    const result = getEmulateDeviceSettingForKeyAndOrientation('iphone-x');
+    const result = getEmulateDeviceSettingForKeyAndOrientation("iphone-x");
     expect(result !== undefined).to.equal(true);
-    expect(typeof result!.height).to.equal('number');
+    expect(typeof result!.height).to.equal("number");
   });
 });

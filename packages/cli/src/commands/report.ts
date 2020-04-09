@@ -1,15 +1,18 @@
-import * as fs from 'fs-extra';
-import { join, resolve } from 'path';
-import { IConfig } from '@oclif/config';
-import { getConfig, TBBaseCommand } from '../command-config';
-import createConsumeableHTML, {
-  ITracerBenchTraceResult,
-} from '../helpers/create-consumable-html';
-import { tbResultsFolder, config } from '../helpers/flags';
-import printToPDF from '../helpers/print-to-pdf';
-import { chalkScheme } from '../helpers/utils';
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/interface-name-prefix */
+import { IConfig } from "@oclif/config";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs-extra";
+import { join, resolve } from "path";
 
-const ARTIFACT_FILE_NAME = 'artifact';
+import { getConfig, TBBaseCommand } from "../command-config";
+import createConsumableHTML, {
+  ITracerBenchTraceResult,
+} from "../helpers/create-consumable-html";
+import { config, tbResultsFolder } from "../helpers/flags";
+import printToPDF from "../helpers/print-to-pdf";
+import { chalkScheme } from "../helpers/utils";
+
+const ARTIFACT_FILE_NAME = "artifact";
 
 export interface IReportFlags {
   tbResultsFolder: string;
@@ -39,20 +42,15 @@ export default class Report extends TBBaseCommand {
     await this.parseFlags();
   }
   /**
-   * Ensure the input file is valid and call the helper function "createConsumeableHTML"
+   * Ensure the input file is valid and call the helper function "createConsumableHTML"
    * to generate the HTML string for the output file.
    */
   public async run() {
     const tbResultsFolder = this.reportFlags.tbResultsFolder;
-    const inputFilePath = join(tbResultsFolder, 'compare.json');
-    let absPathToHTML;
-    let absOutputPath;
-    let renderedHTML;
-    let htmlOutputPath;
-    let outputFileName;
+    const inputFilePath = join(tbResultsFolder, "compare.json");
     let inputData: ITracerBenchTraceResult[] = [];
     // If the input file cannot be found, exit with an error
-    if (!fs.existsSync(inputFilePath)) {
+    if (!existsSync(inputFilePath)) {
       this.error(
         `Input json file does not exist. Please make sure ${inputFilePath} exists`,
         { exit: 1 }
@@ -60,7 +58,7 @@ export default class Report extends TBBaseCommand {
     }
 
     try {
-      inputData = JSON.parse(fs.readFileSync(inputFilePath, 'utf8'));
+      inputData = JSON.parse(readFileSync(inputFilePath, "utf8"));
     } catch (error) {
       this.error(
         `Had issues parsing the input JSON file. Please make sure ${inputFilePath} is a valid JSON`,
@@ -68,39 +66,41 @@ export default class Report extends TBBaseCommand {
       );
     }
 
-    const controlData = inputData.find(element => {
-      return element.set === 'control';
+    const controlData = inputData.find((element) => {
+      return element.set === "control";
     }) as ITracerBenchTraceResult;
 
-    const experimentData = inputData.find(element => {
-      return element.set === 'experiment';
+    const experimentData = inputData.find((element) => {
+      return element.set === "experiment";
     }) as ITracerBenchTraceResult;
 
     if (!controlData || !experimentData) {
       this.error(`Missing control or experiment set in JSON`, { exit: 1 });
     }
 
-    outputFileName = this.determineOutputFileName(tbResultsFolder);
-    renderedHTML = createConsumeableHTML(
+    const outputFileName = this.determineOutputFileName(tbResultsFolder);
+    const renderedHTML = createConsumableHTML(
       controlData,
       experimentData,
       this.parsedConfig
     );
-    if (!fs.existsSync(tbResultsFolder)) {
-      fs.mkdirSync(tbResultsFolder, { recursive: true });
+    if (!existsSync(tbResultsFolder)) {
+      mkdirSync(tbResultsFolder, { recursive: true });
     }
 
-    htmlOutputPath = join(tbResultsFolder, `/${outputFileName}.html`);
-    absPathToHTML = resolve(htmlOutputPath);
+    const htmlOutputPath = join(tbResultsFolder, `/${outputFileName}.html`);
+    const absPathToHTML = resolve(htmlOutputPath);
 
-    fs.writeFileSync(absPathToHTML, renderedHTML);
+    writeFileSync(absPathToHTML, renderedHTML);
 
-    absOutputPath = resolve(join(tbResultsFolder + `/${outputFileName}.pdf`));
+    const absOutputPath = resolve(
+      join(tbResultsFolder + `/${outputFileName}.pdf`)
+    );
 
     await printToPDF(`file://${absPathToHTML}`, absOutputPath);
     this.log(
       `\n${chalkScheme.blackBgBlue(
-        `    ${chalkScheme.white('Benchmark Reports')}    `
+        `    ${chalkScheme.white("Benchmark Reports")}    `
       )}`
     );
     this.log(
@@ -120,13 +120,14 @@ export default class Report extends TBBaseCommand {
 
     // if the folder for the tracerbench results file
     // does not exist then create it
-    if (!fs.existsSync(tbResultsFolder)) {
-      fs.mkdirSync(tbResultsFolder);
+    if (!existsSync(tbResultsFolder)) {
+      mkdirSync(tbResultsFolder);
     }
   }
   private determineOutputFileName(outputFolder: string): string {
     let count = 1;
-    while (true) {
+    const running = true;
+    while (running) {
       const candidateHTML = join(
         outputFolder,
         `${ARTIFACT_FILE_NAME}-${count}.html`
@@ -135,7 +136,7 @@ export default class Report extends TBBaseCommand {
         outputFolder,
         `${ARTIFACT_FILE_NAME}-${count}.pdf`
       );
-      if (!fs.existsSync(candidateHTML) && !fs.existsSync(candidatePDF)) {
+      if (!existsSync(candidateHTML) && !existsSync(candidatePDF)) {
         break;
       }
       count += 1;

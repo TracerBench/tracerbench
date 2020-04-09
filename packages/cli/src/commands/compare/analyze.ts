@@ -1,18 +1,20 @@
-import { TBBaseCommand } from '../../command-config';
-import { logCompareResults } from '../../helpers/log-compare-results';
-import { readJsonSync } from 'fs-extra';
+/* eslint-disable filenames/match-exported */
+import { readJsonSync } from "fs-extra";
+
+import { TBBaseCommand } from "../../command-config";
 import {
   fidelity,
-  tbResultsFolder,
-  regressionThreshold,
   isCIEnv,
-} from '../../helpers/flags';
+  regressionThreshold,
+  tbResultsFolder,
+} from "../../helpers/flags";
+import { logCompareResults } from "../../helpers/log-compare-results";
 
 export default class CompareAnalyze extends TBBaseCommand {
   public static description =
-    'Run an analysis of a benchmark run from a results json file and output to terminal';
+    "Run an analysis of a benchmark run from a results json file and output to terminal";
   public static args = [
-    { name: 'resultsFile', required: true, description: 'Results JSON file' },
+    { name: "resultsFile", required: true, description: "Results JSON file" },
   ];
   public static flags = {
     fidelity: fidelity({ required: true }),

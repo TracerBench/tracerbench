@@ -1,13 +1,28 @@
-/* tslint:disable:no-console*/
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint:disable:no-console*/
 
-import * as chalk from 'chalk';
-import * as logSymbols from 'log-symbols';
-import { IMarker, ITraceEvent } from '@tracerbench/core';
+import { IMarker, ITraceEvent } from "@tracerbench/core";
+import * as chalk from "chalk";
+import * as logSymbols from "log-symbols";
+
 import {
   IBenchmarkEnvironmentOverride,
   ITBConfig,
-} from '../command-config/tb-config';
-import { ICompareFlags } from '../commands/compare';
+} from "../command-config/tb-config";
+import { ICompareFlags } from "../commands/compare";
+
+export interface IEvent extends ITraceEvent {
+  args: {
+    data?: { [key: string]: boolean };
+  };
+}
+
+export interface IFrame extends ITraceEvent {
+  args: {
+    frame: string;
+  };
+}
 
 /**
  * Handles checking if there is a specific override for the attributeName in the tbConfigs for the given overrideObjectName.
@@ -18,6 +33,7 @@ import { ICompareFlags } from '../commands/compare';
  * @param overrideObjectName - Either "controlBenchmarkEnvironment" or "experimentBenchmarkEnvironment"
  * @param tbConfig - This refers to the parsed JSON from the config file if it exists
  */
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 export function checkEnvironmentSpecificOverride(
   attributeName: keyof ICompareFlags,
   flags: ICompareFlags,
@@ -27,6 +43,7 @@ export function checkEnvironmentSpecificOverride(
   if (!tbConfig || !tbConfig[overrideObjectName]) {
     return flags[attributeName];
   }
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const environmentSpecificConfigs: IBenchmarkEnvironmentOverride = tbConfig[
     overrideObjectName
   ]!;
@@ -51,11 +68,11 @@ export function mergeLeft(
   left: { [key: string]: any },
   right: { [key: string]: any }
 ): { [key: string]: any } {
-  Object.keys(right).forEach(key => {
+  Object.keys(right).forEach((key) => {
     const leftValue = left[key];
     const rightValue = left[key];
     const matchingObjectType =
-      typeof leftValue === 'object' && typeof rightValue === 'object';
+      typeof leftValue === "object" && typeof rightValue === "object";
     const isOneArray = Array.isArray(leftValue) || Array.isArray(rightValue);
 
     if (matchingObjectType && (left[key] || right[key]) && !isOneArray) {
@@ -69,12 +86,12 @@ export function mergeLeft(
 }
 
 export function convertMicrosecondsToMS(ms: string | number): number {
-  ms = typeof ms === 'string' ? parseInt(ms, 10) : ms;
+  ms = typeof ms === "string" ? parseInt(ms, 10) : ms;
   return Math.floor(ms * 100) / 100000;
 }
 
 export function convertMSToMicroseconds(ms: string | number): number {
-  ms = typeof ms === 'string' ? parseInt(ms, 10) : ms;
+  ms = typeof ms === "string" ? parseInt(ms, 10) : ms;
   return Math.floor(ms * 1000);
 }
 
@@ -85,12 +102,13 @@ export function getCookiesFromHAR(har: any) {
       cookies.push(entry.response.cookies);
     }
   });
+  // eslint-disable-next-line prefer-spread
   return (cookies = [].concat.apply([], cookies));
 }
 
 export function normalizeFnName(name: string) {
-  if (name === '') {
-    name = '(anonymous)';
+  if (name === "") {
+    name = "(anonymous)";
   }
   return name;
 }
@@ -109,44 +127,43 @@ export function collect(val: any, memo: any) {
   return memo;
 }
 
-export function format(ts: number, start: number) {
+export function format(ts: number, start: number): string {
   let ms = ((ts - start) / 1000).toFixed(2).toString();
   while (ms.length < 10) {
-    ms = ' ' + ms;
+    ms = " " + ms;
   }
   return `${ms} ms`;
 }
 
-export function isMark(event: ITraceEvent) {
-  return event.ph === 'R';
+export function isMark(event: IEvent): boolean {
+  return event.ph === "R";
 }
 
-export function isFrameMark(frame: any, event: any) {
-  return event.ph === 'R' && event.args.frame === frame;
+export function isFrameMark(frame: string, event: IFrame): boolean {
+  return event.ph === "R" && event.args.frame === frame;
 }
 
-export function isFrameNavigationStart(frame: any, event: ITraceEvent) {
-  return isFrameMark(frame, event) && event.name === 'navigationStart';
+export function isFrameNavigationStart(frame: string, event: IFrame): boolean {
+  return isFrameMark(frame, event) && event.name === "navigationStart";
 }
 
-export function isUserMark(event: ITraceEvent) {
+export function isUserMark(event: ITraceEvent): boolean {
   return (
-    event.ph === 'R' &&
-    event.cat === 'blink.user_timing' &&
+    event.ph === "R" &&
+    event.cat === "blink.user_timing" &&
     Object.keys(event.args).length === 0
   );
 }
 
-export function isCommitLoad(event: any) {
+export function isCommitLoad(event: IEvent): boolean {
   return (
-    event.ph === 'X' &&
-    event.name === 'CommitLoad' &&
+    event.ph === "X" &&
+    event.name === "CommitLoad" &&
     event.args.data !== undefined &&
     event.args.data.isMainFrame
   );
 }
-
-export function byTime(a: any, b: any) {
+export function byTime(a: { ts: number }, b: { ts: number }): number {
   return a.ts - b.ts;
 }
 
@@ -162,11 +179,11 @@ export function findFrame(events: any[], url: any) {
 
 export function parseMarkers(m: string | string[]): IMarker[] {
   const a: IMarker[] = [];
-  if (typeof m === 'string') {
-    m = m.split(',');
+  if (typeof m === "string") {
+    m = m.split(",");
   }
 
-  m.forEach(marker => {
+  m.forEach((marker) => {
     a.push({
       label: marker,
       start: marker,
@@ -179,11 +196,7 @@ export function removeDuplicates<T>(collection: T[]) {
   return [...new Set(collection)];
 }
 
-export function fillArray(
-  arrLngth: number,
-  incr: number = 1,
-  strt: number = 0
-): number[] {
+export function fillArray(arrLngth: number, incr = 1, strt = 0): number[] {
   const a = [];
   while (a.length < arrLngth) {
     if (a.length < 1) {
@@ -202,11 +215,11 @@ export function fillArray(
  * @param str - String to be converted to dasherized case
  */
 export function convertToTypable(name: string): string {
-  const split = name.split(' ');
-  const lowercasedWords = split.map(word =>
-    word.toLowerCase().replace(/\//g, '')
+  const split = name.split(" ");
+  const lowercasedWords = split.map((word) =>
+    word.toLowerCase().replace(/\//g, "")
   );
-  return lowercasedWords.join('-');
+  return lowercasedWords.join("-");
 }
 
 export function toNearestHundreth(n: number): number {

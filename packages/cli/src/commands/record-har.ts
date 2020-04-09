@@ -1,28 +1,30 @@
-import { readJson, writeFileSync } from 'fs-extra';
-import { resolve, join } from 'path';
-import { recordHARClient, IConditions } from '@tracerbench/core';
-import { headlessFlags } from '../command-config/default-flag-args';
-import { TBBaseCommand, getConfig } from '../command-config';
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+import { IConditions, recordHARClient } from "@tracerbench/core";
+import { readJson, writeFileSync } from "fs-extra";
+import { join, resolve } from "path";
+
+import { getConfig, TBBaseCommand } from "../command-config";
+import { headlessFlags } from "../command-config/default-flag-args";
 import {
-  dest,
-  url,
-  cookiespath,
-  filename,
-  marker,
   config,
-  headless
-} from '../helpers/flags';
+  cookiespath,
+  dest,
+  filename,
+  headless,
+  marker,
+  url,
+} from "../helpers/flags";
 
 export default class RecordHAR extends TBBaseCommand {
-  public static description = 'Generates a HAR file from a URL.';
+  public static description = "Generates a HAR file from a URL.";
   public static flags = {
     url: url({ required: true, default: undefined }),
     dest: dest({ required: true }),
     cookiespath: cookiespath({ required: true }),
-    filename: filename({ required: true, default: 'tracerbench' }),
+    filename: filename({ required: true, default: "tracerbench" }),
     marker: marker({ required: true }),
     config: config(),
-    headless
+    headless,
   };
   public async init() {
     const { flags } = this.parse(RecordHAR);
@@ -35,8 +37,8 @@ export default class RecordHAR extends TBBaseCommand {
     const { network, cpuThrottleRate, headless } = this.parsedConfig;
     let { browserArgs } = this.parsedConfig;
     const conditions: IConditions = {
-      network: network ? network : 'none',
-      cpu: cpuThrottleRate ? parseInt(cpuThrottleRate as string, 10) : 1
+      network: network ? network : "none",
+      cpu: cpuThrottleRate ? parseInt(cpuThrottleRate as string, 10) : 1,
     };
     // grab the auth cookies
     const cookies = await readJson(resolve(cookiespath));

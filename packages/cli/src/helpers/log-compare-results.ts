@@ -1,17 +1,18 @@
-import * as chalk from 'chalk';
-import { Command } from '@oclif/command';
-import { Stats, ISevenFigureSummary } from '@tracerbench/stats';
+import { Command } from "@oclif/command";
+import { ISevenFigureSummary, Stats } from "@tracerbench/stats";
+import * as chalk from "chalk";
+
+import { fidelityLookup } from "../command-config";
+import { ICompareFlags } from "../commands/compare";
 import {
   bucketPhaseValues,
   formatPhaseData,
   HTMLSectionRenderData,
   ITracerBenchTraceResult,
-  PAGE_LOAD_TIME
-} from './create-consumable-html';
-import TBTable from './table';
-import { ICompareFlags } from '../commands/compare';
-import { fidelityLookup } from '../command-config';
-import { chalkScheme } from './utils';
+  PAGE_LOAD_TIME,
+} from "./create-consumable-html";
+import TBTable from "./tb-table";
+import { chalkScheme } from "./utils";
 
 export interface ICompareJSONResult {
   heading: string;
@@ -63,13 +64,13 @@ export function allBelowRegressionThreshold(
   benchmarkTableEstimatorDeltas: number[],
   phaseTableEstimatorDeltas: number[]
 ): boolean {
-  function isBelowThreshold(n: number) {
+  function isBelowThreshold(n: number): boolean {
     const limit = regressionThreshold as number;
     // if the delta is a negative number and abs(delta) greater than threshold return false
     return n < 0 && Math.abs(n) > limit ? false : true;
   }
 
-  if (typeof regressionThreshold === 'number') {
+  if (typeof regressionThreshold === "number") {
     // concat estimator deltas from all phases
     const deltas: number[] = benchmarkTableEstimatorDeltas.concat(
       phaseTableEstimatorDeltas
@@ -91,7 +92,7 @@ export function outputRunMetaMessagesAndWarnings(
   cli: Command,
   cliFlags: Partial<ICompareFlags>,
   isBelowRegressionThreshold: boolean
-) {
+): void {
   const { fidelity, regressionThreshold } = cliFlags;
   const LOW_FIDELITY_WARNING =
     'The fidelity setting was set below the recommended for a viable result. Rerun TracerBench with at least "fidelity=low"';
@@ -99,7 +100,7 @@ export function outputRunMetaMessagesAndWarnings(
   if ((fidelity as number) < 10) {
     cli.log(
       `\n${chalkScheme.blackBgYellow(
-        `    ${chalkScheme.white('WARNING')}    `
+        `    ${chalkScheme.white("WARNING")}    `
       )} ${chalkScheme.warning(` ${LOW_FIDELITY_WARNING}`)}\n`
     );
   }
@@ -107,12 +108,14 @@ export function outputRunMetaMessagesAndWarnings(
   if (!isBelowRegressionThreshold) {
     cli.log(
       `\n${chalkScheme.blackBgRed(
-        `    ${chalkScheme.white('!! ALERT')}    `
+        `    ${chalkScheme.white("!! ALERT")}    `
       )} ${chalk.red(
         ` Regression found exceeding the set regression threshold of ${regressionThreshold}ms`
       )}\n`
     );
   }
+
+  return;
 }
 
 /**
@@ -129,26 +132,26 @@ export function outputSummaryReport(
   phaseResultsFormatted: Array<
     Pick<
       HTMLSectionRenderData,
-      'phase' | 'hlDiff' | 'isSignificant' | 'ciMin' | 'ciMax'
+      "phase" | "hlDiff" | "isSignificant" | "ciMin" | "ciMax"
     >
   >
-) {
+): void {
   cli.log(
     `\n${chalkScheme.blackBgBlue(
-      `    ${chalkScheme.white('Benchmark Results Summary')}    `
+      `    ${chalkScheme.white("Benchmark Results Summary")}    `
     )}`
   );
 
-  cli.log(`\n${chalk.red('Red')} color means there was a regression.`);
-  cli.log(`${chalk.green('Green')} color means there was an improvement.\n`);
-  phaseResultsFormatted.forEach(phaseData => {
+  cli.log(`\n${chalk.red("Red")} color means there was a regression.`);
+  cli.log(`${chalk.green("Green")} color means there was an improvement.\n`);
+  phaseResultsFormatted.forEach((phaseData) => {
     const { phase, hlDiff, isSignificant, ciMin, ciMax } = phaseData;
     let msg = `${chalk.bold(phase)} phase `;
 
     if (isSignificant && Math.abs(hlDiff)) {
       let coloredDiff;
 
-      msg += 'estimated difference ';
+      msg += "estimated difference ";
 
       if (hlDiff < 0) {
         coloredDiff = chalk.red(
@@ -162,10 +165,12 @@ export function outputSummaryReport(
 
       msg += `${coloredDiff}`;
     } else {
-      msg += `${chalk.grey('no difference')}`;
+      msg += `${chalk.grey("no difference")}`;
     }
     cli.log(msg);
   });
+
+  return;
 }
 
 /**
@@ -190,7 +195,7 @@ export function outputJSONResults(
     benchmarkTableData,
     phaseTableData,
     areResultsSignificant,
-    isBelowRegressionThreshold
+    isBelowRegressionThreshold,
   };
   return JSON.stringify(jsonResults);
 }
@@ -204,39 +209,38 @@ export function outputJSONResults(
  */
 export async function logCompareResults(
   results: ITracerBenchTraceResult[],
-  flags: Pick<ICompareFlags, 'fidelity' | 'regressionThreshold' | 'isCIEnv'>,
+  flags: Pick<ICompareFlags, "fidelity" | "regressionThreshold" | "isCIEnv">,
   cli: Command
 ): Promise<string> {
   const { fidelity } = flags;
-  const benchmarkTable = new TBTable('Initial Render');
-  const phaseTable = new TBTable('Sub Phase of Duration');
+  const benchmarkTable = new TBTable("Initial Render");
+  const phaseTable = new TBTable("Sub Phase of Duration");
 
-  const controlData = results.find(element => {
-    return element.set === 'control';
+  const controlData = results.find((element) => {
+    return element.set === "control";
   }) as ITracerBenchTraceResult;
 
-  const experimentData = results.find(element => {
-    return element.set === 'experiment';
+  const experimentData = results.find((element) => {
+    return element.set === "experiment";
   }) as ITracerBenchTraceResult;
 
   const valuesByPhaseControl = bucketPhaseValues(controlData.samples);
   const valuesByPhaseExperiment = bucketPhaseValues(experimentData.samples);
 
   const subPhases = Object.keys(valuesByPhaseControl).filter(
-    k => k !== PAGE_LOAD_TIME
+    (k) => k !== PAGE_LOAD_TIME
   );
   const phaseResultsFormatted: Array<Pick<
     HTMLSectionRenderData,
-    'phase' | 'hlDiff' | 'isSignificant' | 'ciMin' | 'ciMax'
+    "phase" | "hlDiff" | "isSignificant" | "ciMin" | "ciMax"
   >> = [];
 
   const durationStats = new Stats({
     control: valuesByPhaseControl.duration,
     experiment: valuesByPhaseExperiment.duration,
-    name: 'duration'
+    name: "duration",
   });
   benchmarkTable.display.push(durationStats);
-  // @ts-ignore
   phaseResultsFormatted.push(
     formatPhaseData(
       valuesByPhaseControl[PAGE_LOAD_TIME],
@@ -245,15 +249,14 @@ export async function logCompareResults(
     )
   );
 
-  subPhases.forEach(phase => {
+  subPhases.forEach((phase) => {
     phaseTable.display.push(
       new Stats({
         control: valuesByPhaseControl[phase],
         experiment: valuesByPhaseExperiment[phase],
-        name: phase
+        name: phase,
       })
     );
-    // @ts-ignore
     phaseResultsFormatted.push(
       formatPhaseData(
         valuesByPhaseControl[phase],
@@ -263,7 +266,7 @@ export async function logCompareResults(
     );
   });
 
-  let isBelowRegressionThreshold: boolean = true;
+  let isBelowRegressionThreshold = true;
   const benchmarkTableData = benchmarkTable.getData();
   const phaseTableData = phaseTable.getData();
   const areResultsSignificant = anyResultsSignificant(

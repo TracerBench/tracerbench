@@ -3048,7 +3048,7 @@ enifed('@ember/-internals/glimmer', ['exports', '@glimmer/runtime', '@glimmer/ut
             false && !(this.tagName !== '' || !this.renderer._destinedForDOM || !(() => {
                 let eventDispatcher = (0, _owner.getOwner)(this).lookup('event_dispatcher:main');
                 let events = eventDispatcher && eventDispatcher._finalEvents || {};
-                // tslint:disable-next-line:forin
+                // eslint:disable-next-line:forin
                 for (let key in events) {
                     let methodName = events[key];
                     if (typeof this[methodName] === 'function') {
@@ -3057,7 +3057,7 @@ enifed('@ember/-internals/glimmer', ['exports', '@glimmer/runtime', '@glimmer/ut
                 }
                 return false;
             })()) && (0, _debug.assert)(
-            // tslint:disable-next-line:max-line-length
+            // eslint:disable-next-line:max-line-length
             `You can not define a function that handles DOM events in the \`${this}\` tagless component since it doesn't have any DOM element.`, this.tagName !== '' || !this.renderer._destinedForDOM || !(() => {
                 let eventDispatcher = (0, _owner.getOwner)(this).lookup('event_dispatcher:main');let events = eventDispatcher && eventDispatcher._finalEvents || {};for (let key in events) {
                     let methodName = events[key];if (typeof this[methodName] === 'function') {
@@ -3916,7 +3916,7 @@ enifed('@ember/-internals/glimmer', ['exports', '@glimmer/runtime', '@glimmer/ut
                 return false;
             }
             if ((0, _metal.get)(this, 'loading')) {
-                // tslint:disable-next-line:max-line-length
+                // eslint:disable-next-line:max-line-length
                 false && (0, _debug.warn)('This link-to is in an inactive loading state because at least one of its parameters presently has a null/undefined value, or the provided route name is invalid.', false, {
                     id: 'ember-glimmer.link-to.inactive-loading-state'
                 });
@@ -3934,7 +3934,7 @@ enifed('@ember/-internals/glimmer', ['exports', '@glimmer/runtime', '@glimmer/ut
                 queryParams,
                 routeName: qualifiedRouteName
             };
-            // tslint:disable-next-line:max-line-length
+            // eslint:disable-next-line:max-line-length
             (0, _instrumentation.flaggedInstrument)('interaction.link-to', payload, this._generateTransition(payload, qualifiedRouteName, models, queryParams, shouldReplace));
             return false;
         },
@@ -4007,7 +4007,7 @@ enifed('@ember/-internals/glimmer', ['exports', '@glimmer/runtime', '@glimmer/ut
                     try {
                         routing.generateURL(qualifiedRouteName, models, queryParams);
                     } catch (e) {
-                        // tslint:disable-next-line:max-line-length
+                        // eslint:disable-next-line:max-line-length
                         false && !false && (0, _debug.assert)('You attempted to define a `{{link-to "' + qualifiedRouteName + '"}}` but did not pass the parameters required for generating its dynamic segments. ' + e.message);
                     }
                 }
@@ -4087,7 +4087,7 @@ enifed('@ember/-internals/glimmer', ['exports', '@glimmer/runtime', '@glimmer/ut
             }
             class TemplateElement extends Element {}
             class EngineElement extends Element {}
-            // tslint:disable-next-line:no-shadowed-variable
+            // eslint:disable-next-line:no-shadowed-variable
             DebugStack = class DebugStack {
                 constructor() {
                     this._stack = [];
@@ -4717,7 +4717,7 @@ enifed('@ember/-internals/glimmer', ['exports', '@glimmer/runtime', '@glimmer/ut
             // Otherwise, we need to fall back to our own URL parsing.
             // Global `require` is shadowed by Ember's loader so we have to use the fully
             // qualified `module.require`.
-            // tslint:disable-next-line:no-require-imports
+            // eslint:disable-next-line:no-require-imports
             nodeURL = (0, _nodeModule.require)('url');
             environment.protocolForURL = nodeProtocolForURL;
         } else {
@@ -4834,7 +4834,7 @@ enifed('@ember/-internals/glimmer', ['exports', '@glimmer/runtime', '@glimmer/ut
         }
 
     // implements the ComponentManager interface as defined in glimmer:
-    // tslint:disable-next-line:max-line-length
+    // eslint:disable-next-line:max-line-length
     // https://github.com/glimmerjs/glimmer-vm/blob/v0.24.0-beta.4/packages/%40glimmer/runtime/lib/component/interfaces.ts#L21
     class AbstractManager {
         constructor() {
@@ -4983,7 +4983,7 @@ enifed('@ember/-internals/glimmer', ['exports', '@glimmer/runtime', '@glimmer/ut
         }
     }
 
-    // tslint:disable-next-line:no-empty
+    // eslint:disable-next-line:no-empty
     function NOOP() {}
     /**
       @module ember
@@ -5224,7 +5224,7 @@ enifed('@ember/-internals/glimmer', ['exports', '@glimmer/runtime', '@glimmer/ut
 
     function aliasIdToElementId(args, props) {
         if (args.named.has('id')) {
-            // tslint:disable-next-line:max-line-length
+            // eslint:disable-next-line:max-line-length
             false && !!args.named.has('elementId') && (0, _debug.assert)(`You cannot invoke a component with both 'id' and 'elementId' at the same time.`, !args.named.has('elementId'));
 
             props.elementId = props.id;
@@ -5556,7 +5556,7 @@ enifed('@ember/-internals/glimmer', ['exports', '@glimmer/runtime', '@glimmer/ut
     };
     const CURLY_COMPONENT_MANAGER = new CurlyComponentManager();
     class CurlyComponentDefinition {
-        // tslint:disable-next-line:no-shadowed-variable
+        // eslint:disable-next-line:no-shadowed-variable
         constructor(name, ComponentClass, handle, template, args) {
             this.name = name;
             this.ComponentClass = ComponentClass;
@@ -5656,13 +5656,13 @@ enifed('@ember/-internals/glimmer', ['exports', '@glimmer/runtime', '@glimmer/ut
             return new DynamicScope(this.view, this.outletState);
         }
         get(key) {
-            // tslint:disable-next-line:max-line-length
+            // eslint:disable-next-line:max-line-length
             false && !(key === 'outletState') && (0, _debug.assert)(`Using \`-get-dynamic-scope\` is only supported for \`outletState\` (you used \`${key}\`).`, key === 'outletState');
 
             return this.outletState;
         }
         set(key, value) {
-            // tslint:disable-next-line:max-line-length
+            // eslint:disable-next-line:max-line-length
             false && !(key === 'outletState') && (0, _debug.assert)(`Using \`-with-dynamic-scope\` is only supported for \`outletState\` (you used \`${key}\`).`, key === 'outletState');
 
             this.outletState = value;
@@ -6727,7 +6727,7 @@ enifed('@ember/-internals/glimmer', ['exports', '@glimmer/runtime', '@glimmer/ut
                 self = context;
                 fn = action;
             } else {
-                // tslint:disable-next-line:max-line-length
+                // eslint:disable-next-line:max-line-length
                 false && !false && (0, _debug.assert)(`An action could not be made for \`${debugKey || action}\` in ${target}. Please confirm that you are using either a quoted action name (i.e. \`(action '${debugKey || 'myAction'}')\`) or a function available in ${target}.`, false);
             }
         }
@@ -7238,7 +7238,7 @@ enifed('@ember/-internals/glimmer', ['exports', '@glimmer/runtime', '@glimmer/ut
       @public
     */
     function queryParams({ positional, named }) {
-        // tslint:disable-next-line:max-line-length
+        // eslint:disable-next-line:max-line-length
         false && !(positional.value().length === 0) && (0, _debug.assert)("The `query-params` helper only accepts hash parameters, e.g. (query-params queryParamPropertyName='foo') as opposed to just (query-params 'foo')", positional.value().length === 0);
 
         return new _routing.QueryParams((0, _polyfills.assign)({}, named.value()));
@@ -26278,10 +26278,10 @@ enifed('@ember/-internals/views/lib/mixins/view_support', ['exports', '@ember/-i
     init() {
       this._super(...arguments);
 
-      // tslint:disable-next-line:max-line-length
+      // eslint:disable-next-line:max-line-length
       false && !((0, _meta.descriptorFor)(this, 'elementId') === undefined) && (0, _debug.assert)(`You cannot use a computed property for the component's \`elementId\` (${this}).`, (0, _meta.descriptorFor)(this, 'elementId') === undefined);
 
-      // tslint:disable-next-line:max-line-length
+      // eslint:disable-next-line:max-line-length
 
       false && !((0, _meta.descriptorFor)(this, 'tagName') === undefined) && (0, _debug.assert)(`You cannot use a computed property for the component's \`tagName\` (${this}).`, (0, _meta.descriptorFor)(this, 'tagName') === undefined);
 
@@ -35113,7 +35113,7 @@ enifed('@glimmer/opcode-compiler', ['exports', '@glimmer/util', '@glimmer/vm', '
             builder.setComponentAttrs(sexp[2]);
         });
         CLIENT_SIDE.add(Ops$1.Debugger, () => {
-            // tslint:disable-next-line:no-debugger
+            // eslint:disable-next-line:no-debugger
             debugger;
         });
         CLIENT_SIDE.add(Ops$1.DidRenderLayout, (_sexp, builder) => {
@@ -39054,14 +39054,14 @@ enifed('@glimmer/runtime', ['exports', '@glimmer/util', '@glimmer/reference', '@
         }
     }
 
-    /* tslint:disable */
+    /* eslint:disable */
     function debugCallback(context, get) {
         console.info('Use `context`, and `get(<path>)` to debug this template.');
         // for example...
         context === get('this');
         debugger;
     }
-    /* tslint:enable */
+    /* eslint:enable */
     let callback = debugCallback;
     // For testing purposes
     function setDebuggerCallback(cb) {
