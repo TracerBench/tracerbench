@@ -1,30 +1,32 @@
-import { TBBaseCommand } from '../command-config';
-import { readJson, writeFileSync, existsSync, mkdirSync } from 'fs-extra';
-import * as path from 'path';
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
-  liveTrace,
   analyze,
-  loadTrace,
-  ITraceEvent,
+  IAnalyze,
   IConditions,
-  IAnalyze
-} from '@tracerbench/core';
+  ITraceEvent,
+  liveTrace,
+  loadTrace,
+} from "@tracerbench/core";
+import { existsSync, mkdirSync, readJson, writeFileSync } from "fs-extra";
+import * as path from "path";
+
+import { TBBaseCommand } from "../command-config";
 import {
-  tbResultsFolder,
+  cookiespath,
   cpuThrottleRate,
-  iterations,
-  network,
-  url,
-  insights,
-  locations,
   harpath,
-  cookiespath
-} from '../helpers/flags';
+  insights,
+  iterations,
+  locations,
+  network,
+  tbResultsFolder,
+  url,
+} from "../helpers/flags";
 import {
-  normalizeFnName,
   isCommitLoad,
-  setTraceEvents
-} from '../helpers/utils';
+  normalizeFnName,
+  setTraceEvents,
+} from "../helpers/utils";
 
 export default class Trace extends TBBaseCommand {
   public static description = `Parses a CPU profile and aggregates time across heuristics. Can be vertically sliced with event names.`;
@@ -37,7 +39,7 @@ export default class Trace extends TBBaseCommand {
     cookiespath: cookiespath({ required: true }),
     iterations: iterations({ required: true }),
     locations: locations(),
-    insights
+    insights,
   };
 
   public async run() {
@@ -50,16 +52,16 @@ export default class Trace extends TBBaseCommand {
       insights,
       locations,
       network,
-      harpath
+      harpath,
     } = flags;
 
-    const methods = [''];
+    const methods = [""];
     const cookiesJSON = await readJson(path.resolve(cookiespath));
     const traceHAR = path.resolve(harpath);
     const traceHARJSON = await readJson(traceHAR);
     const conditions: IConditions = {
       cpu: cpuThrottleRate,
-      network
+      network,
     };
     // if the folder for the tracerbench results file
     // does not exist then create it
@@ -72,7 +74,7 @@ export default class Trace extends TBBaseCommand {
     }
     // write the trace.json
     writeFileSync(
-      path.join(tbResultsFolder, 'trace.json'),
+      path.join(tbResultsFolder, "trace.json"),
       JSON.stringify(traceHARJSON, null, 2)
     );
 
@@ -87,7 +89,7 @@ export default class Trace extends TBBaseCommand {
     const analyzeOptions: IAnalyze = {
       traceEvents,
       traceHARJSON,
-      methods
+      methods,
     };
 
     // analyze the liveTrace
@@ -96,8 +98,8 @@ export default class Trace extends TBBaseCommand {
     if (insights) {
       // js-eval-time
       let trace: any;
-      let totalJSDuration: number = 0;
-      let totalCSSDuration: number = 0;
+      let totalJSDuration = 0;
+      let totalCSSDuration = 0;
 
       const methods = new Set();
 
@@ -108,7 +110,7 @@ export default class Trace extends TBBaseCommand {
       }
 
       trace
-        .filter((event: ITraceEvent) => event.name === 'EvaluateScript')
+        .filter((event: ITraceEvent) => event.name === "EvaluateScript")
         .filter((event: any) => event.args.data.url)
         .forEach((event: any) => {
           const url = event.args.data.url;
@@ -124,7 +126,7 @@ export default class Trace extends TBBaseCommand {
 
       // css-parse
       trace
-        .filter((event: ITraceEvent) => event.name === 'ParseAuthorStyleSheet')
+        .filter((event: ITraceEvent) => event.name === "ParseAuthorStyleSheet")
         .filter((event: any) => event.args.data.styleSheetUrl)
         .forEach((event: any) => {
           const url = event.args.data.styleSheetUrl;
@@ -147,7 +149,7 @@ export default class Trace extends TBBaseCommand {
               functionName,
               url,
               lineNumber,
-              columnNumber
+              columnNumber,
             } = node.callFrame;
 
             methods.add(
@@ -171,8 +173,8 @@ export default class Trace extends TBBaseCommand {
         traceLoad.forEach(
           ({
             args: {
-              data: { frame, url }
-            }
+              data: { frame, url },
+            },
           }: {
             args: { data: { frame: any; url: any } };
           }) => {

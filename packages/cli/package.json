@@ -26,7 +26,9 @@
     "@oclif/command": "^1.5.19",
     "@oclif/config": "^1.14.0",
     "@oclif/plugin-help": "^2.2.3",
+    "@oclif/errors": "^1.2.2",
     "@oclif/plugin-warn-if-update-available": "^1.7.0",
+    "@oclif/parser": "^3.8.4",
     "@tracerbench/core": "^3.0.15",
     "@tracerbench/stats": "^3.0.15",
     "archiver": "^3.1.1",
@@ -43,12 +45,12 @@
     "path": "0.12.7",
     "tmp": "^0.1.0",
     "tough-cookie": "^4.0.0",
-    "tslib": "^1.11.1"
+    "tslib": "^1.11.1",
+    "chrome-debugging-client": "^1.2.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
     "@oclif/test": "^1.2.5",
-    "@oclif/tslint": "^3.1.1",
     "@types/chai": "^4.2.11",
     "@types/fs-extra": "^8.1.0",
     "@types/json-query": "^2.2.0",
@@ -64,11 +66,17 @@
     "nyc": "^15.0.1",
     "prettier": "^2.0.4",
     "ts-node": "^8.8.2",
-    "tslint": "^6.1.1",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-plugin-prettier": "^2.3.0",
     "typescript": "^3.8.3",
-    "typescript-json-schema": "^0.42.0"
+    "typescript-json-schema": "^0.42.0",
+    "@typescript-eslint/eslint-plugin": "^2.25.0",
+    "@typescript-eslint/parser": "^2.25.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-filenames": "^1.1.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-oclif": "^0.1.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-simple-import-sort": "^5.0.2"
   },
   "engines": {
     "node": ">=10.0.0"
@@ -90,7 +98,7 @@
     }
   },
   "scripts": {
-    "lint": "tslint -p tsconfig.json",
+    "lint": "eslint -c .eslintrc.js --ext .ts .",
     "prepare": "yarn build",
     "prepack": "yarn build && yarn build:schema",
     "test": "yarn lint && nyc --extension .ts mocha \"test/commands/**/*.test.ts\" \"test/helpers/**/*.test.ts\" \"test/command-config/**/*.test.ts\"",

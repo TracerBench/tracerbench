@@ -1,23 +1,24 @@
-import { TBBaseCommand } from '../command-config';
-import { readJSONSync } from 'fs-extra';
-import * as path from 'path';
-import { ITraceEvent } from '@tracerbench/core';
-import { filter, tracepath, url, traceFrame } from '../helpers/flags';
+import { readJSONSync } from "fs-extra";
+import * as path from "path";
+
+import { TBBaseCommand } from "../command-config";
+import { filter, traceFrame, tracepath, url } from "../helpers/flags";
 import {
   byTime,
   collect,
   findFrame,
   format,
+  IEvent,
   isCommitLoad,
   isFrameMark,
   isFrameNavigationStart,
   isMark,
   isUserMark,
   setTraceEvents,
-} from '../helpers/utils';
+} from "../helpers/utils";
 
 export default class MarkerTimings extends TBBaseCommand {
-  public static description = 'Get list of all user-timings from trace';
+  public static description = "Get list of all user-timings from trace";
 
   public static flags = {
     tracepath: tracepath({ required: true }),
@@ -26,11 +27,11 @@ export default class MarkerTimings extends TBBaseCommand {
     traceFrame: traceFrame(),
   };
 
-  public async run() {
+  public async run(): Promise<void> {
     const { flags } = this.parse(MarkerTimings);
     const { tracepath } = flags;
     const filter = collect(flags.filter, []);
-    const traceFrame: any = flags.traceFrame ? flags.traceFrame : flags.url;
+    const traceFrame: string = flags.traceFrame ? flags.traceFrame : flags.url;
 
     let frame: any = null;
     let startTime = -1;
@@ -53,7 +54,7 @@ export default class MarkerTimings extends TBBaseCommand {
       this.error(e);
     }
 
-    if (traceFrame.startsWith('http')) {
+    if (traceFrame.startsWith("http")) {
       frame = findFrame(trace, traceFrame);
     } else {
       frame = traceFrame;
@@ -63,7 +64,7 @@ export default class MarkerTimings extends TBBaseCommand {
     }
 
     trace
-      .filter((event: ITraceEvent) => isMark(event) || isCommitLoad(event))
+      .filter((event: IEvent) => isMark(event) || isCommitLoad(event))
       .sort(byTime)
       .forEach((event: any) => {
         if (isFrameNavigationStart(frame, event)) {

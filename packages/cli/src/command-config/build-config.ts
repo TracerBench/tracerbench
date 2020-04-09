@@ -1,25 +1,26 @@
-/* tslint:disable:no-console*/
+import { OutputFlags } from "@oclif/parser";
+import * as fs from "fs-extra";
+import * as JSON5 from "json5";
+import * as path from "path";
 
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { EXTENDS, ITBConfig } from './tb-config';
-import * as JSON5 from 'json5';
-import { getDefaultValue } from './default-flag-args';
-import { mergeLeft } from '../helpers/utils';
+import { mergeLeft } from "../helpers/utils";
+import { getDefaultValue } from "./default-flag-args";
+import { EXTENDS, ITBConfig } from "./tb-config";
 
 const configFileKeys = [
-  'extends',
-  'tbResultsFolder',
-  'inputFilePath',
-  'outputFilePath',
+  "extends",
+  "tbResultsFolder",
+  "inputFilePath",
+  "outputFilePath",
 ] as const;
 
-const serverFileKeys = ['har', 'dist'] as const;
+const serverFileKeys = ["har", "dist"] as const;
 
 // STEP 1
 // takes a command flags object with all the flags the command accepts
 // runs that commands object thru the defaults and returns those values
-function getCommandDefaults(flags: any) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getCommandDefaults(flags: OutputFlags<any>): OutputFlags<any> {
   const f = flags;
   Object.entries(f).forEach(([key]) => {
     f[key] = getDefaultValue(key) || flags[key];
@@ -35,15 +36,15 @@ function getCommandDefaults(flags: any) {
  * recursively reading extends
  * @param fileOrDir config file path or directory with a tbconfig.json
  */
-export function readConfig(fileOrDir = 'tbconfig.json'): ITBConfig | undefined {
+export function readConfig(fileOrDir = "tbconfig.json"): ITBConfig | undefined {
   let configDir: string;
   let configFile: string;
   let config: ITBConfig;
   try {
     [configDir, configFile] = resolveConfigFile(fileOrDir);
-    config = JSON5.parse(fs.readFileSync(configFile, 'utf8'));
+    config = JSON5.parse(fs.readFileSync(configFile, "utf8"));
   } catch (e) {
-    if (e.code === 'ENOENT') {
+    if (e.code === "ENOENT") {
       return;
     }
     throw e;
@@ -63,6 +64,7 @@ export function readConfig(fileOrDir = 'tbconfig.json'): ITBConfig | undefined {
   return config;
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function resolveConfigFileKeys(config: ITBConfig, configDir = process.cwd()) {
   resolveFileKeys(config, configFileKeys, configDir);
   if (Array.isArray(config.servers)) {
@@ -72,6 +74,7 @@ function resolveConfigFileKeys(config: ITBConfig, configDir = process.cwd()) {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function resolveFileKeys<K extends string>(
   config: { [P in K]?: string },
   keys: readonly K[],
@@ -79,20 +82,20 @@ function resolveFileKeys<K extends string>(
 ) {
   for (const key of keys) {
     const value = config[key];
-    if (typeof value === 'string') {
+    if (typeof value === "string") {
       config[key] = path.resolve(configDir, value);
     }
   }
 }
 
-function resolveConfigFile(fileOrDir: string) {
+function resolveConfigFile(fileOrDir: string): [string, string] {
   const resolved = path.resolve(fileOrDir);
   const stats = fs.statSync(resolved);
   let dir: string;
   let file: string;
   if (stats.isDirectory()) {
     dir = resolved;
-    file = path.join(dir, 'tbconfig.json');
+    file = path.join(dir, "tbconfig.json");
   } else {
     dir = path.dirname(resolved);
     file = resolved;
@@ -101,12 +104,16 @@ function resolveConfigFile(fileOrDir: string) {
 }
 
 // overwrite all flags explicity flagged within cli command
-function handleExplicitFlags(flags: any, explicitFlags: string[]): {} {
-  const obj: any = {};
+function handleExplicitFlags(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  flags: OutputFlags<any>,
+  explicitFlags: string[]
+): {} {
+  const obj: Record<string, unknown> = {};
   const f = flags;
 
-  explicitFlags.forEach(exF => {
-    if (exF.startsWith('--') && !exF.includes('config')) {
+  explicitFlags.forEach((exF) => {
+    if (exF.startsWith("--") && !exF.includes("config")) {
       exF = exF.substring(2);
       obj[exF] = f[exF];
     }
@@ -122,8 +129,9 @@ function handleExplicitFlags(flags: any, explicitFlags: string[]): {} {
  * @param explicitFlags - overwriting flags coming from the CLI session directly eg. --headless, --url etc.
  */
 export function getConfig(
-  configFileOrDir = 'tbconfig.json',
-  flags: any,
+  configFileOrDir = "tbconfig.json",
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  flags: OutputFlags<any>,
   explicitFlags: string[]
 ): ITBConfig {
   const ef = handleExplicitFlags(flags, explicitFlags);

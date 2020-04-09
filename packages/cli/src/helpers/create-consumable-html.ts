@@ -1,10 +1,11 @@
-import * as Handlebars from 'handlebars';
-import * as path from 'path';
-import { Stats } from '@tracerbench/stats';
-import { convertMicrosecondsToMS } from './utils';
-import { readFileSync } from 'fs-extra';
-import { defaultFlagArgs } from '../command-config/default-flag-args';
-import { ITBConfig } from '../command-config';
+import { Stats } from "@tracerbench/stats";
+import { readFileSync } from "fs-extra";
+import * as Handlebars from "handlebars";
+import * as path from "path";
+
+import { ITBConfig } from "../command-config";
+import { defaultFlagArgs } from "../command-config/default-flag-args";
+import { convertMicrosecondsToMS } from "./utils";
 
 export interface Sample {
   duration: number;
@@ -54,66 +55,66 @@ interface ValuesByPhase {
   [key: string]: number[];
 }
 
-export const PAGE_LOAD_TIME = 'duration';
+export const PAGE_LOAD_TIME = "duration";
 
-const CHART_CSS_PATH = path.join(__dirname, '../static/chart-bootstrap.css');
+const CHART_CSS_PATH = path.join(__dirname, "../static/chart-bootstrap.css");
 const CHART_JS_PATH = path.join(
   __dirname,
-  '../static/chartjs-2.9.3-chart.min.js'
+  "../static/chartjs-2.9.3-chart.min.js"
 );
-const REPORT_PATH = path.join(__dirname, '../static/report-template.hbs');
+const REPORT_PATH = path.join(__dirname, "../static/report-template.hbs");
 const PHASE_DETAIL_PARTIAL = path.join(
   __dirname,
-  '../static/phase-detail-partial.hbs'
+  "../static/phase-detail-partial.hbs"
 );
 const PHASE_CHART_JS_PARTIAL = path.join(
   __dirname,
-  '../static/phase-chart-js-partial.hbs'
+  "../static/phase-chart-js-partial.hbs"
 );
 
-const CHART_CSS = readFileSync(CHART_CSS_PATH, 'utf8');
-const CHART_JS = readFileSync(CHART_JS_PATH, 'utf8');
-const PHASE_DETAIL_TEMPLATE_RAW = readFileSync(PHASE_DETAIL_PARTIAL, 'utf8');
+const CHART_CSS = readFileSync(CHART_CSS_PATH, "utf8");
+const CHART_JS = readFileSync(CHART_JS_PATH, "utf8");
+const PHASE_DETAIL_TEMPLATE_RAW = readFileSync(PHASE_DETAIL_PARTIAL, "utf8");
 const PHASE_CHART_JS_TEMPLATE_RAW = readFileSync(
   PHASE_CHART_JS_PARTIAL,
-  'utf8'
+  "utf8"
 );
-let REPORT_TEMPLATE_RAW = readFileSync(REPORT_PATH, 'utf8');
+let REPORT_TEMPLATE_RAW = readFileSync(REPORT_PATH, "utf8");
 
 REPORT_TEMPLATE_RAW = REPORT_TEMPLATE_RAW.toString()
   .replace(
-    '{{!-- TRACERBENCH-CHART-BOOTSTRAP.CSS --}}',
+    "{{!-- TRACERBENCH-CHART-BOOTSTRAP.CSS --}}",
     `<style>${CHART_CSS}</style>`
   )
-  .replace('{{!-- TRACERBENCH-CHART-JS --}}', `<script>${CHART_JS}</script>`);
+  .replace("{{!-- TRACERBENCH-CHART-JS --}}", `<script>${CHART_JS}</script>`);
 
-Handlebars.registerPartial('phaseChartJSSection', PHASE_CHART_JS_TEMPLATE_RAW);
-Handlebars.registerPartial('phaseDetailSection', PHASE_DETAIL_TEMPLATE_RAW);
+Handlebars.registerPartial("phaseChartJSSection", PHASE_CHART_JS_TEMPLATE_RAW);
+Handlebars.registerPartial("phaseDetailSection", PHASE_DETAIL_TEMPLATE_RAW);
 /**
  * Camel case helper
  */
-Handlebars.registerHelper('toCamel', val => {
+Handlebars.registerHelper("toCamel", (val) => {
   return val.replace(/-([a-z])/g, (g: string) => g[1].toUpperCase());
 });
 
 /**
  * Negative means slower
  */
-Handlebars.registerHelper('isFaster', analysis => {
+Handlebars.registerHelper("isFaster", (analysis) => {
   return analysis.hlDiff > 0;
 });
 
 /**
  * Absolute number helper
  */
-Handlebars.registerHelper('abs', num => {
+Handlebars.registerHelper("abs", (num) => {
   return Math.abs(num);
 });
 
 /**
  * Sort the given numbers by their absolute values
  */
-Handlebars.registerHelper('absSort', (num1, num2, position) => {
+Handlebars.registerHelper("absSort", (num1, num2, position) => {
   const sorted = [Math.abs(num1), Math.abs(num2)];
   sorted.sort((a, b) => a - b);
   return sorted[position];
@@ -135,7 +136,7 @@ export function bucketPhaseValues(
   samples.forEach((sample: Sample) => {
     buckets[PAGE_LOAD_TIME].push(sample[PAGE_LOAD_TIME]);
 
-    sample.phases.forEach(phaseData => {
+    sample.phases.forEach((phaseData) => {
       const bucket = buckets[phaseData.phase] || [];
       bucket.push(valueGen(phaseData));
       buckets[phaseData.phase] = bucket;
@@ -163,9 +164,9 @@ export function resolveTitles(
   version: string
 ): ParsedTitleConfigs {
   const reportTitles = {
-    servers: [{ name: 'Control' }, { name: 'Experiment' }],
+    servers: [{ name: "Control" }, { name: "Experiment" }],
     plotTitle: defaultFlagArgs.plotTitle,
-    browserVersion: version
+    browserVersion: version,
   };
 
   if (tbConfig.servers) {
@@ -195,8 +196,8 @@ export function resolveTitles(
 export function buildCumulativeChartData(
   controlData: ITracerBenchTraceResult,
   experimentData: ITracerBenchTraceResult
-) {
-  const cumulativeValueFunc = (a: any) =>
+): { [key: string]: string } {
+  const cumulativeValueFunc = (a: { [key: string]: number }): number =>
     convertMicrosecondsToMS(a.start + a.duration);
 
   const valuesByPhaseControl = bucketPhaseValues(
@@ -208,13 +209,15 @@ export function buildCumulativeChartData(
     cumulativeValueFunc
   );
   const phases = Object.keys(valuesByPhaseControl).filter(
-    k => k !== PAGE_LOAD_TIME
+    (k) => k !== PAGE_LOAD_TIME
   );
 
   return {
     categories: JSON.stringify(phases),
-    controlData: JSON.stringify(phases.map(k => valuesByPhaseControl[k])),
-    experimentData: JSON.stringify(phases.map(k => valuesByPhaseExperiment[k]))
+    controlData: JSON.stringify(phases.map((k) => valuesByPhaseControl[k])),
+    experimentData: JSON.stringify(
+      phases.map((k) => valuesByPhaseExperiment[k])
+    ),
   };
 }
 
@@ -235,7 +238,7 @@ export function formatPhaseData(
   const stats = new Stats({
     control: controlValues,
     experiment: experimentValues,
-    name: 'output'
+    name: "output",
   });
   const isNotSignificant =
     (stats.confidenceInterval.min < 0 && 0 < stats.confidenceInterval.max) ||
@@ -258,7 +261,7 @@ export function formatPhaseData(
       q3: stats.sevenFigureSummary.control[75],
       max: stats.sevenFigureSummary.control.max,
       outliers: stats.outliers.control.outliers,
-      samplesMS: stats.controlMS
+      samplesMS: stats.controlMS,
     }),
     experimentFormatedSamples: JSON.stringify({
       min: stats.sevenFigureSummary.experiment.min,
@@ -267,8 +270,8 @@ export function formatPhaseData(
       q3: stats.sevenFigureSummary.experiment[75],
       max: stats.sevenFigureSummary.experiment.max,
       outliers: stats.outliers.experiment.outliers,
-      samplesMS: stats.experimentMS
-    })
+      samplesMS: stats.experimentMS,
+    }),
   };
 }
 
@@ -304,11 +307,14 @@ export function generateDataForHTML(
   controlData: ITracerBenchTraceResult,
   experimentData: ITracerBenchTraceResult,
   reportTitles: ParsedTitleConfigs
-) {
+): {
+  durationSection: HTMLSectionRenderData;
+  subPhaseSections: HTMLSectionRenderData[];
+} {
   const valuesByPhaseControl = bucketPhaseValues(controlData.samples);
   const valuesByPhaseExperiment = bucketPhaseValues(experimentData.samples);
   const subPhases = Object.keys(valuesByPhaseControl).filter(
-    k => k !== PAGE_LOAD_TIME
+    (k) => k !== PAGE_LOAD_TIME
   );
 
   const durationSection = formatPhaseData(
@@ -317,7 +323,7 @@ export function generateDataForHTML(
     PAGE_LOAD_TIME
   );
 
-  const subPhaseSections: HTMLSectionRenderData[] = subPhases.map(phase => {
+  const subPhaseSections: HTMLSectionRenderData[] = subPhases.map((phase) => {
     const controlValues = valuesByPhaseControl[phase];
     const experimentValues = valuesByPhaseExperiment[phase];
     const renderDataForPhase = formatPhaseData(
@@ -334,7 +340,7 @@ export function generateDataForHTML(
   return { durationSection, subPhaseSections };
 }
 
-export default function createConsumeableHTML(
+export default function createConsumableHTML(
   controlData: ITracerBenchTraceResult,
   experimentData: ITracerBenchTraceResult,
   tbConfig: ITBConfig
@@ -354,6 +360,6 @@ export default function createConsumeableHTML(
     reportTitles,
     subPhaseSections,
     configsSJSONString: JSON.stringify(tbConfig, null, 4),
-    sectionFormattedDataJson: JSON.stringify(subPhaseSections)
+    sectionFormattedDataJson: JSON.stringify(subPhaseSections),
   });
 }

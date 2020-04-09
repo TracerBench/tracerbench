@@ -1,56 +1,58 @@
-import Protocol from 'devtools-protocol';
-import * as fs from 'fs-extra';
-import * as path from 'path';
-import { TBBaseCommand, flags, getConfig } from '../../command-config';
+import { IConfig } from "@oclif/config";
 import {
   IInitialRenderBenchmarkParams,
+  IMarker,
   InitialRenderBenchmark,
-  Runner,
   networkConditions,
-  IMarker
-} from '@tracerbench/core';
+  Runner,
+} from "@tracerbench/core";
+import Protocol from "devtools-protocol";
+import * as fs from "fs-extra";
+import * as path from "path";
+
+import { flags, getConfig, TBBaseCommand } from "../../command-config";
 import {
-  browserArgs,
-  controlURL,
-  cpuThrottleRate,
-  experimentURL,
-  fidelity,
-  markers,
-  network,
-  tbResultsFolder,
-  tracingLocationSearch,
-  runtimeStats,
-  debug,
-  emulateDevice,
-  emulateDeviceOrientation,
-  socksPorts,
-  regressionThreshold,
-  headless,
-  config,
-  report,
-  isCIEnv
-} from '../../helpers/flags';
-import {
+  defaultFlagArgs,
   fidelityLookup,
   headlessFlags,
-  defaultFlagArgs
-} from '../../command-config/default-flag-args';
-import {
-  chalkScheme,
-  checkEnvironmentSpecificOverride,
-  parseMarkers
-} from '../../helpers/utils';
-import { getEmulateDeviceSettingForKeyAndOrientation } from '../../helpers/simulate-device-options';
+} from "../../command-config/default-flag-args";
 import {
   CONTROL_ENV_OVERRIDE_ATTR,
   EXPERIMENT_ENV_OVERRIDE_ATTR,
-  ITBConfig
-} from '../../command-config/tb-config';
-import { IConfig } from '@oclif/config';
-import CompareAnalyze from './analyze';
-import Report from '../report';
+  ITBConfig,
+} from "../../command-config/tb-config";
+import { getEmulateDeviceSettingForKeyAndOrientation } from "../../helpers/device-settings";
+import {
+  browserArgs,
+  config,
+  controlURL,
+  cpuThrottleRate,
+  debug,
+  emulateDevice,
+  emulateDeviceOrientation,
+  experimentURL,
+  fidelity,
+  headless,
+  isCIEnv,
+  markers,
+  network,
+  regressionThreshold,
+  report,
+  runtimeStats,
+  socksPorts,
+  tbResultsFolder,
+  tracingLocationSearch,
+} from "../../helpers/flags";
+import {
+  chalkScheme,
+  checkEnvironmentSpecificOverride,
+  parseMarkers,
+} from "../../helpers/utils";
+import Report from "../report";
+import CompareAnalyze from "./analyze";
 
-const archiver = require('archiver');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const archiver = require("archiver");
 export interface ICompareFlags {
   hideAnalysis: boolean;
   browserArgs: string[];
@@ -76,11 +78,11 @@ export interface ICompareFlags {
 
 export default class Compare extends TBBaseCommand {
   public static description =
-    'Compare the performance delta between an experiment and control';
+    "Compare the performance delta between an experiment and control";
   public static flags = {
     hideAnalysis: flags.boolean({
       default: false,
-      description: 'Hide the the analysis output in terminal'
+      description: "Hide the the analysis output in terminal",
     }),
     browserArgs: browserArgs({ required: true }),
     cpuThrottleRate: cpuThrottleRate({ required: true }),
@@ -100,14 +102,14 @@ export default class Compare extends TBBaseCommand {
     report,
     debug,
     headless,
-    isCIEnv: isCIEnv()
+    isCIEnv: isCIEnv(),
   };
   public compareFlags: ICompareFlags;
   public parsedConfig: ITBConfig = defaultFlagArgs;
   // flags explicitly specified within the cli when
   // running the command. these will override all
   public explicitFlags: string[];
-  public analyzedJSONString: string = '';
+  public analyzedJSONString = "";
   constructor(argv: string[], config: IConfig) {
     super(argv, config);
     const { flags } = this.parse(Compare);
@@ -116,7 +118,7 @@ export default class Compare extends TBBaseCommand {
   }
 
   // instantiated before this.run()
-  public async init() {
+  public async init(): Promise<void> {
     const { flags } = this.parse(Compare);
     this.parsedConfig = getConfig(flags.config, flags, this.explicitFlags);
     this.compareFlags = flags;
@@ -127,7 +129,7 @@ export default class Compare extends TBBaseCommand {
     const { hideAnalysis } = this.compareFlags;
     const [
       controlSettings,
-      experimentSettings
+      experimentSettings,
     ] = this.generateControlExperimentServerConfig();
 
     // this should be directly above the instantiation of the InitialRenderBenchmarks
@@ -141,7 +143,7 @@ export default class Compare extends TBBaseCommand {
 
     const benchmarks = {
       control: new InitialRenderBenchmark(controlSettings),
-      experiment: new InitialRenderBenchmark(experimentSettings)
+      experiment: new InitialRenderBenchmark(experimentSettings),
     };
 
     const runner = new Runner([benchmarks.control, benchmarks.experiment]);
@@ -161,16 +163,16 @@ export default class Compare extends TBBaseCommand {
         const zipOutput = fs.createWriteStream(
           `${this.parsedConfig.tbResultsFolder}/traces.zip`
         );
-        const archive = archiver('zip', {
-          zlib: { level: 9 }
+        const archive = archiver("zip", {
+          zlib: { level: 9 },
         });
-        archive.directory(tracesDir, 'traces');
+        archive.directory(tracesDir, "traces");
         archive.pipe(zipOutput);
         archive.finalize();
 
-        // tslint:disable-next-line: max-line-length
+        // eslint:disable-next-line: max-line-length
         const message = `${chalkScheme.blackBgGreen(
-          `    ${chalkScheme.white('SUCCESS!')}    `
+          `    ${chalkScheme.white("SUCCESS!")}    `
         )} ${this.parsedConfig.fidelity} test samples were taken.`;
 
         this.log(`\n${message}`);
@@ -178,14 +180,14 @@ export default class Compare extends TBBaseCommand {
         if (!hideAnalysis) {
           this.analyzedJSONString = await CompareAnalyze.run([
             resultJSONPath,
-            '--fidelity',
+            "--fidelity",
             `${this.parsedConfig.fidelity}`,
-            '--tbResultsFolder',
+            "--tbResultsFolder",
             `${this.parsedConfig.tbResultsFolder}`,
-            '--regressionThreshold',
+            "--regressionThreshold",
             `${this.parsedConfig.regressionThreshold}`,
-            '--isCIEnv',
-            `${this.parsedConfig.isCIEnv}`
+            "--isCIEnv",
+            `${this.parsedConfig.isCIEnv}`,
           ]);
 
           fs.writeFileSync(
@@ -197,10 +199,10 @@ export default class Compare extends TBBaseCommand {
         // if we want to run the Report without calling a separate command
         if (this.parsedConfig.report) {
           await Report.run([
-            '--tbResultsFolder',
+            "--tbResultsFolder",
             `${this.parsedConfig.tbResultsFolder}`,
-            '--config',
-            `${this.parsedConfig.config}`
+            "--config",
+            `${this.parsedConfig.config}`,
           ]);
         }
 
@@ -230,7 +232,7 @@ export default class Compare extends TBBaseCommand {
     return this.analyzedJSONString;
   }
 
-  private async parseFlags() {
+  private async parseFlags(): Promise<void> {
     const {
       tbResultsFolder,
       fidelity,
@@ -238,34 +240,34 @@ export default class Compare extends TBBaseCommand {
       regressionThreshold,
       headless,
       controlURL,
-      experimentURL
+      experimentURL,
     } = (this.parsedConfig as unknown) as ICompareFlags;
 
     // modifies properties of flags that were not set
     // during flag.parse(). these are intentionally
     // not deconstructed as to maintain the mutable
     // flags object state
-    if (typeof fidelity === 'string') {
+    if (typeof fidelity === "string") {
       this.compareFlags.fidelity = parseInt(
         (fidelityLookup as any)[fidelity],
         10
       );
     }
-    if (typeof markers === 'string') {
+    if (typeof markers === "string") {
       this.parsedConfig.markers = parseMarkers(markers);
     }
-    if (typeof regressionThreshold === 'string') {
+    if (typeof regressionThreshold === "string") {
       this.parsedConfig.regressionThreshold = parseInt(regressionThreshold, 10);
     }
     if (typeof controlURL === undefined) {
       this.error(
-        'controlURL is required either in the tbconfig.json or as cli flag'
+        "controlURL is required either in the tbconfig.json or as cli flag"
       );
     }
 
     if (typeof experimentURL === undefined) {
       this.error(
-        'experimentURL is required either in the tbconfig.json or as cli flag'
+        "experimentURL is required either in the tbconfig.json or as cli flag"
       );
     }
 
@@ -278,7 +280,7 @@ export default class Compare extends TBBaseCommand {
 
     // if the folder for the tracerbench results file
     // does not exist then create it
-    fs.mkdirpSync(path.join(tbResultsFolder, 'traces'));
+    fs.mkdirpSync(path.join(tbResultsFolder, "traces"));
   }
 
   /**
@@ -300,19 +302,11 @@ export default class Compare extends TBBaseCommand {
     // eg 100 total samples X 200ms per sample = 20 seconds total added to the trace time
     const delay = 200;
     const controlBrowser = {
-      additionalArguments: this.compareFlags.browserArgs
+      additionalArguments: this.compareFlags.browserArgs,
     };
     const experimentBrowser = {
-      additionalArguments: this.compareFlags.browserArgs
+      additionalArguments: this.compareFlags.browserArgs,
     };
-    let controlNetwork: string;
-    let experimentNetwork: string;
-    let experimentEmulateDevice;
-    let experimentEmulateDeviceOrientation;
-    let controlEmulateDevice;
-    let controlEmulateDeviceOrientation;
-    let controlSettings: IInitialRenderBenchmarkParams;
-    let experimentSettings: IInitialRenderBenchmarkParams;
 
     // config for the browsers to leverage socks proxy
     if (this.parsedConfig.socksPorts) {
@@ -323,47 +317,47 @@ export default class Compare extends TBBaseCommand {
         [`--proxy-server=socks5://0.0.0.0:${this.parsedConfig.socksPorts[1]}`]
       );
     }
-    controlNetwork = checkEnvironmentSpecificOverride(
-      'network',
+    const controlNetwork: string = checkEnvironmentSpecificOverride(
+      "network",
       this.compareFlags,
       CONTROL_ENV_OVERRIDE_ATTR,
       this.parsedConfig
     );
-    controlEmulateDevice = checkEnvironmentSpecificOverride(
-      'emulateDevice',
+    const controlEmulateDevice = checkEnvironmentSpecificOverride(
+      "emulateDevice",
       this.compareFlags,
       CONTROL_ENV_OVERRIDE_ATTR,
       this.parsedConfig
     );
-    controlEmulateDeviceOrientation = checkEnvironmentSpecificOverride(
-      'emulateDeviceOrientation',
+    const controlEmulateDeviceOrientation = checkEnvironmentSpecificOverride(
+      "emulateDeviceOrientation",
       this.compareFlags,
       CONTROL_ENV_OVERRIDE_ATTR,
       this.parsedConfig
     );
-    experimentNetwork = checkEnvironmentSpecificOverride(
-      'network',
+    const experimentNetwork: string = checkEnvironmentSpecificOverride(
+      "network",
       this.compareFlags,
       EXPERIMENT_ENV_OVERRIDE_ATTR,
       this.parsedConfig
     );
-    experimentEmulateDevice = checkEnvironmentSpecificOverride(
-      'emulateDevice',
+    const experimentEmulateDevice = checkEnvironmentSpecificOverride(
+      "emulateDevice",
       this.compareFlags,
       EXPERIMENT_ENV_OVERRIDE_ATTR,
       this.parsedConfig
     );
-    experimentEmulateDeviceOrientation = checkEnvironmentSpecificOverride(
-      'emulateDeviceOrientation',
+    const experimentEmulateDeviceOrientation = checkEnvironmentSpecificOverride(
+      "emulateDeviceOrientation",
       this.compareFlags,
       EXPERIMENT_ENV_OVERRIDE_ATTR,
       this.parsedConfig
     );
 
-    controlSettings = {
+    const controlSettings: IInitialRenderBenchmarkParams = {
       browser: controlBrowser,
       cpuThrottleRate: checkEnvironmentSpecificOverride(
-        'cpuThrottleRate',
+        "cpuThrottleRate",
         this.compareFlags,
         CONTROL_ENV_OVERRIDE_ATTR,
         this.parsedConfig
@@ -379,19 +373,19 @@ export default class Compare extends TBBaseCommand {
       networkConditions: controlNetwork
         ? networkConditions[controlNetwork as keyof typeof networkConditions]
         : this.compareFlags.network,
-      name: 'control',
+      name: "control",
       runtimeStats: this.compareFlags.runtimeStats,
-      saveTraces: i =>
+      saveTraces: (i) =>
         `${this.compareFlags.tbResultsFolder}/traces/control${i}.json`,
       url: path.join(
         this.compareFlags.controlURL + this.compareFlags.tracingLocationSearch
-      )
+      ),
     };
 
-    experimentSettings = {
+    const experimentSettings: IInitialRenderBenchmarkParams = {
       browser: experimentBrowser,
       cpuThrottleRate: checkEnvironmentSpecificOverride(
-        'cpuThrottleRate',
+        "cpuThrottleRate",
         this.compareFlags,
         EXPERIMENT_ENV_OVERRIDE_ATTR,
         this.parsedConfig
@@ -407,14 +401,14 @@ export default class Compare extends TBBaseCommand {
       networkConditions: experimentNetwork
         ? networkConditions[experimentNetwork as keyof typeof networkConditions]
         : this.compareFlags.network,
-      name: 'experiment',
+      name: "experiment",
       runtimeStats: this.compareFlags.runtimeStats,
-      saveTraces: i =>
+      saveTraces: (i) =>
         `${this.compareFlags.tbResultsFolder}/traces/experiment${i}.json`,
       url: path.join(
         this.compareFlags.experimentURL +
           this.compareFlags.tracingLocationSearch
-      )
+      ),
     };
 
     return [controlSettings, experimentSettings];
