@@ -19,7 +19,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "lint": "tslint -p tsconfig.json",
+    "lint": "eslint -c .eslintrc.js --ext .ts .",
     "prepare": "tsc",
     "test": "echo \"TODO add tests for har-remix\""
   },
@@ -32,10 +32,16 @@
     "@types/node": "^13.11.1",
     "json-schema-to-typescript": "^8.2.0",
     "prettier": "^2.0.4",
-    "tslint": "^6.1.1",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-plugin-prettier": "^2.3.0",
-    "typescript": "^3.8.3"
+    "typescript": "^3.8.3",
+    "@typescript-eslint/eslint-plugin": "^2.25.0",
+    "@typescript-eslint/parser": "^2.25.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-filenames": "^1.1.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-oclif": "^0.1.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-simple-import-sort": "^5.0.2"
   },
   "publishConfig": {
     "tag": "beta"
