@@ -20,7 +20,7 @@ export function getMergedSortedSamples(control: number[], experiment: number[]):
 
 export function getSamples(a: number[], pool: number[]): ISample[] {
   a.sort((a, b) => a - b);
-  return a.map(val => {
+  return a.map((val) => {
     return {
       val,
       rank: 0,
@@ -41,12 +41,12 @@ export function rankSamples(samples: ISample[]): ISample[] {
     });
   });
 
-  function countDuplicates(obj: any, num: number){
+  function countDuplicates(obj: any, num: number): number{
     obj[num] = (++obj[num] || 1);
     return obj;
   }
   sa.forEach((sample) => {
-    const acc = sample.pool.reduce(countDuplicates, {});
+    const acc = sample.pool.reduce(countDuplicates, {} as any);
     if (acc[sample.val] > 1) {
       sample.rank = (sample.rank - 0.5);
     }

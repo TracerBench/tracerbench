@@ -1,10 +1,10 @@
 import { cartesianProduct, confidenceInterval } from './confidence-interval';
 import {
-  Stats,
-  ISevenFigureSummary,
+  IConfidenceInterval,
   IOutliers,
+  ISevenFigureSummary,
   IStatsOptions,
-  IConfidenceInterval
+  Stats
 } from './stats';
 import {
   convertMicrosecondsToMS,

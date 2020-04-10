@@ -12,11 +12,7 @@ export function toNearestHundreth(n: number): number {
   return Math.round(n * 100) / 100;
 }
 
-export function fillArray(
-  arrLngth: number,
-  incr: number = 1,
-  strt: number = 0
-): number[] {
+export function fillArray(arrLngth: number, incr = 1, strt = 0): number[] {
   const a = [];
   while (a.length < arrLngth) {
     if (a.length < 1) {

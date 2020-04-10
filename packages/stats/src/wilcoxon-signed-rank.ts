@@ -37,7 +37,7 @@ export function sortSamples(samples: ISample[]): ISample[] {
 // rank based on sorted samples
 export function rankSamples(sortedSamples: ISample[]): ISample[] {
   const ss = sortedSamples;
-  ss.slice().map(s => {
+  ss.slice().map((s) => {
     s.rank = ss.indexOf(s) + 1;
   });
   return ss;
