@@ -5,7 +5,7 @@ const jStat = require('jstat').jStat;
  *
  * @private
  */
-function _defaultModifier(x: number, y: number) {
+function _defaultModifier(x: number, y: number): number {
   return x - y;
 }
 
@@ -22,8 +22,8 @@ export function cartesianProduct(
   func = _defaultModifier
 ): number[] {
   let results: number[] = [];
-  listOne.forEach(x => {
-    listTwo.forEach(y => {
+  listOne.forEach((x) => {
+    listTwo.forEach((y) => {
       results.push(func(x, y));
     });
   });

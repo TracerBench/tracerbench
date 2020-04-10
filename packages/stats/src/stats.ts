@@ -1,5 +1,6 @@
 import { cross, histogram, quantile } from 'd3-array';
 import { scaleLinear } from 'd3-scale';
+
 import { confidenceInterval } from './confidence-interval';
 import { convertMicrosecondsToMS } from './utils';
 
@@ -55,16 +56,16 @@ export class Stats {
   constructor(options: IStatsOptions) {
     const { name, control, experiment } = options;
     // explicitly for NOT sorted
-    this.controlMS = control.map(x => Math.round(convertMicrosecondsToMS(x)));
-    this.experimentMS = experiment.map(x =>
+    this.controlMS = control.map((x) => Math.round(convertMicrosecondsToMS(x)));
+    this.experimentMS = experiment.map((x) =>
       Math.round(convertMicrosecondsToMS(x))
     );
 
     // explicitly for sortedMS
-    const controlSortedMS = control.map(x =>
+    const controlSortedMS = control.map((x) =>
       Math.round(convertMicrosecondsToMS(x))
     );
-    const experimentSortedMS = experiment.map(x =>
+    const experimentSortedMS = experiment.map((x) =>
       Math.round(convertMicrosecondsToMS(x))
     );
     this.controlSortedMS = controlSortedMS.sort((a, b) => a - b);
@@ -122,7 +123,7 @@ export class Stats {
       outliers: []
     };
 
-    a.forEach(n => {
+    a.forEach((n) => {
       const roundedN: number = Math.round(n);
       if (roundedN < obj.lowerOutlier || roundedN > obj.upperOutlier) {
         obj.outliers.push(roundedN);
@@ -164,30 +165,39 @@ export class Stats {
     };
   }
 
-  private getHodgesLehmann(control: any[], experiment: any[]) {
+  private getHodgesLehmann(
+    control: number[],
+    experiment: number[]
+  ): number | undefined {
     const crossProduct = cross(control, experiment, (a, b) => a - b).sort(
       (a, b) => a - b
     );
     return quantile(crossProduct, 0.5);
   }
 
-  private getRange(control: number[], experiment: number[]) {
+  private getRange(
+    control: number[],
+    experiment: number[]
+  ): { min: number; max: number } {
     const a = control.concat(experiment);
     return { min: Math.min(...a), max: Math.max(...a) };
   }
 
-  private getHistogram(range: { min: number; max: number }, a: number[]) {
+  private getHistogram(
+    range: { min: number; max: number },
+    a: number[]
+  ): number[] {
     const x: any = scaleLinear()
       .domain([range.min, range.max])
       .range([range.min, range.max]);
     const h = histogram()
-      .value(d => {
+      .value((d) => {
         return d;
       })
       .domain(x.domain())
       .thresholds(x.ticks());
 
-    return h(a).map(i => {
+    return h(a).map((i) => {
       return i.length;
     });
   }
@@ -196,8 +206,8 @@ export class Stats {
     numbers: number[],
     min: number = Math.min.apply(null, numbers),
     max: number = Math.max.apply(null, numbers)
-  ) {
-    function lshift(n: number, bits: number) {
+  ): string {
+    function lshift(n: number, bits: number): number {
       return Math.floor(n) * Math.pow(2, bits);
     }
 

@@ -21,7 +21,7 @@
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "scripts": {
-    "lint": "tslint -p tsconfig.json",
+    "lint": "eslint -c .eslintrc.js --ext .ts .",
     "prepack": "yarn build",
     "test": "yarn lint && nyc --extension .ts mocha \"test/*.test.ts\"",
     "build": "rm -rf ./dist && tsc -b && yarn lint",
@@ -51,11 +51,17 @@
     "nyc": "^15.0.1",
     "prettier": "^2.0.4",
     "ts-node": "^8.8.2",
-    "tslint": "^6.1.1",
-    "tslint-config-prettier": "^1.18.0",
-    "tslint-plugin-prettier": "^2.3.0",
     "typescript": "^3.8.3",
-    "typescript-json-schema": "^0.42.0"
+    "typescript-json-schema": "^0.42.0",
+    "@typescript-eslint/eslint-plugin": "^2.25.0",
+    "@typescript-eslint/parser": "^2.25.0",
+    "eslint": "^6.8.0",
+    "eslint-config-prettier": "^6.10.1",
+    "eslint-plugin-filenames": "^1.1.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-oclif": "^0.1.0",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-simple-import-sort": "^5.0.2"
   },
   "engine": "node >= 10",
   "gitHead": "30be10122ff4fcdf931eec6ecd8075ff6b2dc42f"
