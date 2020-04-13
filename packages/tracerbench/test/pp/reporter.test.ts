@@ -2,11 +2,10 @@
 
 import { expect } from 'chai';
 import 'mocha';
-import { report } from '../../src/trace/reporter';
+import reporter from '../../src/trace/reporter';
 
 describe('Reporter', () => {
   it('class exists', () => {
-    // tslint:disable:no-unused-expression
-    expect(report).to.not.be.undefined;
+    expect(reporter).to.not.be.undefined;
   });
 });

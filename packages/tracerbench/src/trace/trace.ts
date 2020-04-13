@@ -1,15 +1,12 @@
-/* tslint:disable:variable-name */
-/* tslint:disable:no-console */
-/* tslint:disable:no-bitwise */
+/* eslint-disable no-case-declarations */
 
 import binsearch from 'array-binsearch';
+
 import Bounds from './bounds';
-import Process from './process';
-import Thread from './thread';
-
 import CpuProfile from './cpu-profile';
+import Process from './process';
 import { isRenderEnd, isRenderStart } from './render-events';
-
+import Thread from './thread';
 import {
   ICpuProfile,
   ICpuProfileEvent,
@@ -17,18 +14,16 @@ import {
   IProfileChunkEvent,
   IProfileEvent,
   IProfileNode,
-  PROCESS_NAME,
   ITraceEvent,
+  PROCESS_NAME,
   TRACE_EVENT_PHASE_BEGIN,
   TRACE_EVENT_PHASE_COMPLETE,
   TRACE_EVENT_PHASE_END,
-  TRACE_EVENT_PHASE_METADATA,
-  TRACE_EVENT_PHASE_SAMPLE,
   TRACE_EVENT_PHASE_INSTANT,
-} from './trace_event';
-
-import traceEventComparator from './trace_event_comparator';
-
+  TRACE_EVENT_PHASE_METADATA,
+  TRACE_EVENT_PHASE_SAMPLE
+} from './trace-event';
+import traceEventComparator from './trace-event-comparator';
 interface IPartialCpuProfile extends ICpuProfile {
   nodes: Array<ICpuProfileNode & IProfileNode>;
 }
@@ -79,13 +74,13 @@ export default class Trace {
     return this.process(pid).thread(tid);
   }
 
-  public addEvents(events: ITraceEvent[]) {
+  public addEvents(events: ITraceEvent[]): void {
     for (const event of events) {
       this.addEvent(event);
     }
   }
 
-  public cpuProfileBuildModel(event: any) {
+  public cpuProfileBuildModel(event: ITraceEvent): void {
     if (
       event.ph === TRACE_EVENT_PHASE_INSTANT &&
       event.cat === 'disabled-by-default-devtools.timeline'
@@ -107,24 +102,26 @@ export default class Trace {
             duration: 0,
             nodes: [] as Array<ICpuProfileNode & IProfileNode>,
             samples: [] as number[],
-            timeDeltas: [] as number[],
-          },
+            timeDeltas: [] as number[]
+          }
         });
       } else if (event.name === 'ProfileChunk') {
         const profileChunk = event as IProfileChunkEvent;
         const profileEntry = this.profileMap.get(profileChunk.id)!;
         if (profileChunk.args.data.cpuProfile.nodes) {
-          profileChunk.args.data.cpuProfile.nodes.forEach((node: any) => {
-            profileEntry.cpuProfile.nodes.push(
-              Object.assign(node, {
-                sampleCount: 0,
-                min: 0,
-                max: 0,
-                total: 0,
-                self: 0,
-              })
-            );
-          });
+          profileChunk.args.data.cpuProfile.nodes.forEach(
+            (node: IProfileNode | ICpuProfileNode) => {
+              profileEntry.cpuProfile.nodes.push(
+                Object.assign(node, {
+                  sampleCount: 0,
+                  min: 0,
+                  max: 0,
+                  total: 0,
+                  self: 0
+                })
+              );
+            }
+          );
         }
         profileEntry.cpuProfile.samples.push(
           ...profileChunk.args.data.cpuProfile.samples
@@ -142,7 +139,7 @@ export default class Trace {
     } else {
       // fallback to Renderer process with most events
       this.mainProcess = this.processes
-        .filter(p => p.name === PROCESS_NAME.RENDERER)
+        .filter((p) => p.name === PROCESS_NAME.RENDERER)
         .reduce((a, b) => (b.events.length > a.events.length ? b : a));
     }
 
@@ -154,8 +151,8 @@ export default class Trace {
         this._cpuProfile = profileEntry.cpuProfile;
         const { nodes } = profileEntry.cpuProfile;
         const nodeMap = new Map<number, typeof nodes[0]>();
-        nodes.forEach(node => nodeMap.set(node.id, node));
-        nodes.forEach(node => {
+        nodes.forEach((node) => nodeMap.set(node.id, node));
+        nodes.forEach((node) => {
           if (node.parent !== undefined) {
             const parent = nodeMap.get(node.parent)!;
             if (parent.children) {
@@ -170,7 +167,7 @@ export default class Trace {
     }
   }
 
-  public buildModel() {
+  public buildModel(): void {
     const { events } = this;
     if (this.stack.length > 0) {
       this.stack.length = 0;
@@ -183,11 +180,11 @@ export default class Trace {
     }
   }
 
-  public getParent(event: ITraceEvent) {
+  public getParent(event: ITraceEvent): void {
     this.parents.get(event);
   }
 
-  private associateParent(event: ITraceEvent) {
+  private associateParent(event: ITraceEvent): void {
     if (event.ph !== TRACE_EVENT_PHASE_COMPLETE) {
       return;
     }
@@ -207,7 +204,7 @@ export default class Trace {
     stack.push(event);
   }
 
-  private addEvent(event: ITraceEvent) {
+  private addEvent(event: ITraceEvent): void {
     if (event.ph === TRACE_EVENT_PHASE_END || isRenderEnd(event)) {
       this.endEvent(event);
       return;
@@ -240,7 +237,7 @@ export default class Trace {
     return;
   }
 
-  private endEvent(end: ITraceEvent) {
+  private endEvent(end: ITraceEvent): void {
     const { stack } = this;
     for (let i = stack.length - 1; i >= 0; i--) {
       const begin = stack[i];
@@ -257,8 +254,8 @@ export default class Trace {
     throw new Error('could not find matching B phase for E phase event');
   }
 
-  private completeEvent(begin: ITraceEvent, end: ITraceEvent) {
-    let args: { [key: string]: any } | '__stripped__' = '__stripped__';
+  private completeEvent(begin: ITraceEvent, end: ITraceEvent): void {
+    let args: { [key: string]: unknown } | '__stripped__' = '__stripped__';
     if (typeof begin.args === 'object' && begin.args !== null) {
       args = Object.assign({}, begin.args);
     }
@@ -276,14 +273,14 @@ export default class Trace {
       tdur: end.tts! - begin.tts!,
       tid: begin.tid,
       ts: begin.ts,
-      tts: begin.tts,
+      tts: begin.tts
     };
     const { events } = this;
     const index = binsearch(events, begin, traceEventComparator);
     events[index] = complete;
   }
 
-  private addMetadata(event: ITraceEvent) {
+  private addMetadata(event: ITraceEvent): void {
     const { pid, tid } = event;
     if (event.args === '__stripped__') {
       return;

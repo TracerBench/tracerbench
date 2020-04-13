@@ -1,6 +1,6 @@
 import Bounds from './bounds';
 import Thread from './thread';
-import { ITraceEvent } from './trace_event';
+import { ITraceEvent } from './trace-event';
 
 export default class Process {
   public threads: Thread[] = [];
@@ -13,13 +13,13 @@ export default class Process {
   public sortIndex?: number;
   public traceBufferOverflowedAt?: number;
   public isTimeTicksHighResolution?: boolean;
-  public traceConfig: any;
+  public traceConfig: unknown;
 
   private threadMap: { [tid: number]: Thread } = {};
 
   constructor(public id: number) {}
 
-  public thread(tid: number) {
+  public thread(tid: number): Thread {
     let thread = this.threadMap[tid];
     if (thread === undefined) {
       this.threadMap[tid] = thread = new Thread(tid);
@@ -28,7 +28,7 @@ export default class Process {
     return thread;
   }
 
-  public addEvent(event: ITraceEvent) {
+  public addEvent(event: ITraceEvent): void {
     this.bounds.addEvent(event);
     this.events.push(event);
     this.thread(event.tid).addEvent(event);

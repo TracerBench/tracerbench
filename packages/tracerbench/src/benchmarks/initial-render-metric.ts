@@ -1,20 +1,17 @@
-import { IBenchmarkMeta } from "../benchmark";
-import Trace from "../trace/trace";
+import { IBenchmarkMeta } from '../benchmark';
+import Trace from '../trace/trace';
 import {
   ITraceEvent,
   TRACE_EVENT_PHASE_COMPLETE,
   TRACE_EVENT_PHASE_INSTANT,
   TRACE_EVENT_PHASE_MARK
-} from "../trace/trace_event";
-import { runtimeCallStatGroup } from "../util";
+} from '../trace/trace-event';
+import { runtimeCallStatGroup } from '../util';
 
 // going to count blink_gc time as js time since it is wrappers
 // that support js like dom nodes.
 const IS_V8_CAT = /(?:^|,)(?:disabled-by-default-)?v8(?:[,.]|$)/;
 const IS_BLINK_GC_CAT = /(?:^|,)(?:disabled-by-default-)?blink_gc(?:[,.]|$)/;
-
-// disable sort keys because I want samples to have a different order.
-/* tslint:disable:object-literal-sort-keys */
 
 export interface IMarker {
   /**
@@ -28,13 +25,13 @@ export interface IMarker {
   label: string;
 }
 
-export type V8GCKind = "MinorGC" | "MajorGC";
+export type V8GCKind = 'MinorGC' | 'MajorGC';
 
 export type V8GCType =
-  | "scavenge"
-  | "incremental marking"
-  | "atomic pause"
-  | "weak processing";
+  | 'scavenge'
+  | 'incremental marking'
+  | 'atomic pause'
+  | 'weak processing';
 
 export interface IV8GCSample {
   kind: V8GCKind;
@@ -144,12 +141,12 @@ export default class InitialRenderMetric {
   protected phaseEvents: ITraceEvent[] = [];
   protected firstEvent: ITraceEvent | undefined = undefined;
   protected paintEvent: ITraceEvent | undefined = undefined;
-  protected lastEnd: number = 0;
-  protected start: number = 0;
-  protected end: number = 0;
+  protected lastEnd = 0;
+  protected start = 0;
+  protected end = 0;
 
-  protected duration: number = 0;
-  protected js: number = 0;
+  protected duration = 0;
+  protected js = 0;
   protected phases: IPhaseSample[] = [];
   protected gc: IV8GCSample[] = [];
   protected blinkGC: IBlinkGCSample[] = [];
@@ -169,11 +166,11 @@ export default class InitialRenderMetric {
   public measure(trace: Trace): IIterationSample {
     const { mainProcess } = trace;
     if (!mainProcess) {
-      throw new Error("unable to determine main process for trace");
+      throw new Error('unable to determine main process for trace');
     }
     const { mainThread } = mainProcess;
     if (!mainThread) {
-      throw new Error("unable to determine main thread for process");
+      throw new Error('unable to determine main thread for process');
     }
     this.findMarkerEvents(mainThread.events);
     this.addPhaseSamples();
@@ -188,7 +185,7 @@ export default class InitialRenderMetric {
     };
   }
 
-  public findMarkerEvents(events: ITraceEvent[]) {
+  public findMarkerEvents(events: ITraceEvent[]): void {
     const markers = this.markers;
     const phaseEvents: ITraceEvent[] = [];
     let eventIdx = 0;
@@ -214,7 +211,7 @@ export default class InitialRenderMetric {
     let paintEvent: ITraceEvent | undefined;
     for (; eventIdx < events.length; eventIdx++) {
       const event = events[eventIdx];
-      if (event.ph === TRACE_EVENT_PHASE_COMPLETE && event.name === "Paint") {
+      if (event.ph === TRACE_EVENT_PHASE_COMPLETE && event.name === 'Paint') {
         paintEvent = event;
         break;
       }
@@ -231,7 +228,7 @@ export default class InitialRenderMetric {
     this.duration = paintEvent.ts - firstEvent.ts;
   }
 
-  public addPhaseSamples() {
+  public addPhaseSamples(): void {
     const { markers, phaseEvents, start } = this;
     for (let i = 0; i < phaseEvents.length - 1; i++) {
       const marker = markers[i];
@@ -245,7 +242,7 @@ export default class InitialRenderMetric {
     }
   }
 
-  protected addV8Samples(events: ITraceEvent[]) {
+  protected addV8Samples(events: ITraceEvent[]): void {
     const { start, end } = this;
     this.lastEnd = start;
     for (const event of events) {
@@ -267,13 +264,13 @@ export default class InitialRenderMetric {
     }
   }
 
-  protected addV8Sample(event: IV8Event) {
+  protected addV8Sample(event: IV8Event): void {
     this.addRuntimeCallStats(event);
     this.addGCSample(event);
     this.addJSTime(event);
   }
 
-  protected addJSTime(event: IBlinkGCEvent | IV8Event) {
+  protected addJSTime(event: IBlinkGCEvent | IV8Event): void {
     // js sample is all v8 or blink gc events with duration
     // during the duration sample period (clipped if overlap)
     // on any thread for the process (main, web workers, service worker)
@@ -297,7 +294,7 @@ export default class InitialRenderMetric {
     }
   }
 
-  protected addRuntimeCallStats(event: IV8Event) {
+  protected addRuntimeCallStats(event: IV8Event): void {
     const { runtimeCallStats } = this;
     if (!runtimeCallStats) {
       return;
@@ -306,7 +303,7 @@ export default class InitialRenderMetric {
     if (!isRuntimeCallStatsArgs(args)) {
       return;
     }
-    const runtimeCallStatsArg = args["runtime-call-stats"];
+    const runtimeCallStatsArg = args['runtime-call-stats'];
     for (const name of Object.keys(runtimeCallStatsArg)) {
       const [count, time] = runtimeCallStatsArg[name];
       const group = runtimeCallStatGroup(name);
@@ -324,20 +321,20 @@ export default class InitialRenderMetric {
     }
   }
 
-  protected addGCSample(event: IV8Event) {
+  protected addGCSample(event: IV8Event): void {
     const { start } = this;
     if (
       (event.ph !== TRACE_EVENT_PHASE_INSTANT &&
-        event.name !== "MinorGC" &&
-        event.name !== "MajorGC") ||
-      event.args === "__stripped__"
+        event.name !== 'MinorGC' &&
+        event.name !== 'MajorGC') ||
+      event.args === '__stripped__'
     ) {
       return;
     }
     this.gc.push({
       kind: event.name as V8GCKind,
       type:
-        event.name === "MinorGC" ? "scavenge" : (event.args.type as V8GCType),
+        event.name === 'MinorGC' ? 'scavenge' : (event.args.type as V8GCType),
       start: event.ts - start,
       duration: event.dur as number,
       usedHeapSizeAfter: event.args.usedHeapSizeAfter as number,
@@ -345,7 +342,7 @@ export default class InitialRenderMetric {
     });
   }
 
-  protected addBlinkGC(event: IBlinkGCEvent) {
+  protected addBlinkGC(event: IBlinkGCEvent): void {
     this.addJSTime(event);
     if (isCompleteEvent(event)) {
       this.blinkGC.push({
@@ -357,17 +354,17 @@ export default class InitialRenderMetric {
 }
 
 function isRuntimeCallStatsArgs(
-  args: ITraceEvent["args"]
+  args: ITraceEvent['args']
 ): args is IRuntimeCallStatsArgs {
-  if (args === "__stripped__") {
+  if (args === '__stripped__') {
     return false;
   }
-  const runtimeCallStats = args["runtime-call-stats"];
-  return typeof runtimeCallStats === "object" && runtimeCallStats !== null;
+  const runtimeCallStats = args['runtime-call-stats'];
+  return typeof runtimeCallStats === 'object' && runtimeCallStats !== null;
 }
 
 interface IRuntimeCallStatsArgs {
-  "runtime-call-stats": {
+  'runtime-call-stats': {
     [name: string]: [number, number];
   };
 }
@@ -384,7 +381,7 @@ function isCompleteEvent(
 }
 
 export interface IV8Event extends ITraceEvent {
-  cat: "v8";
+  cat: 'v8';
 }
 
 export interface IV8CompleteEvent extends IV8Event {
@@ -393,7 +390,7 @@ export interface IV8CompleteEvent extends IV8Event {
 }
 
 export interface IBlinkGCEvent extends ITraceEvent {
-  cat: "blink_gc";
+  cat: 'blink_gc';
 }
 
 export interface IBlinkGCCompleteEvent extends IBlinkGCEvent {

@@ -1,13 +1,12 @@
 import Protocol from 'devtools-protocol';
 import * as fs from 'fs';
+
 import { Benchmark, IBenchmarkMeta, IBenchmarkParams } from '../benchmark';
 import { ITab } from '../tab';
 import InitialRenderMetric, {
   IInitialRenderSamples,
   IMarker
 } from './initial-render-metric';
-
-/* tslint:disable:no-console */
 
 export interface IInitialRenderBenchmarkParams extends IBenchmarkParams {
   /**
@@ -56,7 +55,8 @@ export interface IInitialRenderBenchmarkParams extends IBenchmarkParams {
   /**
    * Settings to emulate a device.
    */
-  emulateDeviceSettings?: Protocol.Emulation.SetDeviceMetricsOverrideRequest & Protocol.Emulation.SetUserAgentOverrideRequest;
+  emulateDeviceSettings?: Protocol.Emulation.SetDeviceMetricsOverrideRequest &
+    Protocol.Emulation.SetUserAgentOverrideRequest;
 }
 
 /**
@@ -113,7 +113,7 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
     const tracing = await t.startTracing(categories);
     const { traceComplete } = tracing;
 
-    const navigateToBlank = new Promise<void>(resolve => {
+    const navigateToBlank = new Promise<void>((resolve) => {
       t.onNavigate = () => {
         if (t.frame.url === 'about:blank') {
           resolve(tracing.end());
@@ -165,7 +165,7 @@ export class InitialRenderBenchmark extends Benchmark<IInitialRenderSamples> {
   }
 }
 
-function validateParams(params: IInitialRenderBenchmarkParams) {
+function validateParams(params: IInitialRenderBenchmarkParams): void {
   if (!params.markers || params.markers.length === 0) {
     params.markers = [
       {

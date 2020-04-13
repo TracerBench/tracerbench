@@ -1,20 +1,22 @@
 import binsearch from 'array-binsearch';
 import { HierarchyNode } from 'd3-hierarchy';
-import { getChildren } from './cpu-profile';
+
 import {
   ICpuProfileNode,
   ITraceEvent,
   TRACE_EVENT_PHASE_COMPLETE,
-  TRACE_EVENT_PHASE_NESTABLE_ASYNC_END,
   TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN,
+  TRACE_EVENT_PHASE_NESTABLE_ASYNC_END
 } from '../trace';
+import { getChildren } from './cpu-profile';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const cloneDeep = require('lodash.clonedeep');
 
 export function addRenderNodes(
   hierarchy: HierarchyNode<ICpuProfileNode>,
   events: ITraceEvent[]
-) {
-  events.forEach(event => {
+): void {
+  events.forEach((event) => {
     if (!isRenderPhase(event)) {
       return;
     }
@@ -34,7 +36,7 @@ export function addRenderNodes(
 function nodeEnclosesEvent(
   node: HierarchyNode<ICpuProfileNode>,
   event: ITraceEvent
-) {
+): boolean {
   return (
     node.data.min !== -1 &&
     node.data.max !== -1 &&
@@ -46,7 +48,7 @@ function nodeEnclosesEvent(
 function insertRenderEvent(
   enclosingNode: HierarchyNode<ICpuProfileNode>,
   event: ITraceEvent
-) {
+): void {
   const eventStart = event.ts;
   const eventEnd = event.ts + event.dur!;
 
@@ -58,37 +60,37 @@ function insertRenderEvent(
       scriptId: -1,
       url: '',
       lineNumber: -1,
-      columnNumber: -1,
+      columnNumber: -1
     },
     children: [],
     sampleCount: -1,
     min: eventStart,
     max: eventEnd,
     total: 0,
-    self: 0,
+    self: 0
   };
 
   const children = getChildren(enclosingNode);
   // Children who are fully to the left or right of the render event
   const childrenForOriginal = children.filter(
-    child => child.data.max < eventStart || child.data.min > eventEnd
+    (child) => child.data.max < eventStart || child.data.min > eventEnd
   );
   // Children who are fully within the render event
   const childrenForRenderNode = children.filter(
-    child => child.data.min > eventStart && child.data.max < eventEnd
+    (child) => child.data.min > eventStart && child.data.max < eventEnd
   );
   // Children who are split by the render event
   const leftSplitChild = children.find(
-    n => n.data.min < eventStart && n.data.max > eventStart
+    (n) => n.data.min < eventStart && n.data.max > eventStart
   );
   const rightSplitChild = children.find(
-    n => n.data.min < eventEnd && n.data.max > eventEnd
+    (n) => n.data.min < eventEnd && n.data.max > eventEnd
   );
 
   // Fix parent/child links for all children other then split children
   enclosingNode.children = childrenForOriginal;
   renderNode.children = childrenForRenderNode;
-  childrenForRenderNode.forEach(child => (child.parent = renderNode));
+  childrenForRenderNode.forEach((child) => (child.parent = renderNode));
 
   // fix node/render node parent/child link
   renderNode.parent = enclosingNode;
@@ -101,7 +103,7 @@ function insertRenderEvent(
 function insertChildInOrder(
   children: Array<HierarchyNode<ICpuProfileNode>>,
   node: HierarchyNode<ICpuProfileNode>
-) {
+): void {
   let index = binsearch(children, node, (a, b) => a.data.min - b.data.min);
   if (index < 0) {
     /* tslint:disable:no-bitwise */
@@ -118,7 +120,7 @@ function splitChild(
   rightParent: HierarchyNode<ICpuProfileNode>,
   node: HierarchyNode<ICpuProfileNode> | undefined,
   splitTS: number
-) {
+): { middleLeftTime: number; middleRightTime: number } {
   if (node === undefined) {
     return { middleLeftTime: 0, middleRightTime: 0 };
   }
@@ -148,11 +150,13 @@ function splitChild(
 
   // Reasign children correctly
   const middleChild = children.find(
-    n => n.data.min < splitTS && n.data.max > splitTS
+    (n) => n.data.min < splitTS && n.data.max > splitTS
   );
-  const leftChildren = children.filter(child => child.data.max < left.data.max);
+  const leftChildren = children.filter(
+    (child) => child.data.max < left.data.max
+  );
   const rightChildren = children.filter(
-    child => child.data.min > right.data.min
+    (child) => child.data.min > right.data.min
   );
 
   left.children = leftChildren;
@@ -178,31 +182,31 @@ function splitChild(
   // Return the resulting left/right split times, so parents can determine their own self times
   return {
     middleLeftTime: left.data.max - left.data.min,
-    middleRightTime: right.data.max - right.data.min,
+    middleRightTime: right.data.max - right.data.min
   };
 }
 
-export function isRenderEnd(event: ITraceEvent) {
+export function isRenderEnd(event: ITraceEvent): boolean {
   return (
     event.ph === TRACE_EVENT_PHASE_NESTABLE_ASYNC_END && isRender(event.name)
   );
 }
 
-export function isRenderStart(event: ITraceEvent) {
+export function isRenderStart(event: ITraceEvent): boolean {
   return (
     event.ph === TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN && isRender(event.name)
   );
 }
 
-function isRenderPhase(event: ITraceEvent) {
+function isRenderPhase(event: ITraceEvent): boolean {
   return event.ph === TRACE_EVENT_PHASE_COMPLETE && isRender(event.name);
 }
 
-export function isRenderNode(node: HierarchyNode<ICpuProfileNode>) {
+export function isRenderNode(node: HierarchyNode<ICpuProfileNode>): boolean {
   return isRender(node.data.callFrame.functionName);
 }
 
-function isRender(name: string) {
+function isRender(name: string): boolean {
   return (
     name.endsWith('(Rendering: initial)') ||
     name.endsWith('(Rendering: update)') ||

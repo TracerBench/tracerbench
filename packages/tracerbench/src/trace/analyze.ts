@@ -1,30 +1,33 @@
+import { Archive } from '@tracerbench/har';
 import { HierarchyNode } from 'd3-hierarchy';
 import { writeJSONSync } from 'fs-extra';
-import { Archive } from '@tracerbench/har';
-import { ITrace, loadTrace } from './load_trace';
-import { ITraceEvents } from './live_trace';
+
+import {
+  ICpuProfileNode,
+  ITraceEvent,
+  Trace,
+  TRACE_EVENT_PHASE_COMPLETE
+} from '../trace';
 import {
   aggregate,
   categorizeAggregations,
   collapseCallFrames,
-  verifyMethods,
+  verifyMethods
 } from './aggregator';
-import { report as reporter } from './reporter';
+import CpuProfile from './cpu-profile';
+import { ITraceEvents } from './live-trace';
+import { ITrace, loadTrace } from './load-trace';
+import { ModuleMatcher } from './module-matcher';
+import reporter from './reporter';
 import {
   addRemainingModules,
   computeMinMax,
   formatCategories,
   getRenderingNodes,
-  methodsFromCategories,
+  methodsFromCategories
 } from './utils';
-import { ModuleMatcher } from './module_matcher';
-import {
-  ICpuProfileNode,
-  ITraceEvent,
-  Trace,
-  TRACE_EVENT_PHASE_COMPLETE,
-} from '../trace';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const cloneDeep = require('lodash.clonedeep');
 
 export interface IAnalyze {
@@ -37,14 +40,14 @@ export interface IAnalyze {
   verbose?: boolean;
 }
 
-export async function analyze(options: IAnalyze) {
+export async function analyze(options: IAnalyze): Promise<void> {
   const {
     traceHARJSON,
     event,
     filename,
     traceEvents,
     report,
-    methods,
+    methods
   } = options;
   const trace = loadTrace(traceEvents);
   const profile = getCPUProfile(trace, event)!;
@@ -77,14 +80,13 @@ export async function analyze(options: IAnalyze) {
   reporter(categorized);
 
   const renderNodes = getRenderingNodes(hierarchy);
-  renderNodes.forEach(node => {
+  renderNodes.forEach((node) => {
     const renderAgg = aggregate(node, allMethods, traceHARJSON, modMatcher);
     const renderCollapsed = collapseCallFrames(renderAgg);
     const renderCategorized = categorizeAggregations(
       renderCollapsed,
       categories
     );
-    // console.log(`Render Node:${node.data.callFrame.functionName}`); // tslint:disable-line  no-console
     reporter(renderCategorized);
   });
 }
@@ -93,11 +95,11 @@ export function exportHierarchy(
   rawTraceData: ITraceEvent[],
   hierarchy: HierarchyNode<ICpuProfileNode>,
   trace: Trace,
-  filename: string = 'trace-processed',
+  filename = 'trace-processed',
   modMatcher: ModuleMatcher
-) {
+): void {
   const traceObj: ITraceEvents = { traceEvents: cloneDeep(rawTraceData) };
-  hierarchy.each(node => {
+  hierarchy.each((node) => {
     const completeEvent: ITraceEvent = {
       pid: trace.mainProcess!.id,
       tid: trace.mainProcess!.mainThread!.id,
@@ -108,10 +110,10 @@ export function exportHierarchy(
       args: {
         data: {
           functionName: node.data.callFrame.functionName,
-          moduleName: modMatcher.findModuleName(node.data.callFrame),
-        },
+          moduleName: modMatcher.findModuleName(node.data.callFrame)
+        }
       },
-      dur: node.data.max - node.data.min,
+      dur: node.data.max - node.data.min
     };
 
     traceObj.traceEvents.push(completeEvent);
@@ -120,7 +122,7 @@ export function exportHierarchy(
   writeJSONSync(`${filename}.json`, JSON.stringify(traceObj));
 }
 
-function getCPUProfile(trace: Trace, event?: string) {
+function getCPUProfile(trace: Trace, event?: string): CpuProfile {
   const { min, max } = computeMinMax(trace, 'navigationStart', event!);
   return trace.cpuProfile(min, max);
 }

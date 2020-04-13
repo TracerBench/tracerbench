@@ -1,5 +1,5 @@
 import { hierarchy, HierarchyNode } from 'd3-hierarchy';
-import { addRenderNodes } from './render-events';
+
 import {
   FUNCTION_NAME,
   ICpuProfile,
@@ -9,9 +9,10 @@ import {
   ITraceEvent,
   TRACE_EVENT_NAME,
   TRACE_EVENT_PHASE_BEGIN,
-  TRACE_EVENT_PHASE_END,
+  TRACE_EVENT_PHASE_END
 } from '../trace';
-import { TRACE_EVENT_PHASE_COMPLETE } from './trace_event';
+import { addRenderNodes } from './render-events';
+import { TRACE_EVENT_PHASE_COMPLETE } from './trace-event';
 
 export default class CpuProfile {
   public profile: ICpuProfile;
@@ -58,7 +59,7 @@ export default class CpuProfile {
     initNodes(nodes);
     const nodeMap = mapAndLinkNodes(nodes, parentLinks, childrenLinks);
 
-    const originalRoot: ICpuProfileNode | undefined = nodes.find(node => {
+    const originalRoot: ICpuProfileNode | undefined = nodes.find((node) => {
       return (
         node.callFrame.scriptId === 0 ||
         (node.callFrame.scriptId === '0' &&
@@ -86,18 +87,18 @@ export default class CpuProfile {
     const end = (this.end = expandedRoot.max);
     this.duration = end - start;
 
-    this.hierarchy = hierarchy(expandedRoot, node => {
+    this.hierarchy = hierarchy(expandedRoot, (node) => {
       const children = childrenLinks.get(node);
       if (children) {
         return expandedRoot === node
-          ? children.filter(n => !isMetaNode(n))
+          ? children.filter((n) => !isMetaNode(n))
           : children;
       }
       return null;
     });
 
     // Make child iteration easier
-    this.hierarchy.each(node => {
+    this.hierarchy.each((node) => {
       if (node.children === undefined) {
         node.children = [];
       }
@@ -106,15 +107,15 @@ export default class CpuProfile {
     addRenderNodes(this.hierarchy, events);
   }
 
-  public parent(node: ICpuProfileNode) {
+  public parent(node: ICpuProfileNode): ICpuProfileNode | undefined {
     return this.parentLinks.get(node);
   }
 
-  public children(node: ICpuProfileNode) {
+  public children(node: ICpuProfileNode): ICpuProfileNode[] | undefined {
     return this.childrenLinks.get(node);
   }
 
-  public node(id: number) {
+  public node(id: number): ICpuProfileNode {
     const n = this.nodeMap.get(id);
     if (n === undefined) {
       throw new Error(`invalid node id: ${id}`);
@@ -123,7 +124,9 @@ export default class CpuProfile {
   }
 }
 
-export function getChildren(node: HierarchyNode<ICpuProfileNode>) {
+export function getChildren(
+  node: HierarchyNode<ICpuProfileNode>
+): HierarchyNode<ICpuProfileNode>[] {
   if (node.children === undefined) {
     throw new Error('Node had undefined children');
   }
@@ -139,7 +142,10 @@ function expandAndFix(
   parentLinks: Map<ICpuProfileNode, ICpuProfileNode>,
   childrenLinks: Map<ICpuProfileNode, ICpuProfileNode[]>,
   root: ICpuProfileNode
-) {
+): {
+  expandedRoot: ICpuProfileNode;
+  expandedNodeMap: Map<number, ICpuProfileNode>;
+} {
   const { expandedNodes, orig2ExpNodes } = expandNodes(
     samples,
     events,
@@ -163,7 +169,7 @@ function expandAndFix(
   return { expandedRoot: orig2ExpNodes.get(root.id)![0], expandedNodeMap };
 }
 
-function initNodes(nodes: ICpuProfileNode[]) {
+function initNodes(nodes: ICpuProfileNode[]): void {
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
     // initialize our extensions
@@ -178,7 +184,7 @@ function mapAndLinkNodes(
   nodes: ICpuProfileNode[],
   parentLinks: Map<ICpuProfileNode, ICpuProfileNode>,
   childrenLinks: Map<ICpuProfileNode, ICpuProfileNode[]>
-) {
+): Map<number, ICpuProfileNode> {
   const nodeMap = new Map<number, ICpuProfileNode>();
   for (let i = 0; i < nodes.length; i++) {
     nodeMap.set(nodes[i].id, nodes[i]);
@@ -193,7 +199,7 @@ function linkNodes(
   nodeMap: Map<number, ICpuProfileNode>,
   parentLinks: Map<ICpuProfileNode, ICpuProfileNode>,
   childrenLinks: Map<ICpuProfileNode, ICpuProfileNode[]>
-) {
+): void {
   for (let i = 0; i < nodes.length; i++) {
     const node = nodes[i];
     linkChildren(node, nodeMap, parentLinks, childrenLinks);
@@ -205,7 +211,7 @@ function linkChildren(
   nodeMap: Map<number, ICpuProfileNode>,
   parentLinks: Map<ICpuProfileNode, ICpuProfileNode>,
   childrenLinks: Map<ICpuProfileNode, ICpuProfileNode[]>
-) {
+): void {
   const childIds = parent.children;
   if (childIds === undefined) {
     return;
@@ -222,7 +228,7 @@ function linkChildren(
 function absoluteSamples(
   profile: ICpuProfile,
   nodeMap: Map<number, ICpuProfileNode>
-) {
+): ISample[] {
   const sampleIds = profile.samples;
   const samples: ISample[] = new Array(sampleIds.length);
   // deltas can be negative and samples out of order
@@ -236,7 +242,7 @@ function absoluteSamples(
       delta: 0,
       timestamp,
       prev: null,
-      next: null,
+      next: null
     };
     last = timestamp;
 
@@ -270,14 +276,17 @@ function expandNodes(
   min: number,
   max: number,
   parentLinks: Map<ICpuProfileNode, ICpuProfileNode>
-) {
+): {
+  expandedNodes: ICpuProfileNode[];
+  orig2ExpNodes: Map<number, ICpuProfileNode[]>;
+} {
   const expandedNodes: ICpuProfileNode[] = [];
   const orig2ExpNodes = new Map<number, ICpuProfileNode[]>();
   const state: IExpState = {
     lastSampleTS: -1,
     stack: [],
     origId2activeIndex: new Map<number, number>(),
-    expId2origId: new Map<number, number>(),
+    expId2origId: new Map<number, number>()
   };
 
   let begin: ITraceEvent | undefined;
@@ -319,9 +328,7 @@ function expandNodes(
     }
 
     // we should be just after `to` or out of events
-    // if we don't have a from/to then this will drain
-    // samples and exit
-
+    // if we don't have a from/to then this will drain samples and exit
     for (; sampleIndex < samples.length; sampleIndex++) {
       // process samples in execute range
       const sample = samples[sampleIndex];
@@ -338,8 +345,6 @@ function expandNodes(
         processSample(sample, orig2ExpNodes, parentLinks, expandedNodes, state);
       }
     }
-
-    // we should be just past a range or have no more samples
   }
 
   if (to !== -1) {
@@ -350,7 +355,7 @@ function expandNodes(
   return { expandedNodes, orig2ExpNodes };
 }
 
-function isOutOfBounds(ts: number, min: number, max: number) {
+function isOutOfBounds(ts: number, min: number, max: number): boolean {
   return ts < min || (max !== -1 && ts > max);
 }
 
@@ -358,8 +363,8 @@ function terminateNodes(
   toTerminate: ICpuProfileNode[],
   ts: number,
   state: IExpState
-) {
-  toTerminate.forEach(node => {
+): void {
+  toTerminate.forEach((node) => {
     state.origId2activeIndex.delete(state.expId2origId.get(node.id)!);
     state.expId2origId.delete(node.id);
     node.max = ts;
@@ -372,7 +377,7 @@ function activateNodes(
   ts: number,
   newNodes: ICpuProfileNode[],
   orig2ExpNodes: Map<number, ICpuProfileNode[]>
-) {
+): void {
   const { stack, origId2activeIndex, expId2origId } = state;
   let parent = stack[stack.length - 1];
 
@@ -417,7 +422,7 @@ function activateNodes(
   }
 }
 
-function addDurationToNodes(stack: ICpuProfileNode[], delta: number) {
+function addDurationToNodes(stack: ICpuProfileNode[], delta: number): void {
   if (stack.length > 0) {
     stack[stack.length - 1].self += delta;
   }
@@ -430,7 +435,7 @@ interface IExpState {
   expId2origId: Map<number, number>;
 }
 
-function endExecute(state: IExpState, timestamp: number) {
+function endExecute(state: IExpState, timestamp: number): void {
   const { stack, lastSampleTS } = state;
   addDurationToNodes(stack, timestamp - lastSampleTS);
   const toTerminate = stack.splice(1); // don't slice (root)
@@ -443,7 +448,7 @@ function processSample(
   parentLinks: Map<ICpuProfileNode, ICpuProfileNode>,
   newNodes: ICpuProfileNode[],
   state: IExpState
-) {
+): void {
   const { stack, origId2activeIndex } = state;
   let curNode: ICpuProfileNode | undefined;
   const toActivate: ICpuProfileNode[] = [];
@@ -481,7 +486,7 @@ function processSample(
   activateNodes(toActivate, state, sample.timestamp, newNodes, orig2ExpNodes);
 }
 
-export function isMetaNode(node: ICpuProfileNode) {
+export function isMetaNode(node: ICpuProfileNode): boolean {
   switch (node.callFrame.functionName) {
     case FUNCTION_NAME.ROOT:
     case FUNCTION_NAME.IDLE:

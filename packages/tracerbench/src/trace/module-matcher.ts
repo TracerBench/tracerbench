@@ -1,9 +1,8 @@
+import { Archive, Entry } from '@tracerbench/har';
 import { HierarchyNode } from 'd3-hierarchy';
-import { Archive } from '@tracerbench/har';
 
-import { ICallFrame, ICpuProfileNode } from '../trace';
+import { ICallFrame, ICpuProfileNode } from '.';
 import { ParsedFile } from './metadata';
-
 export interface IParsedFiles {
   [key: string]: ParsedFile;
 }
@@ -24,11 +23,11 @@ export class ModuleMatcher {
     });
   }
 
-  public getModuleList() {
+  public getModuleList(): Set<string> {
     return this.moduleSet;
   }
 
-  public findModuleName(callFrame: ICallFrame) {
+  public findModuleName(callFrame: ICallFrame): string | undefined {
     const { url } = callFrame;
     // guards against things like undefined url or urls like "extensions::SafeBuiltins"
     if (
@@ -47,15 +46,15 @@ export class ModuleMatcher {
       return file.moduleNameFor(callFrame);
     }
 
-    file = this.parsedFiles[url] = new ParsedFile(this.contentFor(
-      url
-    ) as string);
+    file = this.parsedFiles[url] = new ParsedFile(
+      this.contentFor(url) as string
+    );
     return file.moduleNameFor(callFrame);
   }
 
-  private contentFor(url: string) {
+  private contentFor(url: string): string | undefined {
     const entry = this.archive.log.entries.find(
-      (e: any) => e.request.url === url
+      (e: Entry) => e.request.url === url
     );
 
     if (!entry) {

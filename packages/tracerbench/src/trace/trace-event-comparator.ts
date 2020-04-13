@@ -1,6 +1,10 @@
-import { ITraceEvent, TRACE_EVENT_PHASE_METADATA } from "./trace_event";
+// eslint-disable-next-line filenames/match-exported
+import { ITraceEvent, TRACE_EVENT_PHASE_METADATA } from './trace-event';
 
-export default function traceEventComparator(a: ITraceEvent, b: ITraceEvent) {
+export default function traceEventComparator(
+  a: ITraceEvent,
+  b: ITraceEvent
+): number {
   let res = 0;
   if (a.ts !== b.ts) {
     res = a.ts - b.ts;
@@ -29,6 +33,6 @@ export default function traceEventComparator(a: ITraceEvent, b: ITraceEvent) {
   return res;
 }
 
-function strcmp(a: string, b: string) {
+function strcmp(a: string, b: string): number {
   return a < b ? -1 : a > b ? 1 : 0;
 }
