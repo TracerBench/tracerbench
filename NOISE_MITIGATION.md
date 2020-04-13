@@ -26,20 +26,20 @@ kill -2 <PROCESS-ID>
 In more recent versions of OSX you cannot disable spotlight without first disabling system integrity protection. This operation comes with risks, please read-up before continuing.
 
 To disable/enable system integrity protection:
-```
-- "Restart" your mac while you hold "Command + R"
+
+- "Restart" your mac while you hold <kbd>⌘</kbd><kbd>R</kbd>
 - Once you enter recovery mode select "Utilities > Terminal"
-- To disable "csrutil disable"
-- To enable "csrutil enable"
+- To disable `csrutil disable`
+- To enable `csrutil enable`
 - "Restart" your mac again
-```
+
 
 Once that's complete, time to disable/enable spotlight from indexing (which is very noisy).
-```
+
 - From a terminal window
-- To disable "sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist"
-- To enable "sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist"
-```
+- To disable `sudo launchctl unload -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist`
+- To enable `sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.metadata.mds.plist`
+
 
 ## RHEL 7
 ### Script to stop/start the following jobs
