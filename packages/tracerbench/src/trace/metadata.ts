@@ -16,7 +16,7 @@ export class ParsedFile {
     this.lines = this.content.split('\n');
   }
 
-  public moduleNameFor(callFrame: ICallFrame) {
+  public moduleNameFor(callFrame: ICallFrame): string {
     const { lineNumber, columnNumber, functionName } = callFrame;
     const key = `${lineNumber}${columnNumber}${functionName}`;
     const moduleLocator = this.moduleLocators.get(key);
@@ -60,7 +60,7 @@ export class ParsedFile {
   }
 }
 
-export function findMangledDefine(content: string) {
+export function findMangledDefine(content: string): string {
   const tail = content.indexOf('.__loader.define');
   const sub = content.slice(0, tail);
   let defineToken = '';
@@ -87,9 +87,9 @@ export function findMangledDefine(content: string) {
   return defineToken;
 }
 
-export function getModuleIndex(str: string, ident: string) {
+export function getModuleIndex(str: string, ident: string): number {
   const matcher = new RegExp(
-    `(?:${ident}\\\(")(.*?)(?=",\\\[\\\"(.*)\\\"],(function|\\\(function))`,
+    `(?:${ident}\\(")(.*?)(?=",\\[\\"(.*)\\"],(function|\\(function))`,
     'g'
   );
   const matches = str.match(matcher);
@@ -102,7 +102,11 @@ export function getModuleIndex(str: string, ident: string) {
   return str.indexOf(lastMatched);
 }
 
-export function extractModuleName(line: string, token: string, index: number) {
+export function extractModuleName(
+  line: string,
+  token: string,
+  index: number
+): string {
   let start = index + `${token}("`.length;
   let moduleName = '';
   let char;

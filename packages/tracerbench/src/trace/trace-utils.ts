@@ -1,14 +1,17 @@
-// tslint:disable:no-console
-import { ProtocolConnection } from '@tracerbench/protocol-connection';
-import { spawnChrome } from 'chrome-debugging-client';
+import {
+  ProtocolConnection,
+  SessionConnection
+} from '@tracerbench/protocol-connection';
+import { ChromeWithPipeConnection, spawnChrome } from 'chrome-debugging-client';
 import Protocol from 'devtools-protocol';
+
 import { IConditions, networkConditions } from './conditions';
 import { filterObjectByKeys } from './utils';
 
 export async function createBrowser(
   browserArgs: string[] = [],
-  headless: boolean = false
-) {
+  headless = false
+): Promise<ChromeWithPipeConnection> {
   const browser = await spawnChrome({
     additionalArguments: browserArgs,
     stdio: 'inherit',
@@ -17,7 +20,7 @@ export async function createBrowser(
     userDataRoot: undefined,
     url: undefined,
     disableDefaultArguments: false,
-    headless,
+    headless
   });
 
   return browser;
@@ -25,25 +28,27 @@ export async function createBrowser(
 
 export async function newTab(
   browser: ProtocolConnection,
-  url: string = 'about:blank'
-) {
+  url = 'about:blank'
+): Promise<SessionConnection> {
   const { targetId } = await browser.send('Target.createTarget', {
-    url,
+    url
   });
   return await browser.attachToTarget(targetId);
 }
 
-export async function getTab(browser: ProtocolConnection) {
+export async function getTab(
+  browser: ProtocolConnection
+): Promise<SessionConnection> {
   // const tabs = await apiClient.send();
   // create one tab at about:blank
   const { targetId } = await browser.send('Target.createTarget', {
-    url: 'about:blank',
+    url: 'about:blank'
   });
 
   const tab = browser.connection(
     await browser.send('Target.attachToTarget', {
       targetId,
-      flatten: true,
+      flatten: true
     })
   );
 
@@ -56,7 +61,7 @@ export async function getTab(browser: ProtocolConnection) {
   for (const targetInfo of targetInfos) {
     if (targetInfo.type === 'page' && targetInfo.targetId !== targetId) {
       await browser.send('Target.closeTarget', {
-        targetId: targetInfo.targetId,
+        targetId: targetInfo.targetId
       });
     }
   }
@@ -69,12 +74,12 @@ export async function getTab(browser: ProtocolConnection) {
 export async function emulate(
   client: ProtocolConnection,
   conditions: IConditions
-) {
+): Promise<void> {
   // tells whether emulation is supported
   const { result: canEmulate } = await client.send('Emulation.canEmulate');
   if (canEmulate) {
     await client.send('Emulation.setCPUThrottlingRate', {
-      rate: conditions.cpu,
+      rate: conditions.cpu
     });
   } // throw error if configured to emulate and returned false
 
@@ -98,11 +103,14 @@ export async function emulate(
 export async function setCookies(
   page: ProtocolConnection,
   cookies: Protocol.Network.CookieParam[]
-) {
+): Promise<void> {
   for (let i = 0; i < cookies.length; i++) {
     const cookie = filterObjectByKeys(cookies[i], ['name', 'value', 'domain']);
     try {
-      await page.send('Network.setCookie', cookie);
+      await page.send(
+        'Network.setCookie',
+        cookie as Protocol.Network.CookieParam
+      );
     } catch (error) {
       throw new Error(
         `${error}. CookieParam format invalid: https://chromedevtools.github.io/devtools-protocol/tot/Network#type-CookieParam.`

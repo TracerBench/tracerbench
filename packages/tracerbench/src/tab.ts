@@ -1,7 +1,8 @@
-import Protocol from 'devtools-protocol';
-import Trace from './trace/trace';
+/* eslint-disable filenames/match-exported */
 import { RootConnection, SessionConnection } from 'chrome-debugging-client';
+import Protocol from 'devtools-protocol';
 
+import Trace from './trace/trace';
 export interface ITab {
   isTracing: boolean;
 
@@ -43,15 +44,6 @@ export interface ITab {
   ): Promise<void>;
 }
 
-export default function createTab(
-  id: string,
-  browser: RootConnection,
-  tab: SessionConnection,
-  frame: Protocol.Page.Frame
-): ITab {
-  return new Tab(id, browser, tab, frame);
-}
-
 export interface ITracing {
   traceComplete: Promise<Trace>;
   end(): Promise<void>;
@@ -87,7 +79,7 @@ class Tab implements ITab {
     this.page = page;
     this.frame = frame;
 
-    page.on('Page.frameNavigated', params => {
+    page.on('Page.frameNavigated', (params) => {
       const newFrame = params.frame;
       if (!newFrame.parentId) {
         this.frame = newFrame;
@@ -109,7 +101,7 @@ class Tab implements ITab {
 
     await Promise.all([maybeWaitForLoad(), load()]);
 
-    async function maybeWaitForLoad() {
+    async function maybeWaitForLoad(): Promise<void> {
       if (shouldWaitForLoad) {
         await page.until(
           'Page.frameStoppedLoading',
@@ -118,7 +110,7 @@ class Tab implements ITab {
       }
     }
 
-    async function load() {
+    async function load(): Promise<void> {
       if (frame.url === url) {
         await page.send('Page.reload', {});
       } else {
@@ -131,7 +123,7 @@ class Tab implements ITab {
     scriptSource: string
   ): Promise<Protocol.Page.ScriptIdentifier> {
     const result = await this.page.send('Page.addScriptToEvaluateOnLoad', {
-      scriptSource,
+      scriptSource
     });
     return result.identifier;
   }
@@ -159,8 +151,8 @@ class Tab implements ITab {
       const trace = new Trace();
 
       const onDataCollected = ({
-        value,
-      }: Protocol.Tracing.DataCollectedEvent) => {
+        value
+      }: Protocol.Tracing.DataCollectedEvent): void => {
         trace.addEvents(value);
       };
 
@@ -181,13 +173,13 @@ class Tab implements ITab {
         Renderer process.
       */
       trace.mainProcess = trace.processes
-        .filter(p => p.name === 'Renderer')
+        .filter((p) => p.name === 'Renderer')
         .reduce((c, v) => (v.events.length > c.events.length ? v : c));
 
       return trace;
     })();
 
-    const end = async () => {
+    const end = async (): Promise<void> => {
       if (this.isTracing) {
         await page.send('Tracing.end');
       }
@@ -212,26 +204,26 @@ class Tab implements ITab {
     // await page.send('Network.disable');
   }
 
-  public async setCPUThrottlingRate(rate: number) {
+  public async setCPUThrottlingRate(rate: number): Promise<void> {
     await this.page.send('Emulation.setCPUThrottlingRate', { rate });
   }
 
   public async emulateNetworkConditions(
     conditions: Protocol.Network.EmulateNetworkConditionsRequest
-  ) {
+  ): Promise<void> {
     await this.page.send('Network.enable', {
       maxResourceBufferSize: 0,
-      maxTotalBufferSize: 0,
+      maxTotalBufferSize: 0
     });
     await this.page.send('Network.emulateNetworkConditions', conditions);
   }
 
-  public async disableNetworkEmulation() {
+  public async disableNetworkEmulation(): Promise<void> {
     await this.page.send('Network.emulateNetworkConditions', {
       downloadThroughput: 0,
       latency: 0,
       offline: false,
-      uploadThroughput: 0,
+      uploadThroughput: 0
     });
     await this.page.send('Network.disable');
   }
@@ -254,4 +246,13 @@ class Tab implements ITab {
   ): Promise<void> {
     await this.page.send('Emulation.setUserAgentOverride', userAgentSettings);
   }
+}
+
+export default function createTab(
+  id: string,
+  browser: RootConnection,
+  tab: SessionConnection,
+  frame: Protocol.Page.Frame
+): ITab {
+  return new Tab(id, browser, tab, frame);
 }

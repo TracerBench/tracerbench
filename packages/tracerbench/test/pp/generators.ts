@@ -1,4 +1,3 @@
-// tslint:disable:max-classes-per-file
 import { Archive } from '@tracerbench/har';
 
 import {
@@ -9,8 +8,8 @@ import {
   TRACE_EVENT_NAME,
   TRACE_EVENT_PHASE_COMPLETE,
   TRACE_EVENT_PHASE_BEGIN,
-  TRACE_EVENT_PHASE_END,
-} from '../../src/trace/trace_event';
+  TRACE_EVENT_PHASE_END
+} from '../../src/trace/trace-event';
 
 interface INode {
   child(options: IOptionalCallFrame): CPUProfileNode;
@@ -42,7 +41,7 @@ class RootCPUProfileNode implements INode {
       lineNumber: -1,
       columnNumber: -1,
       scriptId: 0,
-      url: 'script',
+      url: 'script'
     };
     (Object as any).assign(this.callFrame, options);
   }
@@ -68,7 +67,7 @@ class RootCPUProfileNode implements INode {
       min,
       children,
       sampleCount,
-      total,
+      total
     } = this;
     return {
       id,
@@ -78,7 +77,7 @@ class RootCPUProfileNode implements INode {
       max,
       children,
       sampleCount,
-      total,
+      total
     };
   }
 }
@@ -142,7 +141,7 @@ export class ProfileGenerator {
       dur: duration,
       cat: '',
       name,
-      args: {},
+      args: {}
     };
     this.events.push(event);
   }
@@ -157,7 +156,7 @@ export class ProfileGenerator {
         ph: isStart ? TRACE_EVENT_PHASE_BEGIN : TRACE_EVENT_PHASE_END,
         cat: '',
         name,
-        args: {},
+        args: {}
       };
     } else {
       throw Error('Trying to create an unknown event in test');
@@ -173,20 +172,20 @@ export class ProfileGenerator {
       endTime: duration,
       duration,
       timeDeltas,
-      nodes: nodes.map(node => node.toJSON()),
-      samples,
+      nodes: nodes.map((node) => node.toJSON()),
+      samples
     };
   }
 }
 
 export class LocatorGenerator {
   public generate(methods: string[][]) {
-    return methods.map(m => {
+    return methods.map((m) => {
       return {
         functionName: m[0],
         functionNameRegex: new RegExp(`^${m[0]}$`),
         moduleName: m[1],
-        moduleNameRegex: new RegExp(`^${m[1]}$`),
+        moduleNameRegex: new RegExp(`^${m[1]}$`)
       };
     });
   }
@@ -199,7 +198,7 @@ export class ArchiveGenerator {
         version: '0.0.0',
         creator: {
           name: 'TracerBench',
-          version: '0.0.0',
+          version: '0.0.0'
         },
         entries: [
           {
@@ -211,7 +210,7 @@ export class ArchiveGenerator {
               headers: [],
               queryString: [],
               headersSize: 0,
-              bodySize: 0,
+              bodySize: 0
             },
             response: {
               status: 0,
@@ -225,20 +224,20 @@ export class ArchiveGenerator {
               content: {
                 text: content,
                 size: 0,
-                mimeType: '',
-              },
+                mimeType: ''
+              }
             },
             time: 0,
             cache: {},
             timings: {
               send: 0,
               wait: 0,
-              receive: 0,
+              receive: 0
             },
-            startedDateTime: '',
-          },
-        ],
-      },
+            startedDateTime: ''
+          }
+        ]
+      }
     };
   }
 }

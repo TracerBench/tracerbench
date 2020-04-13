@@ -1,11 +1,10 @@
-// tslint:disable:no-console
-
+import { Archive, Entry, Header } from '@tracerbench/har';
+import { SessionConnection } from 'chrome-debugging-client';
 import Protocol from 'devtools-protocol';
-import { Archive, Header, Entry } from '@tracerbench/har';
 
-import { createBrowser, getTab, setCookies, emulate } from './trace-utils';
-import { getBrowserArgs } from './utils';
 import { IConditions } from './conditions';
+import { createBrowser, emulate, getTab, setCookies } from './trace-utils';
+import { getBrowserArgs } from './utils';
 
 export interface ICookies {
   cookies: Protocol.Network.CookieParam[];
@@ -24,10 +23,10 @@ export async function recordHARClient(
       version: '0.0.0',
       creator: {
         name: 'TracerBench',
-        version: '0.0.0',
+        version: '0.0.0'
       },
-      entries: [],
-    },
+      entries: []
+    }
   };
 
   const browserArgs = getBrowserArgs(altBrowserArgs);
@@ -36,13 +35,13 @@ export async function recordHARClient(
   try {
     const chrome = await getTab(browser.connection);
 
-    chrome.on('Network.requestWillBeSent', params => {
+    chrome.on('Network.requestWillBeSent', (params) => {
       console.log(
         `RECORDING-REQUEST :: ${params.request.method} :: ${params.type} :: ${params.request.url}`
       );
     });
 
-    chrome.on('Network.responseReceived', params => {
+    chrome.on('Network.responseReceived', (params) => {
       networkRequests.push(params);
     });
 
@@ -50,7 +49,7 @@ export async function recordHARClient(
     await Promise.all([
       chrome.send('Page.enable'),
       chrome.send('Network.enable'),
-      chrome.send('Runtime.enable'),
+      chrome.send('Runtime.enable')
     ]); // clear and disable cache
     await chrome.send('Network.clearBrowserCache');
     // disable cache
@@ -70,7 +69,7 @@ export async function recordHARClient(
             }
         });
         observer.observe({ entryTypes: ["mark", "navigation"] });
-        });`,
+        });`
     });
 
     // navigate to the url
@@ -79,11 +78,11 @@ export async function recordHARClient(
     // eval
     const evalPromise = chrome.send('Runtime.evaluate', {
       expression: `__TBMarkerPromise`,
-      awaitPromise: true,
+      awaitPromise: true
     });
 
     let timeoutId: NodeJS.Timeout;
-    const timeout = new Promise(reject => {
+    const timeout = new Promise((reject) => {
       timeoutId = setTimeout(() => {
         clearTimeout(timeoutId);
         reject('Promise timed out after waiting for 20 seconds');
@@ -100,7 +99,7 @@ export async function recordHARClient(
 
     await Promise.all([
       chrome.send('Network.disable'),
-      chrome.send('Runtime.disable'),
+      chrome.send('Runtime.disable')
     ]);
 
     await chrome.send('Page.close');
@@ -117,15 +116,15 @@ export async function recordHARClient(
 
 export async function processEntries(
   networkRequests: Protocol.Network.ResponseReceivedEvent[],
-  chrome: any
-) {
+  chrome: SessionConnection
+): Promise<Entry[]> {
   const entries = [];
   for (let i = 0; i < networkRequests.length; i++) {
     console.log(`BUILDING-HAR-ENTRY-FOR :: ${networkRequests[i].response.url}`);
     const requestId = networkRequests[i].requestId;
     const response = networkRequests[i].response;
     const { body } = await chrome.send('Network.getResponseBody', {
-      requestId,
+      requestId
     });
     const { url, requestHeaders, status, statusText, headers } = response;
 
@@ -138,7 +137,7 @@ export async function processEntries(
         headers: handleHeaders(requestHeaders),
         queryString: [],
         headersSize: 0,
-        bodySize: 0,
+        bodySize: 0
       },
       response: {
         status,
@@ -152,17 +151,17 @@ export async function processEntries(
         content: {
           text: body,
           size: 0,
-          mimeType: '',
-        },
+          mimeType: ''
+        }
       },
       time: 0,
       cache: {},
       timings: {
         send: 0,
         wait: 0,
-        receive: 0,
+        receive: 0
       },
-      startedDateTime: '',
+      startedDateTime: ''
     };
     entries.push(entry);
   }
@@ -175,7 +174,7 @@ export function handleHeaders(headers?: Protocol.Network.Headers): Header[] {
     return [{ name: '', value: '' }];
   }
 
-  return Object.entries(headers).map(e => {
+  return Object.entries(headers).map((e) => {
     return { name: e[0], value: e[1] };
   });
 }

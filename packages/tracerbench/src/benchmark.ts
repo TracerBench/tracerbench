@@ -1,13 +1,14 @@
 import {
-  spawnChrome,
   Chrome,
-  RootConnection,
-  SpawnOptions,
-  SessionConnection,
   ChromeWithPipeConnection,
+  RootConnection,
+  SessionConnection,
+  spawnChrome,
+  SpawnOptions
 } from 'chrome-debugging-client';
-import { sleep } from 'race-cancellation';
 import * as os from 'os';
+import { sleep } from 'race-cancellation';
+
 import { IBenchmark, Runner } from './runner';
 import createTab, { ITab } from './tab';
 
@@ -59,7 +60,7 @@ export abstract class Benchmark<R>
     const browser = process.connection;
 
     const { targetId } = await browser.send('Target.createTarget', {
-      url: 'about:blank',
+      url: 'about:blank'
     });
 
     const tab = await browser.attachToTarget(targetId);
@@ -73,7 +74,7 @@ export abstract class Benchmark<R>
     for (const targetInfo of targetInfos) {
       if (targetInfo.type === 'page' && targetInfo.targetId !== targetId) {
         await browser.send('Target.closeTarget', {
-          targetId: targetInfo.targetId,
+          targetId: targetInfo.targetId
         });
       }
     }
@@ -82,14 +83,14 @@ export abstract class Benchmark<R>
 
     const browserMeta = await browser.send('Browser.getVersion');
     const browserProduct = browserMeta.product;
-    const cpus = os.cpus().map(cpu => cpu.model);
+    const cpus = os.cpus().map((cpu) => cpu.model);
     const results = this.createResults({
       browserVersion: browserProduct,
-      cpus,
+      cpus
     });
     const state = { process, browser, tab, results };
 
-    await this.withTab(state, t => this.warm(t));
+    await this.withTab(state, (t) => this.warm(t));
 
     return state;
   }
@@ -98,7 +99,7 @@ export abstract class Benchmark<R>
     state: IBenchmarkState<R>,
     iteration: number
   ): Promise<IBenchmarkState<R>> {
-    await this.withTab(state, tab =>
+    await this.withTab(state, (tab) =>
       this.performIteration(tab, state.results, iteration)
     );
     return state;
@@ -113,7 +114,7 @@ export abstract class Benchmark<R>
     return results;
   }
 
-  public async dispose() {
+  public async dispose(): Promise<void> {
     const process = this.process;
     if (process !== undefined) {
       await process.dispose();
@@ -122,7 +123,8 @@ export abstract class Benchmark<R>
 
   protected abstract createResults(meta: IBenchmarkMeta): R;
 
-  protected async warm(_: ITab) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  protected async warm(_: ITab): Promise<void> {
     // noop
   }
 

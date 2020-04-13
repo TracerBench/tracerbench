@@ -1,12 +1,12 @@
-// tslint:disable:no-console
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { HierarchyNode } from 'd3-hierarchy';
 import * as fs from 'fs-extra';
 import * as path from 'path';
-import { ICpuProfileNode, Trace } from '../trace';
-import { isRenderNode } from './render-events';
-import { ModuleMatcher } from './module_matcher';
 import { dirSync } from 'tmp';
+
+import { ICpuProfileNode, Trace } from '../trace';
+import { ModuleMatcher } from './module-matcher';
+import { isRenderNode } from './render-events';
 
 export interface ICategories {
   [key: string]: ILocator[];
@@ -21,7 +21,9 @@ export interface ILocator {
 
 export const AUTO_ADD_CAT = 'Auto Added Module Paths';
 
-export function getRenderingNodes(root: HierarchyNode<ICpuProfileNode>) {
+export function getRenderingNodes(
+  root: HierarchyNode<ICpuProfileNode>
+): Array<HierarchyNode<ICpuProfileNode>> {
   const renderNodes: Array<HierarchyNode<ICpuProfileNode>> = [];
   root.each((node: HierarchyNode<ICpuProfileNode>) => {
     if (isRenderNode(node)) {
@@ -31,10 +33,13 @@ export function getRenderingNodes(root: HierarchyNode<ICpuProfileNode>) {
   return renderNodes;
 }
 
-export function filterObjectByKeys(obj: any, keyArray: string[]) {
+export function filterObjectByKeys(
+  obj: { [key: string]: any },
+  keyArray: string[]
+): { [key: string]: any } {
   const o = Object.assign({}, obj);
   const k = Object.keys(o);
-  k.forEach(c => {
+  k.forEach((c) => {
     if (!keyArray.includes(c)) {
       delete o[c];
     }
@@ -45,15 +50,15 @@ export function filterObjectByKeys(obj: any, keyArray: string[]) {
 
 export function computeMinMax(
   trace: Trace,
-  start: string = 'navigationStart',
+  start = 'navigationStart',
   end: string
-) {
+): { min: number; max: number } {
   let min;
   let max;
   if (end) {
     // TODO harden this to find the correct frame
-    const startEvent = trace.events.find(e => e.name === start)!;
-    const endEvent = trace.events.find(e => e.name === end);
+    const startEvent = trace.events.find((e) => e.name === start)!;
+    const endEvent = trace.events.find((e) => e.name === end);
 
     if (!endEvent) {
       throw new Error(`Could not find "${end}" marker in the trace.`);
@@ -77,13 +82,13 @@ export function addRemainingModules(
   locators: ILocator[],
   categories: ICategories,
   modMatcher: ModuleMatcher
-) {
+): void {
   const allModules = modMatcher.getModuleList();
   categories[AUTO_ADD_CAT] = [];
-  allModules.forEach(moduleName => {
+  allModules.forEach((moduleName) => {
     // If the locator is going to match an entire module anyway, don't add that module to the auto
     // generated list of module aggergations.
-    const found = locators.find(locator => {
+    const found = locators.find((locator) => {
       return locator.functionName === '.*'
         ? locator.moduleNameRegex.test(moduleName)
         : false;
@@ -101,7 +106,7 @@ export function addRemainingModules(
   });
 }
 
-export function methodsFromCategories(categories: ICategories) {
+export function methodsFromCategories(categories: ICategories): ILocator[] {
   return Object.keys(categories).reduce(
     (accum: ILocator[], category: string) => {
       accum.push(...categories[category]);
@@ -111,7 +116,7 @@ export function methodsFromCategories(categories: ICategories) {
   );
 }
 
-export function toRegex(locators: ILocator[]) {
+export function toRegex(locators: ILocator[]): RegExp[] {
   return locators.map(({ functionName }) => {
     if (functionName === '*') {
       return /.*/;
@@ -128,7 +133,7 @@ export function toRegex(locators: ILocator[]) {
 export function formatCategories(
   report: string | undefined,
   methods: string[]
-) {
+): { [key: string]: any } {
   if (report) {
     const stats = fs.statSync(report);
     const categories: ICategories = {};
@@ -136,13 +141,12 @@ export function formatCategories(
     if (stats.isDirectory()) {
       const files = fs.readdirSync(report);
 
-      files.map(file => {
+      files.map((file) => {
         const name = path.basename(file).replace('.json', '');
-        // tslint:disable-next-line:no-shadowed-variable
         const methods: ILocator[] = JSON.parse(
           fs.readFileSync(`${report}/${file}`, 'utf8')
         );
-        methods.forEach(method => {
+        methods.forEach((method) => {
           if (method.functionName === '*') {
             method.functionName = '.*';
           }
@@ -175,7 +179,7 @@ export function formatCategories(
       throw new Error(`Error: Must pass a list of method names.`);
     }
 
-    const addHocLocators = methods.map(method => {
+    const addHocLocators = methods.map((method) => {
       return {
         functionName: method,
         functionNameRegex: new RegExp(`^${method}$`),
@@ -188,8 +192,8 @@ export function formatCategories(
   }
 }
 
-export async function wait(dur: number) {
-  return new Promise(resolve => {
+export async function wait(dur: number): Promise<unknown> {
+  return new Promise((resolve) => {
     setTimeout(resolve, dur);
   });
 }

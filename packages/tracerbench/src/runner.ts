@@ -27,9 +27,12 @@ export class Runner<R, S> {
    * @param iterations - Number of iterations to run for each Benchmark
    * @param logger - If CLI command is using this, a log function (this.log) can be passed and will be used to indicate progress
    */
-  public async run(iterations: number, logger?: (msg: string) => void): Promise<R[]> {
+  public async run(
+    iterations: number,
+    logger?: (msg: string) => void
+  ): Promise<R[]> {
     try {
-      let states = await this.inSequence(benchmark => benchmark.setup());
+      let states = await this.inSequence((benchmark) => benchmark.setup());
 
       for (let iteration = 0; iteration < iterations; iteration++) {
         states = await this.shuffled((benchmark, i) =>
@@ -79,7 +82,7 @@ export class Runner<R, S> {
   }
 }
 
-function shuffle(arr: number[]) {
+function shuffle(arr: number[]): void {
   // for i from n−1 downto 1 do
   //      j ← random integer such that 0 ≤ j ≤ i
   //      exchange a[j] and a[i]

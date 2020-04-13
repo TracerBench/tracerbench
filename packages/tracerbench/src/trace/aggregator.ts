@@ -1,11 +1,9 @@
-// tslint:disable:member-ordering
-
-import { HierarchyNode } from 'd3-hierarchy';
 import { Archive } from '@tracerbench/har';
+import { HierarchyNode } from 'd3-hierarchy';
 
 import { ICallFrame, ICpuProfileNode } from '../trace';
 import { ParsedFile } from './metadata';
-import { ModuleMatcher } from './module_matcher';
+import { ModuleMatcher } from './module-matcher';
 import { ICategories, ILocator } from './utils';
 
 export interface ICallFrameInfo {
@@ -30,7 +28,7 @@ export interface ICategorized {
   [key: string]: IAggregationResult[];
 }
 
-export function verifyMethods(array: ILocator[]) {
+export function verifyMethods(array: ILocator[]): void {
   const valuesSoFar: string[] = [];
   for (let i = 0; i < array.length; ++i) {
     const { functionName, moduleName } = array[i];
@@ -47,20 +45,20 @@ export function verifyMethods(array: ILocator[]) {
 export function categorizeAggregations(
   aggregations: IAggregations,
   categories: ICategories
-) {
+): ICategorized {
   const categorized: ICategorized = {
-    unknown: [aggregations.unknown],
+    unknown: [aggregations.unknown]
   };
 
-  Object.keys(categories).forEach(category => {
+  Object.keys(categories).forEach((category) => {
     if (!categorized[category]) {
       categorized[category] = [];
     }
 
-    Object.values(aggregations).forEach(aggergation => {
+    Object.values(aggregations).forEach((aggergation) => {
       if (
         categories[category].find(
-          locator =>
+          (locator) =>
             locator.functionName === aggergation.functionName &&
             locator.moduleName === aggergation.moduleName
         )
@@ -104,7 +102,7 @@ class AggregrationCollector {
         attributed: 0,
         functionName,
         moduleName,
-        callframes: [],
+        callframes: []
       };
     });
 
@@ -114,24 +112,24 @@ class AggregrationCollector {
       attributed: 0,
       functionName: 'unknown',
       moduleName: 'unknown',
-      callframes: [],
+      callframes: []
     };
   }
 
-  public pushCallFrames(name: string, callFrame: ICallFrameInfo) {
+  public pushCallFrames(name: string, callFrame: ICallFrameInfo): void {
     this.aggregations[name].callframes.push(callFrame);
   }
 
-  public addToAttributed(name: string, time: number) {
+  public addToAttributed(name: string, time: number): void {
     this.aggregations[name].attributed += time;
   }
 
-  public addToTotal(name: string, time: number) {
+  public addToTotal(name: string, time: number): void {
     this.aggregations[name].total += time;
   }
 
-  public collect() {
-    Object.keys(this.aggregations).forEach(method => {
+  public collect(): IAggregations {
+    Object.keys(this.aggregations).forEach((method) => {
       const { callframes } = this.aggregations[method];
       this.aggregations[method].self = callframes.reduce(
         (a, c) => a + c.self,
@@ -142,8 +140,8 @@ class AggregrationCollector {
     return this.aggregations;
   }
 
-  public match(callFrame: ICallFrame) {
-    return this.locators.find(locator => {
+  public match(callFrame: ICallFrame): ILocator | undefined {
+    return this.locators.find((locator) => {
       // try to avoid having to regex match is there are .* entries
       const sameFN = locator.functionName === callFrame.functionName;
       if (locator.moduleName === '.*' && sameFN) {
@@ -173,7 +171,7 @@ class AggregrationCollector {
     });
   }
 
-  private isBuiltIn(callFrame: ICallFrame) {
+  private isBuiltIn(callFrame: ICallFrame): boolean {
     const { url, lineNumber } = callFrame;
     if (url === undefined) {
       return true;
@@ -197,12 +195,12 @@ class AggregrationCollector {
   }
 }
 
-export function collapseCallFrames(aggregations: IAggregations) {
-  Object.keys(aggregations).forEach(methodName => {
+export function collapseCallFrames(aggregations: IAggregations): IAggregations {
+  Object.keys(aggregations).forEach((methodName) => {
     const collapsed: ICallFrameInfo[] = [];
     const keys: string[] = [];
 
-    aggregations[methodName].callframes.forEach(callframeInfo => {
+    aggregations[methodName].callframes.forEach((callframeInfo) => {
       const key = callframeInfo.stack.reduce((acc, cur) => {
         const { functionName, columnNumber, lineNumber } = cur;
         return (acc += `${functionName}${columnNumber}${lineNumber}`);
@@ -225,7 +223,7 @@ export function aggregate(
   locators: ILocator[],
   archive: Archive,
   modMatcher: ModuleMatcher
-) {
+): IAggregations {
   const aggregations = new AggregrationCollector(
     locators,
     archive,
@@ -244,7 +242,7 @@ export function aggregate(
         if (canonicalLocator) {
           const {
             functionName: canonicalizeName,
-            moduleName: canonicalizeModName,
+            moduleName: canonicalizeModName
           } = canonicalLocator;
           if (!containerNode) {
             aggregations.addToAttributed(

@@ -1,12 +1,12 @@
-// tslint:disable:no-console
-import Protocol from 'devtools-protocol';
-import { join } from 'path';
-import { writeFileSync } from 'fs-extra';
 import { spawnChrome } from 'chrome-debugging-client';
-import { wait } from './utils';
-import { IConditions } from './conditions';
-import { emulate, setCookies, getTab } from './trace-utils';
+import Protocol from 'devtools-protocol';
+import { writeFileSync } from 'fs-extra';
+import { join } from 'path';
+
 import { ITraceEvent } from '../trace';
+import { IConditions } from './conditions';
+import { emulate, getTab, setCookies } from './trace-utils';
+import { wait } from './utils';
 const DEVTOOLS_CATEGORIES = [
   '-*',
   'devtools.timeline',
@@ -28,7 +28,7 @@ const DEVTOOLS_CATEGORIES = [
   'disabled-by-default.cpu_profiler',
   'disabled-by-default.cpu_profiler.debug',
   'renderer',
-  'cpu_profiler',
+  'cpu_profiler'
 ];
 
 export interface ITraceEvents {
@@ -51,7 +51,7 @@ export async function liveTrace(
     // enable Network / Page
     await Promise.all([
       chromeTab.send('Page.enable'),
-      chromeTab.send('Network.enable'),
+      chromeTab.send('Network.enable')
     ]);
 
     // clear and disable cache
@@ -63,32 +63,32 @@ export async function liveTrace(
     await setCookies(chromeTab, cookies);
 
     // series of dataCollected events
-    browser.on('Tracing.dataCollected', event => {
+    browser.on('Tracing.dataCollected', (event) => {
       traceEvents.push(event);
     });
 
     await browser.send('Tracing.start', {
       traceConfig: {
-        includedCategories: DEVTOOLS_CATEGORIES,
-      },
+        includedCategories: DEVTOOLS_CATEGORIES
+      }
     });
 
     // navigate to a blank page first
     await Promise.all([
       chromeTab.send('Page.navigate', { url: 'about:blank' }),
-      wait(1000),
+      wait(1000)
     ]);
 
     await Promise.all([
       chromeTab.send('Page.navigate', { url }),
-      chromeTab.until('Page.loadEventFired'),
+      chromeTab.until('Page.loadEventFired')
     ]);
 
     await browser.send('Tracing.end');
     await browser.until('Tracing.tracingComplete');
 
     // merge the buffer trace events
-    traceEvents.forEach(i => {
+    traceEvents.forEach((i) => {
       i.value.forEach((ii: ITraceEvent) => {
         traceObj.traceEvents.push(ii);
       });

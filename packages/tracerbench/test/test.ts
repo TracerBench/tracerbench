@@ -4,10 +4,7 @@ import { resolve } from 'path';
 import { InitialRenderBenchmark, Runner } from '@tracerbench/core';
 import { Stdio } from '@tracerbench/spawn';
 
-/* tslint:disable:no-var-requires */
 const globSync: (glob: string) => string[] = require('glob').sync;
-/* tslint:enable:no-var-requires */
-
 const browserOpts = {
   additionalArguments: [
     '--crash-dumps-dir=./tmp',
@@ -74,7 +71,6 @@ tests.forEach((indexFile: string) => {
 
 const runner = new Runner(benchmarks);
 
-/*tslint:disable:no-console*/
 runner
   .run(4, (m) => {
     console.log(`${m}`);

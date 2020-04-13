@@ -2,14 +2,14 @@ import {
   ITraceEvent,
   TRACE_EVENT_PHASE_COMPLETE,
   TRACE_EVENT_PHASE_METADATA
-} from './trace_event';
+} from './trace-event';
 
 export default class Bounds {
-  public min: number = 0;
-  public max: number = 0;
-  public empty: boolean = true;
+  public min = 0;
+  public max = 0;
+  public empty = true;
 
-  public addValue(value: number) {
+  public addValue(value: number): void {
     if (this.empty) {
       this.empty = false;
       this.min = this.max = value;
@@ -19,7 +19,7 @@ export default class Bounds {
     }
   }
 
-  public addEvent(event: ITraceEvent) {
+  public addEvent(event: ITraceEvent): void {
     if (event.ph === TRACE_EVENT_PHASE_METADATA) {
       return;
     }

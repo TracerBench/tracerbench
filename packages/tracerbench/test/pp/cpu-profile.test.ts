@@ -4,8 +4,8 @@ import { expect } from 'chai';
 import 'mocha';
 
 import CpuProfile from '../../src/trace/cpu-profile';
-import { TRACE_EVENT_NAME } from '../../src/trace/trace_event';
-import { FUNCTION_NAME } from '../../src/trace/trace_event';
+import { TRACE_EVENT_NAME } from '../../src/trace/trace-event';
+import { FUNCTION_NAME } from '../../src/trace/trace-event';
 
 import { ProfileGenerator } from './generators';
 
