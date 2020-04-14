@@ -187,6 +187,7 @@ export class Stats {
     range: { min: number; max: number },
     a: number[]
   ): number[] {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const x: any = scaleLinear()
       .domain([range.min, range.max])
       .range([range.min, range.max]);

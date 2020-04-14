@@ -41,11 +41,13 @@ export function rankSamples(samples: ISample[]): ISample[] {
     });
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   function countDuplicates(obj: any, num: number): number{
     obj[num] = (++obj[num] || 1);
     return obj;
   }
   sa.forEach((sample) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const acc = sample.pool.reduce(countDuplicates, {} as any);
     if (acc[sample.val] > 1) {
       sample.rank = (sample.rank - 0.5);
