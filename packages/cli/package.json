@@ -31,7 +31,7 @@
     "@oclif/parser": "^3.8.4",
     "@tracerbench/core": "^3.0.15",
     "@tracerbench/stats": "^3.0.15",
-    "archiver": "^3.1.1",
+    "archiver": "^4.0.1",
     "chalk": "^4.0.0",
     "cli-table3": "^0.6.0",
     "devtools-protocol": "^0.0.758979",
