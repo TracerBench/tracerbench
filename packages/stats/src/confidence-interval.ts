@@ -32,7 +32,7 @@ export function cartesianProduct(
 }
 
 /**
- * Calculate the confidence interval of the difference between the two distributions
+ * Calculate the confidence interval of the delta between the two distributions
  *
  * @param distributionOne - Expected to be array of numbers
  * @param distributionTwo - Expected to be array of numbers

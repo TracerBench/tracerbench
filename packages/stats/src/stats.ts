@@ -25,6 +25,7 @@ export interface IStatsOptions {
   control: number[];
   experiment: number[];
   name: string;
+  confidenceLevel?: 0.8 | 0.85 | 0.9 | 0.95 | 0.99 | 0.995 | 0.999;
 }
 
 export interface IConfidenceInterval {
@@ -38,6 +39,7 @@ export class Stats {
   public readonly name: string;
   public readonly estimator: number;
   public readonly sparkLine: { control: string; experiment: string };
+  public readonly confidenceIntervals: { [key: number]: IConfidenceInterval };
   public readonly confidenceInterval: IConfidenceInterval;
   public readonly sevenFigureSummary: {
     control: ISevenFigureSummary;
@@ -54,7 +56,7 @@ export class Stats {
   public readonly controlSortedMS: number[];
   private range: { min: number; max: number };
   constructor(options: IStatsOptions) {
-    const { name, control, experiment } = options;
+    const { name, control, experiment, confidenceLevel } = options;
     // explicitly for NOT sorted
     this.controlMS = control.map((x) => Math.round(convertMicrosecondsToMS(x)));
     this.experimentMS = experiment.map((x) =>
@@ -85,9 +87,47 @@ export class Stats {
         this.getHistogram(this.range, this.experimentSortedMS)
       )
     };
+    this.confidenceIntervals = {
+      80: this.getConfidenceInterval(
+        this.controlSortedMS,
+        this.experimentSortedMS,
+        0.8
+      ),
+      85: this.getConfidenceInterval(
+        this.controlSortedMS,
+        this.experimentSortedMS,
+        0.85
+      ),
+      90: this.getConfidenceInterval(
+        this.controlSortedMS,
+        this.experimentSortedMS,
+        0.9
+      ),
+      95: this.getConfidenceInterval(
+        this.controlSortedMS,
+        this.experimentSortedMS,
+        0.95
+      ),
+      99: this.getConfidenceInterval(
+        this.controlSortedMS,
+        this.experimentSortedMS,
+        0.99
+      ),
+      995: this.getConfidenceInterval(
+        this.controlSortedMS,
+        this.experimentSortedMS,
+        0.995
+      ),
+      999: this.getConfidenceInterval(
+        this.controlSortedMS,
+        this.experimentSortedMS,
+        0.999
+      )
+    };
     this.confidenceInterval = this.getConfidenceInterval(
       this.controlSortedMS,
-      this.experimentSortedMS
+      this.experimentSortedMS,
+      confidenceLevel
     );
     this.estimator = Math.round(
       this.getHodgesLehmann(
@@ -147,11 +187,10 @@ export class Stats {
 
   private getConfidenceInterval(
     control: number[],
-    experiment: number[]
+    experiment: number[],
+    confidenceLevel: 0.8 | 0.85 | 0.9 | 0.95 | 0.99 | 0.995 | 0.999 = 0.95
   ): IConfidenceInterval {
-    const sigVal = 0.05;
-    const interval = 1 - sigVal;
-    const ci = confidenceInterval(control, experiment, interval);
+    const ci = confidenceInterval(control, experiment, confidenceLevel);
     const isSig =
       (ci[0] < 0 && 0 < ci[1]) ||
       (ci[0] > 0 && 0 > ci[1]) ||
