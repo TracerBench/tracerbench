@@ -1,6 +1,6 @@
 {
   "name": "har-remix",
-  "version": "3.0.15",
+  "version": "3.0.16",
   "description": "Server HAR archive with loose matching and hooks to alter responses.",
   "keywords": [
     "benchmarking",
@@ -24,15 +24,12 @@
     "test": "echo \"TODO add tests for har-remix\""
   },
   "dependencies": {
-    "@tracerbench/har": "^3.0.15",
+    "@tracerbench/har": "^3.0.16",
     "mime-types": "^2.1.26"
   },
   "devDependencies": {
     "@types/mime-types": "^2.1.0",
     "@types/node": "^13.11.1",
-    "json-schema-to-typescript": "^8.2.0",
-    "prettier": "^2.0.4",
-    "typescript": "^3.8.3",
     "@typescript-eslint/eslint-plugin": "^2.25.0",
     "@typescript-eslint/parser": "^2.25.0",
     "eslint": "^6.8.0",
@@ -41,7 +38,10 @@
     "eslint-plugin-import": "^2.20.1",
     "eslint-plugin-oclif": "^0.1.0",
     "eslint-plugin-prettier": "^3.1.1",
-    "eslint-plugin-simple-import-sort": "^5.0.2"
+    "eslint-plugin-simple-import-sort": "^5.0.2",
+    "json-schema-to-typescript": "^8.2.0",
+    "prettier": "^2.0.4",
+    "typescript": "^3.8.3"
   },
   "publishConfig": {
     "tag": "beta"
