@@ -81,12 +81,12 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Only CLI Trace",
+      "name": "Only CLI Profile",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
       "args": [
         "--no-timeout",
-        "${workspaceFolder}/packages/cli/test/commands/trace.test.ts"
+        "${workspaceFolder}/packages/cli/test/commands/profile.test.ts"
       ],
       "sourceMaps": true,
       "cwd": "${workspaceFolder}/packages/cli",

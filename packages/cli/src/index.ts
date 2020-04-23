@@ -1,8 +1,7 @@
 import Compare from "./commands/compare";
-import MarkerTimings from "./commands/marker-timings";
+import Profile from "./commands/profile";
 import RecordHAR from "./commands/record-har";
 import Report from "./commands/report";
-import Trace from "./commands/trace";
 import {
   generateDataForHTML,
   HTMLSectionRenderData,
@@ -13,7 +12,7 @@ import {
 export { run } from "@oclif/command";
 export { IHARServer, ITBConfig, PerformanceTimingMark } from "./command-config";
 export * from "./helpers";
-export { RecordHAR, MarkerTimings, Report, Trace, Compare };
+export { RecordHAR, Report, Profile, Compare };
 export {
   generateDataForHTML,
   HTMLSectionRenderData,

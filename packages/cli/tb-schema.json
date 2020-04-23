@@ -136,12 +136,6 @@
                 "boolean"
             ]
         },
-        "iterations": {
-            "type": [
-                "string",
-                "number"
-            ]
-        },
         "locations": {
             "type": "string"
         },

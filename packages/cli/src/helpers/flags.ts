@@ -31,6 +31,11 @@ export const isCIEnv = flags.build({
   },
 });
 
+export const usertimings = flags.boolean({
+  description: `Included stdout of user-timings.`,
+  default: true,
+});
+
 export const runtimeStats = flags.boolean({
   description: `Compare command output deep-dive stats during run.`,
   default: false,
@@ -59,11 +64,6 @@ export const headless = flags.boolean({
   default: false,
 });
 
-export const insights = flags.boolean({
-  description: `Analyze insights from command.`,
-  default: false,
-});
-
 export const debug = flags.boolean({
   description: `Debug flag per command. Will output noisy command`,
   default: false,
@@ -74,14 +74,6 @@ export const regressionThreshold = flags.build({
   description: `The upper limit the experiment can regress slower in milliseconds. eg 100`,
   parse: (ms): number => {
     return parseInt(ms, 10);
-  },
-});
-
-export const iterations = flags.build({
-  default: () => getDefaultValue("iterations"),
-  description: `Number of runs`,
-  parse: (iterations) => {
-    parseInt(iterations, 10);
   },
 });
 
@@ -196,21 +188,6 @@ export const experimentURL = flags.build({
   description: "Experiment URL to visit for compare command",
 });
 
-export const locations = flags.build({
-  default: () => getDefaultValue("locations"),
-  description: "include locations in names",
-});
-
-export const filter = flags.build({
-  default: () => getDefaultValue("filter"),
-  description: "User timing marks start with",
-});
-
-export const traceFrame = flags.build({
-  default: () => getDefaultValue("traceFrame"),
-  description: "Specify a trace insights frame",
-});
-
 export const socksPorts = flags.build({
   default: () => getDefaultValue("socksPorts"),
   description:
@@ -243,14 +220,11 @@ export const emulateDeviceOrientation = flags.build({
 
 export const cookiespath = flags.build({
   description: `The path to a JSON file containing cookies to authenticate against the correlated URL`,
+  default: () => getDefaultValue("cookiespath"),
 });
 
 export const tbconfigpath = flags.build({
   description: `The path to a TracerBench configuration file (tbconfig.json)`,
-});
-
-export const harpath = flags.build({
-  description: `The path to the HTTP Archive File (HAR)`,
 });
 
 export const tracepath = flags.build({
