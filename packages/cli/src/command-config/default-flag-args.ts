@@ -34,7 +34,6 @@ export const defaultFlagArgs: ITBConfig = {
   ],
   methods: '""',
   tbResultsFolder: "./tracerbench-results",
-  iterations: 1,
   tracingLocationSearch: "?tracing",
   network: "none",
   emulateDevice: "",
@@ -42,6 +41,8 @@ export const defaultFlagArgs: ITBConfig = {
   dest: "",
   regressionThreshold: 100,
   isCIEnv: false,
+  cookiespath: "",
+  url: "",
 };
 
 // specify with --headless flag

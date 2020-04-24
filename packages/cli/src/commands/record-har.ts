@@ -40,8 +40,18 @@ export default class RecordHAR extends TBBaseCommand {
       network: network ? network : "none",
       cpu: cpuThrottleRate ? parseInt(cpuThrottleRate as string, 10) : 1,
     };
-    // grab the auth cookies
-    const cookies = await readJson(resolve(cookiespath));
+    let cookies = [
+      {
+        name: "",
+        value: "",
+        domain: "",
+        path: "",
+      },
+    ];
+    if (cookiespath.length) {
+      // grab the auth cookies
+      cookies = await readJson(resolve(cookiespath));
+    }
 
     // if headless flag is true include the headless flags
     if (headless) {

@@ -184,10 +184,9 @@ s?: TRACE_EVENT_SCOPE;
 * [`tracerbench compare`](#tracerbench-compare)
 * [`tracerbench compare:analyze RESULTSFILE`](#tracerbench-compareanalyze-resultsfile)
 * [`tracerbench help [COMMAND]`](#tracerbench-help-command)
-* [`tracerbench marker-timings`](#tracerbench-marker-timings)
+* [`tracerbench profile HARPATH`](#tracerbench-profile-harpath)
 * [`tracerbench record-har`](#tracerbench-record-har)
 * [`tracerbench report`](#tracerbench-report)
-* [`tracerbench trace`](#tracerbench-trace)
 
 ## `tracerbench compare`
 
@@ -313,22 +312,41 @@ OPTIONS
 
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
 
-## `tracerbench marker-timings`
+## `tracerbench profile HARPATH`
 
-Get list of all user-timings from trace
+Parses a CPU profile and aggregates time across heuristics.
 
 ```
 USAGE
-  $ tracerbench marker-timings
+  $ tracerbench profile HARPATH
+
+ARGUMENTS
+  HARPATH  The path to the HTTP Archive File (HAR)
 
 OPTIONS
-  --filter=filter          User timing marks start with
-  --traceFrame=traceFrame  Specify a trace insights frame
-  --tracepath=tracepath    (required) The path to the generated trace.json file
-  --url=url                (required) URL to visit for record-har, timings & trace commands
+  --cookiespath=cookiespath
+      (required) The path to a JSON file containing cookies to authenticate against the correlated URL
+
+  --cpuThrottleRate=cpuThrottleRate
+      (required) [default: 2] CPU throttle multiplier
+
+  --network=none|offline|dialup|slow-2g|2g|slow-edge|edge|slow-3g|dsl|3g|fast-3g|4g|cable|LTE|FIOS
+      [default: none] Simulated network conditions.
+
+  --tbResultsFolder=tbResultsFolder
+      (required) [default: ./tracerbench-results] The output folder path for all tracerbench results
+
+  --url=url
+      (required) URL to visit for record-har, timings & trace commands
+
+  --usertimings
+      Included stdout of user-timings.
+
+ALIASES
+  $ tracerbench trace
 ```
 
-_See code: [dist/src/commands/marker-timings.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.0.17/dist/src/commands/marker-timings.ts)_
+_See code: [dist/src/commands/profile.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.0.17/dist/src/commands/profile.ts)_
 
 ## `tracerbench record-har`
 
@@ -375,43 +393,4 @@ OPTIONS
 ```
 
 _See code: [dist/src/commands/report.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.0.17/dist/src/commands/report.ts)_
-
-## `tracerbench trace`
-
-Parses a CPU profile and aggregates time across heuristics. Can be vertically sliced with event names.
-
-```
-USAGE
-  $ tracerbench trace
-
-OPTIONS
-  --cookiespath=cookiespath
-      (required) The path to a JSON file containing cookies to authenticate against the correlated URL
-
-  --cpuThrottleRate=cpuThrottleRate
-      (required) [default: 2] CPU throttle multiplier
-
-  --harpath=harpath
-      (required) The path to the HTTP Archive File (HAR)
-
-  --insights
-      Analyze insights from command.
-
-  --iterations=iterations
-      (required) [default: 1] Number of runs
-
-  --locations=locations
-      include locations in names
-
-  --network=none|offline|dialup|slow-2g|2g|slow-edge|edge|slow-3g|dsl|3g|fast-3g|4g|cable|LTE|FIOS
-      [default: none] Simulated network conditions.
-
-  --tbResultsFolder=tbResultsFolder
-      (required) [default: ./tracerbench-results] The output folder path for all tracerbench results
-
-  --url=url
-      (required) URL to visit for record-har, timings & trace commands
-```
-
-_See code: [dist/src/commands/trace.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.0.17/dist/src/commands/trace.ts)_
 <!-- commandsstop -->

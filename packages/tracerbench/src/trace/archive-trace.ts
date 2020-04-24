@@ -1,29 +1,27 @@
 import { Archive, Entry, Header } from '@tracerbench/har';
 import { SessionConnection } from 'chrome-debugging-client';
 import Protocol from 'devtools-protocol';
+import { readFileSync } from 'fs';
 
 import { IConditions } from './conditions';
 import { createBrowser, emulate, getTab, setCookies } from './trace-utils';
 import { getBrowserArgs } from './utils';
 
-export interface ICookies {
-  cookies: Protocol.Network.CookieParam[];
-}
-
 export async function recordHARClient(
   url: string,
-  cookies: ICookies,
+  cookies: Protocol.Network.CookieParam[],
   marker: string,
   conditions: IConditions,
   altBrowserArgs?: string[]
 ): Promise<Archive> {
+  const tbSemver = JSON.parse(readFileSync('package.json', 'utf8'));
   const networkRequests: Protocol.Network.ResponseReceivedEvent[] = [];
   const archive: Archive = {
     log: {
       version: '0.0.0',
       creator: {
         name: 'TracerBench',
-        version: '0.0.0'
+        version: tbSemver.version
       },
       entries: []
     }
@@ -58,7 +56,7 @@ export async function recordHARClient(
     await emulate(chrome, conditions);
 
     // set cookies
-    await setCookies(chrome, cookies.cookies);
+    await setCookies(chrome, cookies);
     // add performance observer script to eval
     await chrome.send('Page.addScriptToEvaluateOnNewDocument', {
       source: `

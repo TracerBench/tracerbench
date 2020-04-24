@@ -25,7 +25,6 @@ export interface ITBConfig {
   traceFrame?: string;
   appName?: string;
   browserArgs?: string[];
-  iterations?: number | string;
   tracingLocationSearch?: string;
   runtimeStats?: boolean;
   emulateDevice?: string;
