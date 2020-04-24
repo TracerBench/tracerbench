@@ -1,6 +1,6 @@
 import { spawnChrome } from "chrome-debugging-client";
 import { writeFileSync } from "fs-extra";
-import * as ora from "ora";
+import * as listr from "listr";
 
 /**
  * Spawn a chrome process and visit the given url. Wait until page load event is fired
@@ -13,7 +13,26 @@ export default async function printToPDF(
   url: string,
   outputPath: string
 ): Promise<void> {
-  const spinner = ora("\n Generating Benchmark Reports").start();
+  const tasks = new listr([
+    {
+      title: "Generating Benchmark Reports",
+      task: async () => {
+        await chromePrintToPDF(url, outputPath);
+      },
+    },
+  ]);
+
+  await tasks.run().catch((error) => {
+    throw new Error(error);
+  });
+
+  return;
+}
+
+async function chromePrintToPDF(
+  url: string,
+  outputPath: string
+): Promise<void> {
   const chrome = spawnChrome({ headless: true });
   try {
     const browser = chrome.connection;
@@ -33,8 +52,6 @@ export default async function printToPDF(
 
     await chrome.close();
   } finally {
-    await spinner.stop();
     await chrome.dispose();
   }
-  return;
 }
