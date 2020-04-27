@@ -40,7 +40,9 @@ export interface IAnalyze {
   verbose?: boolean;
 }
 
-export async function analyze(options: IAnalyze): Promise<void> {
+export async function analyze(
+  options: IAnalyze
+): Promise<{ node: string; hierarchyReports: string[] }> {
   const {
     traceHARJSON,
     event,
@@ -75,20 +77,21 @@ export async function analyze(options: IAnalyze): Promise<void> {
     modMatcher
   );
   const collapsed = collapseCallFrames(aggregations);
-  const categorized = categorizeAggregations(collapsed, categories);
-
-  reporter(categorized);
-
   const renderNodes = getRenderingNodes(hierarchy);
+  const hierarchyReports: string[] = [];
+
   renderNodes.forEach((node) => {
     const renderAgg = aggregate(node, allMethods, traceHARJSON, modMatcher);
     const renderCollapsed = collapseCallFrames(renderAgg);
-    const renderCategorized = categorizeAggregations(
-      renderCollapsed,
-      categories
+    hierarchyReports.push(
+      reporter(categorizeAggregations(renderCollapsed, categories))
     );
-    reporter(renderCategorized);
   });
+
+  return {
+    node: reporter(categorizeAggregations(collapsed, categories)),
+    hierarchyReports
+  };
 }
 
 export function exportHierarchy(

@@ -150,7 +150,7 @@ class Table {
   }
 }
 
-export default function reporter(categorized: ICategorized): void {
+export default function reporter(categorized: ICategorized): string {
   const table = new Table();
   const totalAggregatedTime = findTotalAttrTime(categorized);
   categorized = filterZeroTotalCats(categorized);
@@ -202,7 +202,7 @@ export default function reporter(categorized: ICategorized): void {
   totalRow.empty();
   totalRow.addCell(`${toMS(totalAggregatedTime)}`).pad(2, 'left');
 
-  console.log(`${table.toString()} \n\n`);
+  return `${table.toString()} \n\n`;
 }
 
 function round(num: number): number {
