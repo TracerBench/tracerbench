@@ -116,10 +116,7 @@ export function normalizeFnName(name: string) {
 export function setTraceEvents(
   file: ITraceEvent[] | { metadata: {}; traceEvents: ITraceEvent[] }
 ) {
-  if (!Array.isArray(file)) {
-    file = file.traceEvents;
-  }
-  return file;
+  return !Array.isArray(file) ? file.traceEvents : file;
 }
 
 export function collect(val: any, memo: any) {
