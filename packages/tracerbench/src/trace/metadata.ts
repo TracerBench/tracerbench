@@ -61,6 +61,7 @@ export class ParsedFile {
 }
 
 export function findMangledDefine(content: string): string {
+  // finds the internal loader ident index
   const tail = content.indexOf('.__loader.define');
   const sub = content.slice(0, tail);
   let defineToken = '';
@@ -88,12 +89,25 @@ export function findMangledDefine(content: string): string {
 }
 
 export function getModuleIndex(str: string, ident: string): number {
-  const matcher = new RegExp(
-    `(?:${ident}\\(")(.*?)(?=",\\[\\"(.*)\\"],(function|\\(function))`,
-    'g'
-  );
-  const matches = str.match(matcher);
+  let matcher;
+  // todo this is a temporary workaround as findMangledDefine is not working as intended and needs ASAP deep debug
+  try {
+    matcher = new RegExp(
+      `(?:${ident}\\(")(.*?)(?=",\\[\\"(.*)\\"],(function|\\(function))`,
+      'g'
+    );
+  } catch (error) {
+    try {
+      matcher = new RegExp(
+        `(?:''\\(")(.*?)(?=",\\[\\"(.*)\\"],(function|\\(function))`,
+        'g'
+      );
+    } catch (error) {
+      throw new Error(error);
+    }
+  }
 
+  const matches = str.match(matcher);
   if (matches === null) {
     return EOF;
   }
