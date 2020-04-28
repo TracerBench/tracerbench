@@ -4,8 +4,7 @@ import {
   isFrameNavigationStart,
   convertMSToMicroseconds,
   mergeLeft,
-  IEvent,
-  IFrame,
+  ITraceEventFrame,
 } from "../../src/helpers/utils";
 import { expect } from "chai";
 import { ITraceEvent } from "@tracerbench/core";
@@ -28,8 +27,12 @@ const event: ITraceEvent = {
 const events: ITraceEvent[] = [event];
 const url = "https://www.tracerbench.com";
 const frame = findFrame(events, url);
-const isLoad = isCommitLoad(event as IEvent);
-const isFrameMark = isFrameNavigationStart(frame, event as IFrame);
+const isLoad = isCommitLoad(event as ITraceEventFrame);
+const isFrameMark = isFrameNavigationStart(
+  frame,
+  event as ITraceEventFrame,
+  url
+);
 const micro = convertMSToMicroseconds(`-100ms`);
 
 describe("utils", () => {

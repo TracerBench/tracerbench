@@ -8,7 +8,7 @@ describe("profile: url, cookies", () => {
   test
     .stdout()
     .it(
-      `runs profile ${HAR_PATH} --url ${URL} --tbResultsFolder ${TB_RESULTS_FOLDER} --cookiespath ${COOKIES} --usertimings`,
+      `runs profile ${HAR_PATH} --url ${URL} --tbResultsFolder ${TB_RESULTS_FOLDER} --cookiespath ${COOKIES} --hideUsertimings`,
       async (ctx) => {
         await Profile.run([
           HAR_PATH,
@@ -18,14 +18,11 @@ describe("profile: url, cookies", () => {
           TB_RESULTS_FOLDER,
           "--cookiespath",
           COOKIES,
-          "--usertimings",
+          "--hideUsertimings",
         ]);
-        expect(ctx.stdout).to.contain(`Subtotal`);
-        expect(ctx.stdout).to.contain(`.js`);
-        expect(ctx.stdout).to.contain(`.css`);
-        expect(ctx.stdout).to.contain(
-          `Frame-URL: https://www.tracerbench.com/`
-        );
+        expect(ctx.stdout).to.contain(`Hierarchy Reports`);
+        expect(ctx.stdout).to.contain(`JS Evaluation :: Total Duration`);
+        expect(ctx.stdout).to.contain(`CSS Evaluation :: Total Duration`);
       }
     );
 });
@@ -34,20 +31,17 @@ describe("profile: no url, no cookies", () => {
   test
     .stdout()
     .it(
-      `runs profile ${HAR_PATH} --tbResultsFolder ${TB_RESULTS_FOLDER} --usertimings`,
+      `runs profile ${HAR_PATH} --tbResultsFolder ${TB_RESULTS_FOLDER} --hideUsertimings`,
       async (ctx) => {
         await Profile.run([
           HAR_PATH,
           "--tbResultsFolder",
           TB_RESULTS_FOLDER,
-          "--usertimings",
+          "--hideUsertimings",
         ]);
-        expect(ctx.stdout).to.contain(`Subtotal`);
-        expect(ctx.stdout).to.contain(`.js`);
-        expect(ctx.stdout).to.contain(`.css`);
-        expect(ctx.stdout).to.contain(
-          `Frame-URL: https://www.tracerbench.com/`
-        );
+        expect(ctx.stdout).to.contain(`Hierarchy Reports`);
+        expect(ctx.stdout).to.contain(`JS Evaluation :: Total Duration`);
+        expect(ctx.stdout).to.contain(`CSS Evaluation :: Total Duration`);
       }
     );
 });
@@ -59,12 +53,16 @@ describe("profile: marker-timings", () => {
       `runs profile ${HAR_PATH} --tbResultsFolder ${TB_RESULTS_FOLDER}`,
       async (ctx) => {
         await Profile.run([HAR_PATH, "--tbResultsFolder", TB_RESULTS_FOLDER]);
-        expect(ctx.stdout).to.contain(`navigationStart`);
-        expect(ctx.stdout).to.contain(`fetchStart`);
-        expect(ctx.stdout).to.contain(`domLoading`);
-        expect(ctx.stdout).to.contain(`domComplete`);
-        expect(ctx.stdout).to.contain(`loadEventStart`);
-        expect(ctx.stdout).to.contain(`loadEventEnd`);
+        expect(ctx.stdout).to.contain(`Hierarchy Reports`);
+        expect(ctx.stdout).to.contain(`JS Evaluation :: Total Duration`);
+        expect(ctx.stdout).to.contain(`CSS Evaluation :: Total Duration`);
+        expect(ctx.stdout).to.contain(`Marker Timings :: Total Duration`);
+        expect(ctx.stdout).to.contain(`Navigation Start`);
+        expect(ctx.stdout).to.contain(`Dom Complete`);
+        expect(ctx.stdout).to.contain(`Load Event End`);
+        expect(ctx.stdout).to.contain(
+          `■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■`
+        );
       }
     );
 });

@@ -330,6 +330,9 @@ OPTIONS
   --cpuThrottleRate=cpuThrottleRate
       (required) [default: 2] CPU throttle multiplier
 
+  --hideUsertimings
+      Hide stdout of user-timings.
+
   --network=none|offline|dialup|slow-2g|2g|slow-edge|edge|slow-3g|dsl|3g|fast-3g|4g|cable|LTE|FIOS
       [default: none] Simulated network conditions.
 
@@ -338,9 +341,6 @@ OPTIONS
 
   --url=url
       (required) URL to visit for record-har, timings & trace commands
-
-  --usertimings
-      Included stdout of user-timings.
 
 ALIASES
   $ tracerbench trace

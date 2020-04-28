@@ -15,10 +15,10 @@ import { harpath } from "../helpers/args";
 import {
   cookiespath,
   cpuThrottleRate,
+  hideUsertimings,
   network,
   tbResultsFolder,
   url,
-  usertimings,
 } from "../helpers/flags";
 import {
   byTime,
@@ -30,6 +30,9 @@ import {
   isFrameNavigationStart,
   isMark,
   ITraceEventFrame,
+  logBar,
+  logBarOptions,
+  logHeading,
   setTraceEvents,
 } from "../helpers/utils";
 
@@ -41,6 +44,14 @@ interface ProfileContext {
   url: string;
   analyzeResults: { node: string; hierarchyReports: string[] };
 }
+
+type markerLogMeta = {
+  name: string;
+  sentanceCaseName: string;
+  duration: number;
+  startTime: number;
+  bar: string;
+};
 
 export default class Profile extends TBBaseCommand {
   // include backwards compat to trace cmd
@@ -54,7 +65,7 @@ export default class Profile extends TBBaseCommand {
     network: network(),
     url: url({ required: true }),
     cookiespath: cookiespath({ required: true }),
-    usertimings,
+    hideUsertimings,
   };
 
   public async run(): Promise<void> {
@@ -64,7 +75,7 @@ export default class Profile extends TBBaseCommand {
       cookiespath,
       tbResultsFolder,
       network,
-      usertimings,
+      hideUsertimings,
       url,
     } = flags;
     const { harpath } = args;
@@ -187,17 +198,13 @@ export default class Profile extends TBBaseCommand {
       })
       .then(async (ctx) => {
         // log logAnalyzeReports
-        this.log(`\n`);
         this.logAnalyzeReports(ctx.analyzeResults);
         // log js-eval-time
-        this.log(`\n`);
         this.logJSEvalTime();
         // log css-parse
-        this.log(`\n`);
         this.logCSSEvalTime();
         // log user timings
-        if (usertimings) {
-          this.log(`\n`);
+        if (!hideUsertimings) {
           await this.markerTimings(ctx.traceJSONPath, ctx.url);
         }
       });
@@ -207,14 +214,45 @@ export default class Profile extends TBBaseCommand {
     node: string;
     hierarchyReports: string[];
   }): void {
+    logHeading("Hierarchy Reports");
     this.log(`${analyzeResults.node}`);
     analyzeResults.hierarchyReports.forEach((report) => {
       this.log(`${report}`);
     });
   }
 
+  private logJSEvalTime(): void {
+    let totalJSDuration = 0;
+    const jsEvalLogs: logBarOptions[] = [];
+    this.trace
+      .filter((event: ITraceEvent) => event.name === "EvaluateScript")
+      .filter((event: any) => event.args.data.url)
+      .forEach((event: any) => {
+        const url = event.args.data.url;
+        const durationInMs = event.dur / 1000;
+        totalJSDuration += durationInMs;
+        jsEvalLogs.push({
+          totalDuration: totalJSDuration,
+          duration: durationInMs,
+          title: url,
+        });
+      });
+
+    logHeading(`JS Evaluation :: Total Duration ${totalJSDuration} ms`);
+
+    // log js-eval-time
+    jsEvalLogs
+      .sort((a, b) => {
+        return a.duration - b.duration;
+      })
+      .forEach((log) => {
+        this.log(logBar(log));
+      });
+  }
+
   private logCSSEvalTime(): void {
     let totalCSSDuration = 0;
+    const cssEvalLogs: logBarOptions[] = [];
 
     this.trace
       .filter((event: ITraceEvent) => event.name === "ParseAuthorStyleSheet")
@@ -223,30 +261,23 @@ export default class Profile extends TBBaseCommand {
         const url = event.args.data.styleSheetUrl;
         const durationInMs = event.dur / 1000;
         totalCSSDuration += durationInMs;
-        this.log(`CSS: ${url}: ${durationInMs.toFixed(2)}`);
+        cssEvalLogs.push({
+          totalDuration: totalCSSDuration,
+          duration: durationInMs,
+          title: url,
+        });
       });
+
+    logHeading(`CSS Evaluation :: Total Duration ${totalCSSDuration} ms`);
 
     // log css-parse-time
-    this.log(
-      `CSS: Evaluation Total Duration: ${totalCSSDuration.toFixed(2)}ms`
-    );
-  }
-
-  private logJSEvalTime(): void {
-    let totalJSDuration = 0;
-
-    this.trace
-      .filter((event: ITraceEvent) => event.name === "EvaluateScript")
-      .filter((event: any) => event.args.data.url)
-      .forEach((event: any) => {
-        const url = event.args.data.url;
-        const durationInMs = (event.dur as number) / 1000;
-        totalJSDuration += durationInMs;
-        this.log(`JS: ${url}: ${durationInMs.toFixed(2)}`);
+    cssEvalLogs
+      .sort((a, b) => {
+        return a.duration - b.duration;
+      })
+      .forEach((log) => {
+        this.log(logBar(log));
       });
-
-    // log js-eval-time
-    this.log(`JS: Evaluation Total Duration: ${totalJSDuration.toFixed(2)}ms`);
   }
 
   // tracerbench marker-timings cmd moved here
@@ -254,12 +285,6 @@ export default class Profile extends TBBaseCommand {
     traceJSONPath: string,
     url: string
   ): Promise<void> {
-    type markerLogMeta = {
-      name: string;
-      duration: number;
-      eventTS: number;
-      startTime: number;
-    };
     let frame: string;
     let startTime = -1;
     let rawTraceData: any = null;
@@ -300,18 +325,9 @@ export default class Profile extends TBBaseCommand {
       .filter((event: ITraceEventFrame) => isMark(event) || isCommitLoad(event))
       .sort(byTime)
       .forEach((event: ITraceEventFrame) => {
-        const barTick = "■";
-        const maxBarLength = 60;
         if (isFrameNavigationStart(frame, event, url)) {
           startTime = event.ts;
-          markerLogs.push(
-            `${convertToSentCase(
-              event.name
-            )}\n ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■${formatToDuration(
-              event.ts,
-              startTime
-            )}\n`
-          );
+          markerLogs.push(this.buildMarkerLogs(event, startTime));
         } else if (
           isFrameMark(frame, event) &&
           event.name !== "navigationStart"
@@ -319,21 +335,38 @@ export default class Profile extends TBBaseCommand {
           if (startTime === -1) {
             return;
           }
-          markerLogs.push(
-            `${convertToSentCase(
-              event.name
-            )}\n ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■${formatToDuration(
-              event.ts,
-              startTime
-            )}\n`
-          );
+          markerLogs.push(this.buildMarkerLogs(event, startTime));
         }
       });
 
+    this.logMarkerTimings(markerLogs);
+  }
+
+  private buildMarkerLogs(
+    event: ITraceEventFrame,
+    startTime: number
+  ): markerLogMeta {
+    return {
+      name: event.name,
+      sentanceCaseName: convertToSentCase(event.name),
+      duration: formatToDuration(event.ts, startTime),
+      startTime,
+      bar: "",
+    };
+  }
+
+  private logMarkerTimings(markerLogs: markerLogMeta[]): void {
+    const totalDuration = markerLogs[markerLogs.length - 1].duration;
+
+    logHeading(`Marker Timings :: Total Duration ${totalDuration} ms`);
     markerLogs.forEach((log) => {
-      this.log(log);
+      this.log(
+        logBar({
+          totalDuration,
+          duration: log.duration,
+          title: log.sentanceCaseName,
+        })
+      );
     });
   }
 }
-
-function getBar(maxTicks = 60, duration: number): string {}

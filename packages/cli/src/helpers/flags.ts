@@ -32,9 +32,9 @@ export const isCIEnv = flags.build({
   },
 });
 
-export const usertimings = flags.boolean({
-  description: `Included stdout of user-timings.`,
-  default: true,
+export const hideUsertimings = flags.boolean({
+  description: `Hide stdout of user-timings.`,
+  default: false,
 });
 
 export const runtimeStats = flags.boolean({

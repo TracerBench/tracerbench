@@ -119,12 +119,8 @@ export function collect(val: any, memo: any) {
   return memo;
 }
 
-export function formatToDuration(ts: number, start: number): string {
-  let ms = ((ts - start) / 1000).toFixed(2).toString();
-  while (ms.length < 10) {
-    ms = " " + ms;
-  }
-  return `${ms} ms`;
+export function formatToDuration(ts: number, start: number): number {
+  return toNearestHundreth((ts - start) / 1000);
 }
 
 export function isMark(event: ITraceEventFrame): boolean {
@@ -265,4 +261,29 @@ export const chalkScheme = {
 export function convertToSentCase(str: string): string {
   const result = str.replace(/([A-Z])/g, " $1");
   return result.charAt(0).toUpperCase() + result.slice(1);
+}
+
+export function logHeading(heading: string): void {
+  console.log(
+    `\n${chalkScheme.blackBgBlue(`    ${chalkScheme.white(heading)}    `)}\n`
+  );
+}
+
+export type logBarOptions = {
+  totalDuration: number;
+  duration: number;
+  title: string;
+};
+
+export function logBar(ops: logBarOptions): string {
+  const maxBarLength = 60;
+  const barTick = "■";
+  const barSegment = ops.totalDuration / maxBarLength;
+  const fullSegments = ops.duration / barSegment;
+  const emptySegments = maxBarLength - fullSegments;
+  const bar = `${chalkScheme.tbBranding.blue(
+    barTick.repeat(fullSegments)
+  )}${chalkScheme.tbBranding.grey(barTick.repeat(emptySegments))}`;
+
+  return `${ops.title}\n${bar} ${ops.duration} ms\n`;
 }
