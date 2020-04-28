@@ -52,6 +52,8 @@ async function chromePrintToPDF(
 
     await chrome.close();
   } finally {
-    await chrome.dispose();
+    if (chrome) {
+      await chrome.dispose();
+    }
   }
 }
