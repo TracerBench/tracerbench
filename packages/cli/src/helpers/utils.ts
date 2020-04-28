@@ -12,15 +12,10 @@ import {
 } from "../command-config/tb-config";
 import { ICompareFlags } from "../commands/compare";
 
-export interface IEvent extends ITraceEvent {
+export interface ITraceEventFrame extends ITraceEvent {
   args: {
-    data?: { [key: string]: boolean };
-  };
-}
-
-export interface IFrame extends ITraceEvent {
-  args: {
-    frame: string;
+    frame?: string;
+    data?: { [key: string]: any };
   };
 }
 
@@ -114,7 +109,7 @@ export function normalizeFnName(name: string) {
 }
 
 export function setTraceEvents(
-  file: ITraceEvent[] | { metadata: {}; traceEvents: ITraceEvent[] }
+  file: ITraceEventFrame[] | { metadata: {}; traceEvents: ITraceEventFrame[] }
 ) {
   return !Array.isArray(file) ? file.traceEvents : file;
 }
@@ -124,7 +119,7 @@ export function collect(val: any, memo: any) {
   return memo;
 }
 
-export function format(ts: number, start: number): string {
+export function formatToDuration(ts: number, start: number): string {
   let ms = ((ts - start) / 1000).toFixed(2).toString();
   while (ms.length < 10) {
     ms = " " + ms;
@@ -132,19 +127,22 @@ export function format(ts: number, start: number): string {
   return `${ms} ms`;
 }
 
-export function isMark(event: IEvent): boolean {
+export function isMark(event: ITraceEventFrame): boolean {
   return event.ph === "R";
 }
 
-export function isFrameMark(frame: string, event: IFrame): boolean {
+export function isFrameMark(frame: string, event: ITraceEventFrame): boolean {
   return event.ph === "R" && event.args.frame === frame;
 }
 
-export function isFrameNavigationStart(frame: string, event: IFrame): boolean {
+export function isFrameNavigationStart(
+  frame: string,
+  event: ITraceEventFrame
+): boolean {
   return isFrameMark(frame, event) && event.name === "navigationStart";
 }
 
-export function isUserMark(event: ITraceEvent): boolean {
+export function isUserMark(event: ITraceEventFrame): boolean {
   return (
     event.ph === "R" &&
     event.cat === "blink.user_timing" &&
@@ -152,7 +150,7 @@ export function isUserMark(event: ITraceEvent): boolean {
   );
 }
 
-export function isCommitLoad(event: IEvent): boolean {
+export function isCommitLoad(event: ITraceEventFrame): boolean {
   return (
     event.ph === "X" &&
     event.name === "CommitLoad" &&
@@ -160,18 +158,19 @@ export function isCommitLoad(event: IEvent): boolean {
     event.args.data.isMainFrame
   );
 }
+
 export function byTime(a: { ts: number }, b: { ts: number }): number {
   return a.ts - b.ts;
 }
 
-export function findFrame(events: any[], url: any) {
+export function findFrame(events: any[], url: any): string {
   const event = events
     .filter(isCommitLoad)
     .find((e: any) => e.args.data.url.startsWith(url));
   if (event) {
     return event.args.data.frame;
   }
-  return null;
+  return "";
 }
 
 export function parseMarkers(m: string | string[]): IMarker[] {
@@ -246,3 +245,8 @@ export const chalkScheme = {
     grey: chalk.rgb(153, 153, 153),
   },
 };
+
+export function convertToSentCase(str: string): string {
+  const result = str.replace(/([A-Z])/g, " $1");
+  return result.charAt(0).toUpperCase() + result.slice(1);
+}
