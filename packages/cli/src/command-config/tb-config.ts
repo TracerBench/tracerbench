@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IMarker, INetworkConditions } from "@tracerbench/core";
 
 import { PerformanceTimingMark } from "./default-flag-args";

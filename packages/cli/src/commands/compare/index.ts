@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import { IConfig } from "@oclif/config";
 import {
   IInitialRenderBenchmarkParams,

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint:disable:no-console*/
 import { flags } from "@oclif/command";
 import { networkConditions } from "@tracerbench/core";

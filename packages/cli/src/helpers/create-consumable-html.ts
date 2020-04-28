@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Stats } from "@tracerbench/stats";
 import { readFileSync } from "fs-extra";
 import * as Handlebars from "handlebars";
