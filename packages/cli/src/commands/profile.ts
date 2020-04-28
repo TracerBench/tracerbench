@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   analyze,
   IConditions,
   ITraceEvent,
   liveTrace,
-  loadTrace,
 } from "@tracerbench/core";
 import Protocol from "devtools-protocol";
 import { existsSync, mkdirSync, readJson, writeFileSync } from "fs-extra";
@@ -22,16 +22,14 @@ import {
 } from "../helpers/flags";
 import {
   byTime,
-  collect,
+  convertToSentCase,
   findFrame,
-  format,
-  IEvent,
+  formatToDuration,
   isCommitLoad,
   isFrameMark,
   isFrameNavigationStart,
   isMark,
-  isUserMark,
-  normalizeFnName,
+  ITraceEventFrame,
   setTraceEvents,
 } from "../helpers/utils";
 
@@ -39,7 +37,7 @@ interface ProfileContext {
   cookies: Protocol.Network.CookieParam[];
   harJSON: any;
   traceJSONPath: string;
-  traceEvents: ITraceEvent[];
+  traceEvents: ITraceEventFrame[];
   url: string;
   analyzeResults: { node: string; hierarchyReports: string[] };
 }
@@ -47,7 +45,7 @@ interface ProfileContext {
 export default class Profile extends TBBaseCommand {
   // include backwards compat to trace cmd
   static aliases = ["trace"];
-  public trace: ITraceEvent[] = [];
+  public trace: ITraceEventFrame[] = [];
   public static description = `Parses a CPU profile and aggregates time across heuristics.`;
   public static args = [harpath];
   public static flags = {
@@ -145,7 +143,7 @@ export default class Profile extends TBBaseCommand {
               cookies,
               conditions
             );
-            ctx.traceEvents = traceEvents;
+            ctx.traceEvents = traceEvents as ITraceEventFrame[];
           } catch (error) {
             this.error(`${error}`);
           }
@@ -197,9 +195,6 @@ export default class Profile extends TBBaseCommand {
         // log css-parse
         this.log(`\n`);
         this.logCSSEvalTime();
-        // log list-functions
-        this.log(`\n`);
-        this.listFrames();
         // log user timings
         if (usertimings) {
           this.log(`\n`);
@@ -216,44 +211,6 @@ export default class Profile extends TBBaseCommand {
     analyzeResults.hierarchyReports.forEach((report) => {
       this.log(`${report}`);
     });
-  }
-
-  private listFrames(): void {
-    const methodsSet = new Set();
-    let clonedTrace: any = null;
-
-    try {
-      const profile = loadTrace(this.trace).cpuProfile(-1, -1);
-      profile.nodeMap.forEach((node: any) => {
-        const { functionName, url, lineNumber, columnNumber } = node.callFrame;
-
-        methodsSet.add(
-          `${url}:${lineNumber}:${columnNumber}.${normalizeFnName(
-            functionName
-          )}`
-        );
-      });
-    } catch (error) {
-      this.error(error);
-    }
-
-    try {
-      clonedTrace = this.trace;
-      const traceLoad = clonedTrace.filter(isCommitLoad);
-      traceLoad.forEach(
-        ({
-          args: {
-            data: { frame, url },
-          },
-        }: {
-          args: { data: { frame: any; url: any } };
-        }) => {
-          this.log(`Frame-URL: ${url} | Frame-ID: ${frame}`);
-        }
-      );
-    } catch (error) {
-      this.error(`${error}`);
-    }
   }
 
   private logCSSEvalTime(): void {
@@ -297,13 +254,17 @@ export default class Profile extends TBBaseCommand {
     traceJSONPath: string,
     url: string
   ): Promise<void> {
-    const traceFrame: string = url;
-    const filter = collect("", []);
-
-    let frame: any = null;
+    type markerLogMeta = {
+      name: string;
+      duration: number;
+      eventTS: number;
+      startTime: number;
+    };
+    let frame: string;
     let startTime = -1;
     let rawTraceData: any = null;
-    let customTrace: any = null;
+    let customTrace: ITraceEventFrame[];
+    const markerLogs: markerLogMeta[] = [];
 
     if (!url) {
       this.error(
@@ -323,11 +284,12 @@ export default class Profile extends TBBaseCommand {
       this.error(e);
     }
 
-    if (traceFrame.startsWith("http")) {
-      frame = findFrame(customTrace, traceFrame);
+    if (url.startsWith("http")) {
+      frame = findFrame(customTrace, url);
     } else {
-      frame = traceFrame;
+      frame = url;
     }
+
     if (!frame) {
       this.error(
         `Could not extract frame from trace. Explicitly opt-out of usertimings via "--usertimings" boolean flag and rerun.`
@@ -335,40 +297,43 @@ export default class Profile extends TBBaseCommand {
     }
 
     customTrace
-      .filter((event: IEvent) => isMark(event) || isCommitLoad(event))
+      .filter((event: ITraceEventFrame) => isMark(event) || isCommitLoad(event))
       .sort(byTime)
-      .forEach((event: any) => {
-        if (isFrameNavigationStart(frame, event)) {
+      .forEach((event: ITraceEventFrame) => {
+        const barTick = "■";
+        const maxBarLength = 60;
+        if (isFrameNavigationStart(frame, event, url)) {
           startTime = event.ts;
-          this.log(
-            `Marker Timings: ${format(event.ts, startTime)} ${event.name}`
+          markerLogs.push(
+            `${convertToSentCase(
+              event.name
+            )}\n ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■${formatToDuration(
+              event.ts,
+              startTime
+            )}\n`
           );
-        } else if (isFrameMark(frame, event)) {
+        } else if (
+          isFrameMark(frame, event) &&
+          event.name !== "navigationStart"
+        ) {
           if (startTime === -1) {
-            startTime = event.ts;
+            return;
           }
-          this.log(
-            `Marker Timings: ${format(event.ts, startTime)} ${event.name}`
+          markerLogs.push(
+            `${convertToSentCase(
+              event.name
+            )}\n ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■${formatToDuration(
+              event.ts,
+              startTime
+            )}\n`
           );
-        } else if (isUserMark(event)) {
-          if (
-            filter.length === 0 ||
-            filter.some((f: any) => event.name.indexOf(f) !== -1)
-          ) {
-            this.log(
-              `Marker Timings: ${format(event.ts, startTime)} ${event.name}`
-            );
-          }
-        } else if (isCommitLoad(event)) {
-          const { data } = event.args;
-          if (data.frame === frame) {
-            this.log(
-              `Marker Timings: ${format(event.ts, startTime)} ${event.name} ${
-                data.frame
-              } ${data.url}`
-            );
-          }
         }
       });
+
+    markerLogs.forEach((log) => {
+      this.log(log);
+    });
   }
 }
+
+function getBar(maxTicks = 60, duration: number): string {}

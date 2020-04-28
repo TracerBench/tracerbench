@@ -135,11 +135,27 @@ export function isFrameMark(frame: string, event: ITraceEventFrame): boolean {
   return event.ph === "R" && event.args.frame === frame;
 }
 
+export function isDocLoaderURL(event: any, url: string): boolean {
+  try {
+    if (event.args.data.documentLoaderURL === url) {
+      return true;
+    }
+    return false;
+  } catch (e) {
+    return false;
+  }
+}
+
 export function isFrameNavigationStart(
   frame: string,
-  event: ITraceEventFrame
+  event: ITraceEventFrame,
+  url: string
 ): boolean {
-  return isFrameMark(frame, event) && event.name === "navigationStart";
+  return (
+    isFrameMark(frame, event) &&
+    event.name === "navigationStart" &&
+    isDocLoaderURL(event, url)
+  );
 }
 
 export function isUserMark(event: ITraceEventFrame): boolean {
@@ -163,7 +179,7 @@ export function byTime(a: { ts: number }, b: { ts: number }): number {
   return a.ts - b.ts;
 }
 
-export function findFrame(events: any[], url: any): string {
+export function findFrame(events: any[], url: string): string {
   const event = events
     .filter(isCommitLoad)
     .find((e: any) => e.args.data.url.startsWith(url));
