@@ -26,7 +26,7 @@ export async function createBrowser(
   return browser;
 }
 
-export async function newTab(
+export async function getNewTab(
   browser: ProtocolConnection,
   url = 'about:blank'
 ): Promise<SessionConnection> {
