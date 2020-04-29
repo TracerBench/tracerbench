@@ -1,7 +1,6 @@
-[
-  {
+[{
     "meta": {
-      "browserVersion": "Chrome/76.0.3784.1",
+      "browserVersion": "HeadlessChrome/81.0.4044.122",
       "cpus": [
         "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz",
         "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz",
@@ -13,335 +12,1172 @@
         "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz"
       ]
     },
-    "samples": [
-      {
-        "duration": 67749,
-        "js": 1054,
-        "phases": [
-          {
-            "phase": "domComplete",
+    "samples": [{
+        "duration": 433745,
+        "js": 187068,
+        "phases": [{
+            "phase": "jquery",
             "start": 0,
-            "duration": 67749
+            "duration": 45562
+          },
+          {
+            "phase": "ember",
+            "start": 45562,
+            "duration": 132784
+          },
+          {
+            "phase": "application",
+            "start": 178346,
+            "duration": 24538
+          },
+          {
+            "phase": "routing",
+            "start": 202884,
+            "duration": 21564
+          },
+          {
+            "phase": "transition",
+            "start": 224448,
+            "duration": 11149
+          },
+          {
+            "phase": "render",
+            "start": 235597,
+            "duration": 20269
+          },
+          {
+            "phase": "afterRender",
+            "start": 255866,
+            "duration": 177879
           }
         ],
-        "gc": [],
-        "blinkGC": [],
-        "runtimeCallStats": {
-          "Blink C++": {
-            "FunctionCallback": {
-              "count": 7,
-              "time": 33
-            },
-            "AccessorGetterCallback": {
-              "count": 1,
-              "time": 1
-            },
-            "NamedGetterCallback": {
-              "count": 1,
-              "time": 2
-            }
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 171078,
+            "duration": 1818,
+            "usedHeapSizeAfter": 2533756,
+            "usedHeapSizeBefore": 2828840
           },
-          "V8 C++": {
-            "Invoke": {
-              "count": 3,
-              "time": 3
-            },
-            "InvokeApiFunction": {
-              "count": 6,
-              "time": 9
-            },
-            "Map_SetPrototype": {
-              "count": 3,
-              "time": 1
-            },
-            "Map_TransitionToAccessorProperty": {
-              "count": 1,
-              "time": 6
-            },
-            "FunctionPrototypeGetter": {
-              "count": 1,
-              "time": 0
-            },
-            "LoadAccessorProperty": {
-              "count": 1,
-              "time": 0
-            },
-            "ConsoleDebug": {
-              "count": 1,
-              "time": 268
-            }
-          },
-          "API": {
-            "API_Function_NewInstance": {
-              "count": 2,
-              "time": 1
-            },
-            "API_Function_Call": {
-              "count": 1,
-              "time": 0
-            },
-            "API_FunctionTemplate_GetFunction": {
-              "count": 1,
-              "time": 8
-            },
-            "API_FunctionTemplate_New": {
-              "count": 1,
-              "time": 1
-            },
-            "API_Object_Get": {
-              "count": 1,
-              "time": 0
-            },
-            "API_ObjectTemplate_New": {
-              "count": 2,
-              "time": 0
-            },
-            "API_Persistent_New": {
-              "count": 3,
-              "time": 0
-            },
-            "API_String_NewFromOneByte": {
-              "count": 3,
-              "time": 1
-            },
-            "API_String_Write": {
-              "count": 4,
-              "time": 1
-            },
-            "API_TracedGlobal_New": {
-              "count": 2,
-              "time": 0
-            }
-          },
-          "Compile": {
-            "CompileAnalyse": {
-              "count": 1,
-              "time": 0
-            },
-            "CompileFunction": {
-              "count": 1,
-              "time": 20
-            },
-            "CompileIgnition": {
-              "count": 1,
-              "time": 16
-            },
-            "CompileIgnitionFinalization": {
-              "count": 1,
-              "time": 1
-            },
-            "CompileRewriteReturnResult": {
-              "count": 1,
-              "time": 0
-            },
-            "CompileScopeAnalysis": {
-              "count": 1,
-              "time": 2
-            },
-            "CompileLazy": {
-              "count": 1,
-              "time": 2
-            }
-          },
-          "JavaScript": {
-            "JS_Execution": {
-              "count": 1,
-              "time": 12
-            }
-          },
-          "Parse": {
-            "ParseFunction": {
-              "count": 1,
-              "time": 5
-            },
-            "ParseFunctionLiteral": {
-              "count": 1,
-              "time": 228
-            }
-          },
-          "IC": {
-            "LoadGlobalIC_Miss": {
-              "count": 1,
-              "time": 3
-            },
-            "LoadIC_LoadApiGetterFromPrototypeDH": {
-              "count": 1,
-              "time": 4
-            },
-            "LoadIC_Premonomorphic": {
-              "count": 4,
-              "time": 209
-            }
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 211529,
+            "duration": 2020,
+            "usedHeapSizeAfter": 2857940,
+            "usedHeapSizeBefore": 3067880
           }
-        }
+        ],
+        "blinkGC": []
       },
       {
-        "duration": 69296,
-        "js": 975,
-        "phases": [
-          {
-            "phase": "domComplete",
+        "duration": 308686,
+        "js": 189045,
+        "phases": [{
+            "phase": "jquery",
             "start": 0,
-            "duration": 69296
+            "duration": 46429
+          },
+          {
+            "phase": "ember",
+            "start": 46429,
+            "duration": 131108
+          },
+          {
+            "phase": "application",
+            "start": 177537,
+            "duration": 24031
+          },
+          {
+            "phase": "routing",
+            "start": 201568,
+            "duration": 20132
+          },
+          {
+            "phase": "transition",
+            "start": 221700,
+            "duration": 11138
+          },
+          {
+            "phase": "render",
+            "start": 232838,
+            "duration": 20077
+          },
+          {
+            "phase": "afterRender",
+            "start": 252915,
+            "duration": 55771
           }
         ],
-        "gc": [],
-        "blinkGC": [],
-        "runtimeCallStats": {
-          "Blink C++": {
-            "FunctionCallback": {
-              "count": 7,
-              "time": 32
-            },
-            "AccessorGetterCallback": {
-              "count": 1,
-              "time": 0
-            },
-            "NamedGetterCallback": {
-              "count": 1,
-              "time": 3
-            }
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 170387,
+            "duration": 1688,
+            "usedHeapSizeAfter": 2570844,
+            "usedHeapSizeBefore": 2828868
           },
-          "V8 C++": {
-            "Invoke": {
-              "count": 3,
-              "time": 3
-            },
-            "InvokeApiFunction": {
-              "count": 6,
-              "time": 11
-            },
-            "Map_SetPrototype": {
-              "count": 3,
-              "time": 2
-            },
-            "Map_TransitionToAccessorProperty": {
-              "count": 1,
-              "time": 5
-            },
-            "FunctionPrototypeGetter": {
-              "count": 1,
-              "time": 0
-            },
-            "LoadAccessorProperty": {
-              "count": 1,
-              "time": 0
-            },
-            "ConsoleDebug": {
-              "count": 1,
-              "time": 269
-            }
-          },
-          "API": {
-            "API_Function_NewInstance": {
-              "count": 2,
-              "time": 1
-            },
-            "API_Function_Call": {
-              "count": 1,
-              "time": 1
-            },
-            "API_FunctionTemplate_GetFunction": {
-              "count": 1,
-              "time": 6
-            },
-            "API_FunctionTemplate_New": {
-              "count": 1,
-              "time": 464
-            },
-            "API_Object_Get": {
-              "count": 1,
-              "time": 1
-            },
-            "API_ObjectTemplate_New": {
-              "count": 2,
-              "time": 0
-            },
-            "API_Persistent_New": {
-              "count": 3,
-              "time": 2
-            },
-            "API_String_NewFromOneByte": {
-              "count": 3,
-              "time": 2
-            },
-            "API_String_Write": {
-              "count": 4,
-              "time": 2
-            },
-            "API_TracedGlobal_New": {
-              "count": 2,
-              "time": 1
-            }
-          },
-          "Compile": {
-            "CompileAnalyse": {
-              "count": 1,
-              "time": 0
-            },
-            "CompileFunction": {
-              "count": 1,
-              "time": 18
-            },
-            "CompileIgnition": {
-              "count": 1,
-              "time": 18
-            },
-            "CompileIgnitionFinalization": {
-              "count": 1,
-              "time": 2
-            },
-            "CompileRewriteReturnResult": {
-              "count": 1,
-              "time": 0
-            },
-            "CompileScopeAnalysis": {
-              "count": 1,
-              "time": 2
-            },
-            "CompileLazy": {
-              "count": 1,
-              "time": 2
-            }
-          },
-          "JavaScript": {
-            "JS_Execution": {
-              "count": 1,
-              "time": 13
-            }
-          },
-          "Parse": {
-            "ParseFunction": {
-              "count": 1,
-              "time": 4
-            },
-            "ParseFunctionLiteral": {
-              "count": 1,
-              "time": 20
-            }
-          },
-          "IC": {
-            "LoadGlobalIC_Miss": {
-              "count": 1,
-              "time": 3
-            },
-            "LoadIC_LoadApiGetterFromPrototypeDH": {
-              "count": 1,
-              "time": 3
-            },
-            "LoadIC_Premonomorphic": {
-              "count": 4,
-              "time": 5
-            }
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 202807,
+            "duration": 1935,
+            "usedHeapSizeAfter": 2779896,
+            "usedHeapSizeBefore": 3029352
           }
-        }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 308689,
+        "js": 189337,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 46028
+          },
+          {
+            "phase": "ember",
+            "start": 46028,
+            "duration": 130458
+          },
+          {
+            "phase": "application",
+            "start": 176486,
+            "duration": 24614
+          },
+          {
+            "phase": "routing",
+            "start": 201100,
+            "duration": 20255
+          },
+          {
+            "phase": "transition",
+            "start": 221355,
+            "duration": 11551
+          },
+          {
+            "phase": "render",
+            "start": 232906,
+            "duration": 20756
+          },
+          {
+            "phase": "afterRender",
+            "start": 253662,
+            "duration": 55027
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 169082,
+            "duration": 1773,
+            "usedHeapSizeAfter": 2573176,
+            "usedHeapSizeBefore": 2828936
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 201901,
+            "duration": 1939,
+            "usedHeapSizeAfter": 2771288,
+            "usedHeapSizeBefore": 3025008
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 308630,
+        "js": 188326,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 46637
+          },
+          {
+            "phase": "ember",
+            "start": 46637,
+            "duration": 128500
+          },
+          {
+            "phase": "application",
+            "start": 175137,
+            "duration": 24368
+          },
+          {
+            "phase": "routing",
+            "start": 199505,
+            "duration": 19768
+          },
+          {
+            "phase": "transition",
+            "start": 219273,
+            "duration": 13000
+          },
+          {
+            "phase": "render",
+            "start": 232273,
+            "duration": 20452
+          },
+          {
+            "phase": "afterRender",
+            "start": 252725,
+            "duration": 55905
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 168181,
+            "duration": 1638,
+            "usedHeapSizeAfter": 2569956,
+            "usedHeapSizeBefore": 2828800
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 201068,
+            "duration": 1855,
+            "usedHeapSizeAfter": 2782492,
+            "usedHeapSizeBefore": 3028936
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 308532,
+        "js": 188029,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 46053
+          },
+          {
+            "phase": "ember",
+            "start": 46053,
+            "duration": 129146
+          },
+          {
+            "phase": "application",
+            "start": 175199,
+            "duration": 24454
+          },
+          {
+            "phase": "routing",
+            "start": 199653,
+            "duration": 20707
+          },
+          {
+            "phase": "transition",
+            "start": 220360,
+            "duration": 11387
+          },
+          {
+            "phase": "render",
+            "start": 231747,
+            "duration": 20983
+          },
+          {
+            "phase": "afterRender",
+            "start": 252730,
+            "duration": 55802
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 167949,
+            "duration": 1708,
+            "usedHeapSizeAfter": 2569936,
+            "usedHeapSizeBefore": 2828868
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 201211,
+            "duration": 2001,
+            "usedHeapSizeAfter": 2785720,
+            "usedHeapSizeBefore": 3029420
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 307718,
+        "js": 184996,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 46481
+          },
+          {
+            "phase": "ember",
+            "start": 46481,
+            "duration": 129470
+          },
+          {
+            "phase": "application",
+            "start": 175951,
+            "duration": 25657
+          },
+          {
+            "phase": "routing",
+            "start": 201608,
+            "duration": 17852
+          },
+          {
+            "phase": "transition",
+            "start": 219460,
+            "duration": 11374
+          },
+          {
+            "phase": "render",
+            "start": 230834,
+            "duration": 20112
+          },
+          {
+            "phase": "afterRender",
+            "start": 250946,
+            "duration": 56772
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 168305,
+            "duration": 2026,
+            "usedHeapSizeAfter": 2589156,
+            "usedHeapSizeBefore": 2828860
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 199054,
+            "duration": 1644,
+            "usedHeapSizeAfter": 2764824,
+            "usedHeapSizeBefore": 3014860
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 308205,
+        "js": 187572,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 46753
+          },
+          {
+            "phase": "ember",
+            "start": 46753,
+            "duration": 128612
+          },
+          {
+            "phase": "application",
+            "start": 175365,
+            "duration": 24237
+          },
+          {
+            "phase": "routing",
+            "start": 199602,
+            "duration": 20778
+          },
+          {
+            "phase": "transition",
+            "start": 220380,
+            "duration": 11354
+          },
+          {
+            "phase": "render",
+            "start": 231734,
+            "duration": 20135
+          },
+          {
+            "phase": "afterRender",
+            "start": 251869,
+            "duration": 56336
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 168348,
+            "duration": 1628,
+            "usedHeapSizeAfter": 2568216,
+            "usedHeapSizeBefore": 2828932
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 201169,
+            "duration": 2153,
+            "usedHeapSizeAfter": 2785724,
+            "usedHeapSizeBefore": 3030236
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 311896,
+        "js": 192321,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 47091
+          },
+          {
+            "phase": "ember",
+            "start": 47091,
+            "duration": 131901
+          },
+          {
+            "phase": "application",
+            "start": 178992,
+            "duration": 26618
+          },
+          {
+            "phase": "routing",
+            "start": 205610,
+            "duration": 18847
+          },
+          {
+            "phase": "transition",
+            "start": 224457,
+            "duration": 11558
+          },
+          {
+            "phase": "render",
+            "start": 236015,
+            "duration": 20850
+          },
+          {
+            "phase": "afterRender",
+            "start": 256865,
+            "duration": 55031
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 171448,
+            "duration": 1845,
+            "usedHeapSizeAfter": 2583348,
+            "usedHeapSizeBefore": 2828880
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 203135,
+            "duration": 1699,
+            "usedHeapSizeAfter": 2766616,
+            "usedHeapSizeBefore": 3015292
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 307459,
+        "js": 187678,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 46154
+          },
+          {
+            "phase": "ember",
+            "start": 46154,
+            "duration": 128369
+          },
+          {
+            "phase": "application",
+            "start": 174523,
+            "duration": 26374
+          },
+          {
+            "phase": "routing",
+            "start": 200897,
+            "duration": 18922
+          },
+          {
+            "phase": "transition",
+            "start": 219819,
+            "duration": 12136
+          },
+          {
+            "phase": "render",
+            "start": 231955,
+            "duration": 20252
+          },
+          {
+            "phase": "afterRender",
+            "start": 252207,
+            "duration": 55252
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 167508,
+            "duration": 1643,
+            "usedHeapSizeAfter": 2593548,
+            "usedHeapSizeBefore": 2828924
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 198120,
+            "duration": 2012,
+            "usedHeapSizeAfter": 2764352,
+            "usedHeapSizeBefore": 3013576
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 337570,
+        "js": 212216,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 46285
+          },
+          {
+            "phase": "ember",
+            "start": 46285,
+            "duration": 131460
+          },
+          {
+            "phase": "application",
+            "start": 177745,
+            "duration": 26871
+          },
+          {
+            "phase": "routing",
+            "start": 204616,
+            "duration": 26897
+          },
+          {
+            "phase": "transition",
+            "start": 231513,
+            "duration": 16716
+          },
+          {
+            "phase": "render",
+            "start": 248229,
+            "duration": 28973
+          },
+          {
+            "phase": "afterRender",
+            "start": 277202,
+            "duration": 60368
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 170257,
+            "duration": 1671,
+            "usedHeapSizeAfter": 2567748,
+            "usedHeapSizeBefore": 2828924
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 206742,
+            "duration": 2162,
+            "usedHeapSizeAfter": 2783948,
+            "usedHeapSizeBefore": 3030508
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 314508,
+        "js": 186590,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 46921
+          },
+          {
+            "phase": "ember",
+            "start": 46921,
+            "duration": 129255
+          },
+          {
+            "phase": "application",
+            "start": 176176,
+            "duration": 26071
+          },
+          {
+            "phase": "routing",
+            "start": 202247,
+            "duration": 17676
+          },
+          {
+            "phase": "transition",
+            "start": 219923,
+            "duration": 11069
+          },
+          {
+            "phase": "render",
+            "start": 230992,
+            "duration": 21767
+          },
+          {
+            "phase": "afterRender",
+            "start": 252759,
+            "duration": 61749
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 169352,
+            "duration": 1551,
+            "usedHeapSizeAfter": 2582180,
+            "usedHeapSizeBefore": 2828888
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 199777,
+            "duration": 1840,
+            "usedHeapSizeAfter": 2765696,
+            "usedHeapSizeBefore": 3015732
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 309718,
+        "js": 190016,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 45926
+          },
+          {
+            "phase": "ember",
+            "start": 45926,
+            "duration": 131754
+          },
+          {
+            "phase": "application",
+            "start": 177680,
+            "duration": 23891
+          },
+          {
+            "phase": "routing",
+            "start": 201571,
+            "duration": 20097
+          },
+          {
+            "phase": "transition",
+            "start": 221668,
+            "duration": 11427
+          },
+          {
+            "phase": "render",
+            "start": 233095,
+            "duration": 20298
+          },
+          {
+            "phase": "afterRender",
+            "start": 253393,
+            "duration": 56325
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 169795,
+            "duration": 1810,
+            "usedHeapSizeAfter": 2567708,
+            "usedHeapSizeBefore": 2828936
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 203479,
+            "duration": 1842,
+            "usedHeapSizeAfter": 2782120,
+            "usedHeapSizeBefore": 3030552
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 307447,
+        "js": 188284,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 47082
+          },
+          {
+            "phase": "ember",
+            "start": 47082,
+            "duration": 129021
+          },
+          {
+            "phase": "application",
+            "start": 176103,
+            "duration": 24052
+          },
+          {
+            "phase": "routing",
+            "start": 200155,
+            "duration": 20110
+          },
+          {
+            "phase": "transition",
+            "start": 220265,
+            "duration": 11288
+          },
+          {
+            "phase": "render",
+            "start": 231553,
+            "duration": 19973
+          },
+          {
+            "phase": "afterRender",
+            "start": 251526,
+            "duration": 55921
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 168958,
+            "duration": 1643,
+            "usedHeapSizeAfter": 2569772,
+            "usedHeapSizeBefore": 2828932
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 201953,
+            "duration": 2005,
+            "usedHeapSizeAfter": 2783876,
+            "usedHeapSizeBefore": 3029408
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 308690,
+        "js": 187368,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 46396
+          },
+          {
+            "phase": "ember",
+            "start": 46396,
+            "duration": 129473
+          },
+          {
+            "phase": "application",
+            "start": 175869,
+            "duration": 26104
+          },
+          {
+            "phase": "routing",
+            "start": 201973,
+            "duration": 17925
+          },
+          {
+            "phase": "transition",
+            "start": 219898,
+            "duration": 11277
+          },
+          {
+            "phase": "render",
+            "start": 231175,
+            "duration": 20508
+          },
+          {
+            "phase": "afterRender",
+            "start": 251683,
+            "duration": 57007
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 168670,
+            "duration": 1799,
+            "usedHeapSizeAfter": 2589324,
+            "usedHeapSizeBefore": 2828848
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 199224,
+            "duration": 1822,
+            "usedHeapSizeAfter": 2766148,
+            "usedHeapSizeBefore": 3015028
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 309923,
+        "js": 190188,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 46936
+          },
+          {
+            "phase": "ember",
+            "start": 46936,
+            "duration": 131308
+          },
+          {
+            "phase": "application",
+            "start": 178244,
+            "duration": 24071
+          },
+          {
+            "phase": "routing",
+            "start": 202315,
+            "duration": 20060
+          },
+          {
+            "phase": "transition",
+            "start": 222375,
+            "duration": 11659
+          },
+          {
+            "phase": "render",
+            "start": 234034,
+            "duration": 20225
+          },
+          {
+            "phase": "afterRender",
+            "start": 254259,
+            "duration": 55664
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 171148,
+            "duration": 1690,
+            "usedHeapSizeAfter": 2571504,
+            "usedHeapSizeBefore": 2828896
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 203856,
+            "duration": 1682,
+            "usedHeapSizeAfter": 2779980,
+            "usedHeapSizeBefore": 3028572
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 312290,
+        "js": 192224,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 45540
+          },
+          {
+            "phase": "ember",
+            "start": 45540,
+            "duration": 135244
+          },
+          {
+            "phase": "application",
+            "start": 180784,
+            "duration": 24382
+          },
+          {
+            "phase": "routing",
+            "start": 205166,
+            "duration": 20151
+          },
+          {
+            "phase": "transition",
+            "start": 225317,
+            "duration": 11276
+          },
+          {
+            "phase": "render",
+            "start": 236593,
+            "duration": 19979
+          },
+          {
+            "phase": "afterRender",
+            "start": 256572,
+            "duration": 55718
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 173371,
+            "duration": 1594,
+            "usedHeapSizeAfter": 2569632,
+            "usedHeapSizeBefore": 2828852
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 206702,
+            "duration": 1699,
+            "usedHeapSizeAfter": 2785760,
+            "usedHeapSizeBefore": 3030016
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 309168,
+        "js": 187706,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 46341
+          },
+          {
+            "phase": "ember",
+            "start": 46341,
+            "duration": 129829
+          },
+          {
+            "phase": "application",
+            "start": 176170,
+            "duration": 26173
+          },
+          {
+            "phase": "routing",
+            "start": 202343,
+            "duration": 17851
+          },
+          {
+            "phase": "transition",
+            "start": 220194,
+            "duration": 11289
+          },
+          {
+            "phase": "render",
+            "start": 231483,
+            "duration": 21580
+          },
+          {
+            "phase": "afterRender",
+            "start": 253063,
+            "duration": 56105
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 168787,
+            "duration": 1686,
+            "usedHeapSizeAfter": 2580648,
+            "usedHeapSizeBefore": 2828864
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 199737,
+            "duration": 2017,
+            "usedHeapSizeAfter": 2760324,
+            "usedHeapSizeBefore": 3016000
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 310037,
+        "js": 194123,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 39506
+          },
+          {
+            "phase": "ember",
+            "start": 39506,
+            "duration": 129798
+          },
+          {
+            "phase": "application",
+            "start": 169304,
+            "duration": 27851
+          },
+          {
+            "phase": "routing",
+            "start": 197155,
+            "duration": 20255
+          },
+          {
+            "phase": "transition",
+            "start": 217410,
+            "duration": 12267
+          },
+          {
+            "phase": "render",
+            "start": 229677,
+            "duration": 22503
+          },
+          {
+            "phase": "afterRender",
+            "start": 252180,
+            "duration": 57857
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 161403,
+            "duration": 2029,
+            "usedHeapSizeAfter": 2585164,
+            "usedHeapSizeBefore": 2828904
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 194346,
+            "duration": 2028,
+            "usedHeapSizeAfter": 2768572,
+            "usedHeapSizeBefore": 3015216
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 305781,
+        "js": 185563,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 43611
+          },
+          {
+            "phase": "ember",
+            "start": 43611,
+            "duration": 130644
+          },
+          {
+            "phase": "application",
+            "start": 174255,
+            "duration": 24467
+          },
+          {
+            "phase": "routing",
+            "start": 198722,
+            "duration": 20239
+          },
+          {
+            "phase": "transition",
+            "start": 218961,
+            "duration": 11582
+          },
+          {
+            "phase": "render",
+            "start": 230543,
+            "duration": 19897
+          },
+          {
+            "phase": "afterRender",
+            "start": 250440,
+            "duration": 55341
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 167428,
+            "duration": 1628,
+            "usedHeapSizeAfter": 2569520,
+            "usedHeapSizeBefore": 2828868
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 200286,
+            "duration": 2019,
+            "usedHeapSizeAfter": 2780832,
+            "usedHeapSizeBefore": 3029864
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 304886,
+        "js": 184142,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 46249
+          },
+          {
+            "phase": "ember",
+            "start": 46249,
+            "duration": 127895
+          },
+          {
+            "phase": "application",
+            "start": 174144,
+            "duration": 23976
+          },
+          {
+            "phase": "routing",
+            "start": 198120,
+            "duration": 19652
+          },
+          {
+            "phase": "transition",
+            "start": 217772,
+            "duration": 11563
+          },
+          {
+            "phase": "render",
+            "start": 229335,
+            "duration": 20085
+          },
+          {
+            "phase": "afterRender",
+            "start": 249420,
+            "duration": 55466
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 167283,
+            "duration": 1737,
+            "usedHeapSizeAfter": 2575968,
+            "usedHeapSizeBefore": 2828880
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 199016,
+            "duration": 1747,
+            "usedHeapSizeAfter": 2776140,
+            "usedHeapSizeBefore": 3024452
+          }
+        ],
+        "blinkGC": []
       }
     ],
     "set": "control"
   },
   {
     "meta": {
-      "browserVersion": "Chrome/76.0.3784.1",
+      "browserVersion": "HeadlessChrome/81.0.4044.122",
       "cpus": [
         "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz",
         "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz",
@@ -353,328 +1189,1165 @@
         "Intel(R) Core(TM) i7-7920HQ CPU @ 3.10GHz"
       ]
     },
-    "samples": [
-      {
-        "duration": 16617,
-        "js": 496,
-        "phases": [
-          {
-            "phase": "domComplete",
+    "samples": [{
+        "duration": 1308764,
+        "js": 188437,
+        "phases": [{
+            "phase": "jquery",
             "start": 0,
-            "duration": 16617
+            "duration": 45394
+          },
+          {
+            "phase": "ember",
+            "start": 45394,
+            "duration": 132450
+          },
+          {
+            "phase": "application",
+            "start": 177844,
+            "duration": 1026027
+          },
+          {
+            "phase": "routing",
+            "start": 1203871,
+            "duration": 20265
+          },
+          {
+            "phase": "transition",
+            "start": 1224136,
+            "duration": 11448
+          },
+          {
+            "phase": "render",
+            "start": 1235584,
+            "duration": 20488
+          },
+          {
+            "phase": "afterRender",
+            "start": 1256072,
+            "duration": 52692
           }
         ],
-        "gc": [],
-        "blinkGC": [],
-        "runtimeCallStats": {
-          "Blink C++": {
-            "FunctionCallback": {
-              "count": 7,
-              "time": 41
-            },
-            "AccessorGetterCallback": {
-              "count": 1,
-              "time": 0
-            },
-            "NamedGetterCallback": {
-              "count": 1,
-              "time": 3
-            }
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 169788,
+            "duration": 2007,
+            "usedHeapSizeAfter": 2575188,
+            "usedHeapSizeBefore": 2828880
           },
-          "V8 C++": {
-            "Invoke": {
-              "count": 3,
-              "time": 15
-            },
-            "InvokeApiFunction": {
-              "count": 6,
-              "time": 25
-            },
-            "Map_SetPrototype": {
-              "count": 3,
-              "time": 1
-            },
-            "Map_TransitionToAccessorProperty": {
-              "count": 1,
-              "time": 4
-            },
-            "FunctionPrototypeGetter": {
-              "count": 1,
-              "time": 0
-            },
-            "LoadAccessorProperty": {
-              "count": 1,
-              "time": 0
-            },
-            "ConsoleDebug": {
-              "count": 1,
-              "time": 39
-            }
-          },
-          "API": {
-            "API_Function_NewInstance": {
-              "count": 2,
-              "time": 1
-            },
-            "API_Function_Call": {
-              "count": 1,
-              "time": 1
-            },
-            "API_FunctionTemplate_GetFunction": {
-              "count": 1,
-              "time": 7
-            },
-            "API_FunctionTemplate_New": {
-              "count": 1,
-              "time": 2
-            },
-            "API_Object_Get": {
-              "count": 1,
-              "time": 1
-            },
-            "API_ObjectTemplate_New": {
-              "count": 2,
-              "time": 1
-            },
-            "API_Persistent_New": {
-              "count": 3,
-              "time": 2
-            },
-            "API_String_NewFromOneByte": {
-              "count": 3,
-              "time": 1
-            },
-            "API_String_Write": {
-              "count": 4,
-              "time": 2
-            },
-            "API_TracedGlobal_New": {
-              "count": 2,
-              "time": 1
-            }
-          },
-          "Compile": {
-            "CompileAnalyse": {
-              "count": 1,
-              "time": 0
-            },
-            "CompileFunction": {
-              "count": 1,
-              "time": 19
-            },
-            "CompileIgnition": {
-              "count": 1,
-              "time": 54
-            },
-            "CompileIgnitionFinalization": {
-              "count": 1,
-              "time": 2
-            },
-            "CompileRewriteReturnResult": {
-              "count": 1,
-              "time": 1
-            },
-            "CompileScopeAnalysis": {
-              "count": 1,
-              "time": 25
-            },
-            "CompileLazy": {
-              "count": 1,
-              "time": 2
-            }
-          },
-          "JavaScript": {
-            "JS_Execution": {
-              "count": 1,
-              "time": 25
-            }
-          },
-          "Parse": {
-            "ParseFunction": {
-              "count": 1,
-              "time": 23
-            },
-            "ParseFunctionLiteral": {
-              "count": 1,
-              "time": 33
-            }
-          },
-          "IC": {
-            "LoadGlobalIC_Miss": {
-              "count": 1,
-              "time": 3
-            },
-            "LoadIC_LoadApiGetterFromPrototypeDH": {
-              "count": 1,
-              "time": 3
-            },
-            "LoadIC_Premonomorphic": {
-              "count": 4,
-              "time": 23
-            }
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1204753,
+            "duration": 1990,
+            "usedHeapSizeAfter": 2771160,
+            "usedHeapSizeBefore": 3026852
           }
-        }
+        ],
+        "blinkGC": []
       },
       {
-        "duration": 17280,
-        "js": 417,
-        "phases": [
-          {
-            "phase": "domComplete",
+        "duration": 1312150,
+        "js": 189188,
+        "phases": [{
+            "phase": "jquery",
             "start": 0,
-            "duration": 17280
+            "duration": 44926
+          },
+          {
+            "phase": "ember",
+            "start": 44926,
+            "duration": 133061
+          },
+          {
+            "phase": "application",
+            "start": 177987,
+            "duration": 1030214
+          },
+          {
+            "phase": "routing",
+            "start": 1208201,
+            "duration": 18160
+          },
+          {
+            "phase": "transition",
+            "start": 1226361,
+            "duration": 11021
+          },
+          {
+            "phase": "render",
+            "start": 1237382,
+            "duration": 19618
+          },
+          {
+            "phase": "afterRender",
+            "start": 1257000,
+            "duration": 55150
           }
         ],
-        "gc": [],
-        "blinkGC": [],
-        "runtimeCallStats": {
-          "Blink C++": {
-            "FunctionCallback": {
-              "count": 7,
-              "time": 46
-            },
-            "AccessorGetterCallback": {
-              "count": 1,
-              "time": 1
-            },
-            "NamedGetterCallback": {
-              "count": 1,
-              "time": 2
-            }
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 170935,
+            "duration": 1684,
+            "usedHeapSizeAfter": 2593564,
+            "usedHeapSizeBefore": 2828904
           },
-          "V8 C++": {
-            "Invoke": {
-              "count": 3,
-              "time": 2
-            },
-            "InvokeApiFunction": {
-              "count": 6,
-              "time": 23
-            },
-            "Map_SetPrototype": {
-              "count": 3,
-              "time": 1
-            },
-            "Map_TransitionToAccessorProperty": {
-              "count": 1,
-              "time": 5
-            },
-            "FunctionPrototypeGetter": {
-              "count": 1,
-              "time": 0
-            },
-            "LoadAccessorProperty": {
-              "count": 1,
-              "time": 1
-            },
-            "ConsoleDebug": {
-              "count": 1,
-              "time": 89
-            }
-          },
-          "API": {
-            "API_Function_NewInstance": {
-              "count": 2,
-              "time": 1
-            },
-            "API_Function_Call": {
-              "count": 1,
-              "time": 0
-            },
-            "API_FunctionTemplate_GetFunction": {
-              "count": 1,
-              "time": 7
-            },
-            "API_FunctionTemplate_New": {
-              "count": 1,
-              "time": 2
-            },
-            "API_Object_Get": {
-              "count": 1,
-              "time": 0
-            },
-            "API_ObjectTemplate_New": {
-              "count": 2,
-              "time": 0
-            },
-            "API_Persistent_New": {
-              "count": 3,
-              "time": 0
-            },
-            "API_String_NewFromOneByte": {
-              "count": 3,
-              "time": 1
-            },
-            "API_String_Write": {
-              "count": 4,
-              "time": 1
-            },
-            "API_TracedGlobal_New": {
-              "count": 2,
-              "time": 1
-            }
-          },
-          "Compile": {
-            "CompileAnalyse": {
-              "count": 1,
-              "time": 0
-            },
-            "CompileFunction": {
-              "count": 1,
-              "time": 20
-            },
-            "CompileIgnition": {
-              "count": 1,
-              "time": 16
-            },
-            "CompileIgnitionFinalization": {
-              "count": 1,
-              "time": 2
-            },
-            "CompileRewriteReturnResult": {
-              "count": 1,
-              "time": 1
-            },
-            "CompileScopeAnalysis": {
-              "count": 1,
-              "time": 1
-            },
-            "CompileLazy": {
-              "count": 1,
-              "time": 7
-            }
-          },
-          "JavaScript": {
-            "JS_Execution": {
-              "count": 1,
-              "time": 14
-            }
-          },
-          "Parse": {
-            "ParseFunction": {
-              "count": 1,
-              "time": 3
-            },
-            "ParseFunctionLiteral": {
-              "count": 1,
-              "time": 20
-            }
-          },
-          "IC": {
-            "LoadGlobalIC_Miss": {
-              "count": 1,
-              "time": 2
-            },
-            "LoadIC_LoadApiGetterFromPrototypeDH": {
-              "count": 1,
-              "time": 3
-            },
-            "LoadIC_Premonomorphic": {
-              "count": 4,
-              "time": 7
-            }
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1204948,
+            "duration": 2104,
+            "usedHeapSizeAfter": 2750936,
+            "usedHeapSizeBefore": 3015280
           }
-        }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 1305540,
+        "js": 186225,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 46473
+          },
+          {
+            "phase": "ember",
+            "start": 46473,
+            "duration": 128397
+          },
+          {
+            "phase": "application",
+            "start": 174870,
+            "duration": 1025622
+          },
+          {
+            "phase": "routing",
+            "start": 1200492,
+            "duration": 20450
+          },
+          {
+            "phase": "transition",
+            "start": 1220942,
+            "duration": 11146
+          },
+          {
+            "phase": "render",
+            "start": 1232088,
+            "duration": 19849
+          },
+          {
+            "phase": "afterRender",
+            "start": 1251937,
+            "duration": 53603
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 168071,
+            "duration": 1296,
+            "usedHeapSizeAfter": 2576372,
+            "usedHeapSizeBefore": 2828848
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1201097,
+            "duration": 1642,
+            "usedHeapSizeAfter": 2768448,
+            "usedHeapSizeBefore": 3025688
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 1303670,
+        "js": 183804,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 45353
+          },
+          {
+            "phase": "ember",
+            "start": 45353,
+            "duration": 126626
+          },
+          {
+            "phase": "application",
+            "start": 171979,
+            "duration": 1025620
+          },
+          {
+            "phase": "routing",
+            "start": 1197599,
+            "duration": 19437
+          },
+          {
+            "phase": "transition",
+            "start": 1217036,
+            "duration": 11153
+          },
+          {
+            "phase": "render",
+            "start": 1228189,
+            "duration": 20016
+          },
+          {
+            "phase": "afterRender",
+            "start": 1248205,
+            "duration": 55465
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 165190,
+            "duration": 1641,
+            "usedHeapSizeAfter": 2568016,
+            "usedHeapSizeBefore": 2828880
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1199216,
+            "duration": 1675,
+            "usedHeapSizeAfter": 2787836,
+            "usedHeapSizeBefore": 3032512
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 1308981,
+        "js": 190268,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 45740
+          },
+          {
+            "phase": "ember",
+            "start": 45740,
+            "duration": 131136
+          },
+          {
+            "phase": "application",
+            "start": 176876,
+            "duration": 1025526
+          },
+          {
+            "phase": "routing",
+            "start": 1202402,
+            "duration": 20197
+          },
+          {
+            "phase": "transition",
+            "start": 1222599,
+            "duration": 11308
+          },
+          {
+            "phase": "render",
+            "start": 1233907,
+            "duration": 21415
+          },
+          {
+            "phase": "afterRender",
+            "start": 1255322,
+            "duration": 53659
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 169160,
+            "duration": 1660,
+            "usedHeapSizeAfter": 2569048,
+            "usedHeapSizeBefore": 2828884
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1203941,
+            "duration": 1806,
+            "usedHeapSizeAfter": 2786244,
+            "usedHeapSizeBefore": 3031412
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 1308901,
+        "js": 190034,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 43869
+          },
+          {
+            "phase": "ember",
+            "start": 43869,
+            "duration": 129601
+          },
+          {
+            "phase": "application",
+            "start": 173470,
+            "duration": 1029661
+          },
+          {
+            "phase": "routing",
+            "start": 1203131,
+            "duration": 20027
+          },
+          {
+            "phase": "transition",
+            "start": 1223158,
+            "duration": 12015
+          },
+          {
+            "phase": "render",
+            "start": 1235173,
+            "duration": 19781
+          },
+          {
+            "phase": "afterRender",
+            "start": 1254954,
+            "duration": 53947
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 166451,
+            "duration": 1584,
+            "usedHeapSizeAfter": 2583208,
+            "usedHeapSizeBefore": 2828840
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1200383,
+            "duration": 2124,
+            "usedHeapSizeAfter": 2770032,
+            "usedHeapSizeBefore": 3017416
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 1307071,
+        "js": 188125,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 45875
+          },
+          {
+            "phase": "ember",
+            "start": 45875,
+            "duration": 128450
+          },
+          {
+            "phase": "application",
+            "start": 174325,
+            "duration": 1024994
+          },
+          {
+            "phase": "routing",
+            "start": 1199319,
+            "duration": 19919
+          },
+          {
+            "phase": "transition",
+            "start": 1219238,
+            "duration": 13292
+          },
+          {
+            "phase": "render",
+            "start": 1232530,
+            "duration": 20758
+          },
+          {
+            "phase": "afterRender",
+            "start": 1253288,
+            "duration": 53783
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 167104,
+            "duration": 1794,
+            "usedHeapSizeAfter": 2568020,
+            "usedHeapSizeBefore": 2828848
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1200884,
+            "duration": 2005,
+            "usedHeapSizeAfter": 2782976,
+            "usedHeapSizeBefore": 3032420
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 1325034,
+        "js": 202849,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 45196
+          },
+          {
+            "phase": "ember",
+            "start": 45196,
+            "duration": 139976
+          },
+          {
+            "phase": "application",
+            "start": 185172,
+            "duration": 1032368
+          },
+          {
+            "phase": "routing",
+            "start": 1217540,
+            "duration": 19476
+          },
+          {
+            "phase": "transition",
+            "start": 1237016,
+            "duration": 12386
+          },
+          {
+            "phase": "render",
+            "start": 1249402,
+            "duration": 22205
+          },
+          {
+            "phase": "afterRender",
+            "start": 1271607,
+            "duration": 53427
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 177537,
+            "duration": 1711,
+            "usedHeapSizeAfter": 2593596,
+            "usedHeapSizeBefore": 2828924
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1214221,
+            "duration": 1789,
+            "usedHeapSizeAfter": 2752396,
+            "usedHeapSizeBefore": 3015312
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 1300806,
+        "js": 186366,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 37927
+          },
+          {
+            "phase": "ember",
+            "start": 37927,
+            "duration": 129741
+          },
+          {
+            "phase": "application",
+            "start": 167668,
+            "duration": 1026672
+          },
+          {
+            "phase": "routing",
+            "start": 1194340,
+            "duration": 20502
+          },
+          {
+            "phase": "transition",
+            "start": 1214842,
+            "duration": 11344
+          },
+          {
+            "phase": "render",
+            "start": 1226186,
+            "duration": 19746
+          },
+          {
+            "phase": "afterRender",
+            "start": 1245932,
+            "duration": 54874
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 159038,
+            "duration": 1986,
+            "usedHeapSizeAfter": 2573524,
+            "usedHeapSizeBefore": 2828908
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1195271,
+            "duration": 2038,
+            "usedHeapSizeAfter": 2776408,
+            "usedHeapSizeBefore": 3026972
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 1304750,
+        "js": 186368,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 46351
+          },
+          {
+            "phase": "ember",
+            "start": 46351,
+            "duration": 128464
+          },
+          {
+            "phase": "application",
+            "start": 174815,
+            "duration": 1026910
+          },
+          {
+            "phase": "routing",
+            "start": 1201725,
+            "duration": 17673
+          },
+          {
+            "phase": "transition",
+            "start": 1219398,
+            "duration": 10935
+          },
+          {
+            "phase": "render",
+            "start": 1230333,
+            "duration": 20231
+          },
+          {
+            "phase": "afterRender",
+            "start": 1250564,
+            "duration": 54186
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 167777,
+            "duration": 1860,
+            "usedHeapSizeAfter": 2583836,
+            "usedHeapSizeBefore": 2828880
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1199138,
+            "duration": 1998,
+            "usedHeapSizeAfter": 2771028,
+            "usedHeapSizeBefore": 3017944
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 1308699,
+        "js": 189476,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 46644
+          },
+          {
+            "phase": "ember",
+            "start": 46644,
+            "duration": 130403
+          },
+          {
+            "phase": "application",
+            "start": 177047,
+            "duration": 1026257
+          },
+          {
+            "phase": "routing",
+            "start": 1203304,
+            "duration": 20848
+          },
+          {
+            "phase": "transition",
+            "start": 1224152,
+            "duration": 11257
+          },
+          {
+            "phase": "render",
+            "start": 1235409,
+            "duration": 20196
+          },
+          {
+            "phase": "afterRender",
+            "start": 1255605,
+            "duration": 53094
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 169970,
+            "duration": 1717,
+            "usedHeapSizeAfter": 2574324,
+            "usedHeapSizeBefore": 2828936
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1204113,
+            "duration": 2058,
+            "usedHeapSizeAfter": 2777568,
+            "usedHeapSizeBefore": 3026960
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 1310267,
+        "js": 193012,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 46390
+          },
+          {
+            "phase": "ember",
+            "start": 46390,
+            "duration": 130282
+          },
+          {
+            "phase": "application",
+            "start": 176672,
+            "duration": 1030849
+          },
+          {
+            "phase": "routing",
+            "start": 1207521,
+            "duration": 18373
+          },
+          {
+            "phase": "transition",
+            "start": 1225894,
+            "duration": 11737
+          },
+          {
+            "phase": "render",
+            "start": 1237631,
+            "duration": 19978
+          },
+          {
+            "phase": "afterRender",
+            "start": 1257609,
+            "duration": 52658
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 169446,
+            "duration": 1844,
+            "usedHeapSizeAfter": 2579576,
+            "usedHeapSizeBefore": 2828888
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1204849,
+            "duration": 2088,
+            "usedHeapSizeAfter": 2762692,
+            "usedHeapSizeBefore": 3020152
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 1328389,
+        "js": 204172,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 52945
+          },
+          {
+            "phase": "ember",
+            "start": 52945,
+            "duration": 138750
+          },
+          {
+            "phase": "application",
+            "start": 191695,
+            "duration": 1026381
+          },
+          {
+            "phase": "routing",
+            "start": 1218076,
+            "duration": 19275
+          },
+          {
+            "phase": "transition",
+            "start": 1237351,
+            "duration": 11246
+          },
+          {
+            "phase": "render",
+            "start": 1248597,
+            "duration": 23020
+          },
+          {
+            "phase": "afterRender",
+            "start": 1271617,
+            "duration": 56772
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 183656,
+            "duration": 1868,
+            "usedHeapSizeAfter": 2571732,
+            "usedHeapSizeBefore": 2828924
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1218846,
+            "duration": 2037,
+            "usedHeapSizeAfter": 2779192,
+            "usedHeapSizeBefore": 3027680
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 1307580,
+        "js": 189876,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 47604
+          },
+          {
+            "phase": "ember",
+            "start": 47604,
+            "duration": 130207
+          },
+          {
+            "phase": "application",
+            "start": 177811,
+            "duration": 1024925
+          },
+          {
+            "phase": "routing",
+            "start": 1202736,
+            "duration": 20174
+          },
+          {
+            "phase": "transition",
+            "start": 1222910,
+            "duration": 11297
+          },
+          {
+            "phase": "render",
+            "start": 1234207,
+            "duration": 20178
+          },
+          {
+            "phase": "afterRender",
+            "start": 1254385,
+            "duration": 53195
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 170502,
+            "duration": 1905,
+            "usedHeapSizeAfter": 2575932,
+            "usedHeapSizeBefore": 2828888
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1203322,
+            "duration": 1816,
+            "usedHeapSizeAfter": 2771168,
+            "usedHeapSizeBefore": 3026608
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 1313201,
+        "js": 193065,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 46348
+          },
+          {
+            "phase": "ember",
+            "start": 46348,
+            "duration": 134484
+          },
+          {
+            "phase": "application",
+            "start": 180832,
+            "duration": 1028256
+          },
+          {
+            "phase": "routing",
+            "start": 1209088,
+            "duration": 17975
+          },
+          {
+            "phase": "transition",
+            "start": 1227063,
+            "duration": 10973
+          },
+          {
+            "phase": "render",
+            "start": 1238036,
+            "duration": 20520
+          },
+          {
+            "phase": "afterRender",
+            "start": 1258556,
+            "duration": 54645
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 173407,
+            "duration": 1849,
+            "usedHeapSizeAfter": 2583788,
+            "usedHeapSizeBefore": 2828864
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1206032,
+            "duration": 2345,
+            "usedHeapSizeAfter": 2769288,
+            "usedHeapSizeBefore": 3017804
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 1307563,
+        "js": 190113,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 46152
+          },
+          {
+            "phase": "ember",
+            "start": 46152,
+            "duration": 128500
+          },
+          {
+            "phase": "application",
+            "start": 174652,
+            "duration": 1026325
+          },
+          {
+            "phase": "routing",
+            "start": 1200977,
+            "duration": 21231
+          },
+          {
+            "phase": "transition",
+            "start": 1222208,
+            "duration": 11651
+          },
+          {
+            "phase": "render",
+            "start": 1233859,
+            "duration": 19855
+          },
+          {
+            "phase": "afterRender",
+            "start": 1253714,
+            "duration": 53849
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 166926,
+            "duration": 1720,
+            "usedHeapSizeAfter": 2534428,
+            "usedHeapSizeBefore": 2828872
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1209302,
+            "duration": 1993,
+            "usedHeapSizeAfter": 2826612,
+            "usedHeapSizeBefore": 3066184
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 1310799,
+        "js": 191099,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 47032
+          },
+          {
+            "phase": "ember",
+            "start": 47032,
+            "duration": 130382
+          },
+          {
+            "phase": "application",
+            "start": 177414,
+            "duration": 1026467
+          },
+          {
+            "phase": "routing",
+            "start": 1203881,
+            "duration": 19974
+          },
+          {
+            "phase": "transition",
+            "start": 1223855,
+            "duration": 11565
+          },
+          {
+            "phase": "render",
+            "start": 1235420,
+            "duration": 19854
+          },
+          {
+            "phase": "afterRender",
+            "start": 1255274,
+            "duration": 55525
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 169863,
+            "duration": 2033,
+            "usedHeapSizeAfter": 2568336,
+            "usedHeapSizeBefore": 2828916
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1205481,
+            "duration": 1941,
+            "usedHeapSizeAfter": 2789788,
+            "usedHeapSizeBefore": 3032160
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 1299364,
+        "js": 182693,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 40001
+          },
+          {
+            "phase": "ember",
+            "start": 40001,
+            "duration": 129048
+          },
+          {
+            "phase": "application",
+            "start": 169049,
+            "duration": 1026691
+          },
+          {
+            "phase": "routing",
+            "start": 1195740,
+            "duration": 18077
+          },
+          {
+            "phase": "transition",
+            "start": 1213817,
+            "duration": 11306
+          },
+          {
+            "phase": "render",
+            "start": 1225123,
+            "duration": 20108
+          },
+          {
+            "phase": "afterRender",
+            "start": 1245231,
+            "duration": 54133
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 161917,
+            "duration": 1644,
+            "usedHeapSizeAfter": 2578424,
+            "usedHeapSizeBefore": 2828868
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1193717,
+            "duration": 1778,
+            "usedHeapSizeAfter": 2764228,
+            "usedHeapSizeBefore": 3021544
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 1319576,
+        "js": 190683,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 48217
+          },
+          {
+            "phase": "ember",
+            "start": 48217,
+            "duration": 129249
+          },
+          {
+            "phase": "application",
+            "start": 177466,
+            "duration": 1031691
+          },
+          {
+            "phase": "routing",
+            "start": 1209157,
+            "duration": 18476
+          },
+          {
+            "phase": "transition",
+            "start": 1227633,
+            "duration": 11410
+          },
+          {
+            "phase": "render",
+            "start": 1239043,
+            "duration": 20358
+          },
+          {
+            "phase": "afterRender",
+            "start": 1259401,
+            "duration": 60175
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 170507,
+            "duration": 1638,
+            "usedHeapSizeAfter": 2578600,
+            "usedHeapSizeBefore": 2828904
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1206887,
+            "duration": 1858,
+            "usedHeapSizeAfter": 2770880,
+            "usedHeapSizeBefore": 3021556
+          }
+        ],
+        "blinkGC": []
+      },
+      {
+        "duration": 1308847,
+        "js": 188805,
+        "phases": [{
+            "phase": "jquery",
+            "start": 0,
+            "duration": 45579
+          },
+          {
+            "phase": "ember",
+            "start": 45579,
+            "duration": 128005
+          },
+          {
+            "phase": "application",
+            "start": 173584,
+            "duration": 1025852
+          },
+          {
+            "phase": "routing",
+            "start": 1199436,
+            "duration": 21140
+          },
+          {
+            "phase": "transition",
+            "start": 1220576,
+            "duration": 11738
+          },
+          {
+            "phase": "render",
+            "start": 1232314,
+            "duration": 20729
+          },
+          {
+            "phase": "afterRender",
+            "start": 1253043,
+            "duration": 55804
+          }
+        ],
+        "gc": [{
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 166100,
+            "duration": 1719,
+            "usedHeapSizeAfter": 2569032,
+            "usedHeapSizeBefore": 2828908
+          },
+          {
+            "kind": "MinorGC",
+            "type": "scavenge",
+            "start": 1201209,
+            "duration": 1659,
+            "usedHeapSizeAfter": 2782944,
+            "usedHeapSizeBefore": 3031336
+          }
+        ],
+        "blinkGC": []
       }
     ],
     "set": "experiment"
