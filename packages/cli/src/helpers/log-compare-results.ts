@@ -3,7 +3,7 @@ import { ISevenFigureSummary, Stats } from "@tracerbench/stats";
 import * as chalk from "chalk";
 
 import { fidelityLookup } from "../command-config";
-import { ICompareFlags } from "../commands/compare";
+import { CompareAnalyzeFlags } from "../commands/compare/analyze";
 import {
   bucketPhaseValues,
   formatPhaseData,
@@ -55,49 +55,45 @@ export function anyResultsSignificant(
 /**
  * If any phase of the experiment has regressed slower beyond the threshold limit returns false; otherwise true
  *
- * @param regressionThreshold - Positive number in milliseconds the experiment has regressed slower eg 100
+ * @param regressionThreshold - Positive number in milliseconds the experiment has regressed slower defaults to 100
  * @param benchmarkTableEstimatorDeltas - Array of Estimator Deltas for the Benchmark Table
  * @param phaseTableEstimatorDeltas - Array of Estimator Deltas for the Phase Table
  */
 export function allBelowRegressionThreshold(
-  regressionThreshold: number | undefined,
+  regressionThreshold: number,
   benchmarkTableEstimatorDeltas: number[],
   phaseTableEstimatorDeltas: number[]
 ): boolean {
   function isBelowThreshold(n: number): boolean {
-    const limit = regressionThreshold as number;
+    const limit = regressionThreshold;
     // if the delta is a negative number and abs(delta) greater than threshold return false
     return n < 0 && Math.abs(n) > limit ? false : true;
   }
-
-  if (typeof regressionThreshold === "number") {
-    // concat estimator deltas from all phases
-    const deltas: number[] = benchmarkTableEstimatorDeltas.concat(
-      phaseTableEstimatorDeltas
-    );
-    // if the experiment is slower beyond the threshold return false;
-    return deltas.every(isBelowThreshold);
-  }
-  return true;
+  // concat estimator deltas from all phases
+  const deltas: number[] = benchmarkTableEstimatorDeltas.concat(
+    phaseTableEstimatorDeltas
+  );
+  // if the experiment is slower beyond the threshold return false;
+  return deltas.every(isBelowThreshold);
 }
 
 /**
  * Output meta data about the benchmark run and FYI messages to the user.
  *
  * @param cli - This is expected to be a "compare" Command instance
- * @param cliFlags - This is expected to be CLI flags from the "compare" command
+ * @param cliFlags - This is expected to be CLI flags from the "compare:analyze" command
  * @param isBelowRegressionThreshold - Boolean indicating if there were any deltas below "regressionThreshold" flag
  */
 export function outputRunMetaMessagesAndWarnings(
   cli: Command,
-  cliFlags: Partial<ICompareFlags>,
+  cliFlags: CompareAnalyzeFlags,
   isBelowRegressionThreshold: boolean
 ): void {
   const { fidelity, regressionThreshold } = cliFlags;
   const LOW_FIDELITY_WARNING =
-    'The fidelity setting was set below the recommended for a viable result. Rerun TracerBench with at least "fidelity=low"';
+    'The fidelity setting was set below the recommended for a viable result. Rerun TracerBench with at least "--fidelity=low" OR >= 10';
 
-  if ((fidelity as number) < 10) {
+  if (fidelity < 10) {
     cli.log(
       `\n${chalkScheme.blackBgYellow(
         `    ${chalkScheme.white("WARNING")}    `
@@ -110,7 +106,7 @@ export function outputRunMetaMessagesAndWarnings(
       `\n${chalkScheme.blackBgRed(
         `    ${chalkScheme.white("!! ALERT")}    `
       )} ${chalk.red(
-        ` Regression found exceeding the set regression threshold of ${regressionThreshold}ms`
+        ` Regression found exceeding the set regression threshold of ${regressionThreshold} ms`
       )}\n`
     );
   }
@@ -142,8 +138,10 @@ export function outputSummaryReport(
     )}`
   );
 
-  cli.log(`\n${chalk.red("Red")} color means there was a regression.`);
-  cli.log(`${chalk.green("Green")} color means there was an improvement.\n`);
+  cli.log(`\n${chalk.red("Red")} color means the experiment was a regression.`);
+  cli.log(
+    `${chalk.green("Green")} color means the experiment was an improvement.\n`
+  );
   phaseResultsFormatted.forEach((phaseData) => {
     const { phase, hlDiff, isSignificant, ciMin, ciMax } = phaseData;
     let msg = `${chalk.bold(phase)} phase `;
@@ -209,10 +207,21 @@ export function outputJSONResults(
  */
 export async function logCompareResults(
   results: ITracerBenchTraceResult[],
-  flags: Pick<ICompareFlags, "fidelity" | "regressionThreshold" | "isCIEnv">,
+  flags: CompareAnalyzeFlags,
   cli: Command
 ): Promise<string> {
-  const { fidelity } = flags;
+  const { isCIEnv } = flags;
+  let { fidelity, regressionThreshold } = flags;
+
+  // check for eg 100ms
+  if (typeof regressionThreshold === "string") {
+    regressionThreshold = parseInt(regressionThreshold);
+  }
+  // check from low/med/high
+  if (typeof fidelity === "string") {
+    fidelity = parseInt(fidelity);
+  }
+
   const benchmarkTable = new TBTable("Initial Render");
   const phaseTable = new TBTable("Sub Phase of Duration");
 
@@ -267,23 +276,24 @@ export async function logCompareResults(
   });
 
   let isBelowRegressionThreshold = true;
+
   const benchmarkTableData = benchmarkTable.getData();
   const phaseTableData = phaseTable.getData();
   const areResultsSignificant = anyResultsSignificant(
-    fidelity as number,
+    fidelity,
     benchmarkTable.isSigArray,
     phaseTable.isSigArray
   );
   if (areResultsSignificant) {
     isBelowRegressionThreshold = allBelowRegressionThreshold(
-      fidelity as number,
+      regressionThreshold,
       benchmarkTable.estimatorDeltas,
       phaseTable.estimatorDeltas
     );
   }
 
   // only log the tables when NOT in a CI env
-  if (!flags.isCIEnv) {
+  if (!isCIEnv) {
     cli.log(`\n\n${benchmarkTable.render()}`);
     cli.log(`\n\n${phaseTable.render()}`);
   }

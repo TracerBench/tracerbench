@@ -1,47 +1,47 @@
 // eslint:disable:no-unused-expression
 
-import { expect } from 'chai';
-import { test } from '@oclif/test';
+import { expect } from "chai";
+import { test } from "@oclif/test";
 
 import {
   logCompareResults,
   ICompareJSONResults,
   anyResultsSignificant,
-  allBelowRegressionThreshold
-} from '../../src/helpers/log-compare-results';
+  allBelowRegressionThreshold,
+} from "../../src/helpers/log-compare-results";
 
-import { COMPARE_JSON } from '../test-helpers';
+import { COMPARE_JSON } from "../test-helpers";
 
 const sampleTrace = {
   duration: 6260696,
   js: 5310439,
   phases: [
     {
-      phase: 'load',
+      phase: "load",
       start: 0,
-      duration: 1807839
+      duration: 1807839,
     },
     {
-      phase: 'boot',
+      phase: "boot",
       start: 1807839,
-      duration: 973172
+      duration: 973172,
     },
     {
-      phase: 'transition',
+      phase: "transition",
       start: 2781011,
-      duration: 1540986
+      duration: 1540986,
     },
     {
-      phase: 'render',
+      phase: "render",
       start: 4321997,
-      duration: 1905528
+      duration: 1905528,
     },
     {
-      phase: 'paint',
+      phase: "paint",
       start: 6227525,
-      duration: 33171
-    }
-  ]
+      duration: 33171,
+    },
+  ],
 };
 
 const tbResultsFolder = COMPARE_JSON;
@@ -50,41 +50,41 @@ const network = {
   offline: false,
   latency: 0,
   downloadThroughput: 0,
-  uploadThroughput: 0
+  uploadThroughput: 0,
 };
 
 const flags = {
-  browserArgs: [''],
+  browserArgs: [""],
   cpuThrottleRate: 2,
   fidelity: 2,
   network,
   tbResultsFolder,
-  controlURL: '',
-  experimentURL: '',
-  tracingLocationSearch: '',
+  controlURL: "",
+  experimentURL: "",
+  tracingLocationSearch: "",
   runtimeStats: false,
   debug: false,
-  headless: false
+  headless: false,
 };
 
 const jsonResults = {
   areResultsSignificant: false,
   benchmarkTableData: [{}],
   isBelowRegressionThreshold: true,
-  phaseTableData: [{}]
+  phaseTableData: [{}],
 };
 
-describe('log-compare-results', () => {
+describe("log-compare-results", () => {
   test.stdout().it(`stdout`, async (ctx) => {
     const testResults = [
       {
-        set: 'control',
-        samples: [sampleTrace, sampleTrace, sampleTrace, sampleTrace]
+        set: "control",
+        samples: [sampleTrace, sampleTrace, sampleTrace, sampleTrace],
       },
       {
-        set: 'experiment',
-        samples: [sampleTrace, sampleTrace, sampleTrace, sampleTrace]
-      }
+        set: "experiment",
+        samples: [sampleTrace, sampleTrace, sampleTrace, sampleTrace],
+      },
     ];
     // @ts-ignore
     const results = await logCompareResults(testResults, flags, scope);
@@ -94,7 +94,7 @@ describe('log-compare-results', () => {
   });
 });
 
-describe('anyResultsSignificant', () => {
+describe("anyResultsSignificant", () => {
   const fidelity = 20;
   const truthyArr = [true, true, false];
   const falsyArr = [false, false, false];
@@ -110,7 +110,7 @@ describe('anyResultsSignificant', () => {
   });
 });
 
-describe('allBelowRegressionThreshold', () => {
+describe("allBelowRegressionThreshold", () => {
   const threshold = 100;
   const improvementDeltas = [100, 50, 200];
   const regressionDeltas = [-200, -300, -400];
@@ -135,13 +135,5 @@ describe('allBelowRegressionThreshold', () => {
     );
     expect(isBelowThresholdA).to.be.false;
     expect(isBelowThresholdB).to.be.false;
-  });
-  it(`no regression threshold set`, () => {
-    const isBelowThreshold = allBelowRegressionThreshold(
-      undefined,
-      improvementDeltas,
-      regressionDeltas
-    );
-    expect(isBelowThreshold).to.be.true;
   });
 });

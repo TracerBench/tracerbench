@@ -184,8 +184,6 @@ export default class Compare extends TBBaseCommand {
             resultJSONPath,
             "--fidelity",
             `${this.parsedConfig.fidelity}`,
-            "--tbResultsFolder",
-            `${this.parsedConfig.tbResultsFolder}`,
             "--regressionThreshold",
             `${this.parsedConfig.regressionThreshold}`,
             "--isCIEnv",

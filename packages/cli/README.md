@@ -230,7 +230,8 @@ OPTIONS
       Experiment URL to visit for compare command
 
   --fidelity=fidelity
-      (required) [default: low] Directly correlates to the number of samples per trace. High is the longest trace time.
+      (required) [default: low] Directly correlates to the number of samples per trace. eg. test,low,medium,high OR any 
+      number between 2-100
 
   --headless
       Run with headless chrome flags
@@ -270,27 +271,24 @@ _See code: [dist/src/commands/compare/index.ts](https://github.com/TracerBench/t
 
 ## `tracerbench compare:analyze RESULTSFILE`
 
-Run an analysis of a benchmark run from a results json file and output to terminal
+Generates stdout report from the "tracerbench compare" command output
 
 ```
 USAGE
   $ tracerbench compare:analyze RESULTSFILE
 
 ARGUMENTS
-  RESULTSFILE  Results JSON file
+  RESULTSFILE  The "tracerbench compare" command json output file
 
 OPTIONS
   --fidelity=fidelity                        (required) [default: low] Directly correlates to the number of samples per
-                                             trace. High is the longest trace time.
+                                             trace. eg. test,low,medium,high OR any number between 2-100
 
   --isCIEnv=isCIEnv                          (required) Provides a drastically slimmed down stdout report for CI
                                              workflows. However does NOT hide analysis.
 
-  --regressionThreshold=regressionThreshold  [default: 100] The upper limit the experiment can regress slower in
-                                             milliseconds. eg 100
-
-  --tbResultsFolder=tbResultsFolder          (required) [default: ./tracerbench-results] The output folder path for all
-                                             tracerbench results
+  --regressionThreshold=regressionThreshold  (required) [default: 100] The upper limit the experiment can regress slower
+                                             in milliseconds. eg 100
 ```
 
 _See code: [dist/src/commands/compare/analyze.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.1.0/dist/src/commands/compare/analyze.ts)_
