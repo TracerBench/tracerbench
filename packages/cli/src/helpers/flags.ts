@@ -116,7 +116,9 @@ export const cpuThrottleRate = flags.build({
 
 export const fidelity = flags.build({
   default: () => getDefaultValue("fidelity"),
-  description: `Directly correlates to the number of samples per trace. High is the longest trace time.`,
+  description: `Directly correlates to the number of samples per trace. eg. ${Object.keys(
+    fidelityLookup
+  )} OR any number between 2-100`,
   parse: (fidelity: string | number): number => {
     const warnMessage = `Expected --fidelity=${fidelity} to be either a number or one of: ${Object.keys(
       fidelityLookup
