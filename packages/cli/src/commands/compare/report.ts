@@ -1,16 +1,18 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable @typescript-eslint/interface-name-prefix */
+/* eslint-disable filenames/match-exported */
+
 import { IConfig } from "@oclif/config";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs-extra";
 import { join, resolve } from "path";
 
-import { getConfig, TBBaseCommand } from "../command-config";
+import { getConfig, TBBaseCommand } from "../../command-config";
 import createConsumableHTML, {
   ITracerBenchTraceResult,
-} from "../helpers/create-consumable-html";
-import { config, tbResultsFolder } from "../helpers/flags";
-import printToPDF from "../helpers/print-to-pdf";
-import { chalkScheme } from "../helpers/utils";
+} from "../../helpers/create-consumable-html";
+import { config, tbResultsFolder } from "../../helpers/flags";
+import printToPDF from "../../helpers/print-to-pdf";
+import { chalkScheme } from "../../helpers/utils";
 
 const ARTIFACT_FILE_NAME = "artifact";
 
@@ -19,8 +21,10 @@ export interface IReportFlags {
   config?: string;
 }
 
-export default class Report extends TBBaseCommand {
-  public static description = `Parses the output json from tracerbench and formats it into pdf and html`;
+export default class CompareReport extends TBBaseCommand {
+  // alias for API backwards compat
+  static aliases = ["report"];
+  public static description = `Generates report files (PDF/HTML) from the "tracerbench compare" command output`;
   public static flags = {
     tbResultsFolder: tbResultsFolder({ required: true }),
     config: config(),
@@ -29,13 +33,13 @@ export default class Report extends TBBaseCommand {
 
   constructor(argv: string[], config: IConfig) {
     super(argv, config);
-    const { flags } = this.parse(Report);
+    const { flags } = this.parse(CompareReport);
 
     this.reportFlags = flags;
   }
   // instantiated before this.run()
   public async init() {
-    const { flags } = this.parse(Report);
+    const { flags } = this.parse(CompareReport);
     this.parsedConfig = getConfig(flags.config, flags, this.explicitFlags);
 
     this.reportFlags = flags;

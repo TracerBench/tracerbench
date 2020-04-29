@@ -183,10 +183,10 @@ s?: TRACE_EVENT_SCOPE;
 <!-- commands -->
 * [`tracerbench compare`](#tracerbench-compare)
 * [`tracerbench compare:analyze RESULTSFILE`](#tracerbench-compareanalyze-resultsfile)
+* [`tracerbench compare:report`](#tracerbench-comparereport)
 * [`tracerbench help [COMMAND]`](#tracerbench-help-command)
 * [`tracerbench profile HARPATH`](#tracerbench-profile-harpath)
 * [`tracerbench record-har`](#tracerbench-record-har)
-* [`tracerbench report`](#tracerbench-report)
 
 ## `tracerbench compare`
 
@@ -295,6 +295,27 @@ OPTIONS
 
 _See code: [dist/src/commands/compare/analyze.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.1.0/dist/src/commands/compare/analyze.ts)_
 
+## `tracerbench compare:report`
+
+Generates report files (PDF/HTML) from the "tracerbench compare" command output
+
+```
+USAGE
+  $ tracerbench compare:report
+
+OPTIONS
+  --config=config                    Specify an alternative directory rather than the project root for the
+                                     tbconfig.json. This explicit config will overwrite all.
+
+  --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output folder path for all
+                                     tracerbench results
+
+ALIASES
+  $ tracerbench report
+```
+
+_See code: [dist/src/commands/compare/report.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.1.0/dist/src/commands/compare/report.ts)_
+
 ## `tracerbench help [COMMAND]`
 
 display help for tracerbench
@@ -375,22 +396,4 @@ OPTIONS
 ```
 
 _See code: [dist/src/commands/record-har.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.1.0/dist/src/commands/record-har.ts)_
-
-## `tracerbench report`
-
-Parses the output json from tracerbench and formats it into pdf and html
-
-```
-USAGE
-  $ tracerbench report
-
-OPTIONS
-  --config=config                    Specify an alternative directory rather than the project root for the
-                                     tbconfig.json. This explicit config will overwrite all.
-
-  --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output folder path for all
-                                     tracerbench results
-```
-
-_See code: [dist/src/commands/report.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.1.0/dist/src/commands/report.ts)_
 <!-- commandsstop -->

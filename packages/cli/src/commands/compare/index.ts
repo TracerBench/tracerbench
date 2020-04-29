@@ -50,8 +50,8 @@ import {
   checkEnvironmentSpecificOverride,
   parseMarkers,
 } from "../../helpers/utils";
-import Report from "../report";
 import CompareAnalyze from "./analyze";
+import CompareReport from "./report";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const archiver = require("archiver");
@@ -198,9 +198,9 @@ export default class Compare extends TBBaseCommand {
           );
         }
 
-        // if we want to run the Report without calling a separate command
+        // if we want to run the CompareReport without calling a separate command
         if (this.parsedConfig.report) {
-          await Report.run([
+          await CompareReport.run([
             "--tbResultsFolder",
             `${this.parsedConfig.tbResultsFolder}`,
             "--config",
