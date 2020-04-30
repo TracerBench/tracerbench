@@ -1,9 +1,9 @@
 import { ICallFrame } from '../trace';
 
-export interface IModuleInfo {
+type IModuleInfo = {
   name: string;
   callFrames: ICallFrame[];
-}
+};
 
 const EOF = -1;
 

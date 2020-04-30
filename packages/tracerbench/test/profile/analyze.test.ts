@@ -2,7 +2,7 @@
 
 import { expect } from 'chai';
 import 'mocha';
-import { analyze } from '../../src/trace/analyze';
+import { analyze } from '../../src/profile/analyze';
 
 describe('analyze', () => {
   it('function exists', () => {

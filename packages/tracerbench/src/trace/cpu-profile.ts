@@ -10,7 +10,7 @@ import {
   TRACE_EVENT_NAME,
   TRACE_EVENT_PHASE_BEGIN,
   TRACE_EVENT_PHASE_END
-} from '../trace';
+} from './index';
 import { addRenderNodes } from './render-events';
 import { TRACE_EVENT_PHASE_COMPLETE } from './trace-event';
 

@@ -4,8 +4,13 @@ import Protocol from 'devtools-protocol';
 import { readFileSync } from 'fs';
 
 import { IConditions } from './conditions';
-import { createBrowser, emulate, getTab, setCookies } from './trace-utils';
-import { getBrowserArgs } from './utils';
+import {
+  createBrowser,
+  emulate,
+  getBrowserArgs,
+  getTab,
+  setCookies
+} from './utils';
 
 export async function recordHARClient(
   url: string,

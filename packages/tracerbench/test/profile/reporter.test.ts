@@ -2,7 +2,7 @@
 
 import { expect } from 'chai';
 import 'mocha';
-import reporter from '../../src/trace/reporter';
+import reporter from '../../src/profile/reporter';
 
 describe('Reporter', () => {
   it('class exists', () => {

@@ -4,7 +4,7 @@ import {
   findMangledDefine,
   getModuleIndex,
   ParsedFile
-} from '../../src/trace/metadata';
+} from '../../src/profile/metadata';
 
 describe('getModuleIndex', () => {
   it('returns a module index if we detect a define ident', () => {

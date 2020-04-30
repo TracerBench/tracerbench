@@ -3,8 +3,10 @@ import {
   analyze,
   IConditions,
   ITraceEvent,
+  ITraceEventFrame,
   liveTrace,
 } from "@tracerbench/core";
+import { Archive } from "@tracerbench/har";
 import Protocol from "devtools-protocol";
 import { existsSync, mkdirSync, readJson, writeFileSync } from "fs-extra";
 import * as listr from "listr";
@@ -29,7 +31,6 @@ import {
   isFrameMark,
   isFrameNavigationStart,
   isMark,
-  ITraceEventFrame,
   logBar,
   logBarOptions,
   logHeading,
@@ -38,7 +39,7 @@ import {
 
 interface ProfileContext {
   cookies: Protocol.Network.CookieParam[];
-  harJSON: any;
+  harJSON: Archive;
   traceJSONPath: string;
   traceEvents: ITraceEventFrame[];
   url: string;
@@ -87,7 +88,6 @@ export default class Profile extends TBBaseCommand {
         path: "",
       },
     ];
-    const methods = [""];
     const conditions: IConditions = {
       cpu: cpuThrottleRate,
       network,
@@ -169,8 +169,7 @@ export default class Profile extends TBBaseCommand {
             // analyze the liveTrace
             ctx.analyzeResults = await analyze({
               traceEvents,
-              traceHARJSON: harJSON,
-              methods,
+              harJSON,
             });
           } catch (error) {
             this.error(`${error}`);

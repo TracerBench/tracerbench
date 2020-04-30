@@ -8,7 +8,7 @@
       "cwd": "${workspaceFolder}/packages/tracerbench",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
       "runtimeArgs": ["--nolazy"],
-      "args": ["test/pp/*.test.ts"],
+      "args": ["test/profile/*.test.ts"],
       "outFiles": ["dist/**/*.js"],
       "sourceMaps": true
     },

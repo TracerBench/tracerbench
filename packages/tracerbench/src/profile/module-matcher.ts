@@ -1,7 +1,7 @@
 import { Archive, Entry } from '@tracerbench/har';
 import { HierarchyNode } from 'd3-hierarchy';
 
-import { ICallFrame, ICpuProfileNode } from '.';
+import { ICallFrame, ICpuProfileNode } from '../trace';
 import { ParsedFile } from './metadata';
 export interface IParsedFiles {
   [key: string]: ParsedFile;

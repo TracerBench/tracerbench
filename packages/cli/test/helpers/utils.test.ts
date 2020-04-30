@@ -4,10 +4,9 @@ import {
   isFrameNavigationStart,
   convertMSToMicroseconds,
   mergeLeft,
-  ITraceEventFrame,
 } from "../../src/helpers/utils";
 import { expect } from "chai";
-import { ITraceEvent } from "@tracerbench/core";
+import { ITraceEvent, ITraceEventFrame } from "@tracerbench/core";
 
 const event: ITraceEvent = {
   ph: "X",

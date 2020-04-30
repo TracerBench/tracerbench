@@ -127,6 +127,12 @@ export const enum TRACE_METADATA_NAME {
  */
 
 /** Serialized TraceEvent */
+export interface ITraceEventFrame extends ITraceEvent {
+  args: {
+    frame?: string;
+    data?: { [key: string]: any };
+  };
+}
 export interface ITraceEvent {
   /**
    * Process id. Can be 0 (kNoId) for global scope event like metadata.

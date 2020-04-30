@@ -1,5 +1,5 @@
 import { ICategorized } from './aggregator';
-import { AUTO_ADD_CAT } from './utils';
+import { AUTO_ADD_CAT } from './analyze';
 
 function findTotalAttrTime(categorized: ICategorized): number {
   let totalAggregatedTime = 0;

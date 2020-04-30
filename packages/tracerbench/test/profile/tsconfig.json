@@ -1,7 +1,7 @@
 {
   "extends": "../../tsconfig_base.json",
   "compilerOptions": {
-    "outDir": "../../dist/test/pp"
+    "outDir": "../../dist/test/profile"
   },
   "include": ["*.ts"],
   "references": [{

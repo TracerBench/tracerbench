@@ -5,8 +5,7 @@ import { join } from 'path';
 
 import { ITraceEvent } from '../trace';
 import { IConditions } from './conditions';
-import { emulate, getTab, setCookies } from './trace-utils';
-import { wait } from './utils';
+import { emulate, getTab, setCookies, wait } from './utils';
 const DEVTOOLS_CATEGORIES = [
   '-*',
   'devtools.timeline',

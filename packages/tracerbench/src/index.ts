@@ -23,14 +23,13 @@ export { Runner, IBenchmark } from './runner';
 export { ITab } from './tab';
 export {
   analyze,
-  loadTrace,
   liveTrace,
   networkConditions,
   ITraceEvent,
   getBrowserArgs,
   IConditions,
-  IAnalyze,
   recordHARClient,
-  INetworkConditions
+  INetworkConditions,
+  ITraceEventFrame
 } from './trace';
-export * from './util';
+export * from './benchmarks/utils';

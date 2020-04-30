@@ -2,27 +2,27 @@ import { Archive } from '@tracerbench/har';
 import { HierarchyNode } from 'd3-hierarchy';
 
 import { ICallFrame, ICpuProfileNode } from '../trace';
+import { ICategories, ILocator } from './analyze';
 import { ParsedFile } from './metadata';
 import { ModuleMatcher } from './module-matcher';
-import { ICategories, ILocator } from './utils';
 
-export interface ICallFrameInfo {
+type ICallFrameInfo = {
   self: number;
   stack: ICallFrame[];
-}
+};
 
-export interface IAggregations {
+export type IAggregations = {
   [key: string]: IAggregationResult;
-}
+};
 
-export interface IAggregationResult {
+type IAggregationResult = {
   total: number;
   self: number;
   attributed: number;
   functionName: string;
   moduleName: string;
   callframes: ICallFrameInfo[];
-}
+};
 
 export interface ICategorized {
   [key: string]: IAggregationResult[];

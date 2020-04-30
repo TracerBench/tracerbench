@@ -32,10 +32,10 @@
     "lint": "eslint -c .eslintrc.js --ext .ts .",
     "prepare": "yarn build",
     "report": "Rscript bin/report.R test/results/results.json",
-    "test": "yarn lint && yarn test:build && yarn test:only && yarn test:pp",
+    "test": "yarn lint && yarn test:build && yarn test:only && yarn test:profile",
     "test:build": "node dist/test/build.js",
     "test:only": "node dist/test/test.js",
-    "test:pp": "nyc --extension .ts mocha --forbid-only \"test/pp/*.test.ts\"",
+    "test:profile": "nyc --extension .ts mocha --forbid-only \"test/profile/*.test.ts\"",
     "watch": "tsc -b -w"
   },
   "dependencies": {

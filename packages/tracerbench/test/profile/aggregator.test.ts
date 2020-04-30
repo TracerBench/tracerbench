@@ -8,9 +8,9 @@ import {
   IAggregations,
   categorizeAggregations,
   verifyMethods
-} from '../../src/trace/aggregator';
-import { ModuleMatcher } from '../../src/trace/module-matcher';
-import { addRemainingModules } from '../../src/trace/utils';
+} from '../../src/profile/aggregator';
+import { ModuleMatcher } from '../../src/profile/module-matcher';
+import { addRemainingModules } from '../../src/profile/analyze';
 import { TRACE_EVENT_NAME } from '../../src/trace/trace-event';
 
 import {

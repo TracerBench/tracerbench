@@ -6,7 +6,7 @@ import {
   TRACE_EVENT_PHASE_INSTANT,
   TRACE_EVENT_PHASE_MARK
 } from '../trace/trace-event';
-import { runtimeCallStatGroup } from '../util';
+import { runtimeCallStatGroup } from './utils';
 
 // going to count blink_gc time as js time since it is wrappers
 // that support js like dom nodes.

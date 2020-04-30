@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import 'mocha';
-import { methodsFromCategories } from '../../src/trace/utils';
+import { methodsFromCategories } from '../../src/profile/analyze';
 import { LocatorGenerator } from './generators';
 
 describe('methodsFromCategories', () => {

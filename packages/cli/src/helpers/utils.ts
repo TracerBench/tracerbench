@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint:disable:no-console*/
 
-import { IMarker, ITraceEvent } from "@tracerbench/core";
+import { IMarker, ITraceEventFrame } from "@tracerbench/core";
 import * as chalk from "chalk";
 import * as logSymbols from "log-symbols";
 
@@ -11,13 +11,6 @@ import {
   ITBConfig,
 } from "../command-config/tb-config";
 import { ICompareFlags } from "../commands/compare";
-
-export interface ITraceEventFrame extends ITraceEvent {
-  args: {
-    frame?: string;
-    data?: { [key: string]: any };
-  };
-}
 
 /**
  * Handles checking if there is a specific override for the attributeName in the tbConfigs for the given overrideObjectName.
