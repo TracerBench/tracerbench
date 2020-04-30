@@ -22,7 +22,6 @@ export {
 export { Runner, IBenchmark } from './runner';
 export { ITab } from './tab';
 export {
-  analyze,
   liveTrace,
   networkConditions,
   ITraceEvent,
@@ -32,4 +31,5 @@ export {
   INetworkConditions,
   ITraceEventFrame
 } from './trace';
+export { analyze } from './profile';
 export * from './benchmarks/utils';
