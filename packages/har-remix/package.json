@@ -39,7 +39,7 @@
     "eslint-plugin-oclif": "^0.1.0",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-simple-import-sort": "^5.0.2",
-    "json-schema-to-typescript": "^8.2.0",
+    "json-schema-to-typescript": "^9.0.1",
     "prettier": "^2.0.4",
     "typescript": "^3.8.3"
   },
