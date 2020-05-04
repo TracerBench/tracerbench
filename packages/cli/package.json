@@ -59,7 +59,7 @@
     "@types/log-symbols": "^3.0.0",
     "@types/mock-fs": "4.10.0",
     "@types/node": "^13.11.1",
-    "@types/tmp": "^0.1.0",
+    "@types/tmp": "^0.2.0",
     "@typescript-eslint/eslint-plugin": "^2.25.0",
     "@typescript-eslint/parser": "^2.25.0",
     "chai": "^4.2.0",
