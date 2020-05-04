@@ -33,7 +33,7 @@
     "fs-extra": "^9.0.0",
     "jstat": "^1.9.2",
     "path": "0.12.7",
-    "tmp": "^0.1.0",
+    "tmp": "^0.2.1",
     "tslib": "^1.11.1"
   },
   "devDependencies": {
