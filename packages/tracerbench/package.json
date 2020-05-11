@@ -46,7 +46,7 @@
     "chrome-debugging-client": "^1.2.0",
     "d3-hierarchy": "^1.1.9",
     "debug": "^4.1.1",
-    "devtools-protocol": "^0.0.765004",
+    "devtools-protocol": "^0.0.767035",
     "fs-extra": "^9.0.0",
     "handlebars": "^4.7.6",
     "lodash.clonedeep": "^4.5.0",
