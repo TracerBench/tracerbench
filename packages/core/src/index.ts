@@ -31,5 +31,4 @@ export {
   INetworkConditions,
   ITraceEventFrame
 } from './trace';
-export { analyze } from './profile';
 export * from './benchmarks/utils';

@@ -8,7 +8,7 @@ describe("profile: url, cookies", () => {
   test
     .stdout()
     .it(
-      `runs profile ${HAR_PATH} --url ${URL} --tbResultsFolder ${TB_RESULTS_FOLDER} --cookiespath ${COOKIES} --hideUsertimings`,
+      `runs profile ${HAR_PATH} --url ${URL} --tbResultsFolder ${TB_RESULTS_FOLDER} --cookiespath ${COOKIES}`,
       async (ctx) => {
         await Profile.run([
           HAR_PATH,
@@ -18,7 +18,6 @@ describe("profile: url, cookies", () => {
           TB_RESULTS_FOLDER,
           "--cookiespath",
           COOKIES,
-          "--hideUsertimings",
         ]);
         expect(ctx.stdout).to.contain(`JS Evaluation :: Total Duration`);
         expect(ctx.stdout).to.contain(`CSS Evaluation :: Total Duration`);
@@ -30,14 +29,9 @@ describe("profile: no url, no cookies", () => {
   test
     .stdout()
     .it(
-      `runs profile ${HAR_PATH} --tbResultsFolder ${TB_RESULTS_FOLDER} --hideUsertimings`,
+      `runs profile ${HAR_PATH} --tbResultsFolder ${TB_RESULTS_FOLDER}`,
       async (ctx) => {
-        await Profile.run([
-          HAR_PATH,
-          "--tbResultsFolder",
-          TB_RESULTS_FOLDER,
-          "--hideUsertimings",
-        ]);
+        await Profile.run([HAR_PATH, "--tbResultsFolder", TB_RESULTS_FOLDER]);
         expect(ctx.stdout).to.contain(`JS Evaluation :: Total Duration`);
         expect(ctx.stdout).to.contain(`CSS Evaluation :: Total Duration`);
       }

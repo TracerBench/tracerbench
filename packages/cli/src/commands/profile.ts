@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
-  analyze,
   IConditions,
   ITraceEvent,
   ITraceEventFrame,
@@ -17,7 +16,6 @@ import { harpath } from "../helpers/args";
 import {
   cookiespath,
   cpuThrottleRate,
-  hideUsertimings,
   network,
   tbResultsFolder,
   url,
@@ -43,7 +41,6 @@ interface ProfileContext {
   traceJSONPath: string;
   traceEvents: ITraceEventFrame[];
   url: string;
-  analyzeResults: { node: string; hierarchyReports: string[] };
 }
 
 type markerLogMeta = {
@@ -66,7 +63,6 @@ export default class Profile extends TBBaseCommand {
     network: network(),
     url: url({ required: true }),
     cookiespath: cookiespath({ required: true }),
-    hideUsertimings,
   };
 
   public async run(): Promise<void> {
@@ -76,7 +72,6 @@ export default class Profile extends TBBaseCommand {
       cookiespath,
       tbResultsFolder,
       network,
-      hideUsertimings,
       url,
     } = flags;
     const { harpath } = args;
@@ -161,22 +156,6 @@ export default class Profile extends TBBaseCommand {
         },
       },
       {
-        title: "Analyzing the live trace",
-        task: async (ctx: ProfileContext) => {
-          const { traceEvents, harJSON } = ctx;
-
-          try {
-            // analyze the liveTrace
-            ctx.analyzeResults = await analyze({
-              traceEvents,
-              harJSON,
-            });
-          } catch (error) {
-            this.error(`${error}`);
-          }
-        },
-      },
-      {
         title: "Setting trace events",
         task: async (ctx: ProfileContext) => {
           const { traceEvents } = ctx;
@@ -196,28 +175,13 @@ export default class Profile extends TBBaseCommand {
         this.error(`${error}`);
       })
       .then(async (ctx) => {
-        // log logAnalyzeReports
-        this.logAnalyzeReports(ctx.analyzeResults);
         // log js-eval-time
         this.logJSEvalTime();
         // log css-parse
         this.logCSSEvalTime();
         // log user timings
-        if (!hideUsertimings) {
-          await this.markerTimings(ctx.traceJSONPath, ctx.url);
-        }
+        await this.markerTimings(ctx.traceJSONPath, ctx.url);
       });
-  }
-
-  private logAnalyzeReports(analyzeResults: {
-    node: string;
-    hierarchyReports: string[];
-  }): void {
-    logHeading("Hierarchy Reports");
-    this.log(`${analyzeResults.node}`);
-    analyzeResults.hierarchyReports.forEach((report) => {
-      this.log(`${report}`);
-    });
   }
 
   private logJSEvalTime(): void {
