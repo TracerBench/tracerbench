@@ -20,7 +20,6 @@ describe("profile: url, cookies", () => {
           COOKIES,
           "--hideUsertimings",
         ]);
-        expect(ctx.stdout).to.contain(`Hierarchy Reports`);
         expect(ctx.stdout).to.contain(`JS Evaluation :: Total Duration`);
         expect(ctx.stdout).to.contain(`CSS Evaluation :: Total Duration`);
       }
@@ -39,7 +38,6 @@ describe("profile: no url, no cookies", () => {
           TB_RESULTS_FOLDER,
           "--hideUsertimings",
         ]);
-        expect(ctx.stdout).to.contain(`Hierarchy Reports`);
         expect(ctx.stdout).to.contain(`JS Evaluation :: Total Duration`);
         expect(ctx.stdout).to.contain(`CSS Evaluation :: Total Duration`);
       }
@@ -53,7 +51,6 @@ describe("profile: marker-timings", () => {
       `runs profile ${HAR_PATH} --tbResultsFolder ${TB_RESULTS_FOLDER}`,
       async (ctx) => {
         await Profile.run([HAR_PATH, "--tbResultsFolder", TB_RESULTS_FOLDER]);
-        expect(ctx.stdout).to.contain(`Hierarchy Reports`);
         expect(ctx.stdout).to.contain(`JS Evaluation :: Total Duration`);
         expect(ctx.stdout).to.contain(`CSS Evaluation :: Total Duration`);
         expect(ctx.stdout).to.contain(`Marker Timings :: Total Duration`);
