@@ -5,7 +5,7 @@ import { FIXTURE_APP, TB_RESULTS_FOLDER } from "../test-helpers";
 import { ICompareJSONResults } from "../../src/helpers/log-compare-results";
 
 const fidelity = "test";
-const fidelityLow = "20";
+const fidelityLow = "10";
 const emulateDevice = "iphone-4";
 const regressionThreshold = "100";
 
@@ -31,7 +31,7 @@ describe("compare fixture: A/A", () => {
           "--debug",
           "--report",
         ]);
-        const resultsJSON: ICompareJSONResults = JSON.parse(results);
+        const resultsJSON: ICompareJSONResults = await JSON.parse(results);
         assert.exists(`${TB_RESULTS_FOLDER}/server-control-settings.json`);
         assert.exists(`${TB_RESULTS_FOLDER}/server-experiment-settings.json`);
         assert.exists(`${TB_RESULTS_FOLDER}/compare-flags-settings.json`);
@@ -92,17 +92,17 @@ describe("compare regression: fixture: A/B", () => {
           FIXTURE_APP.regression,
           "--fidelity",
           fidelityLow,
-          "--cpuThrottleRate=1",
-          "--regressionThreshold",
-          regressionThreshold,
-          "--config",
-          FIXTURE_APP.regressionConfig,
           "--tbResultsFolder",
           TB_RESULTS_FOLDER,
+          "--config",
+          FIXTURE_APP.regressionConfig,
+          "--regressionThreshold",
+          regressionThreshold,
+          "--cpuThrottleRate=1",
           "--headless",
         ]);
 
-        const resultsJSON: ICompareJSONResults = JSON.parse(results);
+        const resultsJSON: ICompareJSONResults = await JSON.parse(results);
         expect(ctx.stdout).to.contain(
           `    SUCCESS!     ${fidelityLow} test samples were taken`
         );
