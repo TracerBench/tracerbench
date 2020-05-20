@@ -25,7 +25,7 @@ $ npm install -g tracerbench
 $ tracerbench COMMAND
 running command...
 $ tracerbench (-v|--version|version)
-tracerbench/3.1.1 darwin-x64 node-v12.16.1
+tracerbench/3.1.1 darwin-x64 node-v12.16.3
 $ tracerbench --help [COMMAND]
 USAGE
   $ tracerbench COMMAND
@@ -329,7 +329,7 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
-_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.2.3/src/commands/help.ts)_
+_See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.0.0/src/commands/help.ts)_
 
 ## `tracerbench profile HARPATH`
 
