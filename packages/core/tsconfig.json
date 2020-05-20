@@ -1,13 +1,11 @@
 {
   "files": [], // container only
-  "references": [{
+  "references": [
+    {
       "path": "src"
     },
     {
       "path": "test"
-    },
-    {
-      "path": "test/profile"
     }
   ]
 }

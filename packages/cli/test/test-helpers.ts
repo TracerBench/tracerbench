@@ -1,42 +1,42 @@
-import { dirSync } from 'tmp';
-import { pathToFileURL } from 'url';
-import { join, resolve } from 'path';
-import { mkdirpSync, writeFileSync } from 'fs-extra';
+import { dirSync } from "tmp";
+import { pathToFileURL } from "url";
+import { join, resolve } from "path";
+import { mkdirpSync, writeFileSync } from "fs-extra";
 
 export const FIXTURE_APP = {
   control: pathToFileURL(
-    `${join(process.cwd(), '/test/fixtures/release/index.html')}`
+    `${join(process.cwd(), "/test/fixtures/release/index.html")}`
   ).toString(),
   experiment: pathToFileURL(
-    `${join(process.cwd(), '/test/fixtures/experiment/index.html')}`
+    `${join(process.cwd(), "/test/fixtures/experiment/index.html")}`
   ).toString(),
   regression: pathToFileURL(
-    `${join(process.cwd(), '/test/fixtures/regression/index.html')}`
+    `${join(process.cwd(), "/test/fixtures/regression/index.html")}`
   ).toString(),
-  controlConfig: join(process.cwd(), '/test/fixtures/release/tbconfig.json'),
+  controlConfig: join(process.cwd(), "/test/fixtures/release/tbconfig.json"),
   experimentConfig: join(
     process.cwd(),
-    '/test/fixtures/experiment/tbconfig.json'
+    "/test/fixtures/experiment/tbconfig.json"
   ),
   regressionConfig: join(
     process.cwd(),
-    '/test/fixtures/regression/tbconfig.json'
+    "/test/fixtures/regression/tbconfig.json"
   ),
 };
 
 export const TB_RESULTS_FOLDER = dirSync().name;
-export const TB_CONFIG_FILE = join(process.cwd(), '/test/tbconfig.json');
+export const TB_CONFIG_FILE = join(process.cwd(), "/test/tbconfig.json");
 export const COOKIES = resolve(
-  join(process.cwd(), '/test/fixtures/results/mock-cookies.json')
+  join(process.cwd(), "/test/fixtures/results/mock-cookies.json")
 );
 export const HAR_PATH = resolve(
-  join(process.cwd(), '/test/fixtures/results/fixture.har')
+  join(process.cwd(), "/test/fixtures/results/fixture.har")
 );
-export const URL = 'https://www.tracerbench.com';
+export const URL = "https://www.tracerbench.com/";
 export const COMPARE_JSON = resolve(
-  join(process.cwd(), '/test/fixtures/results/compare.json')
+  join(process.cwd(), "/test/fixtures/results/compare.json")
 );
-export const MARKER = 'domComplete';
+export const MARKER = "domComplete";
 export interface FileStructure {
   [key: string]: string | FileStructure;
 }
@@ -55,10 +55,10 @@ export function generateFileStructure(
 
   names.forEach((name: string) => {
     const pathForName = join(rootFolder, name);
-    if (typeof structure[name] === 'string') {
+    if (typeof structure[name] === "string") {
       writeFileSync(pathForName, structure[name]);
     } else if (
-      typeof structure[name] === 'object' &&
+      typeof structure[name] === "object" &&
       Object.keys(structure[name]).length
     ) {
       mkdirpSync(pathForName);
