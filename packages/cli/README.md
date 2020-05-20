@@ -333,7 +333,7 @@ _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v3.0.0
 
 ## `tracerbench profile HARPATH`
 
-Parses a CPU profile and aggregates time across heuristics.
+Parses a CPU profile with asset and marker timings.
 
 ```
 USAGE
