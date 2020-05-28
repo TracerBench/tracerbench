@@ -39,7 +39,7 @@ export const defaultFlagArgs: ITBConfig = {
   emulateDevice: "",
   emulateDeviceOrientation: "vertical",
   dest: "",
-  regressionThreshold: 100,
+  regressionThreshold: 50,
   isCIEnv: false,
   cookiespath: "",
   url: "",

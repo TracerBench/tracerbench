@@ -72,7 +72,7 @@ export const debug = flags.boolean({
 
 export const regressionThreshold = flags.build({
   default: () => getDefaultValue("regressionThreshold"),
-  description: `The upper limit the experiment can regress slower in milliseconds. eg 100`,
+  description: `The upper limit the experiment can regress slower in milliseconds. eg 50`,
   parse: (ms): number => {
     return parseInt(ms, 10);
   },

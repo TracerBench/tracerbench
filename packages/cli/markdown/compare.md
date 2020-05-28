@@ -68,7 +68,7 @@ OPTIONS
       (required) [default: none] Simulated network conditions.
 
   --regressionThreshold=regressionThreshold
-      [default: 100] The upper limit the experiment can regress slower in milliseconds. eg 100
+      [default: 50] The upper limit the experiment can regress slower in milliseconds. eg 50
 
   --report
       Generate a PDF report directly after running the compare command.
@@ -106,8 +106,8 @@ OPTIONS
   --isCIEnv=isCIEnv                          (required) Provides a drastically slimmed down stdout report for CI
                                              workflows. However does NOT hide analysis.
 
-  --regressionThreshold=regressionThreshold  (required) [default: 100] The upper limit the experiment can regress slower
-                                             in milliseconds. eg 100
+  --regressionThreshold=regressionThreshold  (required) [default: 50] The upper limit the experiment can regress slower
+                                             in milliseconds. eg 50
 ```
 
 _See code: [dist/src/commands/compare/analyze.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.1.1/dist/src/commands/compare/analyze.ts)_

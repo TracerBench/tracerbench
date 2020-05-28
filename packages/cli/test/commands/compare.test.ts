@@ -7,7 +7,7 @@ import { ICompareJSONResults } from "../../src/helpers/log-compare-results";
 const fidelity = "test";
 const fidelityLow = "10";
 const emulateDevice = "iphone-4";
-const regressionThreshold = "100";
+const regressionThreshold = "50";
 
 describe("compare fixture: A/A", () => {
   test
