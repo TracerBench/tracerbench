@@ -104,7 +104,7 @@ describe("compare regression: fixture: A/B", () => {
 
         const resultsJSON: ICompareJSONResults = await JSON.parse(results);
         expect(ctx.stdout).to.contain(
-          `    SUCCESS!     ${fidelityLow} test samples were taken`
+          `    SUCCESS!     ${fidelityLow} test samples took`
         );
         // confirm with headless flag is logging the trace stream
         expect(ctx.stdout).to.contain(`duration phase estimated difference +`);

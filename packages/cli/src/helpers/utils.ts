@@ -280,3 +280,11 @@ export function logBar(ops: logBarOptions): string {
 
   return `${ops.title}\n${bar} ${ops.duration} ms\n`;
 }
+
+export function timestamp(): number {
+  return new Date().getTime();
+}
+
+export function durationInSec(endTime: number, startTime: number): number {
+  return Math.round((endTime - startTime) / 1000);
+}

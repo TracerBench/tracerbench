@@ -48,7 +48,9 @@ import {
 import {
   chalkScheme,
   checkEnvironmentSpecificOverride,
+  durationInSec,
   parseMarkers,
+  timestamp,
 } from "../../helpers/utils";
 import CompareAnalyze from "./analyze";
 import CompareReport from "./report";
@@ -149,9 +151,11 @@ export default class Compare extends TBBaseCommand {
     };
 
     const runner = new Runner([benchmarks.control, benchmarks.experiment]);
+    const startTime = timestamp();
     await runner
       .run(this.compareFlags.fidelity, this.log)
       .then(async (results: any) => {
+        const endTime = timestamp();
         if (!results[0].samples[0]) {
           this.error(
             `Could not sample from provided urls\nCONTROL: ${this.parsedConfig.controlURL}\nEXPERIMENT: ${this.parsedConfig.experimentURL}.`
@@ -175,7 +179,10 @@ export default class Compare extends TBBaseCommand {
         // eslint:disable-next-line: max-line-length
         const message = `${chalkScheme.blackBgGreen(
           `    ${chalkScheme.white("SUCCESS!")}    `
-        )} ${this.parsedConfig.fidelity} test samples were taken.`;
+        )} ${this.parsedConfig.fidelity} test samples took ${durationInSec(
+          endTime,
+          startTime
+        )} seconds`;
 
         this.log(`\n${message}`);
 
