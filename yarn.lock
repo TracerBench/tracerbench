@@ -3231,10 +3231,10 @@ detect-indent@^5.0.0:
   resolved "https://registry.yarnpkg.com/detect-indent/-/detect-indent-5.0.0.tgz#3871cc0a6a002e8c3e5b3cf7f336264675f06b9d"
   integrity sha1-OHHMCmoALow+Wzz38zYmRnXwa50=
 
-devtools-protocol@^0.0.770080:
-  version "0.0.770080"
-  resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.770080.tgz#9527ed4ae0a9ddf00c4d62b35eff0eaae3107bb7"
-  integrity sha512-fkObMd4FHypfthcP5DvnENxGeW4+tM9RIJ0EJ5492wmzXpMBRowZGH01aFPlwKrrD5YAnG3HuFJm0fuqO15cew==
+devtools-protocol@^0.0.772852:
+  version "0.0.772852"
+  resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.772852.tgz#9dd87a50d0425d86dc4f36e270e9c06a94160c67"
+  integrity sha512-BTNnZFhh/ogi12dCzYAoXaaM+zo++BMr8FBV/5DT4Ug1ufYS9QS7vNSfrcJOLIRH+NshZS3Au4iXH7fdJysN/w==
 
 dezalgo@^1.0.0:
   version "1.0.3"
