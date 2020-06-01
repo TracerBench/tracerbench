@@ -35,7 +35,7 @@
     "chalk": "^4.0.0",
     "chrome-debugging-client": "^1.2.0",
     "cli-table3": "^0.6.0",
-    "devtools-protocol": "^0.0.770080",
+    "devtools-protocol": "^0.0.772852",
     "execa": "^4.0.0",
     "fs-extra": "^9.0.0",
     "handlebars": "^4.7.6",
