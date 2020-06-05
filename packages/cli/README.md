@@ -19,6 +19,9 @@ https://www.tracerbench.com/docs/api
 ### Understanding The TracerBench Report
 https://www.tracerbench.com/docs/guide/reports
 
+### Statistics Primer
+https://www.tracerbench.com/docs/guide/stats-primer
+
 ### TracerBench Stats Class Module
 https://www.npmjs.com/package/@tracerbench/stats
 https://github.com/TracerBench/tracerbench/tree/master/packages/stats
