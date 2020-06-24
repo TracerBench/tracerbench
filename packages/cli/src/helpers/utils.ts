@@ -184,12 +184,18 @@ export function parseMarkers(m: string | string[]): IMarker[] {
     m = m.split(",");
   }
 
-  m.forEach((marker) => {
+  for (let i = 1; i < m.length; i++) {
     a.push({
-      label: marker,
-      start: marker,
+      start: m[i - 1],
+      label: m[i],
     });
+  }
+
+  a.push({
+    start: m[m.length - 1],
+    label: "paint",
   });
+
   return a;
 }
 
