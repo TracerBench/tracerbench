@@ -4,6 +4,7 @@ import {
   isFrameNavigationStart,
   convertMSToMicroseconds,
   mergeLeft,
+  parseMarkers,
 } from "../../src/helpers/utils";
 import { expect } from "chai";
 import { ITraceEvent, ITraceEventFrame } from "@tracerbench/core";
@@ -49,6 +50,16 @@ describe("utils", () => {
 
   it(`convertMSToMicroseconds()`, () => {
     expect(micro).to.equal(-100000);
+  });
+
+  it(`parseMarkers`, () => {
+    expect(parseMarkers("navigationStart,domComplete")).to.deep.equal([{
+      start: "navigationStart",
+      label: "domComplete",
+    }, {
+      start: "domComplete",
+      label: "paint",
+    }]);
   });
 });
 
