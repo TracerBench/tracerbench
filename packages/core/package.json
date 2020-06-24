@@ -32,9 +32,7 @@
     "lint": "eslint -c .eslintrc.js --ext .ts .",
     "prepare": "yarn build",
     "report": "Rscript bin/report.R test/results/results.json",
-    "test": "yarn lint && yarn test:build && yarn test:only",
-    "test:build": "node dist/test/build.js",
-    "test:only": "node dist/test/test.js",
+    "test": "yarn lint && yarn mocha",
     "watch": "tsc -b -w"
   },
   "dependencies": {
@@ -73,6 +71,7 @@
     "eslint-plugin-oclif": "^0.1.0",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-simple-import-sort": "^5.0.2",
+    "find-up": "^4.1.0",
     "jquery": "^3.4.1",
     "mkdirp": "^1.0.4",
     "mocha": "^7.1.1",
@@ -83,5 +82,8 @@
     "typescript": "^3.8.3"
   },
   "engine": "node >= 8",
-  "gitHead": "30be10122ff4fcdf931eec6ecd8075ff6b2dc42f"
+  "gitHead": "30be10122ff4fcdf931eec6ecd8075ff6b2dc42f",
+  "mocha": {
+    "spec": "dist/test/test.js"
+  }
 }

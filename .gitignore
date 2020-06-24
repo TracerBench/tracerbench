@@ -2,7 +2,7 @@
 dist/
 node_modules/
 vendor/
-/packages/tracerbench/**/results/
+/packages/core/test/results/
 tmp/
 /*workspace
 *.log
