@@ -1,4 +1,5 @@
 import { IncomingMessage } from "http";
+import { pipeline } from "stream";
 import * as https from "https";
 
 export async function getJSON(url: string) {
@@ -14,10 +15,12 @@ export function getResponse(url: string) {
   });
 }
 
-export function waitForFinish(writable: NodeJS.WritableStream) {
+export function waitForFinish(readable: NodeJS.ReadableStream, writable: NodeJS.WritableStream) {
   return new Promise((resolve, reject) => {
-    writable.once("error", reject);
-    writable.once("finish", resolve);
+    pipeline(readable, writable, (err) => {
+      if (err) reject(err);
+      else resolve();
+    })
   });
 }
 

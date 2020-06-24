@@ -28,9 +28,9 @@ const buildMeta: {
   }
 };
 
-export default async function downloadEmbers(channels: string[]) {
+export default async function downloadEmbers(channels: string[], root: string) {
   for (const channel of channels) {
-    await downloadEmber(channel, `test/vendor/ember-${channel}`);
+    await downloadEmber(channel, join(root, `test/vendor/ember-${channel}`));
   }
 }
 
@@ -50,8 +50,7 @@ async function downloadEmber(channel: string, to: string) {
       return /^package\/(?:dist\/ember|package\.json)/.test(p);
     }
   });
-  tarball.pipe(extract);
-  await waitForFinish(extract);
+  await waitForFinish(tarball, extract);
 }
 
 export function alreadyDownloaded(version: string, packagePath: string) {
@@ -70,10 +69,6 @@ export function getTarBar(assetPath: string): Promise<IncomingMessage> {
   console.debug(`downloading ${url}`);
   return getResponse(url);
 }
-
-// export function getBuildMeta(channel: string): Promise<IBuildMeta> {
-//   return getJSON(`https://s3.amazonaws.com/builds.emberjs.com/${channel}.json`);
-// }
 
 export interface IBuildMeta {
   version: string;

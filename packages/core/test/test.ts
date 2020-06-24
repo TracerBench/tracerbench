@@ -1,10 +1,13 @@
-import { writeFileSync } from 'fs';
-import { sync } from 'mkdirp';
-import { resolve } from 'path';
+import { writeFileSync, existsSync } from 'fs';
+import mkdirp = require('mkdirp');
+import { resolve, dirname, join } from 'path';
+import { pathToFileURL } from 'url';
 import { InitialRenderBenchmark, Runner } from '@tracerbench/core';
 import { Stdio } from '@tracerbench/spawn';
+import findUp = require('find-up');
+import build from './build/index';
 
-const globSync: (glob: string) => string[] = require('glob').sync;
+const channels = ['alpha', 'beta', 'release'];
 const browserOpts = {
   additionalArguments: [
     '--crash-dumps-dir=./tmp',
@@ -33,55 +36,72 @@ const browserOpts = {
   disableDefaultArguments: false
 };
 
-const tests = globSync('dist/test/*/index.html');
+describe('Benchmark', function () {
+  describe('smoke test', function () {
+    this.timeout('10m');
 
-// make dir test and results
-sync('test/results');
+    let resultDir!: string;
+    let tests!: {
+      name: string;
+      url: string;
+    }[];
 
-const benchmarks: InitialRenderBenchmark[] = [];
+    before(async () => {
+      const packageJson = await findUp('package.json');
+      if (packageJson === undefined) {
+        throw new Error(`failed to find-up package.json from ${__dirname}`);
+      }
+      const packageRoot = dirname(packageJson);
 
-tests.forEach((indexFile: string) => {
-  const url = `file://${resolve(indexFile)}?tracing`;
-  const match = /dist\/test\/([^\/]+)/.exec(indexFile);
-  if (!match) {
-    return;
-  }
-  const version = match[1];
-  benchmarks.push(
-    new InitialRenderBenchmark({
-      browser: browserOpts,
-      cpuThrottleRate: 4,
-      delay: 100,
-      markers: [
-        { start: 'fetchStart', label: 'jquery' },
-        { start: 'jqueryLoaded', label: 'ember' },
-        { start: 'emberLoaded', label: 'application' },
-        { start: 'startRouting', label: 'routing' },
-        { start: 'willTransition', label: 'transition' },
-        { start: 'didTransition', label: 'render' },
-        { start: 'renderEnd', label: 'afterRender' }
-      ],
-      name: version,
-      runtimeStats: true,
-      saveTraces: (i: any) => `test/results/trace-${version}-${i}.json`,
-      url
-    })
-  );
-});
+      const needsBuild: string[] = [];
 
-const runner = new Runner(benchmarks);
+      tests = channels.map((name) => {
+        const path = resolve(packageRoot, `dist/test/${name}/index.html`);
+        if (!existsSync(path)) {
+          needsBuild.push(name);
+        }
+        const url = `${pathToFileURL(path)}?tracing`;
+        return { name, url };
+      });
 
-runner
-  .run(4, (m) => {
-    console.log(`${m}`);
-  })
-  .then((results: any) => {
-    writeFileSync(
-      'test/results/results.json',
-      JSON.stringify(results, null, 2)
-    );
-  })
-  .catch((err: any) => {
-    console.error(err.stack);
-    process.exit(1);
+      await build(needsBuild, packageRoot);
+
+      resultDir = resolve(packageRoot, 'test/results');
+
+      mkdirp.sync(resultDir);
+    });
+
+    it('should work', async function () {
+      const benchmarks = tests.map(
+        ({ name, url }) =>
+          new InitialRenderBenchmark({
+            browser: browserOpts,
+            cpuThrottleRate: 4,
+            delay: 100,
+            markers: [
+              { start: 'fetchStart', label: 'jquery' },
+              { start: 'jqueryLoaded', label: 'ember' },
+              { start: 'emberLoaded', label: 'application' },
+              { start: 'startRouting', label: 'routing' },
+              { start: 'willTransition', label: 'transition' },
+              { start: 'didTransition', label: 'render' },
+              { start: 'renderEnd', label: 'afterRender' }
+            ],
+            name,
+            runtimeStats: true,
+            saveTraces: (i: any) => join(resultDir, `trace-${name}-${i}.json`),
+            url
+          })
+      );
+      const runner = new Runner(benchmarks);
+      const results = await runner.run(4, (m) => {
+        console.log(`${m}`);
+      });
+
+      writeFileSync(
+        join(resultDir, 'results.json'),
+        JSON.stringify(results, null, 2)
+      );
+    });
   });
+});
