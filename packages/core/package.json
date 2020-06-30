@@ -50,7 +50,7 @@
     "race-cancellation": "^0.4.1",
     "silent-error": "^1.1.1",
     "tmp": "^0.2.1",
-    "tslib": "^1.11.1"
+    "tslib": "^2.0.0"
   },
   "devDependencies": {
     "@tracerbench/har": "^3.1.2",
