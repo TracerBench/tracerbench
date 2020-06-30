@@ -1,7 +1,6 @@
 import { Archive, Entry, Header } from '@tracerbench/har';
 import { SessionConnection } from 'chrome-debugging-client';
 import Protocol from 'devtools-protocol';
-import { readFileSync } from 'fs';
 
 import { IConditions } from './conditions';
 import {
@@ -19,14 +18,13 @@ export async function recordHARClient(
   conditions: IConditions,
   altBrowserArgs?: string[]
 ): Promise<Archive> {
-  const tbSemver = JSON.parse(readFileSync('package.json', 'utf8'));
   const networkRequests: Protocol.Network.ResponseReceivedEvent[] = [];
   const archive: Archive = {
     log: {
       version: '0.0.0',
       creator: {
         name: 'TracerBench',
-        version: tbSemver.version
+        version: '0.0.0'
       },
       entries: []
     }
