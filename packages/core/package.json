@@ -1,6 +1,6 @@
 {
   "name": "@tracerbench/core",
-  "version": "3.1.1",
+  "version": "3.1.2",
   "description": "Benchmark runner for trace metrics",
   "keywords": [
     "chrome",
@@ -53,7 +53,7 @@
     "tslib": "^1.11.1"
   },
   "devDependencies": {
-    "@tracerbench/har": "^3.0.16",
+    "@tracerbench/har": "^3.1.2",
     "@tracerbench/protocol-connection": "^1.2.0",
     "@types/chai": "^4.2.11",
     "@types/debug": "^4.1.5",
