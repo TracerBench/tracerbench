@@ -14,3 +14,4 @@ tmp/
 .vscode/
 /packages/cli/bin/run.js
 **SCRATCH**
+**/test/results/**
