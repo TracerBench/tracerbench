@@ -5269,9 +5269,9 @@ json-schema-ref-parser@^9.0.1:
     "@apidevtools/json-schema-ref-parser" "9.0.1"
 
 json-schema-to-typescript@^9.0.1:
-  version "9.0.1"
-  resolved "https://registry.yarnpkg.com/json-schema-to-typescript/-/json-schema-to-typescript-9.0.1.tgz#d9d16b0610942971dfa84dc93ead73bfdaec4b02"
-  integrity sha512-BM8nwGzFKt4I5x+/zeJSh9taIhNgT3yAByUsfsF9onx57MSgF+MGOILaMLl/QHT/WyIscgMuqXkI3788f49l3g==
+  version "9.1.1"
+  resolved "https://registry.yarnpkg.com/json-schema-to-typescript/-/json-schema-to-typescript-9.1.1.tgz#572c1eb8b7ca82d6534c023c4651f3fe925171c0"
+  integrity sha512-VrdxmwQROjPBRlHxXwGUa2xzhOMPiNZIVsxZrZjMYtbI7suRFMiEktqaD/gqhfSya7Djy+x8dnJT+H0/0sZO0Q==
   dependencies:
     "@types/json-schema" "^7.0.4"
     cli-color "^2.0.0"
