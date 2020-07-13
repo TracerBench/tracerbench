@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
+import { flags as oclifFlags } from "@oclif/command";
 import { IConditions, recordHARClient } from "@tracerbench/core";
 import { readJson, writeFileSync } from "fs-extra";
 import { join, resolve } from "path";
@@ -17,7 +18,7 @@ import {
 
 export default class RecordHAR extends TBBaseCommand {
   public static description = "Generates a HAR file from a URL.";
-  public static flags = {
+  public static flags: oclifFlags.Input<any> = {
     url: url({ required: true, default: undefined }),
     dest: dest({ required: true }),
     cookiespath: cookiespath({ required: true }),
