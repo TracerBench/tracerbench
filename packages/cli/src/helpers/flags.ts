@@ -115,7 +115,7 @@ export const methods: oclifFlags.Definition<string> = oclifFlags.build({
   description: "List of methods to aggregate",
 });
 
-export const cpuThrottleRate: oclifFlags.Definition<string> = oclifFlags.build({
+export const cpuThrottleRate: oclifFlags.Definition<number> = oclifFlags.build({
   default: () => getDefaultValue("cpuThrottleRate"),
   description: "CPU throttle multiplier",
   parse: (cpuThrottleRate): number => {

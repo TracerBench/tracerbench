@@ -16,7 +16,7 @@ export interface ITBConfig {
   report?: string;
   event?: string;
   markers?: string | string[] | IMarker[] | PerformanceTimingMark[];
-  network?: keyof INetworkConditions;
+  network?: keyof INetworkConditions & string;
   tbResultsFolder?: string;
   url?: string;
   controlURL?: string;

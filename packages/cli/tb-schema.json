@@ -205,10 +205,7 @@
             "type": "string"
         },
         "network": {
-            "type": [
-                "string",
-                "number"
-            ]
+            "type": "string"
         },
         "outputFilePath": {
             "type": "string"
