@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-/* eslint-disable @typescript-eslint/interface-name-prefix */
 /* eslint-disable filenames/match-exported */
 
 import { IConfig } from "@oclif/config";

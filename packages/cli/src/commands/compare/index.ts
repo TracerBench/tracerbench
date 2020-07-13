@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import { flags as oclifFlags } from "@oclif/command";
 import { IConfig } from "@oclif/config";
 import {
   IInitialRenderBenchmarkParams,
@@ -8,11 +9,12 @@ import {
   networkConditions,
   Runner,
 } from "@tracerbench/core";
+import type { ChromeSpawnOptions } from "@tracerbench/spawn-chrome";
 import Protocol from "devtools-protocol";
 import * as fs from "fs-extra";
 import * as path from "path";
 
-import { flags, getConfig, TBBaseCommand } from "../../command-config";
+import { getConfig, TBBaseCommand } from "../../command-config";
 import {
   defaultFlagArgs,
   fidelityLookup,
@@ -54,7 +56,6 @@ import {
 } from "../../helpers/utils";
 import CompareAnalyze from "./analyze";
 import CompareReport from "./report";
-
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const archiver = require("archiver");
 export interface ICompareFlags {
@@ -83,8 +84,8 @@ export interface ICompareFlags {
 export default class Compare extends TBBaseCommand {
   public static description =
     "Compare the performance delta between an experiment and control";
-  public static flags = {
-    hideAnalysis: flags.boolean({
+  public static flags: oclifFlags.Input<any> = {
+    hideAnalysis: oclifFlags.boolean({
       default: false,
       description: "Hide the the analysis output in terminal",
     }),
@@ -118,14 +119,14 @@ export default class Compare extends TBBaseCommand {
     super(argv, config);
     const { flags } = this.parse(Compare);
     this.explicitFlags = argv;
-    this.compareFlags = flags;
+    this.compareFlags = flags as ICompareFlags;
   }
 
   // instantiated before this.run()
   public async init(): Promise<void> {
     const { flags } = this.parse(Compare);
     this.parsedConfig = getConfig(flags.config, flags, this.explicitFlags);
-    this.compareFlags = flags;
+    this.compareFlags = flags as ICompareFlags;
     await this.parseFlags();
   }
 
@@ -308,21 +309,25 @@ export default class Compare extends TBBaseCommand {
     // delay in ms times the number of samples. this improves variance.
     // eg 100 total samples X 200ms per sample = 20 seconds total added to the trace time
     const delay = 200;
-    const controlBrowser = {
+    const controlBrowser: Partial<ChromeSpawnOptions> = {
       additionalArguments: this.compareFlags.browserArgs,
     };
-    const experimentBrowser = {
+    const experimentBrowser: Partial<ChromeSpawnOptions> = {
       additionalArguments: this.compareFlags.browserArgs,
     };
 
     // config for the browsers to leverage socks proxy
     if (this.parsedConfig.socksPorts) {
-      controlBrowser.additionalArguments = controlBrowser.additionalArguments.concat(
-        [`--proxy-server=socks5://0.0.0.0:${this.parsedConfig.socksPorts[0]}`]
-      );
-      experimentBrowser.additionalArguments = experimentBrowser.additionalArguments.concat(
-        [`--proxy-server=socks5://0.0.0.0:${this.parsedConfig.socksPorts[1]}`]
-      );
+      if (controlBrowser.additionalArguments) {
+        controlBrowser.additionalArguments = controlBrowser.additionalArguments.concat(
+          [`--proxy-server=socks5://0.0.0.0:${this.parsedConfig.socksPorts[0]}`]
+        );
+      }
+      if (experimentBrowser.additionalArguments) {
+        experimentBrowser.additionalArguments = experimentBrowser.additionalArguments.concat(
+          [`--proxy-server=socks5://0.0.0.0:${this.parsedConfig.socksPorts[1]}`]
+        );
+      }
     }
     const controlNetwork: string = checkEnvironmentSpecificOverride(
       "network",

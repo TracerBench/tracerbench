@@ -102,7 +102,9 @@ export function normalizeFnName(name: string) {
 }
 
 export function setTraceEvents(
-  file: ITraceEventFrame[] | { metadata: {}; traceEvents: ITraceEventFrame[] }
+  file:
+    | ITraceEventFrame[]
+    | { metadata: Record<string, unknown>; traceEvents: ITraceEventFrame[] }
 ) {
   return !Array.isArray(file) ? file.traceEvents : file;
 }

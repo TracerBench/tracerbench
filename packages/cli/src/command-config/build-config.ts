@@ -108,7 +108,7 @@ function handleExplicitFlags(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   flags: OutputFlags<any>,
   explicitFlags: string[]
-): {} {
+): Record<string, unknown> {
   const obj: Record<string, unknown> = {};
   const f = flags;
 
@@ -119,7 +119,7 @@ function handleExplicitFlags(
     }
   });
 
-  return obj as {};
+  return obj;
 }
 
 /**

@@ -38,7 +38,7 @@ export const COMPARE_JSON = resolve(
 );
 export const MARKER = "domComplete";
 export interface FileStructure {
-  [key: string]: string | FileStructure;
+  [key: string]: string;
 }
 
 /**
