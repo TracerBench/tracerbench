@@ -1,11 +1,11 @@
 import Protocol from 'devtools-protocol';
 
 export interface IConditions {
-  network: keyof INetworkConditions;
+  network: keyof INetworkConditions & string;
   cpu: number;
 }
 
-export interface INetworkConditions {
+export type INetworkConditions = {
   none: Protocol.Network.EmulateNetworkConditionsRequest;
   dialup: Protocol.Network.EmulateNetworkConditionsRequest;
   'slow-2g': Protocol.Network.EmulateNetworkConditionsRequest;
@@ -22,7 +22,7 @@ export interface INetworkConditions {
   LTE: Protocol.Network.EmulateNetworkConditionsRequest;
   FIOS: Protocol.Network.EmulateNetworkConditionsRequest;
   [key: string]: Protocol.Network.EmulateNetworkConditionsRequest;
-}
+};
 
 export const networkConditions: INetworkConditions = {
   none: {

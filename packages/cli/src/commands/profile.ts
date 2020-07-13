@@ -84,8 +84,8 @@ export default class Profile extends TBBaseCommand {
       },
     ];
     const conditions: IConditions = {
-      cpu: cpuThrottleRate,
-      network,
+      network: network ? network : "none",
+      cpu: cpuThrottleRate ? cpuThrottleRate : 1,
     };
 
     const tasks = new listr([
