@@ -15,3 +15,5 @@ tmp/
 /packages/cli/bin/run.js
 **SCRATCH**
 **/test/results/**
+*.tsbuildinfo
+/packages/trace-model/fixtures/

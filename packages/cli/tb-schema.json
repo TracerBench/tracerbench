@@ -275,9 +275,6 @@
         "traceFrame": {
             "type": "string"
         },
-        "tracingLocationSearch": {
-            "type": "string"
-        },
         "url": {
             "type": "string"
         }

@@ -1,0 +1,29 @@
+{
+  "name": "@tracerbench/trace-event",
+  "version": "3.1.2",
+  "description": "Chrome Trace Events interfaces",
+  "keywords": [
+    "chrome",
+    "trace event",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TracerBench/tracerbench.git"
+  },
+  "license": "BSD-2-Clause",
+  "author": "Kris Selden <kris.selden@gmail.com>",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -b",
+    "prepare": "yarn build"
+  },
+  "devDependencies": {
+    "typescript": "^3.8.3"
+  }
+}

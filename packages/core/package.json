@@ -36,6 +36,9 @@
     "watch": "tsc -b -w"
   },
   "dependencies": {
+    "@tracerbench/har": "^3.1.2",
+    "@tracerbench/trace-event": "^3.1.2",
+    "@tracerbench/trace-model": "^3.1.2",
     "@types/d3-hierarchy": "^1.1.6",
     "@types/node": "*",
     "array-binsearch": "^1.0.1",
@@ -84,6 +87,7 @@
   "engine": "node >= 8",
   "gitHead": "30be10122ff4fcdf931eec6ecd8075ff6b2dc42f",
   "mocha": {
-    "spec": "dist/test/test.js"
+    "spec": "test/test.ts",
+    "require": "ts-node/register"
   }
 }

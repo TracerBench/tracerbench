@@ -7,14 +7,15 @@ import {
   parseMarkers,
 } from "../../src/helpers/utils";
 import { expect } from "chai";
-import { ITraceEvent, ITraceEventFrame } from "@tracerbench/core";
+import { TraceEvent, Constants, CompleteTraceEvent } from "@tracerbench/trace-event";
 
-const event: ITraceEvent = {
-  ph: "X",
+const event: CompleteTraceEvent = {
+  ph: Constants.TRACE_EVENT_PHASE_COMPLETE,
   name: "CommitLoad",
   pid: 0,
   tid: 0,
   ts: 0,
+  dur: 0,
   cat: "",
   args: {
     data: {
@@ -24,13 +25,13 @@ const event: ITraceEvent = {
     },
   },
 };
-const events: ITraceEvent[] = [event];
+const events: TraceEvent[] = [event];
 const url = "https://www.tracerbench.com";
 const frame = findFrame(events, url);
-const isLoad = isCommitLoad(event as ITraceEventFrame);
+const isLoad = isCommitLoad(event);
 const isFrameMark = isFrameNavigationStart(
   frame,
-  event as ITraceEventFrame,
+  event,
   url
 );
 const micro = convertMSToMicroseconds(`-100ms`);

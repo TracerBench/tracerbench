@@ -16,6 +16,6 @@ describe("simulate-device-options", () => {
   it(`getEmulateDeviceSettingForKeyAndOrientation() success path`, () => {
     const result = getEmulateDeviceSettingForKeyAndOrientation("iphone-x");
     expect(result !== undefined).to.equal(true);
-    expect(typeof result!.height).to.equal("number");
+    expect(typeof result!.deviceMetricsOverride.height).to.equal("number");
   });
 });
