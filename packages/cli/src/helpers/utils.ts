@@ -2,7 +2,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint:disable:no-console*/
 
-import { IMarker, ITraceEventFrame } from "@tracerbench/core";
+import { Marker } from "@tracerbench/core";
+import {
+  Constants,
+  MarkTraceEvent,
+  TraceEvent,
+  TraceStreamJson,
+} from "@tracerbench/trace-event";
 import * as chalk from "chalk";
 import * as logSymbols from "log-symbols";
 
@@ -27,7 +33,7 @@ export function checkEnvironmentSpecificOverride(
   flags: ICompareFlags,
   overrideObjectName: string,
   tbConfig?: ITBConfig
-) {
+): any {
   if (!tbConfig || !tbConfig[overrideObjectName]) {
     return flags[attributeName];
   }
@@ -83,52 +89,35 @@ export function convertMSToMicroseconds(ms: string | number): number {
   return Math.floor(ms * 1000);
 }
 
-export function getCookiesFromHAR(har: any) {
-  let cookies: any = [];
-  har.log.entries.forEach((entry: any) => {
-    if (entry.response.cookies.length > 0) {
-      cookies.push(entry.response.cookies);
-    }
-  });
-  // eslint-disable-next-line prefer-spread
-  return (cookies = [].concat.apply([], cookies));
-}
-
-export function normalizeFnName(name: string) {
-  if (name === "") {
-    name = "(anonymous)";
-  }
-  return name;
-}
-
 export function setTraceEvents(
-  file:
-    | ITraceEventFrame[]
-    | { metadata: Record<string, unknown>; traceEvents: ITraceEventFrame[] }
-) {
+  file: TraceEvent[] | TraceStreamJson
+): TraceEvent[] {
   return !Array.isArray(file) ? file.traceEvents : file;
-}
-
-export function collect(val: any, memo: any) {
-  memo.push(val);
-  return memo;
 }
 
 export function formatToDuration(ts: number, start: number): number {
   return toNearestHundreth((ts - start) / 1000);
 }
 
-export function isMark(event: ITraceEventFrame): boolean {
-  return event.ph === "R";
+export function isMark(event: TraceEvent): event is MarkTraceEvent {
+  return event.ph === Constants.TRACE_EVENT_PHASE_MARK;
 }
 
-export function isFrameMark(frame: string, event: ITraceEventFrame): boolean {
-  return event.ph === "R" && event.args.frame === frame;
+export function isFrameMark(
+  frame: string,
+  event: TraceEvent
+): event is MarkTraceEvent {
+  return (
+    event.ph === Constants.TRACE_EVENT_PHASE_MARK &&
+    event.args !== Constants.STRIPPED &&
+    event.args.frame === frame
+  );
 }
 
-export function isDocLoaderURL(event: any, url: string): boolean {
+export function isDocLoaderURL(event: MarkTraceEvent, url: string): boolean {
   try {
-    if (event.args.data.documentLoaderURL === url) {
+    if (event.args === Constants.STRIPPED) return false;
+    if ((event.args.data as any).documentLoaderURL === url) {
       return true;
     }
     return false;
@@ -139,7 +128,7 @@ export function isDocLoaderURL(event: any, url: string): boolean {
 
 export function isFrameNavigationStart(
   frame: string,
-  event: ITraceEventFrame,
+  event: TraceEvent,
   url: string
 ): boolean {
   return (
@@ -149,20 +138,13 @@ export function isFrameNavigationStart(
   );
 }
 
-export function isUserMark(event: ITraceEventFrame): boolean {
+export function isCommitLoad(event: TraceEvent): boolean {
   return (
-    event.ph === "R" &&
-    event.cat === "blink.user_timing" &&
-    Object.keys(event.args).length === 0
-  );
-}
-
-export function isCommitLoad(event: ITraceEventFrame): boolean {
-  return (
-    event.ph === "X" &&
+    event.ph === Constants.TRACE_EVENT_PHASE_COMPLETE &&
     event.name === "CommitLoad" &&
+    event.args !== Constants.STRIPPED &&
     event.args.data !== undefined &&
-    event.args.data.isMainFrame
+    (event.args.data as any).isMainFrame
   );
 }
 
@@ -170,18 +152,18 @@ export function byTime(a: { ts: number }, b: { ts: number }): number {
   return a.ts - b.ts;
 }
 
-export function findFrame(events: any[], url: string): string {
+export function findFrame(events: TraceEvent[], url: string): string {
   const event = events
     .filter(isCommitLoad)
     .find((e: any) => e.args.data.url.startsWith(url));
   if (event) {
-    return event.args.data.frame;
+    return (event.args as any).data.frame;
   }
   return "";
 }
 
-export function parseMarkers(m: string | string[]): IMarker[] {
-  const a: IMarker[] = [];
+export function parseMarkers(m: string | string[]): Marker[] {
+  const a: Marker[] = [];
   if (typeof m === "string") {
     m = m.split(",");
   }
@@ -199,10 +181,6 @@ export function parseMarkers(m: string | string[]): IMarker[] {
   });
 
   return a;
-}
-
-export function removeDuplicates<T>(collection: T[]) {
-  return [...new Set(collection)];
 }
 
 export function fillArray(arrLngth: number, incr = 1, strt = 0): number[] {

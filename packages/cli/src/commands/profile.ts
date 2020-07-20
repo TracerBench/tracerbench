@@ -1,11 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  IConditions,
-  ITraceEvent,
-  ITraceEventFrame,
-  liveTrace,
-} from "@tracerbench/core";
+import { IConditions, liveTrace } from "@tracerbench/core";
 import { Archive } from "@tracerbench/har";
+import { TraceEvent } from "@tracerbench/trace-event";
 import Protocol from "devtools-protocol";
 import { existsSync, mkdirSync, readJson, writeFileSync } from "fs-extra";
 import * as listr from "listr";
@@ -39,7 +35,7 @@ interface ProfileContext {
   cookies: Protocol.Network.CookieParam[];
   harJSON: Archive;
   traceJSONPath: string;
-  traceEvents: ITraceEventFrame[];
+  traceEvents: TraceEvent[];
   url: string;
 }
 
@@ -54,7 +50,7 @@ type markerLogMeta = {
 export default class Profile extends TBBaseCommand {
   // include backwards compat to trace cmd
   static aliases = ["trace"];
-  public trace: ITraceEventFrame[] = [];
+  public trace: TraceEvent[] = [];
   public static description = `Parses a CPU profile with asset and marker timings.`;
   public static args = [harpath];
   public static flags = {
@@ -149,7 +145,7 @@ export default class Profile extends TBBaseCommand {
               cookies,
               conditions
             );
-            ctx.traceEvents = traceEvents as ITraceEventFrame[];
+            ctx.traceEvents = traceEvents as TraceEvent[];
           } catch (error) {
             this.error(`${error}`);
           }
@@ -188,7 +184,7 @@ export default class Profile extends TBBaseCommand {
     let totalJSDuration = 0;
     const jsEvalLogs: logBarOptions[] = [];
     this.trace
-      .filter((event: ITraceEvent) => event.name === "EvaluateScript")
+      .filter((event: TraceEvent) => event.name === "EvaluateScript")
       .filter((event: any) => event.args.data.url)
       .forEach((event: any) => {
         const url = event.args.data.url;
@@ -218,7 +214,7 @@ export default class Profile extends TBBaseCommand {
     const cssEvalLogs: logBarOptions[] = [];
 
     this.trace
-      .filter((event: ITraceEvent) => event.name === "ParseAuthorStyleSheet")
+      .filter((event: TraceEvent) => event.name === "ParseAuthorStyleSheet")
       .filter((event: any) => event.args.data.styleSheetUrl)
       .forEach((event: any) => {
         const url = event.args.data.styleSheetUrl;
@@ -251,7 +247,7 @@ export default class Profile extends TBBaseCommand {
     let frame: string;
     let startTime = -1;
     let rawTraceData: any = null;
-    let customTrace: ITraceEventFrame[];
+    let customTrace: TraceEvent[];
     const markerLogs: markerLogMeta[] = [];
 
     if (!url) {
@@ -285,9 +281,9 @@ export default class Profile extends TBBaseCommand {
     }
 
     customTrace
-      .filter((event: ITraceEventFrame) => isMark(event) || isCommitLoad(event))
+      .filter((event: TraceEvent) => isMark(event) || isCommitLoad(event))
       .sort(byTime)
-      .forEach((event: ITraceEventFrame) => {
+      .forEach((event: TraceEvent) => {
         if (isFrameNavigationStart(frame, event, url)) {
           startTime = event.ts;
           markerLogs.push(this.buildMarkerLogs(event, startTime));
@@ -305,10 +301,7 @@ export default class Profile extends TBBaseCommand {
     this.logMarkerTimings(markerLogs);
   }
 
-  private buildMarkerLogs(
-    event: ITraceEventFrame,
-    startTime: number
-  ): markerLogMeta {
+  private buildMarkerLogs(event: TraceEvent, startTime: number): markerLogMeta {
     return {
       name: event.name,
       sentanceCaseName: convertToSentCase(event.name),

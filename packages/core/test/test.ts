@@ -2,7 +2,7 @@ import { writeFileSync, existsSync } from 'fs';
 import mkdirp = require('mkdirp');
 import { resolve, dirname, join } from 'path';
 import { pathToFileURL } from 'url';
-import { InitialRenderBenchmark, Runner } from '@tracerbench/core';
+import { createTraceNavigationBenchmark, run } from '@tracerbench/core';
 import { Stdio } from '@tracerbench/spawn';
 import findUp = require('find-up');
 import build from './build/index';
@@ -60,7 +60,7 @@ describe('Benchmark', function () {
         if (!existsSync(path)) {
           needsBuild.push(name);
         }
-        const url = `${pathToFileURL(path)}?tracing`;
+        const url = pathToFileURL(path).toString();
         return { name, url };
       });
 
@@ -72,30 +72,29 @@ describe('Benchmark', function () {
     });
 
     it('should work', async function () {
+      const markers = [
+        { start: 'fetchStart', label: 'jquery' },
+        { start: 'jqueryLoaded', label: 'ember' },
+        { start: 'emberLoaded', label: 'application' },
+        { start: 'startRouting', label: 'routing' },
+        { start: 'willTransition', label: 'transition' },
+        { start: 'didTransition', label: 'render' },
+        { start: 'renderEnd', label: 'afterRender' }
+      ];
       const benchmarks = tests.map(
         ({ name, url }) =>
-          new InitialRenderBenchmark({
-            browser: browserOpts,
-            cpuThrottleRate: 4,
-            delay: 100,
-            markers: [
-              { start: 'fetchStart', label: 'jquery' },
-              { start: 'jqueryLoaded', label: 'ember' },
-              { start: 'emberLoaded', label: 'application' },
-              { start: 'startRouting', label: 'routing' },
-              { start: 'willTransition', label: 'transition' },
-              { start: 'didTransition', label: 'render' },
-              { start: 'renderEnd', label: 'afterRender' }
-            ],
-            name,
-            runtimeStats: true,
-            saveTraces: (i: any) => join(resultDir, `trace-${name}-${i}.json`),
-            url
+          createTraceNavigationBenchmark(name, url, markers, {
+            spawnOptions: browserOpts,
+            pageSetupOptions: {
+              cpuThrottlingRate: 4,
+            },
+            traceOptions: {
+              saveTraceAs: (group, i) => join(resultDir, `trace-${group}-${i}.json`)
+            },
           })
       );
-      const runner = new Runner(benchmarks);
-      const results = await runner.run(4, (m) => {
-        console.log(`${m}`);
+      const results = await run(benchmarks, 4, (elasped, completed, remaining, group, iteration) => {
+        console.log("%o %o %o %o %o", elasped, completed, remaining, group, iteration);
       });
 
       writeFileSync(

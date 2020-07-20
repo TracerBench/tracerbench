@@ -81,9 +81,6 @@ OPTIONS
 
   --tbResultsFolder=tbResultsFolder
       (required) [default: ./tracerbench-results] The output folder path for all tracerbench results
-
-  --tracingLocationSearch=tracingLocationSearch
-      (required) [default: ?tracing] The document location search param.
 ```
 
 _See code: [dist/src/commands/compare/index.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.1.2/dist/src/commands/compare/index.ts)_

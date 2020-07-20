@@ -7,7 +7,6 @@
   "controlURL": "https://www.tracerbench.com/",
   "experimentURL": "https://www.tracerbench.com/",
   "url": "https://www.tracerbench.com/",
-  "tracingLocationSearch": "?tracing",
   "regressionThreshold": "50",
   "appName": "tracerbench",
   "network": "cable",

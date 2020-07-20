@@ -1,9 +1,9 @@
+import { TraceEvent } from '@tracerbench/trace-event';
 import { spawnChrome } from 'chrome-debugging-client';
 import Protocol from 'devtools-protocol';
 import { writeFileSync } from 'fs-extra';
 import { join } from 'path';
 
-import { ITraceEvent } from '../trace';
 import { IConditions } from './conditions';
 import { emulate, getTab, setCookies, wait } from './utils';
 const DEVTOOLS_CATEGORIES = [
@@ -31,7 +31,7 @@ const DEVTOOLS_CATEGORIES = [
 ];
 
 export interface ITraceEvents {
-  traceEvents: ITraceEvent[];
+  traceEvents: TraceEvent[];
 }
 
 export async function liveTrace(
@@ -88,7 +88,7 @@ export async function liveTrace(
 
     // merge the buffer trace events
     traceEvents.forEach((i) => {
-      i.value.forEach((ii: ITraceEvent) => {
+      i.value.forEach((ii: TraceEvent) => {
         traceObj.traceEvents.push(ii);
       });
     });

@@ -34,7 +34,6 @@ export const defaultFlagArgs: ITBConfig = {
   ],
   methods: '""',
   tbResultsFolder: "./tracerbench-results",
-  tracingLocationSearch: "?tracing",
   network: "none",
   emulateDevice: "",
   emulateDeviceOrientation: "vertical",
@@ -55,8 +54,8 @@ export const headlessFlags = [
   "--disable-logging",
 ];
 
-// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-export function getDefaultValue(key: string) {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function getDefaultValue(key: string): any {
   if (key in defaultFlagArgs) {
     return defaultFlagArgs[key];
   }

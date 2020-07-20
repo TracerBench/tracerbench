@@ -93,13 +93,6 @@ export const browserArgs: oclifFlags.Definition<string> = oclifFlags.build({
   },
 });
 
-export const tracingLocationSearch: oclifFlags.Definition<string> = oclifFlags.build(
-  {
-    default: () => getDefaultValue("tracingLocationSearch"),
-    description: `The document location search param.`,
-  }
-);
-
 export const appName: oclifFlags.Definition<string> = oclifFlags.build({
   default: () => getDefaultValue("appName"),
   description: "The name of your application",

@@ -23,9 +23,9 @@ export interface EmulateDeviceSettingBase {
   typeable: string;
 }
 
-export interface EmulateDeviceSetting
-  extends Protocol.Emulation.SetDeviceMetricsOverrideRequest,
-    Protocol.Emulation.SetUserAgentOverrideRequest {
+export interface EmulateDeviceSetting {
+  deviceMetricsOverride: Protocol.Emulation.SetDeviceMetricsOverrideRequest;
+  userAgentOverride: Protocol.Emulation.SetUserAgentOverrideRequest;
   typeable: string;
 }
 
@@ -68,11 +68,15 @@ export function getEmulateDeviceSettingForKeyAndOrientation(
         );
       }
       return {
-        width: deviceSetting.screens[orientation].width,
-        height: deviceSetting.screens[orientation].height,
-        deviceScaleFactor: deviceSetting.deviceScaleFactor,
-        mobile: deviceSetting.mobile,
-        userAgent: deviceSetting.userAgent,
+        deviceMetricsOverride: {
+          width: deviceSetting.screens[orientation].width,
+          height: deviceSetting.screens[orientation].height,
+          deviceScaleFactor: deviceSetting.deviceScaleFactor,
+          mobile: deviceSetting.mobile,
+        },
+        userAgentOverride: {
+          userAgent: deviceSetting.userAgent,
+        },
         typeable: deviceSetting.typeable,
       };
     }

@@ -1,0 +1,47 @@
+{
+  "name": "@tracerbench/trace-model",
+  "version": "3.1.2",
+  "description": "Minimal model of Chrome TraceEvents",
+  "keywords": [
+    "chrome",
+    "trace event",
+    "trace model",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TracerBench/tracerbench.git"
+  },
+  "license": "BSD-2-Clause",
+  "author": "Kris Selden <kris.selden@gmail.com>",
+  "files": [
+    "dist",
+    "src"
+  ],
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -b",
+    "prepare": "yarn build",
+    "test": "yarn mocha"
+  },
+  "dependencies": {
+    "@tracerbench/trace-event": "^3.1.2",
+    "@typescript-eslint/eslint-plugin": "^3.6.1",
+    "@typescript-eslint/parser": "^3.6.1",
+    "debug": "^4.1.1",
+    "eslint": "^7.4.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-filenames": "^1.3.2",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "eslint-plugin-simple-import-sort": "^5.0.3"
+  },
+  "devDependencies": {
+    "mocha": "^8.0.1",
+    "typescript": "^3.8.3"
+  },
+  "mocha": {
+    "spec": "test/test.js"
+  }
+}

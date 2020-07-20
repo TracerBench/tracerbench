@@ -3,11 +3,11 @@
 import { flags as oclifFlags } from "@oclif/command";
 import { IConfig } from "@oclif/config";
 import {
-  IInitialRenderBenchmarkParams,
-  IMarker,
-  InitialRenderBenchmark,
+  createTraceNavigationBenchmark,
+  Marker,
+  NavigationBenchmarkOptions,
   networkConditions,
-  Runner,
+  run,
 } from "@tracerbench/core";
 import type { ChromeSpawnOptions } from "@tracerbench/spawn-chrome";
 import Protocol from "devtools-protocol";
@@ -45,7 +45,6 @@ import {
   runtimeStats,
   socksPorts,
   tbResultsFolder,
-  tracingLocationSearch,
 } from "../../helpers/flags";
 import {
   chalkScheme,
@@ -63,12 +62,11 @@ export interface ICompareFlags {
   browserArgs: string[];
   cpuThrottleRate: number;
   fidelity: number;
-  markers: IMarker[];
+  markers: Marker[];
   network: Protocol.Network.EmulateNetworkConditionsRequest;
   tbResultsFolder: string;
   controlURL: string | undefined;
   experimentURL: string | undefined;
-  tracingLocationSearch: string;
   runtimeStats: boolean;
   emulateDevice?: string;
   emulateDeviceOrientation?: string;
@@ -97,7 +95,6 @@ export default class Compare extends TBBaseCommand {
     tbResultsFolder: tbResultsFolder({ required: true }),
     controlURL: controlURL({ required: false }),
     experimentURL: experimentURL({ required: false }),
-    tracingLocationSearch: tracingLocationSearch({ required: true }),
     emulateDevice: emulateDevice(),
     emulateDeviceOrientation: emulateDeviceOrientation(),
     socksPorts: socksPorts(),
@@ -147,95 +144,99 @@ export default class Compare extends TBBaseCommand {
     }
 
     const benchmarks = {
-      control: new InitialRenderBenchmark(controlSettings),
-      experiment: new InitialRenderBenchmark(experimentSettings),
+      control: createTraceNavigationBenchmark(...controlSettings),
+      experiment: createTraceNavigationBenchmark(...experimentSettings),
     };
 
-    const runner = new Runner([benchmarks.control, benchmarks.experiment]);
     const startTime = timestamp();
-    await runner
-      .run(this.compareFlags.fidelity, this.log)
-      .then(async (results: any) => {
-        const endTime = timestamp();
-        if (!results[0].samples[0]) {
-          this.error(
-            `Could not sample from provided urls\nCONTROL: ${this.parsedConfig.controlURL}\nEXPERIMENT: ${this.parsedConfig.experimentURL}.`
-          );
+    const results = (
+      await run(
+        [benchmarks.control, benchmarks.experiment],
+        this.compareFlags.fidelity,
+        () => {
+          // log progress
         }
-        const resultJSONPath = `${this.parsedConfig.tbResultsFolder}/compare.json`;
+      )
+    ).map(({ group, samples }) => {
+      const meta = samples.length > 0 ? samples[0].metadata : {};
+      return { set: group, samples, meta };
+    });
+    const endTime = timestamp();
+    if (!results[0].samples[0]) {
+      this.error(
+        `Could not sample from provided urls\nCONTROL: ${this.parsedConfig.controlURL}\nEXPERIMENT: ${this.parsedConfig.experimentURL}.`
+      );
+    }
+    const resultJSONPath = `${this.parsedConfig.tbResultsFolder}/compare.json`;
 
-        fs.writeFileSync(resultJSONPath, JSON.stringify(results, null, 2));
+    fs.writeFileSync(resultJSONPath, JSON.stringify(results, null, 2));
 
-        const tracesDir = `${this.parsedConfig.tbResultsFolder}/traces`;
-        const zipOutput = fs.createWriteStream(
-          `${this.parsedConfig.tbResultsFolder}/traces.zip`
-        );
-        const archive = archiver("zip", {
-          zlib: { level: 9 },
-        });
-        archive.directory(tracesDir, "traces");
-        archive.pipe(zipOutput);
-        archive.finalize();
+    const tracesDir = `${this.parsedConfig.tbResultsFolder}/traces`;
+    const zipOutput = fs.createWriteStream(
+      `${this.parsedConfig.tbResultsFolder}/traces.zip`
+    );
+    const archive = archiver("zip", {
+      zlib: { level: 9 },
+    });
+    archive.directory(tracesDir, "traces");
+    archive.pipe(zipOutput);
+    archive.finalize();
 
-        // eslint:disable-next-line: max-line-length
-        const message = `${chalkScheme.blackBgGreen(
-          `    ${chalkScheme.white("SUCCESS!")}    `
-        )} ${this.parsedConfig.fidelity} test samples took ${durationInSec(
-          endTime,
-          startTime
-        )} seconds`;
+    // eslint:disable-next-line: max-line-length
+    const message = `${chalkScheme.blackBgGreen(
+      `    ${chalkScheme.white("SUCCESS!")}    `
+    )} ${this.parsedConfig.fidelity} test samples took ${durationInSec(
+      endTime,
+      startTime
+    )} seconds`;
 
-        this.log(`\n${message}`);
+    this.log(`\n${message}`);
 
-        if (!hideAnalysis) {
-          this.analyzedJSONString = await CompareAnalyze.run([
-            resultJSONPath,
-            "--fidelity",
-            `${this.parsedConfig.fidelity}`,
-            "--regressionThreshold",
-            `${this.parsedConfig.regressionThreshold}`,
-            "--isCIEnv",
-            `${this.parsedConfig.isCIEnv}`,
-          ]);
+    if (!hideAnalysis) {
+      this.analyzedJSONString = await CompareAnalyze.run([
+        resultJSONPath,
+        "--fidelity",
+        `${this.parsedConfig.fidelity}`,
+        "--regressionThreshold",
+        `${this.parsedConfig.regressionThreshold}`,
+        "--isCIEnv",
+        `${this.parsedConfig.isCIEnv}`,
+      ]);
 
-          fs.writeFileSync(
-            `${this.parsedConfig.tbResultsFolder}/report.json`,
-            this.analyzedJSONString
-          );
-        }
+      fs.writeFileSync(
+        `${this.parsedConfig.tbResultsFolder}/report.json`,
+        this.analyzedJSONString
+      );
+    }
 
-        // if we want to run the CompareReport without calling a separate command
-        if (this.parsedConfig.report) {
-          await CompareReport.run([
-            "--tbResultsFolder",
-            `${this.parsedConfig.tbResultsFolder}`,
-            "--config",
-            `${this.parsedConfig.config}`,
-          ]);
-        }
+    // if we want to run the CompareReport without calling a separate command
+    if (this.parsedConfig.report) {
+      await CompareReport.run([
+        "--tbResultsFolder",
+        `${this.parsedConfig.tbResultsFolder}`,
+        "--config",
+        `${this.parsedConfig.config}`,
+      ]);
+    }
 
-        // with debug flag output three files
-        // on config specifics
-        if (this.parsedConfig.debug) {
-          fs.writeFileSync(
-            `${this.parsedConfig.tbResultsFolder}/server-control-settings.json`,
-            JSON.stringify(Object.assign(controlSettings), null, 2)
-          );
+    // with debug flag output three files
+    // on config specifics
+    if (this.parsedConfig.debug) {
+      fs.writeFileSync(
+        `${this.parsedConfig.tbResultsFolder}/server-control-settings.json`,
+        JSON.stringify(Object.assign(controlSettings), null, 2)
+      );
 
-          fs.writeFileSync(
-            `${this.parsedConfig.tbResultsFolder}/server-experiment-settings.json`,
-            JSON.stringify(Object.assign(experimentSettings), null, 2)
-          );
+      fs.writeFileSync(
+        `${this.parsedConfig.tbResultsFolder}/server-experiment-settings.json`,
+        JSON.stringify(Object.assign(experimentSettings), null, 2)
+      );
 
-          fs.writeFileSync(
-            `${this.parsedConfig.tbResultsFolder}/compare-flags-settings.json`,
-            JSON.stringify(Object.assign(this.parsedConfig), null, 2)
-          );
-        }
-      })
-      .catch((err: any) => {
-        this.error(err);
-      });
+      fs.writeFileSync(
+        `${this.parsedConfig.tbResultsFolder}/compare-flags-settings.json`,
+        JSON.stringify(Object.assign(this.parsedConfig), null, 2)
+      );
+    }
 
     return this.analyzedJSONString;
   }
@@ -303,12 +304,9 @@ export default class Compare extends TBBaseCommand {
    * @param this.parsedConfig - Object containing configs parsed from the Command class
    */
   private generateControlExperimentServerConfig(): [
-    IInitialRenderBenchmarkParams,
-    IInitialRenderBenchmarkParams
+    [string, string, Marker[], NavigationBenchmarkOptions],
+    [string, string, Marker[], NavigationBenchmarkOptions]
   ] {
-    // delay in ms times the number of samples. this improves variance.
-    // eg 100 total samples X 200ms per sample = 20 seconds total added to the trace time
-    const delay = 200;
     const controlBrowser: Partial<ChromeSpawnOptions> = {
       additionalArguments: this.compareFlags.browserArgs,
     };
@@ -366,62 +364,86 @@ export default class Compare extends TBBaseCommand {
       this.parsedConfig
     );
 
-    const controlSettings: IInitialRenderBenchmarkParams = {
-      browser: controlBrowser,
-      cpuThrottleRate: checkEnvironmentSpecificOverride(
-        "cpuThrottleRate",
-        this.compareFlags,
-        CONTROL_ENV_OVERRIDE_ATTR,
-        this.parsedConfig
-      ),
-      delay,
-      emulateDeviceSettings: controlEmulateDevice
-        ? getEmulateDeviceSettingForKeyAndOrientation(
-            controlEmulateDevice,
-            controlEmulateDeviceOrientation
-          )
-        : undefined,
-      markers: this.compareFlags.markers,
-      networkConditions: controlNetwork
-        ? networkConditions[controlNetwork as keyof typeof networkConditions]
-        : this.compareFlags.network,
-      name: "control",
-      runtimeStats: this.compareFlags.runtimeStats,
-      saveTraces: (i) =>
-        `${this.compareFlags.tbResultsFolder}/traces/control${i}.json`,
-      url: path.join(
-        this.compareFlags.controlURL + this.compareFlags.tracingLocationSearch
-      ),
-    };
+    const controlDeviceSettings = controlEmulateDevice
+      ? getEmulateDeviceSettingForKeyAndOrientation(
+          controlEmulateDevice,
+          controlEmulateDeviceOrientation
+        )
+      : {};
 
-    const experimentSettings: IInitialRenderBenchmarkParams = {
-      browser: experimentBrowser,
-      cpuThrottleRate: checkEnvironmentSpecificOverride(
-        "cpuThrottleRate",
-        this.compareFlags,
-        EXPERIMENT_ENV_OVERRIDE_ATTR,
-        this.parsedConfig
-      ),
-      delay,
-      emulateDeviceSettings: experimentEmulateDevice
-        ? getEmulateDeviceSettingForKeyAndOrientation(
-            experimentEmulateDevice,
-            experimentEmulateDeviceOrientation
-          )
-        : undefined,
-      markers: this.compareFlags.markers,
-      networkConditions: experimentNetwork
-        ? networkConditions[experimentNetwork as keyof typeof networkConditions]
-        : this.compareFlags.network,
-      name: "experiment",
-      runtimeStats: this.compareFlags.runtimeStats,
-      saveTraces: (i) =>
-        `${this.compareFlags.tbResultsFolder}/traces/experiment${i}.json`,
-      url: path.join(
-        this.compareFlags.experimentURL +
-          this.compareFlags.tracingLocationSearch
-      ),
-    };
+    const controlSettings: [
+      string,
+      string,
+      Marker[],
+      NavigationBenchmarkOptions
+    ] = [
+      "control",
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      this.compareFlags.controlURL!,
+      this.compareFlags.markers,
+      {
+        spawnOptions: controlBrowser,
+        pageSetupOptions: {
+          cpuThrottlingRate: checkEnvironmentSpecificOverride(
+            "cpuThrottleRate",
+            this.compareFlags,
+            CONTROL_ENV_OVERRIDE_ATTR,
+            this.parsedConfig
+          ),
+          ...controlDeviceSettings,
+          emulateNetworkConditions: controlNetwork
+            ? networkConditions[
+                controlNetwork as keyof typeof networkConditions
+              ]
+            : this.compareFlags.network,
+        },
+        traceOptions: {
+          captureV8RuntimeStats: this.compareFlags.runtimeStats,
+          saveTraceAs: (group, i) =>
+            `${this.compareFlags.tbResultsFolder}/traces/${group}${i}.json`,
+        },
+      },
+    ];
+
+    const experimentDeviceSettings = experimentEmulateDevice
+      ? getEmulateDeviceSettingForKeyAndOrientation(
+          experimentEmulateDevice,
+          experimentEmulateDeviceOrientation
+        )
+      : {};
+    const experimentSettings: [
+      string,
+      string,
+      Marker[],
+      NavigationBenchmarkOptions
+    ] = [
+      "experiment",
+      this.compareFlags.experimentURL!,
+      this.compareFlags.markers,
+      {
+        spawnOptions: experimentBrowser,
+
+        pageSetupOptions: {
+          cpuThrottlingRate: checkEnvironmentSpecificOverride(
+            "cpuThrottleRate",
+            this.compareFlags,
+            EXPERIMENT_ENV_OVERRIDE_ATTR,
+            this.parsedConfig
+          ),
+          ...experimentDeviceSettings,
+          emulateNetworkConditions: experimentNetwork
+            ? networkConditions[
+                experimentNetwork as keyof typeof networkConditions
+              ]
+            : this.compareFlags.network,
+        },
+        traceOptions: {
+          captureV8RuntimeStats: this.compareFlags.runtimeStats,
+          saveTraceAs: (group, i) =>
+            `${this.compareFlags.tbResultsFolder}/traces/${group}${i}.json`,
+        },
+      },
+    ];
 
     return [controlSettings, experimentSettings];
   }

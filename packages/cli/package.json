@@ -31,6 +31,7 @@
     "@oclif/plugin-warn-if-update-available": "^1.7.0",
     "@tracerbench/core": "^3.1.2",
     "@tracerbench/stats": "^3.1.2",
+    "@tracerbench/trace-event": "^3.1.2",
     "archiver": "^4.0.2",
     "chalk": "^4.1.0",
     "chrome-debugging-client": "^2.0.0",

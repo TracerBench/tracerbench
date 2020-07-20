@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { IMarker, INetworkConditions } from "@tracerbench/core";
+import { INetworkConditions, Marker } from "@tracerbench/core";
 
 import { PerformanceTimingMark } from "./default-flag-args";
 
@@ -15,7 +15,7 @@ export interface ITBConfig {
   fidelity?: "test" | "low" | "medium" | "high" | number;
   report?: string;
   event?: string;
-  markers?: string | string[] | IMarker[] | PerformanceTimingMark[];
+  markers?: string | string[] | Marker[] | PerformanceTimingMark[];
   network?: keyof INetworkConditions & string;
   tbResultsFolder?: string;
   url?: string;
@@ -26,7 +26,6 @@ export interface ITBConfig {
   traceFrame?: string;
   appName?: string;
   browserArgs?: string[];
-  tracingLocationSearch?: string;
   runtimeStats?: boolean;
   emulateDevice?: string;
   emulateDeviceOrientation?: string;

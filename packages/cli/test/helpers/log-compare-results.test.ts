@@ -61,7 +61,6 @@ const flags = {
   tbResultsFolder,
   controlURL: "",
   experimentURL: "",
-  tracingLocationSearch: "",
   runtimeStats: false,
   debug: false,
   headless: false,
