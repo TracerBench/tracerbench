@@ -15,7 +15,7 @@
     "target": "es2017",
     "outDir": "dist",
     "rootDir": "src",
-    "lib": ["ES2017"],
+    "lib": ["ES2017"]
   },
   "include": ["src/**/*.ts"],
   "exclude": ["node_modules", "dist"],

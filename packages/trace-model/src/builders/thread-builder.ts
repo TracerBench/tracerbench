@@ -10,8 +10,8 @@ import type {
 } from '../types';
 import Bounds from '../util/bounds';
 import type {
-  CastableEventModelImpl,
-  CompleteEventModelImpl
+  CompleteEventModelImpl,
+  EventModelImplUnion
 } from './event-model-impl';
 
 class ThreadModelImpl implements ThreadModel {
@@ -52,7 +52,7 @@ export default class ThreadBuilder {
   name = '';
   sortIndex = 0;
 
-  events: CastableEventModelImpl[] = [];
+  events: EventModelImplUnion[] = [];
   stack: CompleteEventModelImpl[] = [];
 
   constructor(pid: ProcessId, tid: ThreadId) {
@@ -82,7 +82,7 @@ export default class ThreadBuilder {
     }
   }
 
-  extendBounds(event: CastableEventModelImpl): void {
+  extendBounds(event: EventModelImplUnion): void {
     if (this.bounds === undefined) {
       this.bounds = new Bounds(event.start, event.end);
     } else {
@@ -90,7 +90,7 @@ export default class ThreadBuilder {
     }
   }
 
-  addEvent(event: CastableEventModelImpl): void {
+  addEvent(event: EventModelImplUnion): void {
     this.events.push(event);
     if (event.isComplete()) {
       const { stack } = this;

@@ -7,15 +7,34 @@ import {
 } from '@tracerbench/trace-event';
 
 import type {
+  AsyncBeginEventModel,
+  AsyncEndEventModel,
+  AsyncStepIntoEventModel,
+  AsyncStepPastEventModel,
   BeginEventModel,
+  ClockSyncEventModel,
   CompleteEventModel,
+  CounterEventModel,
+  CreateObjectEventModel,
+  DeleteObjectEventModel,
   EndEventModel,
+  EnterContextEventModel,
   EventModelCommon,
-  EventModels,
+  EventModelTraceEvents,
+  FlowBeginEventModel,
+  FlowEndEventModel,
+  FlowStepEventModel,
   InstantEventModel,
+  LeaveContextEventModel,
   MarkEventModel,
+  MemoryDumpEventModel,
   MetadataEventModel,
+  NestableAsyncBeginEventModel,
+  NestableAsyncEndEventModel,
+  NestableAsyncInstantEventModel,
   ProcessId,
+  SampleEventModel,
+  SnapshotObjectEventModel,
   ThreadId
 } from '../types';
 import splitCat from '../util/split-cat';
@@ -26,7 +45,7 @@ export type EventModelImpls = {
   [TPhase in TRACE_EVENT_PHASE]: EventModelImpl<TPhase>;
 };
 
-export type CastableEventModelImpl = EventModelImpls[TRACE_EVENT_PHASE];
+export type EventModelImplUnion = EventModelImpls[TRACE_EVENT_PHASE];
 
 export type MetadataEventModelImpl = EventModelImpl<MetadataEventModel['ph']>;
 
@@ -42,7 +61,7 @@ export type MarkEventModelImpl = EventModelImpl<MarkEventModel['ph']>;
 
 export default class EventModelImpl<
   TPhase extends TRACE_EVENT_PHASE = TRACE_EVENT_PHASE
-> implements EventModelCommon<TPhase, EventModels[TPhase]['traceEvent']> {
+> implements EventModelCommon<TPhase> {
   ord: number;
   pid: ProcessId;
   tid: ThreadId;
@@ -53,8 +72,8 @@ export default class EventModelImpl<
   end: number;
   args: TraceEventArgs;
   parent: CompleteEventModel | undefined;
-  traceEvent: EventModels[TPhase]['traceEvent'];
-  constructor(traceEvent: EventModels[TPhase]['traceEvent'], ord: number);
+  traceEvent: EventModelTraceEvents[TPhase];
+  constructor(traceEvent: EventModelTraceEvents[TPhase], ord: number);
   constructor(traceEvent: TraceEvent, ord: number) {
     const { args, ts: start } = traceEvent;
     this.ord = ord;
@@ -69,7 +88,7 @@ export default class EventModelImpl<
         ? start + traceEvent.dur
         : start;
     this.args = args === Constants.STRIPPED ? EMPTY_ARGS : args;
-    this.traceEvent = traceEvent;
+    this.traceEvent = traceEvent as EventModelTraceEvents[TPhase];
     this.parent = undefined;
   }
 
@@ -77,28 +96,110 @@ export default class EventModelImpl<
     return this.end - this.start;
   }
 
-  isMetadata(): this is MetadataEventModelImpl {
-    return this.ph === Constants.TRACE_EVENT_PHASE_METADATA;
-  }
-
   isBegin(): this is BeginEventModelImpl {
     return this.ph === Constants.TRACE_EVENT_PHASE_BEGIN;
   }
 
-  isEnd(): this is EndEventModelImpl {
+  isEnd(): this is EventModelImpl<EndEventModel['ph']> {
     return this.ph === Constants.TRACE_EVENT_PHASE_END;
   }
 
-  isComplete(): this is CompleteEventModelImpl {
+  isComplete(): this is EventModelImpl<CompleteEventModel['ph']> {
     return this.ph === Constants.TRACE_EVENT_PHASE_COMPLETE;
   }
 
-  isInstant(): this is InstantEventModelImpl {
+  isInstant(): this is EventModelImpl<InstantEventModel['ph']> {
     return this.ph === Constants.TRACE_EVENT_PHASE_INSTANT;
   }
 
-  isMark(): this is MarkEventModelImpl {
+  isAsyncBegin(): this is EventModelImpl<AsyncBeginEventModel['ph']> {
+    return this.ph === Constants.TRACE_EVENT_PHASE_ASYNC_BEGIN;
+  }
+
+  isAsyncStepInto(): this is EventModelImpl<AsyncStepIntoEventModel['ph']> {
+    return this.ph === Constants.TRACE_EVENT_PHASE_ASYNC_STEP_INTO;
+  }
+
+  isAsyncStepPast(): this is EventModelImpl<AsyncStepPastEventModel['ph']> {
+    return this.ph === Constants.TRACE_EVENT_PHASE_ASYNC_STEP_PAST;
+  }
+
+  isAsyncEnd(): this is EventModelImpl<AsyncEndEventModel['ph']> {
+    return this.ph === Constants.TRACE_EVENT_PHASE_ASYNC_END;
+  }
+
+  isNestableAsyncBegin(): this is EventModelImpl<
+    NestableAsyncBeginEventModel['ph']
+  > {
+    return this.ph === Constants.TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN;
+  }
+
+  isNestableAsyncEnd(): this is EventModelImpl<
+    NestableAsyncEndEventModel['ph']
+  > {
+    return this.ph === Constants.TRACE_EVENT_PHASE_NESTABLE_ASYNC_END;
+  }
+
+  isNestableAsyncInstant(): this is EventModelImpl<
+    NestableAsyncInstantEventModel['ph']
+  > {
+    return this.ph === Constants.TRACE_EVENT_PHASE_NESTABLE_ASYNC_INSTANT;
+  }
+
+  isFlowBegin(): this is EventModelImpl<FlowBeginEventModel['ph']> {
+    return this.ph === Constants.TRACE_EVENT_PHASE_FLOW_BEGIN;
+  }
+
+  isFlowStep(): this is EventModelImpl<FlowStepEventModel['ph']> {
+    return this.ph === Constants.TRACE_EVENT_PHASE_FLOW_STEP;
+  }
+
+  isFlowEnd(): this is EventModelImpl<FlowEndEventModel['ph']> {
+    return this.ph === Constants.TRACE_EVENT_PHASE_FLOW_END;
+  }
+
+  isMetadata(): this is EventModelImpl<MetadataEventModel['ph']> {
+    return this.ph === Constants.TRACE_EVENT_PHASE_METADATA;
+  }
+
+  isCounter(): this is EventModelImpl<CounterEventModel['ph']> {
+    return this.ph === Constants.TRACE_EVENT_PHASE_COUNTER;
+  }
+
+  isSample(): this is EventModelImpl<SampleEventModel['ph']> {
+    return this.ph === Constants.TRACE_EVENT_PHASE_SAMPLE;
+  }
+
+  isCreateObject(): this is EventModelImpl<CreateObjectEventModel['ph']> {
+    return this.ph === Constants.TRACE_EVENT_PHASE_CREATE_OBJECT;
+  }
+
+  isSnapshotObject(): this is EventModelImpl<SnapshotObjectEventModel['ph']> {
+    return this.ph === Constants.TRACE_EVENT_PHASE_SNAPSHOT_OBJECT;
+  }
+
+  isDeleteObject(): this is EventModelImpl<DeleteObjectEventModel['ph']> {
+    return this.ph === Constants.TRACE_EVENT_PHASE_DELETE_OBJECT;
+  }
+
+  isMemoryDump(): this is EventModelImpl<MemoryDumpEventModel['ph']> {
+    return this.ph === Constants.TRACE_EVENT_PHASE_MEMORY_DUMP;
+  }
+
+  isMark(): this is EventModelImpl<MarkEventModel['ph']> {
     return this.ph === Constants.TRACE_EVENT_PHASE_MARK;
+  }
+
+  isClockSync(): this is EventModelImpl<ClockSyncEventModel['ph']> {
+    return this.ph === Constants.TRACE_EVENT_PHASE_CLOCK_SYNC;
+  }
+
+  isEnterContext(): this is EventModelImpl<EnterContextEventModel['ph']> {
+    return this.ph === Constants.TRACE_EVENT_PHASE_ENTER_CONTEXT;
+  }
+
+  isLeaveContext(): this is EventModelImpl<LeaveContextEventModel['ph']> {
+    return this.ph === Constants.TRACE_EVENT_PHASE_LEAVE_CONTEXT;
   }
 
   getArg(name: string): unknown {
@@ -129,13 +230,16 @@ export default class EventModelImpl<
     }
   }
 
-  hasCategory(category: string): boolean {
+  hasCategory(category: string | ((category: string) => boolean)): boolean {
     const cat = this.cat;
-    return Array.isArray(cat) ? cat.indexOf(category) !== -1 : cat === category;
+    if (typeof category === 'function') {
+      return Array.isArray(cat) ? cat.some(category) : category(cat);
+    }
+    return Array.isArray(cat) ? cat.includes(category) : cat === category;
   }
 
   toJSON(): TraceEvents[TPhase];
-  toJSON(this: CastableEventModelImpl): TraceEvent {
+  toJSON(this: EventModelImplUnion): TraceEvent {
     const { traceEvent } = this;
     if (Array.isArray(traceEvent)) {
       const [beginEvent, endEvent] = traceEvent;

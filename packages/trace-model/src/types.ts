@@ -37,110 +37,110 @@ export interface Bounds {
   end: number;
 }
 
+export type EventModelTraceEvents = {
+  [Constants.TRACE_EVENT_PHASE_BEGIN]: BeginTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_END]: EndTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_COMPLETE]:
+    | CompleteTraceEvent
+    | [BeginTraceEvent, EndTraceEvent]
+    | BeginTraceEvent
+    | EndTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_INSTANT]: InstantTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_ASYNC_BEGIN]: AsyncBeginTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_ASYNC_STEP_INTO]: AsyncStepIntoTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_ASYNC_STEP_PAST]: AsyncStepPastTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_ASYNC_END]: AsyncEndTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN]: NestableAsyncBeginTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_NESTABLE_ASYNC_END]: NestableAsyncEndTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_NESTABLE_ASYNC_INSTANT]: NestableAsyncInstantTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_FLOW_BEGIN]: FlowBeginTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_FLOW_STEP]: FlowStepTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_FLOW_END]: FlowEndTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_METADATA]: MetadataTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_COUNTER]: CounterTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_SAMPLE]: SampleTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_CREATE_OBJECT]: CreateObjectTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_SNAPSHOT_OBJECT]: SnapshotObjectTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_DELETE_OBJECT]: DeleteObjectTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_MEMORY_DUMP]: MemoryDumpTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_MARK]: MarkTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_CLOCK_SYNC]: ClockSyncTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_ENTER_CONTEXT]: EnterContextTraceEvent;
+  [Constants.TRACE_EVENT_PHASE_LEAVE_CONTEXT]: LeaveContextTraceEvent;
+};
+
 export type EventModel = EventModels[TRACE_EVENT_PHASE];
 
 export type BeginEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_BEGIN,
-  BeginTraceEvent
+  Constants.TRACE_EVENT_PHASE_BEGIN
 >;
-export type EndEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_END,
-  EndTraceEvent
->;
+export type EndEventModel = EventModelCommon<Constants.TRACE_EVENT_PHASE_END>;
 export type CompleteEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_COMPLETE,
-  | CompleteTraceEvent
-  | [BeginTraceEvent, EndTraceEvent]
-  | BeginTraceEvent
-  | EndTraceEvent
+  Constants.TRACE_EVENT_PHASE_COMPLETE
 >;
 export type InstantEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_INSTANT,
-  InstantTraceEvent
+  Constants.TRACE_EVENT_PHASE_INSTANT
 >;
 export type AsyncBeginEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_ASYNC_BEGIN,
-  AsyncBeginTraceEvent
+  Constants.TRACE_EVENT_PHASE_ASYNC_BEGIN
 >;
 export type AsyncStepIntoEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_ASYNC_STEP_INTO,
-  AsyncStepIntoTraceEvent
+  Constants.TRACE_EVENT_PHASE_ASYNC_STEP_INTO
 >;
 export type AsyncStepPastEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_ASYNC_STEP_PAST,
-  AsyncStepPastTraceEvent
+  Constants.TRACE_EVENT_PHASE_ASYNC_STEP_PAST
 >;
 export type AsyncEndEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_ASYNC_END,
-  AsyncEndTraceEvent
+  Constants.TRACE_EVENT_PHASE_ASYNC_END
 >;
 export type NestableAsyncBeginEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN,
-  NestableAsyncBeginTraceEvent
+  Constants.TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN
 >;
 export type NestableAsyncEndEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_NESTABLE_ASYNC_END,
-  NestableAsyncEndTraceEvent
+  Constants.TRACE_EVENT_PHASE_NESTABLE_ASYNC_END
 >;
 export type NestableAsyncInstantEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_NESTABLE_ASYNC_INSTANT,
-  NestableAsyncInstantTraceEvent
+  Constants.TRACE_EVENT_PHASE_NESTABLE_ASYNC_INSTANT
 >;
 export type FlowBeginEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_FLOW_BEGIN,
-  FlowBeginTraceEvent
+  Constants.TRACE_EVENT_PHASE_FLOW_BEGIN
 >;
 export type FlowStepEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_FLOW_STEP,
-  FlowStepTraceEvent
+  Constants.TRACE_EVENT_PHASE_FLOW_STEP
 >;
 export type FlowEndEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_FLOW_END,
-  FlowEndTraceEvent
+  Constants.TRACE_EVENT_PHASE_FLOW_END
 >;
 export type MetadataEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_METADATA,
-  MetadataTraceEvent
+  Constants.TRACE_EVENT_PHASE_METADATA
 >;
 export type CounterEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_COUNTER,
-  CounterTraceEvent
+  Constants.TRACE_EVENT_PHASE_COUNTER
 >;
 export type SampleEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_SAMPLE,
-  SampleTraceEvent
+  Constants.TRACE_EVENT_PHASE_SAMPLE
 >;
 export type CreateObjectEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_CREATE_OBJECT,
-  CreateObjectTraceEvent
+  Constants.TRACE_EVENT_PHASE_CREATE_OBJECT
 >;
 export type SnapshotObjectEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_SNAPSHOT_OBJECT,
-  SnapshotObjectTraceEvent
+  Constants.TRACE_EVENT_PHASE_SNAPSHOT_OBJECT
 >;
 export type DeleteObjectEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_DELETE_OBJECT,
-  DeleteObjectTraceEvent
+  Constants.TRACE_EVENT_PHASE_DELETE_OBJECT
 >;
 export type MemoryDumpEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_MEMORY_DUMP,
-  MemoryDumpTraceEvent
+  Constants.TRACE_EVENT_PHASE_MEMORY_DUMP
 >;
-export type MarkEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_MARK,
-  MarkTraceEvent
->;
+export type MarkEventModel = EventModelCommon<Constants.TRACE_EVENT_PHASE_MARK>;
 export type ClockSyncEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_CLOCK_SYNC,
-  ClockSyncTraceEvent
+  Constants.TRACE_EVENT_PHASE_CLOCK_SYNC
 >;
 export type EnterContextEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_ENTER_CONTEXT,
-  EnterContextTraceEvent
+  Constants.TRACE_EVENT_PHASE_ENTER_CONTEXT
 >;
 export type LeaveContextEventModel = EventModelCommon<
-  Constants.TRACE_EVENT_PHASE_LEAVE_CONTEXT,
-  LeaveContextTraceEvent
+  Constants.TRACE_EVENT_PHASE_LEAVE_CONTEXT
 >;
 
 export type EventModels = {
@@ -177,10 +177,8 @@ export type ProcessId = number & { __isProcessId: true };
 /**
  * Monomorphic wrapper for common props
  */
-export interface EventModelCommon<
-  TPhase extends TRACE_EVENT_PHASE,
-  TTraceEvent
-> extends Bounds {
+export interface EventModelCommon<TPhase extends TRACE_EVENT_PHASE>
+  extends Bounds {
   /**
    * original order in trace
    */
@@ -196,16 +194,35 @@ export interface EventModelCommon<
 
   readonly parent: EventModel | undefined;
 
-  readonly traceEvent: TTraceEvent;
+  readonly traceEvent: EventModelTraceEvents[TPhase];
 
   readonly args: TraceEventArgs;
 
-  isMetadata(): this is MetadataEventModel;
   isBegin(): this is BeginEventModel;
   isEnd(): this is EndEventModel;
   isComplete(): this is CompleteEventModel;
   isInstant(): this is InstantEventModel;
+  isAsyncBegin(): this is AsyncBeginEventModel;
+  isAsyncStepInto(): this is AsyncStepIntoEventModel;
+  isAsyncStepPast(): this is AsyncStepPastEventModel;
+  isAsyncEnd(): this is AsyncEndEventModel;
+  isNestableAsyncBegin(): this is NestableAsyncBeginEventModel;
+  isNestableAsyncEnd(): this is NestableAsyncEndEventModel;
+  isNestableAsyncInstant(): this is NestableAsyncInstantEventModel;
+  isFlowBegin(): this is FlowBeginEventModel;
+  isFlowStep(): this is FlowStepEventModel;
+  isFlowEnd(): this is FlowEndEventModel;
+  isMetadata(): this is MetadataEventModel;
+  isCounter(): this is CounterEventModel;
+  isSample(): this is SampleEventModel;
+  isCreateObject(): this is CreateObjectEventModel;
+  isSnapshotObject(): this is SnapshotObjectEventModel;
+  isDeleteObject(): this is DeleteObjectEventModel;
+  isMemoryDump(): this is MemoryDumpEventModel;
   isMark(): this is MarkEventModel;
+  isClockSync(): this is ClockSyncEventModel;
+  isEnterContext(): this is EnterContextEventModel;
+  isLeaveContext(): this is LeaveContextEventModel;
 
   getArg(name: string): unknown;
 
@@ -214,6 +231,8 @@ export interface EventModelCommon<
 
   getStringArg(name: string, defaultValue: string): string;
   getStringArg(name: string, defaultValue?: undefined): string | undefined;
+
+  hasCategory(category: string | ((category: string) => boolean)): boolean;
 
   toJSON(): TraceEvents[TPhase];
 }

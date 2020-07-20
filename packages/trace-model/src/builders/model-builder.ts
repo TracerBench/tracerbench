@@ -15,8 +15,11 @@ import type {
 import Bounds from '../util/bounds';
 import Cache from '../util/cache';
 import normalizeCompleteEvents from '../util/normalize-complete-events';
-import EventModelImpl, { CastableEventModelImpl } from './event-model-impl';
+import EventModelImpl, { EventModelImplUnion } from './event-model-impl';
 import ProcessBuilder from './process-builder';
+import debug = require('debug');
+
+const debugCallback = debug('tracerbench:model');
 
 class TraceModelImpl implements TraceModel {
   start: number;
@@ -88,7 +91,7 @@ export default class ModelBuilder {
     return this.processes.get(pid);
   }
 
-  extendBounds(event: CastableEventModelImpl): void {
+  extendBounds(event: EventModelImplUnion): void {
     const { pid, start, end } = event;
     if (this.bounds === undefined) {
       this.bounds = new Bounds(start, end);
@@ -108,7 +111,7 @@ export default class ModelBuilder {
     }
   }
 
-  addEvent(event: CastableEventModelImpl): void {
+  addEvent(event: EventModelImplUnion): void {
     const { pid } = event;
     if (pid) {
       this.process(pid).addEvent(event);
@@ -126,9 +129,10 @@ export default class ModelBuilder {
 
     let needsSort = false;
     let last = 0;
-    const events: CastableEventModelImpl[] = (this.events = new Array(
+    const events: EventModelImplUnion[] = (this.events = new Array(
       traceEvents.length
     ));
+    debugCallback('creating models from %d trace events', traceEvents.length);
     for (let i = 0; i < traceEvents.length; i++) {
       const traceEvent = traceEvents[i];
       const { ts } = traceEvent;
@@ -137,7 +141,7 @@ export default class ModelBuilder {
       }
       last = ts;
 
-      const event = new EventModelImpl(traceEvent, i) as CastableEventModelImpl;
+      const event = new EventModelImpl(traceEvent, i) as EventModelImplUnion;
 
       if (event.isMetadata()) {
         this.addMetadata(event);
@@ -149,20 +153,25 @@ export default class ModelBuilder {
     }
 
     if (needsSort) {
+      debugCallback('sorting models');
       events.sort((a, b) => {
         const cmp = a.start - b.start;
         return cmp !== 0 ? cmp : a.ord - b.ord;
       });
     }
 
+    debugCallback('normalizing B/E events into X event');
     normalizeCompleteEvents(events, this.start, this.end);
 
     // at this point we shouldn't have any non B or E models
     // and events are sorted
+    debugCallback(
+      'adding events to processes and threads and setting parent of X events'
+    );
     for (const event of events) {
       this.addEvent(event);
     }
-
+    debugCallback('finishing model');
     return new TraceModelImpl(this);
   }
 }

@@ -2,6 +2,7 @@ export { default as buildModel } from './builders/build-model';
 
 export type {
   Bounds,
+  EventModelTraceEvents,
   EventModel,
   BeginEventModel,
   EndEventModel,

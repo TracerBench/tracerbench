@@ -11,7 +11,7 @@ import type {
 } from '../types';
 import Bounds from '../util/bounds';
 import Cache from '../util/cache';
-import type { CastableEventModelImpl } from './event-model-impl';
+import type { EventModelImplUnion } from './event-model-impl';
 import ThreadBuilder from './thread-builder';
 
 class ProcessModelImpl implements ProcessModel {
@@ -69,7 +69,7 @@ export default class ProcessBuilder {
 
   bounds: Bounds | undefined = undefined;
 
-  events: CastableEventModelImpl[] = [];
+  events: EventModelImplUnion[] = [];
 
   constructor(pid: ProcessId) {
     this.pid = pid;
@@ -92,7 +92,7 @@ export default class ProcessBuilder {
     return this.threads.get(tid);
   }
 
-  extendBounds(event: CastableEventModelImpl): void {
+  extendBounds(event: EventModelImplUnion): void {
     const { tid, start, end } = event;
     if (this.bounds === undefined) {
       this.bounds = new Bounds(start, end);
@@ -125,7 +125,7 @@ export default class ProcessBuilder {
     }
   }
 
-  addEvent(event: CastableEventModelImpl): void {
+  addEvent(event: EventModelImplUnion): void {
     const { tid } = event;
     this.events.push(event);
     if (tid) {
