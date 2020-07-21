@@ -83,7 +83,7 @@
     "typescript": "^3.9.6"
   },
   "engine": "node >= 8",
-  "gitHead": "348eaee92345c0e066bcee4cf0dc9cfb42dd970f",
+  "gitHead": "be9e06628e23d38ad405d72d41e1737ae7f8339c",
   "mocha": {
     "spec": "test/test.ts",
     "require": "ts-node/register"

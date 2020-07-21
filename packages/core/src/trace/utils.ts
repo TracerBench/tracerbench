@@ -1,9 +1,9 @@
 import type {
   ChromeWithPipeConnection,
   ProtocolConnection,
-  SessionConnection,
-  spawnChrome
+  SessionConnection
 } from 'chrome-debugging-client';
+import { spawnChrome } from 'chrome-debugging-client';
 import type { Protocol } from 'devtools-protocol';
 import { dirSync } from 'tmp';
 
