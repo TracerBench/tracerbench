@@ -62,6 +62,5 @@
     "typescript": "^3.9.6",
     "typescript-json-schema": "^0.42.0"
   },
-  "engine": "node >= 10",
-  "gitHead": "348eaee92345c0e066bcee4cf0dc9cfb42dd970f"
+  "engine": "node >= 10"
 }

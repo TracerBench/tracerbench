@@ -45,6 +45,5 @@
   },
   "publishConfig": {
     "tag": "beta"
-  },
-  "gitHead": "be9e06628e23d38ad405d72d41e1737ae7f8339c"
+  }
 }
