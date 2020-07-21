@@ -25,5 +25,6 @@
   },
   "devDependencies": {
     "typescript": "^3.8.3"
-  }
+  },
+  "gitHead": "348eaee92345c0e066bcee4cf0dc9cfb42dd970f"
 }

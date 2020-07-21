@@ -45,14 +45,12 @@
             },
             "type": "object"
         },
-        "IMarker": {
+        "Marker": {
             "properties": {
                 "label": {
-                    "description": "Label of phase",
                     "type": "string"
                 },
                 "start": {
-                    "description": "performance.mark name",
                     "type": "string"
                 }
             },
@@ -152,7 +150,7 @@
                 },
                 {
                     "items": {
-                        "$ref": "#/definitions/IMarker"
+                        "$ref": "#/definitions/Marker"
                     },
                     "type": "array"
                 },

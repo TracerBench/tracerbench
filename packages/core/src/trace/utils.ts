@@ -1,9 +1,10 @@
-import {
+import type {
+  ChromeWithPipeConnection,
   ProtocolConnection,
-  SessionConnection
-} from '@tracerbench/protocol-connection';
-import { ChromeWithPipeConnection, spawnChrome } from 'chrome-debugging-client';
-import Protocol from 'devtools-protocol';
+  SessionConnection,
+  spawnChrome
+} from 'chrome-debugging-client';
+import type { Protocol } from 'devtools-protocol';
 import { dirSync } from 'tmp';
 
 import { IConditions, networkConditions } from './conditions';

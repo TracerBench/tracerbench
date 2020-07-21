@@ -56,8 +56,6 @@
     "tslib": "^2.0.0"
   },
   "devDependencies": {
-    "@tracerbench/har": "^3.1.2",
-    "@tracerbench/protocol-connection": "^2.0.0",
     "@types/chai": "^4.2.11",
     "@types/debug": "^4.1.5",
     "@types/glob": "^7.1.3",
@@ -85,7 +83,7 @@
     "typescript": "^3.9.6"
   },
   "engine": "node >= 8",
-  "gitHead": "30be10122ff4fcdf931eec6ecd8075ff6b2dc42f",
+  "gitHead": "348eaee92345c0e066bcee4cf0dc9cfb42dd970f",
   "mocha": {
     "spec": "test/test.ts",
     "require": "ts-node/register"

@@ -31,4 +31,4 @@ OPTIONS
   --url=url                  (required) URL to visit for record-har, timings & trace commands
 ```
 
-_See code: [dist/src/commands/record-har.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v3.1.2/dist/src/commands/record-har.ts)_
+_See code: [dist/src/commands/record-har.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.0.0/dist/src/commands/record-har.ts)_
