@@ -20,5 +20,12 @@
     "outDir": "./dist"
   },
   "include": ["src"],
-  "exclude": ["node_modules", "test"]
+  "exclude": ["node_modules", "test"],
+  "references": [{
+    "path": "../core/src"
+  }, {
+    "path": "../trace-event"
+  }, {
+    "path": "../stats"
+  }]
 }
