@@ -4,7 +4,7 @@ import {
   withRaceTimeout
 } from 'race-cancellation';
 
-declare let gc: () => void;
+import gc from './util/gc';
 
 const SETUP_TIMEOUT = 2000;
 const SAMPLE_TIMEOUT = 15 * 1000;
@@ -109,9 +109,7 @@ async function takeSamples<TSample>(
         group,
         i
       );
-      if (typeof gc === 'function') {
-        gc();
-      }
+      gc();
       const sampler = samplers[group];
       const sample = await sampleWithTimeout(
         sampler,
