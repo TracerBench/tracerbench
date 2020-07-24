@@ -223,6 +223,9 @@
         "runtimeStats": {
             "type": "boolean"
         },
+        "sampleTimeout": {
+            "type": "number"
+        },
         "servers": {
             "additionalItems": {
                 "anyOf": [
