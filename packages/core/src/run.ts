@@ -6,8 +6,8 @@ import {
 
 import gc from './util/gc';
 
-const SETUP_TIMEOUT = 2000;
-const SAMPLE_TIMEOUT = 15 * 1000;
+const SETUP_TIMEOUT = 5000;
+const SAMPLE_TIMEOUT = 30 * 1000;
 
 export interface Benchmark<TSample> {
   readonly group: string;

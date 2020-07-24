@@ -33,6 +33,7 @@ export interface ITBConfig {
   inputFilePath?: string;
   outputFilePath?: string;
   regressionThreshold?: number | string;
+  sampleTimeout?: number;
   servers?: [IHARServer, IHARServer];
   headless?: boolean;
   debug?: boolean;

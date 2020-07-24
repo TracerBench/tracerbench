@@ -12,11 +12,11 @@ export default function extractNavigationSample(
   trace: TraceModel,
   markers: Marker[]
 ): NavigationSample {
-  const mainRendererThread = trace.findRendererMain();
-  if (mainRendererThread === undefined) {
-    throw new Error(`missing main renderer thread`);
+  const mainProcess = trace.processes.find((p) => p.isRenderer);
+  if (mainProcess === undefined) {
+    throw new Error(`missing main process`);
   }
-  const phases = findPhases(mainRendererThread.events, markers);
+  const phases = findPhases(mainProcess.events, markers);
   const lastPhase = phases[phases.length - 1];
   return {
     metadata: trace.metadata,

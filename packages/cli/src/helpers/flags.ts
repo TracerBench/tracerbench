@@ -85,6 +85,14 @@ export const regressionThreshold: oclifFlags.Definition<string> = oclifFlags.bui
   }
 );
 
+export const sampleTimeout: oclifFlags.Definition<number> = oclifFlags.build({
+  default: () => getDefaultValue("sampleTimeout"),
+  description: `The number of seconds to wait for a sample.`,
+  parse: (ms): number => {
+    return parseInt(ms, 10);
+  },
+});
+
 export const browserArgs: oclifFlags.Definition<string> = oclifFlags.build({
   default: () => getDefaultValue("browserArgs"),
   description: `(Default Recommended) Additional chrome flags for the TracerBench render benchmark. TracerBench includes many non-configurable defaults in this category.`,

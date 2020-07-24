@@ -3,37 +3,14 @@ import mkdirp = require('mkdirp');
 import { resolve, dirname, join } from 'path';
 import { pathToFileURL } from 'url';
 import { createTraceNavigationBenchmark, run } from '@tracerbench/core';
-import { Stdio } from '@tracerbench/spawn';
 import findUp = require('find-up');
 import build from './build/index';
+import type { ChromeSpawnOptions } from 'chrome-debugging-client';
 
 const channels = ['alpha', 'beta', 'release'];
-const browserOpts = {
-  additionalArguments: [
-    '--crash-dumps-dir=./tmp',
-    '--disable-background-timer-throttling',
-    '--disable-dev-shm-usage',
-    '--disable-cache',
-    '--disable-v8-idle-tasks',
-    '--disable-breakpad',
-    '--disable-notifications',
-    '--disable-hang-monitor',
-    '--safebrowsing-disable-auto-update',
-    '--ignore-certificate-errors',
-    '--v8-cache-options=none',
-    '--headless',
-    '--disable-gpu',
-    '--hide-scrollbars',
-    '--mute-audio',
-    '--disable-logging',
-    '--headless'
-  ],
-  stdio: 'inherit' as Stdio,
-  chromeExecutable: undefined,
-  userDataDir: undefined,
-  userDataRoot: undefined,
-  url: undefined,
-  disableDefaultArguments: false
+const browserOpts: Partial<ChromeSpawnOptions> = {
+  headless: true,
+  stdio: 'ignore'
 };
 
 describe('Benchmark', function () {
@@ -93,13 +70,30 @@ describe('Benchmark', function () {
             },
           })
       );
+      const start = Date.now();
       const results = await run(benchmarks, 4, (elasped, completed, remaining, group, iteration) => {
-        console.log("%o %o %o %o %o", elasped, completed, remaining, group, iteration);
+        if (completed > 0) {
+          const average = elasped / completed;
+          const remainingSecs = Math.round(remaining * average / 1000);
+          console.log(
+            "%s %s %s seconds remaining",
+            group.padStart(15),
+            iteration.toString().padStart(3),
+            `about ${remainingSecs}`.padStart(10)
+          );
+        } else {
+          console.log(
+            "%s %s",
+            group.padStart(15),
+            iteration.toString().padStart(3)
+          );
+        }
       });
+      console.log("completed in %d seconds", Math.round((Date.now() - start) / 1000 ));
 
       writeFileSync(
         join(resultDir, 'results.json'),
-        JSON.stringify(results, null, 2)
+        JSON.stringify(results)
       );
     });
   });
