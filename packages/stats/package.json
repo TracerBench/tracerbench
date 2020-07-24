@@ -1,6 +1,6 @@
 {
   "name": "@tracerbench/stats",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "Stats class written in TS-Node",
   "keywords": [
     "statistics",
