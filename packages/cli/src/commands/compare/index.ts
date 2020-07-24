@@ -43,6 +43,7 @@ import {
   regressionThreshold,
   report,
   runtimeStats,
+  sampleTimeout,
   socksPorts,
   tbResultsFolder,
 } from "../../helpers/flags";
@@ -73,6 +74,7 @@ export interface ICompareFlags {
   socksPorts?: [string, string] | [number, number] | undefined;
   debug: boolean;
   regressionThreshold?: number;
+  sampleTimeout: number;
   headless: boolean;
   config?: string;
   report?: boolean;
@@ -99,6 +101,7 @@ export default class Compare extends TBBaseCommand {
     emulateDeviceOrientation: emulateDeviceOrientation(),
     socksPorts: socksPorts(),
     regressionThreshold: regressionThreshold(),
+    sampleTimeout: sampleTimeout(),
     config: config(),
     runtimeStats,
     report,
@@ -148,18 +151,43 @@ export default class Compare extends TBBaseCommand {
       experiment: createTraceNavigationBenchmark(...experimentSettings),
     };
 
+    const sampleTimeout = this.parsedConfig.sampleTimeout;
+
     const startTime = timestamp();
     const results = (
       await run(
         [benchmarks.control, benchmarks.experiment],
         this.compareFlags.fidelity,
-        () => {
-          // log progress
+        (elasped, completed, remaining, group, iteration) => {
+          if (completed > 0) {
+            const average = elasped / completed;
+            const remainingSecs = Math.round((remaining * average) / 1000);
+            console.log(
+              "%s %s %s seconds remaining",
+              group.padStart(15),
+              iteration.toString().padStart(3),
+              `about ${remainingSecs}`.padStart(10)
+            );
+          } else {
+            console.log(
+              "%s %s",
+              group.padStart(15),
+              iteration.toString().padStart(3)
+            );
+          }
+        },
+        {
+          sampleTimeoutMs: sampleTimeout && sampleTimeout * 1000,
         }
       )
     ).map(({ group, samples }) => {
       const meta = samples.length > 0 ? samples[0].metadata : {};
-      return { set: group, samples, meta };
+      return {
+        group,
+        set: group,
+        samples,
+        meta,
+      };
     });
     const endTime = timestamp();
     if (!results[0].samples[0]) {
@@ -169,7 +197,7 @@ export default class Compare extends TBBaseCommand {
     }
     const resultJSONPath = `${this.parsedConfig.tbResultsFolder}/compare.json`;
 
-    fs.writeFileSync(resultJSONPath, JSON.stringify(results, null, 2));
+    fs.writeFileSync(resultJSONPath, JSON.stringify(results));
 
     const tracesDir = `${this.parsedConfig.tbResultsFolder}/traces`;
     const zipOutput = fs.createWriteStream(
@@ -307,10 +335,13 @@ export default class Compare extends TBBaseCommand {
     [string, string, Marker[], NavigationBenchmarkOptions],
     [string, string, Marker[], NavigationBenchmarkOptions]
   ] {
+    const stdio = this.parsedConfig.debug ? "inherit" : "ignore";
     const controlBrowser: Partial<ChromeSpawnOptions> = {
+      stdio,
       additionalArguments: this.compareFlags.browserArgs,
     };
     const experimentBrowser: Partial<ChromeSpawnOptions> = {
+      stdio,
       additionalArguments: this.compareFlags.browserArgs,
     };
 

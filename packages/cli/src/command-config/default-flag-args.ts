@@ -42,6 +42,7 @@ export const defaultFlagArgs: ITBConfig = {
   isCIEnv: false,
   cookiespath: "",
   url: "",
+  sampleTimeout: 30,
 };
 
 // specify with --headless flag
@@ -51,7 +52,6 @@ export const headlessFlags = [
   "--disable-gpu",
   "--hide-scrollbars",
   "--mute-audio",
-  "--disable-logging",
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

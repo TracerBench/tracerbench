@@ -8,61 +8,49 @@ export type WaitForMark = (raceCancellation: RaceCancellation) => Promise<void>;
 
 export default async function injectMarkObserver(
   page: ProtocolConnection,
-  mark: string
+  mark: string,
+  variable = '__tracerbench'
 ): Promise<(raceCancelation: RaceCancellation) => Promise<void>> {
   const scriptSource = isNavigationTimingMark(mark)
-    ? navigationObserver()
-    : observerScript(mark);
+    ? navigationObserver(variable)
+    : markObserver(mark, variable);
 
   await page.send('Page.addScriptToEvaluateOnLoad', {
     scriptSource
   });
 
   return (raceCancelation: RaceCancellation) =>
-    waitForMark(page, '__tracerbench.done', mark, raceCancelation);
+    waitForMark(page, variable, mark, raceCancelation);
 }
 
-function observerScript(mark: string): string {
+function markObserver(mark: string, variable: string): string {
   return `"use strict";
-  var __tracerbench = {
-    stop() {},
-    done: Promise.resolve(),
-  };
-
-  (() => {
-    if (self !== top || opener !== null) {
-      return;
-    }
-    __tracerbench.done = new Promise((resolve) => (__tracerbench.stop = resolve));
-    (new PerformanceObserver((list, observer) => {
-      console.log(JSON.stringify(list.getEntries()));
-      if (list.getEntriesByName(${JSON.stringify(mark)}).length > 0) {
-        requestIdleCallback(() => {
-          __tracerbench.stop();
-        });
+var ${variable} =
+  self === top &&
+  opener === null &&
+  new Promise((resolve) =>
+    new PerformanceObserver((records, observer) => {
+      if (records.getEntriesByName(${JSON.stringify(mark)}).length > 0) {
+        resolve();
         observer.disconnect();
       }
-    })).observe({ entryTypes: ["mark"] });
-  })();`;
+    }).observe({ type: "mark" })
+  );`;
 }
 
-function navigationObserver(): string {
+function navigationObserver(variable: string): string {
   return `"use strict";
-  var __tracerbench = {
-    stop() {},
-    done: Promise.resolve(),
-  };
-
-  (() => {
-    if (self !== top || opener !== null) {
-      return;
-    }
-    self.on('load', () => {
-      requestIdleCallback(() => {
-        __tracerbench.stop();
-      });
-    });
-  })();`;
+var ${variable} =
+  self === top &&
+  opener === null &&
+  new Promise((resolve) =>
+    new PerformanceObserver((records, observer) => {
+      if (records.getEntries().length > 0) {
+        resolve();
+        observer.disconnect();
+      }
+    }).observe({ type: "navigation" })
+  );`;
 }
 
 async function waitForMark(
@@ -91,18 +79,27 @@ async function waitForMark(
   }
 }
 
+interface ErrorDetail {
+  exceptionDetails?: Protocol.Runtime.ExceptionDetails;
+  original?: Error;
+}
+
 function waitForMarkError(
   mark: string,
-  detail: {
-    exceptionDetails?: Protocol.Runtime.ExceptionDetails;
-    original?: Error;
-  }
+  { original, exceptionDetails }: ErrorDetail
 ): Error {
+  let message = `errored while waiting for ${mark}`;
+  if (exceptionDetails) {
+    message += `: ${exceptionDetails.text}`;
+  }
+  if (original) {
+    message += `: ${original.message}`;
+  }
   const error: Error & {
     exceptionDetails?: Protocol.Runtime.ExceptionDetails;
     original?: Error;
-  } = new Error(`errored while waiting for ${mark}`);
-  error.exceptionDetails = detail.exceptionDetails;
-  error.original = detail.original;
+  } = new Error(message);
+  error.exceptionDetails = exceptionDetails;
+  error.original = original;
   return error;
 }

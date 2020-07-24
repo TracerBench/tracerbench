@@ -76,6 +76,9 @@ OPTIONS
   --runtimeStats
       Compare command output deep-dive stats during run.
 
+  --sampleTimeout=sampleTimeout
+      [default: 30] The number of seconds to wait for a sample.
+
   --socksPorts=socksPorts
       Specify a socks proxy port as browser option for control and experiment
 
