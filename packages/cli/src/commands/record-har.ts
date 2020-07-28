@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { flags as oclifFlags } from "@oclif/command";
 import { IConditions, recordHARClient } from "@tracerbench/core";
 import { readJson, writeFileSync } from "fs-extra";
@@ -18,6 +17,7 @@ import {
 
 export default class RecordHAR extends TBBaseCommand {
   public static description = "Generates a HAR file from a URL.";
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public static flags: oclifFlags.Input<any> = {
     url: url({ required: true, default: undefined }),
     dest: dest({ required: true }),
@@ -27,12 +27,12 @@ export default class RecordHAR extends TBBaseCommand {
     config: config(),
     headless,
   };
-  public async init() {
+  public async init(): Promise<void> {
     const { flags } = this.parse(RecordHAR);
     this.parsedConfig = getConfig(flags.config, flags, this.explicitFlags);
   }
 
-  public async run() {
+  public async run(): Promise<void> {
     const { flags } = this.parse(RecordHAR);
     const { url, dest, cookiespath, filename, marker } = flags;
     const { network, cpuThrottleRate, headless } = this.parsedConfig;

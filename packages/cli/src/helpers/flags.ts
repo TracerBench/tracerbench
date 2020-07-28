@@ -53,7 +53,7 @@ export const servers: oclifFlags.Definition<string> = oclifFlags.build({
 
 export const plotTitle: oclifFlags.Definition<string> = oclifFlags.build({
   default: () => getDefaultValue("plotTitle"),
-  description: `Specify the title of the report pdf file.`,
+  description: `Specify the title of the report pdf/html files.`,
 });
 
 export const config: oclifFlags.Definition<string> = oclifFlags.build({

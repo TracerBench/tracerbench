@@ -9,7 +9,7 @@ import { getConfig, TBBaseCommand } from "../../command-config";
 import createConsumableHTML, {
   ITracerBenchTraceResult,
 } from "../../helpers/create-consumable-html";
-import { config, tbResultsFolder } from "../../helpers/flags";
+import { config, plotTitle, tbResultsFolder } from "../../helpers/flags";
 import printToPDF from "../../helpers/print-to-pdf";
 import { chalkScheme } from "../../helpers/utils";
 
@@ -18,6 +18,7 @@ const ARTIFACT_FILE_NAME = "artifact";
 export interface IReportFlags {
   tbResultsFolder: string;
   config?: string;
+  plotTitle?: string;
 }
 
 export default class CompareReport extends TBBaseCommand {
@@ -27,6 +28,7 @@ export default class CompareReport extends TBBaseCommand {
   public static flags = {
     tbResultsFolder: tbResultsFolder({ required: true }),
     config: config(),
+    plotTitle: plotTitle(),
   };
   public reportFlags: IReportFlags;
 
@@ -37,7 +39,7 @@ export default class CompareReport extends TBBaseCommand {
     this.reportFlags = flags;
   }
   // instantiated before this.run()
-  public async init() {
+  public async init(): Promise<void> {
     const { flags } = this.parse(CompareReport);
     this.parsedConfig = getConfig(flags.config, flags, this.explicitFlags);
 
@@ -48,14 +50,14 @@ export default class CompareReport extends TBBaseCommand {
    * Ensure the input file is valid and call the helper function "createConsumableHTML"
    * to generate the HTML string for the output file.
    */
-  public async run() {
+  public async run(): Promise<void> {
     const tbResultsFolder = this.reportFlags.tbResultsFolder;
     const inputFilePath = join(tbResultsFolder, "compare.json");
     let inputData: ITracerBenchTraceResult[] = [];
     // If the input file cannot be found, exit with an error
     if (!existsSync(inputFilePath)) {
       this.error(
-        `Input json file does not exist. Please make sure ${inputFilePath} exists`,
+        `The compare.json file does not exist. Please make sure ${inputFilePath} exists`,
         { exit: 1 }
       );
     }
@@ -64,7 +66,7 @@ export default class CompareReport extends TBBaseCommand {
       inputData = JSON.parse(readFileSync(inputFilePath, "utf8"));
     } catch (error) {
       this.error(
-        `Had issues parsing the input JSON file. Please make sure ${inputFilePath} is a valid JSON`,
+        `Had issues parsing the compare.json file. Please make sure ${inputFilePath} is valid JSON`,
         { exit: 1 }
       );
     }
@@ -78,14 +80,17 @@ export default class CompareReport extends TBBaseCommand {
     }) as ITracerBenchTraceResult;
 
     if (!controlData || !experimentData) {
-      this.error(`Missing control or experiment set in JSON`, { exit: 1 });
+      this.error(`Missing control or experiment set in compare.json`, {
+        exit: 1,
+      });
     }
 
     const outputFileName = this.determineOutputFileName(tbResultsFolder);
     const renderedHTML = createConsumableHTML(
       controlData,
       experimentData,
-      this.parsedConfig
+      this.parsedConfig,
+      this.reportFlags.plotTitle
     );
     if (!existsSync(tbResultsFolder)) {
       mkdirSync(tbResultsFolder, { recursive: true });
@@ -118,7 +123,8 @@ export default class CompareReport extends TBBaseCommand {
       `\nHTML: ${chalkScheme.tbBranding.blue.underline.bold(absPathToHTML)}\n`
     );
   }
-  private async parseFlags() {
+
+  private async parseFlags(): Promise<void> {
     const { tbResultsFolder } = (this.parsedConfig as unknown) as IReportFlags;
 
     // if the folder for the tracerbench results file
@@ -127,6 +133,7 @@ export default class CompareReport extends TBBaseCommand {
       mkdirSync(tbResultsFolder);
     }
   }
+
   private determineOutputFileName(outputFolder: string): string {
     let count = 1;
     const running = true;

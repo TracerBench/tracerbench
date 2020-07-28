@@ -3,96 +3,129 @@ import {
   generateDataForHTML,
   resolveTitles,
   phaseSorter,
-  Sample
-} from '../../src/helpers/create-consumable-html';
-import { expect } from 'chai';
-import { IHARServer } from '../../src/command-config';
+  Sample,
+} from "../../src/helpers/create-consumable-html";
+import { expect } from "chai";
+import { IHARServer } from "../../src/command-config";
 
 const TEST_SAMPLES: Sample[] = [
   {
-    'gc': [],
-    'blinkGC': [],
-    'duration': 6260696,
-    'js': 5310439,
-    'phases': [
+    gc: [],
+    blinkGC: [],
+    duration: 6260696,
+    js: 5310439,
+    phases: [
       {
-        'phase': 'load',
-        'start': 0,
-        'duration': 1807839
+        phase: "load",
+        start: 0,
+        duration: 1807839,
       },
       {
-        'phase': 'boot',
-        'start': 1807839,
-        'duration': 973172
+        phase: "boot",
+        start: 1807839,
+        duration: 973172,
       },
       {
-        'phase': 'transition',
-        'start': 2781011,
-        'duration': 1540986
+        phase: "transition",
+        start: 2781011,
+        duration: 1540986,
       },
       {
-        'phase': 'render',
-        'start': 4321997,
-        'duration': 1905528
+        phase: "render",
+        start: 4321997,
+        duration: 1905528,
       },
       {
-        'phase': 'paint',
-        'start': 6227525,
-        'duration': 33171
-      }
-    ]
-  }, {
-    'gc': [],
-    'blinkGC': [],
-    'duration': 6260696,
-    'js': 5310439,
-    'phases': [
+        phase: "paint",
+        start: 6227525,
+        duration: 33171,
+      },
+    ],
+  },
+  {
+    gc: [],
+    blinkGC: [],
+    duration: 6260696,
+    js: 5310439,
+    phases: [
       {
-        'phase': 'load',
-        'start': 0,
-        'duration': 1807839
+        phase: "load",
+        start: 0,
+        duration: 1807839,
       },
       {
-        'phase': 'boot',
-        'start': 1807839,
-        'duration': 973172
+        phase: "boot",
+        start: 1807839,
+        duration: 973172,
       },
       {
-        'phase': 'transition',
-        'start': 2781011,
-        'duration': 1540986
+        phase: "transition",
+        start: 2781011,
+        duration: 1540986,
       },
       {
-        'phase': 'render',
-        'start': 4321997,
-        'duration': 1905528
+        phase: "render",
+        start: 4321997,
+        duration: 1905528,
       },
       {
-        'phase': 'paint',
-        'start': 6227525,
-        'duration': 33171
-      }
-    ]
-  }
+        phase: "paint",
+        start: 6227525,
+        duration: 33171,
+      },
+    ],
+  },
 ];
 
-describe('create-consumable-html test', () => {
+describe("create-consumable-html test", () => {
   it(`resolveTitles()`, () => {
-    const browserVersion = 'HeadlessChrome/80.0.3965.0';
-    const servers: [IHARServer, IHARServer] = [{
-      name: 'Hello World',
-      url: '',
-      dist: '',
-      socksPort: 0,
-      har: ''
-    }, { name: 'Hello World 2', url: '', dist: '', socksPort: 0, har: '' }];
-    const resolved = resolveTitles({
-      servers,
-      plotTitle: 'Override'
-    }, browserVersion);
-    expect(resolved.servers[0].name).to.equal('Control: Hello World');
-    expect(resolved.servers[1].name).to.equal('Experiment: Hello World 2');
-    expect(resolved.plotTitle).to.equal('Override');
+    const browserVersion = "HeadlessChrome/80.0.3965.0";
+    const servers: [IHARServer, IHARServer] = [
+      {
+        name: "Hello World",
+        url: "",
+        dist: "",
+        socksPort: 0,
+        har: "",
+      },
+      { name: "Hello World 2", url: "", dist: "", socksPort: 0, har: "" },
+    ];
+    const resolved = resolveTitles(
+      {
+        servers,
+        plotTitle: "Override",
+      },
+      browserVersion
+    );
+    expect(resolved.servers[0].name).to.equal("Control: Hello World");
+    expect(resolved.servers[1].name).to.equal("Experiment: Hello World 2");
+    expect(resolved.plotTitle).to.equal("Override");
+    expect(resolved.browserVersion).to.equal(browserVersion);
+  });
+
+  it(`resolveTitles():flag-override`, () => {
+    const browserVersion = "HeadlessChrome/80.0.3965.0";
+    const servers: [IHARServer, IHARServer] = [
+      {
+        name: "Hello World",
+        url: "",
+        dist: "",
+        socksPort: 0,
+        har: "",
+      },
+      { name: "Hello World 2", url: "", dist: "", socksPort: 0, har: "" },
+    ];
+    const resolved = resolveTitles(
+      {
+        servers,
+        plotTitle: "Override",
+      },
+      browserVersion,
+      "Flag-Override"
+    );
+    expect(resolved.servers[0].name).to.equal("Control: Hello World");
+    expect(resolved.servers[1].name).to.equal("Experiment: Hello World 2");
+    expect(resolved.plotTitle).to.equal("Flag-Override");
     expect(resolved.browserVersion).to.equal(browserVersion);
   });
 
@@ -102,9 +135,9 @@ describe('create-consumable-html test', () => {
     const keys = Object.keys(results);
     // Should be 5 phases + duration
     expect(keys.length).to.equal(6);
-    expect(results).to.have.property('duration');
-    expect(results).to.have.property('render');
-    expect(results).to.have.property('boot');
+    expect(results).to.have.property("duration");
+    expect(results).to.have.property("render");
+    expect(results).to.have.property("boot");
     expect(results.duration.length).to.equal(2);
   });
 
@@ -141,33 +174,30 @@ describe('create-consumable-html test', () => {
   /**
    * The mocked data is duplicated so the differences should be 0
    */
-  it('generateDataForHTML()', () => {
+  it("generateDataForHTML()", () => {
     const { durationSection, subPhaseSections } = generateDataForHTML(
       {
         samples: TEST_SAMPLES,
         meta: {
-          'browserVersion': 'HeadlessChrome/78.0.3904.97',
-          'cpus': [
-            'Intel(R) Core(TM) i9-8950HK CPU @ 2.90GHz'
-          ]
+          browserVersion: "HeadlessChrome/78.0.3904.97",
+          cpus: ["Intel(R) Core(TM) i9-8950HK CPU @ 2.90GHz"],
         },
-        set: 'control'
+        set: "control",
       },
       {
         samples: TEST_SAMPLES,
         meta: {
-          'browserVersion': 'HeadlessChrome/78.0.3904.97',
-          'cpus': [
-            'Intel(R) Core(TM) i9-8950HK CPU @ 2.90GHz'
-          ]
+          browserVersion: "HeadlessChrome/78.0.3904.97",
+          cpus: ["Intel(R) Core(TM) i9-8950HK CPU @ 2.90GHz"],
         },
-        set: 'experiment'
+        set: "experiment",
       },
       {
         servers: [],
-        plotTitle: 'Random Title',
-        browserVersion: '0.0.2'
-      });
+        plotTitle: "Random Title",
+        browserVersion: "0.0.2",
+      }
+    );
     expect(subPhaseSections).to.length(5);
     expect(durationSection.hlDiff).to.equal(0);
   });

@@ -159,14 +159,18 @@ export interface ParsedTitleConfigs {
  * @param tbConfig - Concerned only about the "servers" and "plotTitle"
  *   attribute
  * @param version - Browser version
+ * @param plotTitle - Optional explicit title from cli flag
  */
 export function resolveTitles(
   tbConfig: Partial<ITBConfig>,
-  version: string
+  version: string,
+  plotTitle?: string
 ): ParsedTitleConfigs {
   const reportTitles = {
     servers: [{ name: "Control" }, { name: "Experiment" }],
-    plotTitle: defaultFlagArgs.plotTitle,
+    plotTitle: tbConfig.plotTitle
+      ? tbConfig.plotTitle
+      : defaultFlagArgs.plotTitle,
     browserVersion: version,
   };
 
@@ -180,8 +184,10 @@ export function resolveTitles(
     });
   }
 
-  if (tbConfig.plotTitle) {
-    reportTitles.plotTitle = tbConfig.plotTitle;
+  // if passing an explicit plotTitle via cli flag this trumps
+  // the tbConfig.plotTitle and defaults
+  if (plotTitle) {
+    reportTitles.plotTitle = plotTitle;
   }
 
   return reportTitles;
@@ -344,9 +350,14 @@ export function generateDataForHTML(
 export default function createConsumableHTML(
   controlData: ITracerBenchTraceResult,
   experimentData: ITracerBenchTraceResult,
-  tbConfig: ITBConfig
+  tbConfig: ITBConfig,
+  plotTitle?: string
 ): string {
-  const reportTitles = resolveTitles(tbConfig, controlData.meta.browserVersion);
+  const reportTitles = resolveTitles(
+    tbConfig,
+    controlData.meta.browserVersion,
+    plotTitle
+  );
   const { durationSection, subPhaseSections } = generateDataForHTML(
     controlData,
     experimentData,
