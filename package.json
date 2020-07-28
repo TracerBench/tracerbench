@@ -22,7 +22,7 @@
     "husky": "^4.2.5",
     "conventional-changelog-cli": "^2.0.31",
     "@commitlint/config-conventional": "^9.1.1",
-    "@commitlint/cli": "^8.3.5"
+    "@commitlint/cli": "^9.1.1"
   },
   "repository": {
     "type": "git",
