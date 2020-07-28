@@ -32,7 +32,7 @@
     "@tracerbench/core": "^4.0.2",
     "@tracerbench/stats": "^4.0.1",
     "@tracerbench/trace-event": "^4.0.0",
-    "archiver": "^4.0.2",
+    "archiver": "^5.0.0",
     "chalk": "^4.1.0",
     "chrome-debugging-client": "^2.0.0",
     "cli-table3": "^0.6.0",
