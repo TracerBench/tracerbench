@@ -124,6 +124,8 @@ OPTIONS
   --config=config                    Specify an alternative directory rather than the project root for the
                                      tbconfig.json. This explicit config will overwrite all.
 
+  --plotTitle=plotTitle              [default: TracerBench] Specify the title of the report pdf/html files.
+
   --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output folder path for all
                                      tracerbench results
 
