@@ -38,11 +38,19 @@ export async function recordHARClient(
 
     chrome.on('Network.requestWillBeSent', (params) => {
       console.log(
-        `RECORDING-REQUEST :: ${params.request.method} :: ${params.type} :: ${params.request.url}`
+        `REQUEST :: ${params.request.method} :: ${params.type} :: ${params.request.url}`
       );
     });
 
     chrome.on('Network.responseReceived', (params) => {
+      const { statusText, status, url } = params.response;
+      if (statusText !== 'OK') {
+        console.warn(`REQUEST-NOT-INCLUDED :: ${status} :: ${url}`);
+        return;
+      }
+
+      console.log(`RESPONSE :: ${url}`);
+
       networkRequests.push(params);
     });
 
