@@ -60,6 +60,7 @@ export async function recordHARClient(
         params.type === 'Other' ||
         statusText === 'No Content' ||
         status === 204 ||
+        status === 206 ||
         (statusText !== 'OK' && status >= 400)
       ) {
         debugCallback('NOT-INCLUDED %o', params);
