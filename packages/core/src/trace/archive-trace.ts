@@ -10,6 +10,21 @@ import {
   getTab,
   setCookies
 } from './utils';
+import debug = require('debug');
+
+// run with DEBUG=* eg.`DEBUG=* tracerbench record-har`
+// run with DEBUG=tracerbench:archive-trace eg.`DEBUG=tracerbench:archive-trace tracerbench record-har`
+const debugCallback = debug('tracerbench:archive-trace');
+
+type NetworkRequestStacks = {
+  stackA: Protocol.Network.ResponseReceivedEvent[];
+  stackB: Protocol.Network.ResponseReceivedEvent[];
+};
+
+const networkRequestStacks: NetworkRequestStacks = {
+  stackA: [],
+  stackB: []
+};
 
 export async function recordHARClient(
   url: string,
@@ -18,7 +33,6 @@ export async function recordHARClient(
   conditions: IConditions,
   altBrowserArgs?: string[]
 ): Promise<Archive> {
-  const networkRequests: Protocol.Network.ResponseReceivedEvent[] = [];
   const archive: Archive = {
     log: {
       version: '0.0.0',
@@ -29,7 +43,6 @@ export async function recordHARClient(
       entries: []
     }
   };
-
   const browserArgs = getBrowserArgs(altBrowserArgs);
   const browser = await createBrowser(browserArgs);
 
@@ -37,21 +50,24 @@ export async function recordHARClient(
     const chrome = await getTab(browser.connection);
 
     chrome.on('Network.requestWillBeSent', (params) => {
-      console.log(
-        `REQUEST :: ${params.request.method} :: ${params.type} :: ${params.request.url}`
-      );
+      debugCallback('Network.requestWillBeSent %o', params);
     });
 
     chrome.on('Network.responseReceived', (params) => {
-      const { statusText, status, url } = params.response;
-      if (statusText !== 'OK') {
-        console.warn(`REQUEST-NOT-INCLUDED :: ${status} :: ${url}`);
+      const { statusText, status } = params.response;
+
+      if (
+        params.type === 'Other' ||
+        statusText === 'No Content' ||
+        status === 204 ||
+        (statusText !== 'OK' && status >= 400)
+      ) {
+        debugCallback('NOT-INCLUDED %o', params);
         return;
       }
 
-      console.log(`RESPONSE :: ${url}`);
-
-      networkRequests.push(params);
+      debugCallback('Network.responseReceived %o', params);
+      networkRequestStacks.stackA.push(params);
     });
 
     // enable Network / Page / Runtime
@@ -59,7 +75,9 @@ export async function recordHARClient(
       chrome.send('Page.enable'),
       chrome.send('Network.enable'),
       chrome.send('Runtime.enable')
-    ]); // clear and disable cache
+    ]);
+
+    // clear and disable cache
     await chrome.send('Network.clearBrowserCache');
     // disable cache
     await chrome.send('Network.setCacheDisabled', { cacheDisabled: true });
@@ -102,77 +120,119 @@ export async function recordHARClient(
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
+      debugCallback('evalPromise resolved with marker %o', marker);
     });
 
-    archive.log.entries = await processEntries(networkRequests, chrome);
+    archive.log.entries = await processEntriesLoop(chrome);
 
     await Promise.all([
       chrome.send('Network.disable'),
       chrome.send('Runtime.disable')
     ]);
 
+    debugCallback('Network.disable');
+    debugCallback('Runtime.disable');
+
     await chrome.send('Page.close');
+    debugCallback('Page.close');
   } catch (e) {
-    throw new Error(`Network Request could not be captured. ${e}`);
+    throw new Error(e);
   } finally {
     if (browser) {
       await browser.dispose();
+      debugCallback('browser.dispose()');
     }
   }
 
   return archive;
 }
 
+export async function processEntriesLoop(
+  chrome: SessionConnection
+): Promise<Entry[]> {
+  debugCallback(
+    'processEntriesLoop() %o',
+    `${networkRequestStacks.stackA.length} entries`
+  );
+  let networkEntries: Entry[] = [];
+  // empty A into B
+  networkRequestStacks.stackB = networkRequestStacks.stackA;
+  networkRequestStacks.stackA = [];
+
+  // process B and empty
+  networkEntries = await processEntries(networkRequestStacks.stackB, chrome);
+  networkRequestStacks.stackB = [];
+
+  // check A for new entries
+  // if empty return
+  if (networkRequestStacks.stackA.length > 0) {
+    debugCallback(
+      'processEntriesLoop() %o',
+      `${networkRequestStacks.stackA.length} entries`
+    );
+
+    networkEntries = networkEntries.concat(await processEntriesLoop(chrome));
+  }
+
+  return networkEntries;
+}
+
 export async function processEntries(
   networkRequests: Protocol.Network.ResponseReceivedEvent[],
   chrome: SessionConnection
 ): Promise<Entry[]> {
+  debugCallback('processEntries()');
   const entries = [];
   for (let i = 0; i < networkRequests.length; i++) {
-    console.log(`BUILDING-HAR-ENTRY-FOR :: ${networkRequests[i].response.url}`);
-    const requestId = networkRequests[i].requestId;
-    const response = networkRequests[i].response;
-    const { body } = await chrome.send('Network.getResponseBody', {
-      requestId
-    });
-    const { url, requestHeaders, status, statusText, headers } = response;
+    debugCallback('processEntries.entry %o', networkRequests[i].response.url);
 
-    const entry: Entry = {
-      request: {
-        url,
-        method: '',
-        httpVersion: '',
-        cookies: [],
-        headers: handleHeaders(requestHeaders),
-        queryString: [],
-        headersSize: 0,
-        bodySize: 0
-      },
-      response: {
-        status,
-        statusText,
-        httpVersion: '',
-        cookies: [],
-        headers: handleHeaders(headers),
-        redirectURL: '',
-        headersSize: 0,
-        bodySize: 0,
-        content: {
-          text: body,
-          size: 0,
-          mimeType: ''
-        }
-      },
-      time: 0,
-      cache: {},
-      timings: {
-        send: 0,
-        wait: 0,
-        receive: 0
-      },
-      startedDateTime: ''
-    };
-    entries.push(entry);
+    try {
+      const requestId = networkRequests[i].requestId;
+      const response = networkRequests[i].response;
+      const { body } = await chrome.send('Network.getResponseBody', {
+        requestId
+      });
+      const { url, requestHeaders, status, statusText, headers } = response;
+
+      const entry: Entry = {
+        request: {
+          url,
+          method: '',
+          httpVersion: '',
+          cookies: [],
+          headers: handleHeaders(requestHeaders),
+          queryString: [],
+          headersSize: 0,
+          bodySize: 0
+        },
+        response: {
+          status,
+          statusText,
+          httpVersion: '',
+          cookies: [],
+          headers: handleHeaders(headers),
+          redirectURL: '',
+          headersSize: 0,
+          bodySize: 0,
+          content: {
+            text: body,
+            size: 0,
+            mimeType: ''
+          }
+        },
+        time: 0,
+        cache: {},
+        timings: {
+          send: 0,
+          wait: 0,
+          receive: 0
+        },
+        startedDateTime: ''
+      };
+      entries.push(entry);
+    } catch (e) {
+      console.warn(e, networkRequests[i].response);
+    }
   }
 
   return entries;
