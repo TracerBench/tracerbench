@@ -186,57 +186,64 @@ export async function processEntries(
   const entries = [];
   for (let i = 0; i < networkRequests.length; i++) {
     debugCallback('processEntries.entry %o', networkRequests[i].response.url);
+    const requestId = networkRequests[i].requestId;
+    const response = networkRequests[i].response;
+    const body = await getResponseBody(requestId, chrome);
+    const { url, requestHeaders, status, statusText, headers } = response;
+    const entry: Entry = {
+      request: {
+        url,
+        method: '',
+        httpVersion: '',
+        cookies: [],
+        headers: handleHeaders(requestHeaders),
+        queryString: [],
+        headersSize: 0,
+        bodySize: 0
+      },
+      response: {
+        status,
+        statusText,
+        httpVersion: '',
+        cookies: [],
+        headers: handleHeaders(headers),
+        redirectURL: '',
+        headersSize: 0,
+        bodySize: 0,
+        content: {
+          text: body,
+          size: 0,
+          mimeType: ''
+        }
+      },
+      time: 0,
+      cache: {},
+      timings: {
+        send: 0,
+        wait: 0,
+        receive: 0
+      },
+      startedDateTime: ''
+    };
 
-    try {
-      const requestId = networkRequests[i].requestId;
-      const response = networkRequests[i].response;
-      const { body } = await chrome.send('Network.getResponseBody', {
-        requestId
-      });
-      const { url, requestHeaders, status, statusText, headers } = response;
-
-      const entry: Entry = {
-        request: {
-          url,
-          method: '',
-          httpVersion: '',
-          cookies: [],
-          headers: handleHeaders(requestHeaders),
-          queryString: [],
-          headersSize: 0,
-          bodySize: 0
-        },
-        response: {
-          status,
-          statusText,
-          httpVersion: '',
-          cookies: [],
-          headers: handleHeaders(headers),
-          redirectURL: '',
-          headersSize: 0,
-          bodySize: 0,
-          content: {
-            text: body,
-            size: 0,
-            mimeType: ''
-          }
-        },
-        time: 0,
-        cache: {},
-        timings: {
-          send: 0,
-          wait: 0,
-          receive: 0
-        },
-        startedDateTime: ''
-      };
-      entries.push(entry);
-    } catch (e) {
-      console.warn(e, networkRequests[i].response);
-    }
+    entries.push(entry);
   }
 
   return entries;
+}
+
+export async function getResponseBody(
+  requestId: string,
+  chrome: SessionConnection
+): Promise<string> {
+  try {
+    const { body } = await chrome.send('Network.getResponseBody', {
+      requestId
+    });
+    return body;
+  } catch (error) {
+    return '';
+  }
 }
 
 export function handleHeaders(headers?: Protocol.Network.Headers): Header[] {
