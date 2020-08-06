@@ -45,7 +45,6 @@ export async function recordHARClient(
   };
   const browserArgs = getBrowserArgs(altBrowserArgs);
   const browser = await createBrowser(browserArgs);
-
   try {
     const chrome = await getTab(browser.connection);
 
@@ -186,15 +185,31 @@ export async function processEntries(
   const entries = [];
   for (let i = 0; i < networkRequests.length; i++) {
     debugCallback('processEntries.entry %o', networkRequests[i].response.url);
-    const requestId = networkRequests[i].requestId;
-    const response = networkRequests[i].response;
+    const { requestId, response } = networkRequests[i];
     const body = await getResponseBody(requestId, chrome);
-    const { url, requestHeaders, status, statusText, headers } = response;
+    const {
+      url,
+      requestHeaders,
+      status,
+      statusText,
+      headers,
+      mimeType,
+      protocol
+    } = response;
     const entry: Entry = {
+      time: 0,
+      cache: {},
+      timings: {
+        send: 0,
+        wait: 0,
+        receive: 0
+      },
+      serverIPAddress: response.remoteIPAddress || '',
+      startedDateTime: new Date().toISOString(),
       request: {
         url,
-        method: '',
-        httpVersion: '',
+        method: handleHeaders(requestHeaders)[0].value || '',
+        httpVersion: protocol || '',
         cookies: [],
         headers: handleHeaders(requestHeaders),
         queryString: [],
@@ -204,7 +219,7 @@ export async function processEntries(
       response: {
         status,
         statusText,
-        httpVersion: '',
+        httpVersion: protocol || '',
         cookies: [],
         headers: handleHeaders(headers),
         redirectURL: '',
@@ -213,17 +228,9 @@ export async function processEntries(
         content: {
           text: body,
           size: 0,
-          mimeType: ''
+          mimeType
         }
-      },
-      time: 0,
-      cache: {},
-      timings: {
-        send: 0,
-        wait: 0,
-        receive: 0
-      },
-      startedDateTime: ''
+      }
     };
 
     entries.push(entry);
