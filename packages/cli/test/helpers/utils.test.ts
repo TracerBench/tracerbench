@@ -111,7 +111,7 @@ describe("secondsToTime", () => {
     const timeWithMin = secondsToTime(123);
     const timeWithoutMin = secondsToTime(31);
 
-    expect(timeWithMin).to.eq("02m:05s");
+    expect(timeWithMin).to.eq("02m:03s");
     expect(timeWithoutMin).to.eq("00m:31s");
   });
 });
