@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { flags as oclifFlags } from "@oclif/command";
@@ -52,6 +53,7 @@ import {
   checkEnvironmentSpecificOverride,
   durationInSec,
   parseMarkers,
+  secondsToTime,
   timestamp,
 } from "../../helpers/utils";
 import CompareAnalyze from "./analyze";
@@ -157,22 +159,23 @@ export default class Compare extends TBBaseCommand {
     const results = (
       await run(
         [benchmarks.control, benchmarks.experiment],
-        this.compareFlags.fidelity,
+        this.parsedConfig.fidelity as number,
         (elasped, completed, remaining, group, iteration) => {
           if (completed > 0) {
             const average = elasped / completed;
             const remainingSecs = Math.round((remaining * average) / 1000);
+            const remainingTime = secondsToTime(remainingSecs);
             console.log(
-              "%s %s %s seconds remaining",
+              "%s: %s %s remaining",
               group.padStart(15),
-              iteration.toString().padStart(3),
-              `about ${remainingSecs}`.padStart(10)
+              iteration.toString().padStart(2),
+              `${remainingTime}`.padStart(10)
             );
           } else {
             console.log(
-              "%s %s",
+              "%s: %s",
               group.padStart(15),
-              iteration.toString().padStart(3)
+              iteration.toString().padStart(2)
             );
           }
         },
@@ -209,14 +212,10 @@ export default class Compare extends TBBaseCommand {
     archive.directory(tracesDir, "traces");
     archive.pipe(zipOutput);
     archive.finalize();
-
-    // eslint:disable-next-line: max-line-length
+    const duration = secondsToTime(durationInSec(endTime, startTime));
     const message = `${chalkScheme.blackBgGreen(
-      `    ${chalkScheme.white("SUCCESS!")}    `
-    )} ${this.parsedConfig.fidelity} test samples took ${durationInSec(
-      endTime,
-      startTime
-    )} seconds`;
+      `    ${chalkScheme.white("SUCCESS")}    `
+    )} ${this.parsedConfig.fidelity} test samples took ${duration}`;
 
     this.log(`\n${message}`);
 
@@ -409,7 +408,6 @@ export default class Compare extends TBBaseCommand {
       NavigationBenchmarkOptions
     ] = [
       "control",
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       this.compareFlags.controlURL!,
       this.compareFlags.markers,
       {

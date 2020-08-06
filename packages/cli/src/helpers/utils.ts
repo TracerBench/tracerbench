@@ -274,3 +274,14 @@ export function timestamp(): number {
 export function durationInSec(endTime: number, startTime: number): number {
   return Math.round((endTime - startTime) / 1000);
 }
+
+export function secondsToTime(sec: number): string {
+  const m = Math.floor((sec % 3600) / 60)
+    .toString()
+    .padStart(2, "0");
+  const s = Math.floor(sec % 60)
+    .toString()
+    .padStart(2, "0");
+
+  return `${m}m:${s}s`;
+}

@@ -97,16 +97,16 @@ export function outputRunMetaMessagesAndWarnings(
     cli.log(
       `\n${chalkScheme.blackBgYellow(
         `    ${chalkScheme.white("WARNING")}    `
-      )} ${chalkScheme.warning(` ${LOW_FIDELITY_WARNING}`)}\n`
+      )} ${chalkScheme.warning(`${LOW_FIDELITY_WARNING}`)}\n`
     );
   }
 
   if (!isBelowRegressionThreshold) {
     cli.log(
       `\n${chalkScheme.blackBgRed(
-        `    ${chalkScheme.white("!! ALERT")}    `
+        `    ${chalkScheme.white("! ALERT")}    `
       )} ${chalk.red(
-        ` Regression found exceeding the set regression threshold of ${regressionThreshold} ms`
+        `Regression found exceeding the set regression threshold of ${regressionThreshold} ms`
       )}\n`
     );
   }

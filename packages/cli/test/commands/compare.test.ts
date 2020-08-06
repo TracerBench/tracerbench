@@ -40,7 +40,7 @@ describe("compare fixture: A/A", () => {
         assert.isFalse(resultsJSON.areResultsSignificant);
         // regression is below the threshold
         assert.isTrue(resultsJSON.isBelowRegressionThreshold);
-        expect(ctx.stdout).to.contain(`SUCCESS!`);
+        expect(ctx.stdout).to.contain(`SUCCESS`);
         expect(ctx.stdout).to.contain(`Benchmark Reports`);
       }
     );
@@ -68,7 +68,7 @@ describe("compare fixture: A/A CI", () => {
           "--isCIEnv=true",
         ]);
 
-        expect(ctx.stdout).to.contain(`SUCCESS!`);
+        expect(ctx.stdout).to.contain(`SUCCESS`);
         expect(ctx.stdout).to.contain(`Benchmark Results Summary`);
 
         expect(ctx.stdout).to.not.contain("Benchmark Reports");
@@ -104,13 +104,13 @@ describe("compare regression: fixture: A/B", () => {
 
         const resultsJSON: ICompareJSONResults = await JSON.parse(results);
         expect(ctx.stdout).to.contain(
-          `    SUCCESS!     ${fidelityLow} test samples took`
+          `    SUCCESS     ${fidelityLow} test samples took`
         );
         // confirm with headless flag is logging the trace stream
         expect(ctx.stdout).to.contain(`duration phase estimated difference +`);
         expect(ctx.stdout).to.contain(`ember phase no difference`);
         expect(ctx.stdout).to.contain(
-          `    !! ALERT      Regression found exceeding the set regression threshold of ${regressionThreshold} ms`
+          `    ! ALERT     Regression found exceeding the set regression threshold of ${regressionThreshold} ms`
         );
         assert.isAbove(
           parseInt(resultsJSON.benchmarkTableData[0].estimatorDelta, 10),
@@ -155,7 +155,7 @@ describe("compare mobile horizontal: fixture: A/A", () => {
           "--headless",
         ]);
 
-        expect(ctx.stdout).to.contain(`SUCCESS!`);
+        expect(ctx.stdout).to.contain(`SUCCESS`);
       }
     );
 });

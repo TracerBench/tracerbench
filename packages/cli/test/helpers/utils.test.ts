@@ -5,9 +5,14 @@ import {
   convertMSToMicroseconds,
   mergeLeft,
   parseMarkers,
+  secondsToTime,
 } from "../../src/helpers/utils";
 import { expect } from "chai";
-import { TraceEvent, Constants, CompleteTraceEvent } from "@tracerbench/trace-event";
+import {
+  TraceEvent,
+  Constants,
+  CompleteTraceEvent,
+} from "@tracerbench/trace-event";
 
 const event: CompleteTraceEvent = {
   ph: Constants.TRACE_EVENT_PHASE_COMPLETE,
@@ -29,11 +34,7 @@ const events: TraceEvent[] = [event];
 const url = "https://www.tracerbench.com";
 const frame = findFrame(events, url);
 const isLoad = isCommitLoad(event);
-const isFrameMark = isFrameNavigationStart(
-  frame,
-  event,
-  url
-);
+const isFrameMark = isFrameNavigationStart(frame, event, url);
 const micro = convertMSToMicroseconds(`-100ms`);
 
 describe("utils", () => {
@@ -54,13 +55,16 @@ describe("utils", () => {
   });
 
   it(`parseMarkers`, () => {
-    expect(parseMarkers("navigationStart,domComplete")).to.deep.equal([{
-      start: "navigationStart",
-      label: "domComplete",
-    }, {
-      start: "domComplete",
-      label: "paint",
-    }]);
+    expect(parseMarkers("navigationStart,domComplete")).to.deep.equal([
+      {
+        start: "navigationStart",
+        label: "domComplete",
+      },
+      {
+        start: "domComplete",
+        label: "paint",
+      },
+    ]);
   });
 });
 
@@ -99,5 +103,15 @@ describe("mergeLeft", () => {
       value: 2,
       newValue: 1,
     });
+  });
+});
+
+describe("secondsToTime", () => {
+  it(`Ensure seconds to time works as expected`, () => {
+    const timeWithMin = secondsToTime(123);
+    const timeWithoutMin = secondsToTime(31);
+
+    expect(timeWithMin).to.eq("02m:05s");
+    expect(timeWithoutMin).to.eq("00m:31s");
   });
 });

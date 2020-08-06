@@ -32,10 +32,10 @@ describe("compare:analyze low fidelity, low threshold", () => {
         ]);
 
         expect(ctx.stdout).to.contain(
-          `    WARNING      The fidelity setting was set below the recommended for a viable result. Rerun TracerBench with at least "--fidelity=low" OR >= 10`
+          `    WARNING     The fidelity setting was set below the recommended for a viable result. Rerun TracerBench with at least "--fidelity=low" OR >= 10`
         );
         expect(ctx.stdout).to.not.contain(
-          `    !! ALERT      Regression found exceeding the set regression threshold of 10 ms`
+          `    ! ALERT     Regression found exceeding the set regression threshold of 10 ms`
         );
       }
     );
@@ -56,7 +56,7 @@ describe("compare:analyze low threshold", () => {
         ]);
 
         expect(ctx.stdout).to.contain(
-          `    !! ALERT      Regression found exceeding the set regression threshold of 10 ms`
+          `    ! ALERT     Regression found exceeding the set regression threshold of 10 ms`
         );
       }
     );
