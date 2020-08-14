@@ -243,6 +243,8 @@ export default class Compare extends TBBaseCommand {
         `${this.parsedConfig.tbResultsFolder}`,
         "--config",
         `${this.parsedConfig.config}`,
+        "--isCIEnv",
+        `${this.parsedConfig.isCIEnv}`,
       ]);
     }
 

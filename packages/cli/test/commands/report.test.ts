@@ -62,3 +62,29 @@ describe("report - backwards compat test", () => {
       }
     );
 });
+
+describe("compare:report ci", () => {
+  generateFileStructure(COMPARE, TB_RESULTS_FOLDER);
+  test
+    .stdout()
+    .it(
+      `runs compare:report --config ${TB_CONFIG_FILE} --tbResultsFolder ${TB_RESULTS_FOLDER} --isCIEnv true`,
+      async (ctx) => {
+        await CompareReport.run([
+          "--tbResultsFolder",
+          `${TB_RESULTS_FOLDER}`,
+          "--config",
+          `${TB_CONFIG_FILE}`,
+          "--isCIEnv",
+          `${true}`,
+        ]);
+
+        expect(ctx.stdout).to.not.contain(`JSON:`);
+        expect(ctx.stdout).to.not.contain(`PDF:`);
+        expect(ctx.stdout).to.not.contain(`HTML:`);
+        assert.exists(`${TB_RESULTS_FOLDER}/compare.json`);
+        assert.exists(`${TB_RESULTS_FOLDER}/artifact-1.html`);
+        assert.exists(`${TB_RESULTS_FOLDER}/artifact-1.pdf`);
+      }
+    );
+});

@@ -9,7 +9,12 @@ import { getConfig, TBBaseCommand } from "../../command-config";
 import createConsumableHTML, {
   ITracerBenchTraceResult,
 } from "../../helpers/create-consumable-html";
-import { config, plotTitle, tbResultsFolder } from "../../helpers/flags";
+import {
+  config,
+  isCIEnv,
+  plotTitle,
+  tbResultsFolder,
+} from "../../helpers/flags";
 import printToPDF from "../../helpers/print-to-pdf";
 import { chalkScheme } from "../../helpers/utils";
 
@@ -19,6 +24,7 @@ export interface IReportFlags {
   tbResultsFolder: string;
   config?: string;
   plotTitle?: string;
+  isCIEnv?: boolean;
 }
 
 export default class CompareReport extends TBBaseCommand {
@@ -29,6 +35,7 @@ export default class CompareReport extends TBBaseCommand {
     tbResultsFolder: tbResultsFolder({ required: true }),
     config: config(),
     plotTitle: plotTitle(),
+    isCIEnv: isCIEnv(),
   };
   public reportFlags: IReportFlags;
 
@@ -106,22 +113,25 @@ export default class CompareReport extends TBBaseCommand {
     );
 
     await printToPDF(`file://${absPathToHTML}`, absOutputPath);
-    this.log(
-      `\n${chalkScheme.blackBgBlue(
-        `    ${chalkScheme.white("Benchmark Reports")}    `
-      )}`
-    );
-    this.log(
-      `\nJSON: ${chalkScheme.tbBranding.blue.underline.bold(
-        `${this.parsedConfig.tbResultsFolder}/compare.json`
-      )}`
-    );
-    this.log(
-      `\nPDF: ${chalkScheme.tbBranding.blue.underline.bold(absOutputPath)}`
-    );
-    this.log(
-      `\nHTML: ${chalkScheme.tbBranding.blue.underline.bold(absPathToHTML)}\n`
-    );
+
+    if (!this.parsedConfig.isCIEnv) {
+      this.log(
+        `\n${chalkScheme.blackBgBlue(
+          `    ${chalkScheme.white("Benchmark Reports")}    `
+        )}`
+      );
+      this.log(
+        `\nJSON: ${chalkScheme.tbBranding.blue.underline.bold(
+          `${this.parsedConfig.tbResultsFolder}/compare.json`
+        )}`
+      );
+      this.log(
+        `\nPDF: ${chalkScheme.tbBranding.blue.underline.bold(absOutputPath)}`
+      );
+      this.log(
+        `\nHTML: ${chalkScheme.tbBranding.blue.underline.bold(absPathToHTML)}\n`
+      );
+    }
   }
 
   private async parseFlags(): Promise<void> {

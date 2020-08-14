@@ -14,6 +14,7 @@ export interface CompareAnalyzeFlags {
   regressionThreshold: number;
   isCIEnv: boolean;
 }
+
 export default class CompareAnalyze extends TBBaseCommand {
   public static description = `Generates stdout report from the "tracerbench compare" command output`;
 
