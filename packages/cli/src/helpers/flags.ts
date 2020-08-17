@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint:disable:no-console*/
 import { flags as oclifFlags } from "@oclif/command";
-import * as Parser from "@oclif/parser";
 import { networkConditions } from "@tracerbench/core";
 import Protocol from "devtools-protocol";
 
@@ -33,57 +32,53 @@ export const isCIEnv = oclifFlags.build({
   },
 });
 
-export const hideUsertimings: Parser.flags.IBooleanFlag<boolean> = oclifFlags.boolean(
-  {
-    description: `Hide stdout of user-timings.`,
-    default: false,
-  }
-);
+export const hideUsertimings = oclifFlags.boolean({
+  description: `Hide stdout of user-timings.`,
+  default: false,
+});
 
-export const runtimeStats: Parser.flags.IBooleanFlag<boolean> = oclifFlags.boolean(
-  {
-    description: `Compare command output deep-dive stats during run.`,
-    default: false,
-  }
-);
+export const runtimeStats = oclifFlags.boolean({
+  description: `Compare command output deep-dive stats during run.`,
+  default: false,
+});
 
-export const servers: oclifFlags.Definition<string> = oclifFlags.build({
+export const servers = oclifFlags.build({
   description: `Optional servers config for A/B testing with har-remix dist slicing with socks proxy. All paths within this config are relative.`,
 });
 
-export const plotTitle: oclifFlags.Definition<string> = oclifFlags.build({
+export const plotTitle = oclifFlags.build({
   default: () => getDefaultValue("plotTitle"),
   description: `Specify the title of the report pdf/html files.`,
 });
 
-export const config: oclifFlags.Definition<string> = oclifFlags.build({
+export const config = oclifFlags.build({
   description: `Specify an alternative directory rather than the project root for the tbconfig.json. This explicit config will overwrite all.`,
 });
 
-export const report: Parser.flags.IBooleanFlag<boolean> = oclifFlags.boolean({
+export const report = oclifFlags.boolean({
   description: `Generate a PDF report directly after running the compare command.`,
   default: false,
 });
 
-export const headless: Parser.flags.IBooleanFlag<boolean> = oclifFlags.boolean({
+export const headless = oclifFlags.boolean({
   description: `Run with headless chrome flags`,
   default: false,
 });
 
-export const debug: Parser.flags.IBooleanFlag<boolean> = oclifFlags.boolean({
+export const debug = oclifFlags.boolean({
   description: `Debug flag per command. Will output noisy command`,
   default: false,
 });
 
-export const regressionThreshold: oclifFlags.Definition<string> = oclifFlags.build(
-  {
-    default: () => getDefaultValue("regressionThreshold"),
-    description: `The upper limit the experiment can regress slower in milliseconds. eg 50`,
-    parse: (ms): number => {
-      return parseInt(ms, 10);
-    },
-  }
-);
+export const regressionThreshold: oclifFlags.Definition<
+  string | number
+> = oclifFlags.build({
+  default: () => getDefaultValue("regressionThreshold"),
+  description: `The upper limit the experiment can regress slower in milliseconds. eg 50`,
+  parse: (ms): number => {
+    return parseInt(ms, 10);
+  },
+});
 
 export const sampleTimeout: oclifFlags.Definition<number> = oclifFlags.build({
   default: () => getDefaultValue("sampleTimeout"),
@@ -93,7 +88,7 @@ export const sampleTimeout: oclifFlags.Definition<number> = oclifFlags.build({
   },
 });
 
-export const browserArgs: oclifFlags.Definition<string> = oclifFlags.build({
+export const browserArgs = oclifFlags.build({
   default: () => getDefaultValue("browserArgs"),
   description: `(Default Recommended) Additional chrome flags for the TracerBench render benchmark. TracerBench includes many non-configurable defaults in this category.`,
   parse: (s): string[] => {
@@ -101,17 +96,17 @@ export const browserArgs: oclifFlags.Definition<string> = oclifFlags.build({
   },
 });
 
-export const appName: oclifFlags.Definition<string> = oclifFlags.build({
+export const appName = oclifFlags.build({
   default: () => getDefaultValue("appName"),
   description: "The name of your application",
 });
 
-export const event: oclifFlags.Definition<string> = oclifFlags.build({
+export const event = oclifFlags.build({
   default: () => getDefaultValue("event"),
   description: "Slice time and see the events before and after the time slice",
 });
 
-export const methods: oclifFlags.Definition<string> = oclifFlags.build({
+export const methods = oclifFlags.build({
   default: () => getDefaultValue("methods"),
   description: "List of methods to aggregate",
 });
@@ -124,7 +119,7 @@ export const cpuThrottleRate: oclifFlags.Definition<number> = oclifFlags.build({
   },
 });
 
-export const fidelity: oclifFlags.Definition<string> = oclifFlags.build({
+export const fidelity = oclifFlags.build({
   default: () => getDefaultValue("fidelity"),
   description: `Directly correlates to the number of samples per trace. eg. ${Object.keys(
     fidelityLookup
@@ -150,13 +145,13 @@ export const fidelity: oclifFlags.Definition<string> = oclifFlags.build({
   },
 });
 
-export const markers: oclifFlags.Definition<string> = oclifFlags.build({
+export const markers = oclifFlags.build({
   default: () => getDefaultValue("markers"),
   description: "User Timing Markers",
   parse: parseMarkers,
 });
 
-export const network: oclifFlags.Definition<string> = oclifFlags.build({
+export const network = oclifFlags.build({
   default: () => getDefaultValue("network"),
   description: "Simulated network conditions.",
   options: [
@@ -181,27 +176,27 @@ export const network: oclifFlags.Definition<string> = oclifFlags.build({
   },
 });
 
-export const tbResultsFolder: oclifFlags.Definition<string> = oclifFlags.build({
+export const tbResultsFolder = oclifFlags.build({
   default: () => getDefaultValue("tbResultsFolder"),
   description: "The output folder path for all tracerbench results",
 });
 
-export const url: oclifFlags.Definition<string> = oclifFlags.build({
+export const url = oclifFlags.build({
   default: () => getDefaultValue("url"),
-  description: "URL to visit for record-har, timings & trace commands",
+  description: "URL to visit for record-har, auth, timings & trace commands",
 });
 
-export const controlURL: oclifFlags.Definition<string> = oclifFlags.build({
+export const controlURL = oclifFlags.build({
   default: () => getDefaultValue("controlURL"),
   description: "Control URL to visit for compare command",
 });
 
-export const experimentURL: oclifFlags.Definition<string> = oclifFlags.build({
+export const experimentURL = oclifFlags.build({
   default: () => getDefaultValue("experimentURL"),
   description: "Experiment URL to visit for compare command",
 });
 
-export const socksPorts: oclifFlags.Definition<string> = oclifFlags.build({
+export const socksPorts = oclifFlags.build({
   default: () => getDefaultValue("socksPorts"),
   description:
     "Specify a socks proxy port as browser option for control and experiment",
@@ -217,7 +212,7 @@ export const socksPorts: oclifFlags.Definition<string> = oclifFlags.build({
   },
 });
 
-export const emulateDevice: oclifFlags.Definition<string> = oclifFlags.build({
+export const emulateDevice = oclifFlags.build({
   default: () => getDefaultValue("emulateDevice"),
   description: `Emulate a mobile device screen size.`,
   options: deviceSettings.map(
@@ -225,37 +220,45 @@ export const emulateDevice: oclifFlags.Definition<string> = oclifFlags.build({
   ),
 });
 
-export const emulateDeviceOrientation: oclifFlags.Definition<string> = oclifFlags.build(
-  {
-    default: () => getDefaultValue("emulateDeviceOrientation"),
-    description: `Expected to be either "vertical" or "horizontal". Dictates orientation of device screen.`,
-    options: ["horizontal", "vertical"],
-  }
-);
+export const emulateDeviceOrientation = oclifFlags.build({
+  default: () => getDefaultValue("emulateDeviceOrientation"),
+  description: `Expected to be either "vertical" or "horizontal". Dictates orientation of device screen.`,
+  options: ["horizontal", "vertical"],
+});
 
-export const cookiespath: oclifFlags.Definition<string> = oclifFlags.build({
+export const cookiespath = oclifFlags.build({
   description: `The path to a JSON file containing cookies to authenticate against the correlated URL`,
   default: () => getDefaultValue("cookiespath"),
 });
 
-export const tbconfigpath: oclifFlags.Definition<string> = oclifFlags.build({
+export const tbconfigpath = oclifFlags.build({
   description: `The path to a TracerBench configuration file (tbconfig.json)`,
 });
 
-export const tracepath: oclifFlags.Definition<string> = oclifFlags.build({
+export const tracepath = oclifFlags.build({
   description: `The path to the generated trace.json file`,
 });
 
-export const dest: oclifFlags.Definition<string> = oclifFlags.build({
+export const dest = oclifFlags.build({
   default: () => getDefaultValue("dest"),
   description: `The destination path for the generated file`,
 });
 
-export const filename: oclifFlags.Definition<string> = oclifFlags.build({
+export const filename = oclifFlags.build({
   description: `The filename for the generated file`,
 });
 
-export const marker: oclifFlags.Definition<string> = oclifFlags.build({
+export const marker = oclifFlags.build({
   description: `The last marker before ending a HAR recording`,
   default: "loadEventEnd",
+});
+
+export const username = oclifFlags.build({
+  description: `The username to login to the form`,
+  required: true,
+});
+
+export const password = oclifFlags.build({
+  description: `The password to login to the form`,
+  required: true,
 });

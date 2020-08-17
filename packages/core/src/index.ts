@@ -35,5 +35,6 @@ export {
   getBrowserArgs,
   IConditions,
   recordHARClient,
-  INetworkConditions
+  INetworkConditions,
+  authClient
 } from './trace';

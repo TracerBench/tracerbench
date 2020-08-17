@@ -3,8 +3,8 @@ import { IConditions, recordHARClient } from "@tracerbench/core";
 import { readJson, writeFileSync } from "fs-extra";
 import { join, resolve } from "path";
 
-import { getConfig, TBBaseCommand } from "../command-config";
-import { headlessFlags } from "../command-config/default-flag-args";
+import { getConfig, TBBaseCommand } from "../../command-config";
+import { headlessFlags } from "../../command-config/default-flag-args";
 import {
   config,
   cookiespath,
@@ -13,7 +13,7 @@ import {
   headless,
   marker,
   url,
-} from "../helpers/flags";
+} from "../../helpers/flags";
 
 export default class RecordHAR extends TBBaseCommand {
   public static description = "Generates a HAR file from a URL.";
