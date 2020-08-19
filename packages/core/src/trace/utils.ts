@@ -102,7 +102,7 @@ export async function createBrowser(
 ): Promise<ChromeWithPipeConnection> {
   const browser = await spawnChrome({
     additionalArguments: browserArgs,
-    stdio: 'inherit',
+    stdio: headless ? 'ignore' : 'inherit',
     chromeExecutable: undefined,
     userDataDir: undefined,
     userDataRoot: undefined,

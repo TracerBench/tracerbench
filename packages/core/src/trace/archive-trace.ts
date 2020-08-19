@@ -31,6 +31,7 @@ export async function recordHARClient(
   cookies: Protocol.Network.CookieParam[],
   marker: string,
   conditions: IConditions,
+  headless = false,
   altBrowserArgs?: string[]
 ): Promise<Archive> {
   const archive: Archive = {
@@ -44,7 +45,7 @@ export async function recordHARClient(
     }
   };
   const browserArgs = getBrowserArgs(altBrowserArgs);
-  const browser = await createBrowser(browserArgs);
+  const browser = await createBrowser(browserArgs, headless);
   try {
     const chrome = await getTab(browser.connection);
 

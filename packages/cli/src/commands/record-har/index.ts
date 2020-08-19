@@ -61,12 +61,14 @@ export default class RecordHAR extends TBBaseCommand {
         : headlessFlags;
     }
 
+    this.log(`Recording HAR...`);
     // record the actual HAR and return the archive file
     const harArchive = await recordHARClient(
       url,
       cookies,
       marker,
       conditions,
+      headless,
       browserArgs
     );
 
@@ -74,6 +76,6 @@ export default class RecordHAR extends TBBaseCommand {
 
     writeFileSync(harPath, JSON.stringify(harArchive));
 
-    this.log(`HAR recorded and available here: ${harPath}`);
+    this.log(`  ✔ HAR recorded: ${harPath}`);
   }
 }

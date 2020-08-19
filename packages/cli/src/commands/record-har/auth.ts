@@ -31,7 +31,7 @@ export default class RecordHARAuth extends TBBaseCommand {
     "Authenticate with a given login URL, username, password and retrieve auth cookies";
   public static flags = {
     url: url({ required: true, default: undefined }),
-    dest: dest({ required: true, default: `process.cwd()` }),
+    dest: dest({ required: true }),
     filename: filename({ required: true, default: "cookies" }),
     username: username({ required: true }),
     password: password({ required: true }),
@@ -40,6 +40,7 @@ export default class RecordHARAuth extends TBBaseCommand {
   };
   public async init(): Promise<void> {
     const { flags } = this.parse(RecordHARAuth);
+    flags.dest = !flags.dest ? process.cwd() : flags.dest;
     this.parsedConfig = getConfig(flags.config, flags, this.explicitFlags);
   }
 
@@ -55,8 +56,15 @@ export default class RecordHARAuth extends TBBaseCommand {
         : headlessFlags;
     }
 
+    this.log(`Retrieving cookies...`);
     // login to the url provided and retrieve the cookies
-    const cookies = await authClient(url, username, password, browserArgs);
+    const cookies = await authClient(
+      url,
+      username,
+      password,
+      headless,
+      browserArgs
+    );
 
     const cookiesPath = resolve(join(dest, `${filename}.json`));
 

@@ -241,7 +241,7 @@ export const tracepath = oclifFlags.build({
 
 export const dest = oclifFlags.build({
   default: () => getDefaultValue("dest"),
-  description: `The destination path for the generated file`,
+  description: `The destination path for the generated file. Default process.cwd()`,
 });
 
 export const filename = oclifFlags.build({

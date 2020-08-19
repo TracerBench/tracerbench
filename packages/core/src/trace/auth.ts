@@ -17,10 +17,11 @@ export async function authClient(
   url: string,
   username: string,
   password: string,
+  headless = false,
   altBrowserArgs?: string[]
 ): Promise<Protocol.Network.Cookie[]> {
   const browserArgs = getBrowserArgs(altBrowserArgs);
-  const browser = await createBrowser(browserArgs);
+  const browser = await createBrowser(browserArgs, headless);
   let cookieResponse: Protocol.Network.GetCookiesResponse;
   try {
     const chrome = await getTab(browser.connection);
