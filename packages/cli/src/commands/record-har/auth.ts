@@ -56,7 +56,7 @@ export default class RecordHARAuth extends TBBaseCommand {
         : headlessFlags;
     }
 
-    this.log(`Retrieving cookies...`);
+    this.log(`Retrieving cookies ...`);
     // login to the url provided and retrieve the cookies
     const cookies = await authClient(
       url,
