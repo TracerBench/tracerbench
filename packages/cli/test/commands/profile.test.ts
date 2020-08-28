@@ -4,11 +4,14 @@ import { expect } from "chai";
 import Profile from "../../src/commands/profile";
 import { COOKIES, HAR_PATH, TB_RESULTS_FOLDER, URL } from "../test-helpers";
 
+const CPU_THROTTLE_RATE = "6";
+const NETWORK = "4g";
+
 describe("profile: url, cookies", () => {
   test
     .stdout()
     .it(
-      `runs profile ${HAR_PATH} --url ${URL} --tbResultsFolder ${TB_RESULTS_FOLDER} --cookiespath ${COOKIES}`,
+      `runs profile ${HAR_PATH} --url ${URL} --tbResultsFolder ${TB_RESULTS_FOLDER} --cookiespath ${COOKIES} --cpuThrottleRate ${CPU_THROTTLE_RATE} --network ${NETWORK}`,
       async (ctx) => {
         await Profile.run([
           HAR_PATH,
@@ -18,6 +21,10 @@ describe("profile: url, cookies", () => {
           TB_RESULTS_FOLDER,
           "--cookiespath",
           COOKIES,
+          "--cpuThrottleRate",
+          CPU_THROTTLE_RATE,
+          "--network",
+          NETWORK,
         ]);
         expect(ctx.stdout).to.contain(`JS Evaluation :: Total Duration`);
         expect(ctx.stdout).to.contain(`CSS Evaluation :: Total Duration`);

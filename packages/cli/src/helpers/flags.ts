@@ -1,8 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint:disable:no-console*/
 import { flags as oclifFlags } from "@oclif/command";
-import { networkConditions } from "@tracerbench/core";
-import Protocol from "devtools-protocol";
 
 import {
   fidelityLookup,
@@ -171,9 +169,6 @@ export const network = oclifFlags.build({
     "LTE",
     "FIOS",
   ],
-  parse: (n: string): Protocol.Network.EmulateNetworkConditionsRequest => {
-    return networkConditions[n as keyof typeof networkConditions];
-  },
 });
 
 export const tbResultsFolder = oclifFlags.build({

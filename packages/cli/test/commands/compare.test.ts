@@ -8,12 +8,12 @@ const fidelity = "test";
 const fidelityLow = "10";
 const emulateDevice = "iphone-4";
 const regressionThreshold = "50";
-
+const network = "FIOS";
 describe("compare fixture: A/A", () => {
   test
     .stdout()
     .it(
-      `runs compare --controlURL ${FIXTURE_APP.control} --experimentURL ${FIXTURE_APP.control} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER} --cpuThrottleRate=1 --config ${FIXTURE_APP.controlConfig} --headless --debug --report`,
+      `runs compare --controlURL ${FIXTURE_APP.control} --experimentURL ${FIXTURE_APP.control} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER} --cpuThrottleRate=1 --config ${FIXTURE_APP.controlConfig} --network ${network} --headless --debug --report`,
       async (ctx) => {
         const results = await Compare.run([
           "--controlURL",
@@ -26,6 +26,8 @@ describe("compare fixture: A/A", () => {
           TB_RESULTS_FOLDER,
           "--config",
           FIXTURE_APP.controlConfig,
+          "--network",
+          network,
           "--cpuThrottleRate=1",
           "--headless",
           "--debug",
