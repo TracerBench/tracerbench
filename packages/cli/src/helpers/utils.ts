@@ -10,6 +10,7 @@ import {
   TraceStreamJson,
 } from "@tracerbench/trace-event";
 import * as chalk from "chalk";
+import { createHash } from "crypto";
 import * as logSymbols from "log-symbols";
 
 import {
@@ -284,4 +285,8 @@ export function secondsToTime(sec: number): string {
     .padStart(2, "0");
 
   return `${m}m:${s}s`;
+}
+
+export function md5sum(text: string): string {
+  return createHash("md5").update(text).digest("hex");
 }

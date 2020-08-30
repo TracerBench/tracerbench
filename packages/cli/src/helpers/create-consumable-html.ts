@@ -6,7 +6,7 @@ import * as path from "path";
 
 import { ITBConfig } from "../command-config";
 import { defaultFlagArgs } from "../command-config/default-flag-args";
-import { convertMicrosecondsToMS } from "./utils";
+import { convertMicrosecondsToMS, md5sum } from "./utils";
 
 export interface Sample {
   duration: number;
@@ -254,7 +254,7 @@ export function formatPhaseData(
 
   return {
     phase: phaseName,
-    identifierHash: phaseName,
+    identifierHash: md5sum(phaseName),
     isSignificant: !isNotSignificant,
     sampleCount: stats.sampleCount.control,
     ciMin: stats.confidenceInterval.min,
