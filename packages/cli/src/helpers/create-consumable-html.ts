@@ -247,15 +247,13 @@ export function formatPhaseData(
     experiment: experimentValues,
     name: "output",
   });
-  const isNotSignificant =
-    (stats.confidenceInterval.min < 0 && 0 < stats.confidenceInterval.max) ||
-    (stats.confidenceInterval.min > 0 && 0 > stats.confidenceInterval.max) ||
-    (stats.confidenceInterval.min === 0 && stats.confidenceInterval.max === 0);
+
+  const estimatorIsSig = Math.abs(stats.estimator) >= 1 ? true : false;
 
   return {
     phase: phaseName,
     identifierHash: md5sum(phaseName),
-    isSignificant: !isNotSignificant,
+    isSignificant: stats.confidenceInterval.isSig && estimatorIsSig,
     sampleCount: stats.sampleCount.control,
     ciMin: stats.confidenceInterval.min,
     ciMax: stats.confidenceInterval.max,

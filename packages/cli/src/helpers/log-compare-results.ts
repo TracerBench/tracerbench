@@ -141,8 +141,9 @@ export function outputSummaryReport(
   phaseResultsFormatted.forEach((phaseData) => {
     const { phase, hlDiff, isSignificant, ciMin, ciMax } = phaseData;
     let msg = `${chalk.bold(phase)} phase `;
-
-    if (isSignificant && Math.abs(hlDiff)) {
+    const hlDiffisSig = Math.abs(hlDiff) >= 1 ? true : false;
+    // isSignificant comes from the confidence interval range NOT estimator
+    if (isSignificant && hlDiffisSig) {
       let coloredDiff;
 
       msg += "estimated ";

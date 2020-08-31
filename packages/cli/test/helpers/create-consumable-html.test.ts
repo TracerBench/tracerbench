@@ -4,10 +4,66 @@ import {
   resolveTitles,
   phaseSorter,
   Sample,
+  formatPhaseData,
+  HTMLSectionRenderData,
 } from "../../src/helpers/create-consumable-html";
 import { expect } from "chai";
 import { IHARServer } from "../../src/command-config";
+const control = [
+  54106,
+  51389,
+  51389,
+  51822,
+  48795,
+  48891,
+  48954,
+  51935,
+  52039,
+  52065,
+  52159,
+  52199,
+  52475,
+  52814,
+  52901,
+  52954,
+  54194,
+  54893,
+  49294,
+  49441,
+  49458,
+  50248,
+  50397,
+  50578,
+  51097,
+];
 
+const experiment = [
+  1136150,
+  1130550,
+  1130841,
+  1130856,
+  1124565,
+  1125724,
+  1126078,
+  1126482,
+  1131473,
+  1131611,
+  1131770,
+  1132622,
+  1133104,
+  1133154,
+  1134401,
+  1138230,
+  1138314,
+  1128269,
+  1129836,
+  1131026,
+  1131376,
+  1131391,
+  1131411,
+  1131419,
+  1129367,
+];
 const TEST_SAMPLES: Sample[] = [
   {
     gc: [],
@@ -200,5 +256,37 @@ describe("create-consumable-html test", () => {
     );
     expect(subPhaseSections).to.length(5);
     expect(durationSection.hlDiff).to.equal(0);
+  });
+
+  it("formatPhaseData()", () => {
+    const phase = "foo";
+    const data: HTMLSectionRenderData = formatPhaseData(
+      control,
+      experiment,
+      phase
+    );
+    const controlSamples = JSON.parse(data.controlFormatedSamples);
+    const experimentSamples = JSON.parse(data.experimentFormatedSamples);
+
+    expect(data.phase).to.eq(phase);
+    expect(data.isSignificant).to.be.true;
+    expect(data.sampleCount).to.eq(control.length);
+    expect(data.ciMin).to.eq(-1081);
+    expect(data.ciMax).to.eq(-1078);
+    expect(data.hlDiff).to.eq(-1080);
+
+    expect(controlSamples.min).to.eq(49);
+    expect(controlSamples.q1).to.eq(50);
+    expect(controlSamples.median).to.eq(52);
+    expect(controlSamples.q3).to.eq(52);
+    expect(controlSamples.max).to.eq(55);
+    expect(controlSamples.outliers.length).to.eq(0);
+
+    expect(experimentSamples.min).to.eq(1125);
+    expect(experimentSamples.q1).to.eq(1130);
+    expect(experimentSamples.median).to.eq(1131);
+    expect(experimentSamples.q3).to.eq(1133);
+    expect(experimentSamples.max).to.eq(1138);
+    expect(experimentSamples.outliers.length).to.eq(0);
   });
 });
