@@ -135,13 +135,9 @@ export function outputSummaryReport(
   cli.log(
     `\n${chalkScheme.blackBgBlue(
       `    ${chalkScheme.white("Benchmark Results Summary")}    `
-    )}`
+    )}\n`
   );
 
-  cli.log(`\n${chalk.red("Red")} color means the experiment was a regression.`);
-  cli.log(
-    `${chalk.green("Green")} color means the experiment was an improvement.\n`
-  );
   phaseResultsFormatted.forEach((phaseData) => {
     const { phase, hlDiff, isSignificant, ciMin, ciMax } = phaseData;
     let msg = `${chalk.bold(phase)} phase `;
@@ -149,24 +145,26 @@ export function outputSummaryReport(
     if (isSignificant && Math.abs(hlDiff)) {
       let coloredDiff;
 
-      msg += "estimated difference ";
+      msg += "estimated ";
 
       if (hlDiff < 0) {
         coloredDiff = chalk.red(
           `+${Math.abs(hlDiff)}ms [${ciMax * -1}ms to ${ciMin * -1}ms]`
         );
+        msg += `regression ${coloredDiff}`;
       } else {
         coloredDiff = chalk.green(
           `-${Math.abs(hlDiff)}ms [${ciMax * -1}ms to ${ciMin * -1}ms]`
         );
+        msg += `improvement ${coloredDiff}`;
       }
-
-      msg += `${coloredDiff}`;
     } else {
       msg += `${chalk.grey("no difference")}`;
     }
     cli.log(msg);
   });
+
+  cli.log(`\n`);
 
   return;
 }

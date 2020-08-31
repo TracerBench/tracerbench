@@ -4,6 +4,8 @@ import { expect } from "chai";
 import CompareAnalyze from "../../src/commands/compare/analyze";
 import { COMPARE_JSON } from "../test-helpers";
 
+const regressionThreshold = "10";
+
 describe("compare:analyze", () => {
   test.stdout().it(`runs compare:analyze COMPARE`, async (ctx) => {
     await CompareAnalyze.run([`${COMPARE_JSON}`]);
@@ -12,8 +14,8 @@ describe("compare:analyze", () => {
     expect(ctx.stdout).to.contain(`Sub Phase of Duration : application`);
     expect(ctx.stdout).to.contain(`Hodges–Lehmann estimated delta`);
     expect(ctx.stdout).to.contain(`Benchmark Results Summary`);
-    expect(ctx.stdout).to.contain(`duration phase estimated difference +`);
-    expect(ctx.stdout).to.contain(`application phase estimated difference +`);
+    expect(ctx.stdout).to.contain(`duration phase estimated regression +`);
+    expect(ctx.stdout).to.contain(`application phase estimated regression +`);
   });
 });
 
@@ -28,14 +30,14 @@ describe("compare:analyze low fidelity, low threshold", () => {
           "--fidelity",
           "2",
           "--regressionThreshold",
-          "10",
+          regressionThreshold,
         ]);
 
         expect(ctx.stdout).to.contain(
           `    WARNING     The fidelity setting was set below the recommended for a viable result. Rerun TracerBench with at least "--fidelity=low" OR >= 10`
         );
         expect(ctx.stdout).to.not.contain(
-          `    ! ALERT     Regression found exceeding the set regression threshold of 10 ms`
+          `    ! ALERT     Regression found exceeding the set regression threshold of ${regressionThreshold} ms`
         );
       }
     );
@@ -52,11 +54,11 @@ describe("compare:analyze low threshold", () => {
           "--fidelity",
           "10",
           "--regressionThreshold",
-          "10",
+          regressionThreshold,
         ]);
 
         expect(ctx.stdout).to.contain(
-          `    ! ALERT     Regression found exceeding the set regression threshold of 10 ms`
+          `    ! ALERT     Regression found exceeding the set regression threshold of ${regressionThreshold} ms`
         );
       }
     );
