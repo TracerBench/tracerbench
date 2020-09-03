@@ -29,10 +29,10 @@
   },
   "devDependencies": {
     "@types/mime-types": "^2.1.0",
-    "@types/node": "^14.0.27",
-    "@typescript-eslint/eslint-plugin": "^3.8.0",
-    "@typescript-eslint/parser": "^3.8.0",
-    "eslint": "^7.6.0",
+    "@types/node": "^14.6.3",
+    "@typescript-eslint/eslint-plugin": "^4.0.1",
+    "@typescript-eslint/parser": "^4.0.1",
+    "eslint": "^7.8.1",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-filenames": "^1.3.2",
     "eslint-plugin-import": "^2.22.0",
@@ -40,8 +40,8 @@
     "eslint-plugin-prettier": "^3.1.4",
     "eslint-plugin-simple-import-sort": "^5.0.3",
     "json-schema-to-typescript": "^9.1.1",
-    "prettier": "^2.0.5",
-    "typescript": "^3.9.7"
+    "prettier": "^2.1.1",
+    "typescript": "^4.0.2"
   },
   "publishConfig": {
     "tag": "beta"
