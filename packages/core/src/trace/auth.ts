@@ -1,6 +1,6 @@
 import type { Protocol } from 'devtools-protocol';
 
-import { createBrowser, getBrowserArgs, getNewTab } from './utils';
+import { createBrowser, getBrowserArgs, getNewTab, wait } from './utils';
 import debug = require('debug');
 import { SessionConnection } from 'chrome-debugging-client';
 
@@ -67,7 +67,7 @@ export async function authClient(
 
     await click('button[type=submit]', chrome);
     await chrome.until('Page.loadEventFired');
-
+    await wait(5000);
     // The list of URLs for which applicable cookies will be fetched
     cookieResponse = await chrome.send('Network.getCookies', [url]);
 
@@ -103,7 +103,9 @@ async function waitForSelector(
     nodeId: document.root.nodeId,
     selector
   };
+  debugCallback('querySelector %O', options);
   const { nodeId } = await chrome.send('DOM.querySelector', options);
+  debugCallback('resolveNode %o', nodeId);
   const node = await chrome.send('DOM.resolveNode', { nodeId });
   return { nodeId, node };
 }
