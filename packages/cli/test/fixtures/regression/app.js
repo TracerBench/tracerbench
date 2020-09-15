@@ -1,7 +1,8 @@
 Ember.TEMPLATES["application"] = Ember.HTMLBars.template({
-  "id": null,
-  "block": "{\"symbols\":[],\"statements\":[[7,\"h1\"],[9],[0,\"Welcome To Ember\"],[10],[0,\"\\n\"],[7,\"div\"],[18,\"style\",[21,\"color\"]],[9],[0,\"\\n\"],[1,[21,\"outlet\"],false],[0,\"\\n\"],[10]],\"hasEval\":false}",
-  "meta": {}
+  id: null,
+  block:
+    '{"symbols":[],"statements":[[7,"h1"],[9],[0,"Welcome To Ember"],[10],[0,"\\n"],[7,"div"],[18,"style",[21,"color"]],[9],[0,"\\n"],[1,[21,"outlet"],false],[0,"\\n"],[10]],"hasEval":false}',
+  meta: {},
 });
 var MyApp;
 (function () {
@@ -22,19 +23,12 @@ var MyApp;
         performance.measure("render", "didTransition", "renderEnd");
         performance.measure("afterRender", "renderEnd", "beforePaint");
         performance.measure("paint", "beforePaint", "afterPaint");
-        if (location.search === "?tracing") {
-          requestAnimationFrame(function () {
-            setTimeout(function () {
-              document.location.href = "about:blank";
-            }, 0);
-          });
-        }
       });
     });
   }
 
   MyApp = Ember.Application.extend({
-    autoboot: false
+    autoboot: false,
   }).create();
 
   MyApp.Router = Ember.Router.extend({
@@ -49,7 +43,7 @@ var MyApp;
         Ember.run.schedule("afterRender", renderEnd);
       });
       this._super.apply(this, arguments);
-    }
+    },
   });
 
   setTimeout(() => {
