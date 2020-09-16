@@ -5,3 +5,4 @@ trace.json
 *tsconfig.tsbuildinfo
 *tb-tmp*
 events_output.json
+*screenshot.png

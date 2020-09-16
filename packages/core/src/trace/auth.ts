@@ -4,9 +4,16 @@ import { createBrowser, getBrowserArgs, getTab, wait } from './utils';
 import debug = require('debug');
 import { SessionConnection } from 'chrome-debugging-client';
 
+import type { Screenshot } from '../util/interfaces';
+
 type QuerySelectorOptions = {
   nodeId: number;
   selector: string;
+};
+
+type AuthClientResponse = {
+  cookies: Protocol.Network.Cookie[];
+  screenshotData?: Screenshot[];
 };
 
 // run with DEBUG=* eg.`DEBUG=* tracerbench record-har:auth`
@@ -18,10 +25,12 @@ export async function authClient(
   username: string,
   password: string,
   headless = false,
-  altBrowserArgs?: string[]
-): Promise<Protocol.Network.Cookie[]> {
+  altBrowserArgs?: string[],
+  screenshots?: boolean
+): Promise<AuthClientResponse> {
   const browserArgs = getBrowserArgs(altBrowserArgs);
   const browser = await createBrowser(browserArgs, headless);
+  const screenshotData: Screenshot[] = [];
   let cookieResponse: Protocol.Network.GetCookiesResponse;
   try {
     const chrome = await getTab(browser.connection);
@@ -40,6 +49,12 @@ export async function authClient(
     await chrome.send('Page.navigate', { url });
     // wait for the app to load
     await chrome.until('Page.loadEventFired');
+    // screenshot login page
+    if (screenshots) {
+      const loginScreenshot = await chrome.send('Page.captureScreenshot');
+      screenshotData.push({ data: loginScreenshot.data, name: 'login' });
+    }
+
     // grab the document
     const document = await chrome.send('DOM.getDocument');
 
@@ -67,7 +82,13 @@ export async function authClient(
 
     await click('button[type=submit]', chrome);
     await chrome.until('Page.loadEventFired');
+    // let redirects settle
     await wait(5000);
+    // screenshot of the logged in application
+    if (screenshots) {
+      const appScreenshot = await chrome.send('Page.captureScreenshot');
+      screenshotData.push({ data: appScreenshot.data, name: 'app' });
+    }
     // The list of URLs for which applicable cookies will be fetched
     cookieResponse = await chrome.send('Network.getCookies', [url]);
 
@@ -87,7 +108,10 @@ export async function authClient(
     }
   }
 
-  return cookieResponse.cookies;
+  return {
+    cookies: cookieResponse.cookies,
+    screenshotData
+  };
 }
 
 /**

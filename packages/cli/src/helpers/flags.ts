@@ -257,3 +257,8 @@ export const password = oclifFlags.build({
   description: `The password to login to the form`,
   required: true,
 });
+
+export const screenshots = oclifFlags.boolean({
+  description: `Include chrome screenshots from command execution`,
+  default: false,
+});

@@ -2,6 +2,7 @@ import { Archive, Entry, Header } from '@tracerbench/har';
 import { SessionConnection } from 'chrome-debugging-client';
 import Protocol from 'devtools-protocol';
 
+import type { Screenshot } from '../util/interfaces';
 import { IConditions } from './conditions';
 import {
   createBrowser,
@@ -21,6 +22,11 @@ type NetworkRequestStacks = {
   stackB: Protocol.Network.ResponseReceivedEvent[];
 };
 
+type HARArchiveResponse = {
+  archive: Archive;
+  screenshotData?: Screenshot[];
+};
+
 const networkRequestStacks: NetworkRequestStacks = {
   stackA: [],
   stackB: []
@@ -32,8 +38,9 @@ export async function recordHARClient(
   marker: string,
   conditions: IConditions,
   headless = false,
-  altBrowserArgs?: string[]
-): Promise<Archive> {
+  altBrowserArgs?: string[],
+  screenshots?: boolean
+): Promise<HARArchiveResponse> {
   const archive: Archive = {
     log: {
       version: '0.0.0',
@@ -44,6 +51,8 @@ export async function recordHARClient(
       entries: []
     }
   };
+  const screenshotData: Screenshot[] = [];
+
   const browserArgs = getBrowserArgs(altBrowserArgs);
   const browser = await createBrowser(browserArgs, headless);
   try {
@@ -124,6 +133,12 @@ export async function recordHARClient(
       debugCallback('evalPromise resolved with marker %o', marker);
     });
 
+    // screenshot app
+    if (screenshots) {
+      const appScreenshot = await chrome.send('Page.captureScreenshot');
+      screenshotData.push({ data: appScreenshot.data, name: 'app' });
+    }
+
     archive.log.entries = await processEntriesLoop(chrome);
 
     await Promise.all([
@@ -145,7 +160,10 @@ export async function recordHARClient(
     }
   }
 
-  return archive;
+  return {
+    archive,
+    screenshotData
+  };
 }
 
 export async function processEntriesLoop(
