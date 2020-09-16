@@ -1,6 +1,6 @@
 import type { Protocol } from 'devtools-protocol';
 
-import { createBrowser, getBrowserArgs, getNewTab, wait } from './utils';
+import { createBrowser, getBrowserArgs, getTab, wait } from './utils';
 import debug = require('debug');
 import { SessionConnection } from 'chrome-debugging-client';
 
@@ -24,7 +24,7 @@ export async function authClient(
   const browser = await createBrowser(browserArgs, headless);
   let cookieResponse: Protocol.Network.GetCookiesResponse;
   try {
-    const chrome = await getNewTab(browser.connection, url);
+    const chrome = await getTab(browser.connection);
 
     // enable Page / DOM / Network / Runtime
     await Promise.all([
