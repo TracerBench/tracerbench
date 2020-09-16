@@ -1,6 +1,6 @@
 {
   "name": "har-remix",
-  "version": "4.0.12",
+  "version": "4.1.0",
   "description": "Server HAR archive with loose matching and hooks to alter responses.",
   "keywords": [
     "benchmarking",
