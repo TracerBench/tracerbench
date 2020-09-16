@@ -1,6 +1,6 @@
 import { flags as oclifFlags } from "@oclif/command";
 import { IConditions, recordHARClient } from "@tracerbench/core";
-import { readJson, writeFileSync } from "fs-extra";
+import { mkdirpSync, readJson, writeFileSync, writeJsonSync } from "fs-extra";
 import { join, resolve } from "path";
 
 import { getConfig, TBBaseCommand } from "../../command-config";
@@ -12,6 +12,7 @@ import {
   filename,
   headless,
   marker,
+  screenshots,
   url,
 } from "../../helpers/flags";
 
@@ -26,6 +27,7 @@ export default class RecordHAR extends TBBaseCommand {
     marker: marker({ required: true }),
     config: config(),
     headless,
+    screenshots,
   };
   public async init(): Promise<void> {
     const { flags } = this.parse(RecordHAR);
@@ -34,7 +36,7 @@ export default class RecordHAR extends TBBaseCommand {
 
   public async run(): Promise<void> {
     const { flags } = this.parse(RecordHAR);
-    const { url, dest, cookiespath, filename, marker } = flags;
+    const { url, dest, cookiespath, filename, marker, screenshots } = flags;
     const { network, cpuThrottleRate, headless } = this.parsedConfig;
     let { browserArgs } = this.parsedConfig;
     const conditions: IConditions = {
@@ -49,6 +51,9 @@ export default class RecordHAR extends TBBaseCommand {
         path: "",
       },
     ];
+
+    mkdirpSync(dest);
+
     if (cookiespath.length) {
       // grab the auth cookies
       cookies = await readJson(resolve(cookiespath));
@@ -63,18 +68,32 @@ export default class RecordHAR extends TBBaseCommand {
 
     this.log(`Recording HAR ...`);
     // record the actual HAR and return the archive file
-    const harArchive = await recordHARClient(
+    const harArchiveResponse = await recordHARClient(
       url,
       cookies,
       marker,
       conditions,
       headless,
-      browserArgs
+      browserArgs,
+      screenshots
     );
+
+    if (screenshots && harArchiveResponse.screenshotData) {
+      harArchiveResponse.screenshotData.map((screenshot) => {
+        const screenshotName = `record-har-${screenshot.name}-screenshot.png`;
+        const screenshotPath = resolve(join(dest, screenshotName));
+
+        writeFileSync(screenshotPath, screenshot.data, {
+          encoding: "base64",
+        });
+
+        this.log(`  ✔ ${screenshot.name} screenshot: ${screenshotPath}`);
+      });
+    }
 
     const harPath = join(dest, `${filename}.har`);
 
-    writeFileSync(harPath, JSON.stringify(harArchive));
+    writeJsonSync(harPath, harArchiveResponse.archive);
 
     this.log(`  ✔ HAR recorded: ${harPath}`);
   }

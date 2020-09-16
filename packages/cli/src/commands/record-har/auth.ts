@@ -1,7 +1,7 @@
 /* eslint-disable filenames/match-exported */
 import { authClient } from "@tracerbench/core";
 import Protocol from "devtools-protocol";
-import { writeFileSync } from "fs-extra";
+import { mkdirpSync, writeFileSync } from "fs-extra";
 import { join, resolve } from "path";
 
 import { getConfig, TBBaseCommand } from "../../command-config";
@@ -12,6 +12,7 @@ import {
   filename,
   headless,
   password,
+  screenshots,
   url,
   username,
 } from "../../helpers/flags";
@@ -24,6 +25,7 @@ type RecordHARAuthOptions = {
   config: string;
   headless: boolean;
   password: string;
+  screenshots: boolean;
 };
 
 export default class RecordHARAuth extends TBBaseCommand {
@@ -37,6 +39,7 @@ export default class RecordHARAuth extends TBBaseCommand {
     password: password({ required: true }),
     config: config(),
     headless,
+    screenshots,
   };
   public async init(): Promise<void> {
     const { flags } = this.parse(RecordHARAuth);
@@ -45,8 +48,15 @@ export default class RecordHARAuth extends TBBaseCommand {
   }
 
   public async run(): Promise<Protocol.Network.CookieParam[]> {
-    const { headless, url, username, password, filename, dest } = this
-      .parsedConfig as RecordHARAuthOptions;
+    const {
+      headless,
+      url,
+      username,
+      password,
+      filename,
+      dest,
+      screenshots,
+    } = this.parsedConfig as RecordHARAuthOptions;
     let { browserArgs } = this.parsedConfig;
 
     // if headless flag is true include the headless flags
@@ -55,23 +65,39 @@ export default class RecordHARAuth extends TBBaseCommand {
         ? browserArgs.concat(headlessFlags)
         : headlessFlags;
     }
+    mkdirpSync(dest);
 
     this.log(`Retrieving cookies ...`);
+
     // login to the url provided and retrieve the cookies
-    const cookies = await authClient(
+    const authClientResponse = await authClient(
       url,
       username,
       password,
       headless,
-      browserArgs
+      browserArgs,
+      screenshots
     );
 
     const cookiesPath = resolve(join(dest, `${filename}.json`));
 
-    writeFileSync(cookiesPath, JSON.stringify(cookies));
+    if (screenshots && authClientResponse.screenshotData) {
+      authClientResponse.screenshotData.map((screenshot) => {
+        const screenshotName = `record-har-auth-${screenshot.name}-screenshot.png`;
+        const screenshotPath = resolve(join(dest, screenshotName));
 
-    this.log(`  ✔ Cookies retrieved: ${cookiesPath}`);
+        writeFileSync(screenshotPath, screenshot.data, {
+          encoding: "base64",
+        });
 
-    return cookies;
+        this.log(`  ✔ ${screenshot.name} screenshot: ${screenshotPath}`);
+      });
+    }
+
+    writeFileSync(cookiesPath, JSON.stringify(authClientResponse.cookies));
+
+    this.log(`  ✔ Cookies: ${cookiesPath}`);
+
+    return authClientResponse.cookies;
   }
 }
