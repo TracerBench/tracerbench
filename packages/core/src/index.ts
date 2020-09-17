@@ -36,5 +36,8 @@ export {
   IConditions,
   recordHARClient,
   INetworkConditions,
-  authClient
+  authClient,
+  getNewTab,
+  createBrowser,
+  getTab
 } from './trace';

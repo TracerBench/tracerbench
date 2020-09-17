@@ -6,4 +6,4 @@ export {
   IConditions,
   INetworkConditions
 } from './conditions';
-export { getBrowserArgs } from './utils';
+export { getBrowserArgs, createBrowser, getNewTab, getTab } from './utils';
