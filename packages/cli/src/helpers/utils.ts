@@ -243,10 +243,33 @@ export function convertToSentCase(str: string): string {
   return result.charAt(0).toUpperCase() + result.slice(1);
 }
 
-export function logHeading(heading: string): void {
-  console.log(
-    `\n${chalkScheme.blackBgBlue(`    ${chalkScheme.white(heading)}    `)}\n`
-  );
+export function logHeading(
+  heading: string,
+  headingType: "log" | "warn" | "alert" = "log"
+): void {
+  switch (headingType) {
+    case "log":
+      console.log(
+        `\n${chalkScheme.blackBgBlue(
+          `    ${chalkScheme.white(heading)}    `
+        )}\n`
+      );
+      break;
+    case "warn":
+      console.log(
+        `\n${chalkScheme.blackBgYellow(
+          `    ${chalkScheme.white("WARNING")}    `
+        )} ${chalkScheme.warning(heading)}\n`
+      );
+      break;
+    case "alert":
+      console.log(
+        `\n${chalkScheme.blackBgRed(
+          `    ${chalkScheme.white("! ALERT")}    `
+        )} ${chalk.red(heading)}\n`
+      );
+      break;
+  }
 }
 
 export type logBarOptions = {

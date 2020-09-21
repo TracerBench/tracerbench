@@ -35,7 +35,7 @@
       {{else}}
       <strong>slower</strong>
       {{/if}}
-      by <strong>{{abs analysisForPhase.hlDiff}} ms</strong>. TracerBench is 95% confident it is
+      by <strong>{{abs analysisForPhase.hlDiff}} ms</strong>. TracerBench is 95% confident "{{analysisForPhase.servers.[1].name}}" is
       {{#if (isFaster analysisForPhase)}}
       <strong>faster</strong>
       {{else}}
@@ -43,8 +43,8 @@
       {{/if}}
       between <strong>{{absSort analysisForPhase.ciMax analysisForPhase.ciMin 0}} ms to
         {{absSort analysisForPhase.ciMax analysisForPhase.ciMin 1}} ms</strong> based on
-      {{analysisForPhase.sampleCount}} samples using a <a href="https://en.wikipedia.org/wiki/Confidence_interval"
-        target="_blank">confidence interval</a>.
+      {{analysisForPhase.sampleCount}} samples using a <i><small>(<a href="https://en.wikipedia.org/wiki/Confidence_interval"
+        target="_blank">confidence interval</a>)</small></i>.
       {{/if}}
     </p>
   </div>

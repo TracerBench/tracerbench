@@ -2,8 +2,8 @@ import { Stats } from "@tracerbench/stats";
 import * as chalk from "chalk";
 import * as Table from "cli-table3";
 
-import { ICompareJSONResult } from "./log-compare-results";
-import { chalkScheme } from "./utils";
+import { chalkScheme } from "../helpers/utils";
+import { ICompareJSONResult } from "./compare-results";
 
 export default class TBTable {
   public table: Table.Table;
