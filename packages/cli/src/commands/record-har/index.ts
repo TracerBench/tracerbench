@@ -1,5 +1,6 @@
 import { flags as oclifFlags } from "@oclif/command";
 import { IConditions, recordHARClient } from "@tracerbench/core";
+import type { Archive } from "@tracerbench/har";
 import { mkdirpSync, readJson, writeFileSync, writeJsonSync } from "fs-extra";
 import { join, resolve } from "path";
 
@@ -93,8 +94,36 @@ export default class RecordHAR extends TBBaseCommand {
 
     const harPath = join(dest, `${filename}.har`);
 
+    // validate the har file can be parsed as JSON
+    // validate that the expected URL matches what was recorded
+    await this.validateHAR(harArchiveResponse.archive, url);
+
     writeJsonSync(harPath, harArchiveResponse.archive);
 
     this.log(`  ✔ HAR recorded: ${harPath}`);
+  }
+
+  public async validateHAR(harJSON: Archive, url: string): Promise<void> {
+    this.log(`Validating HAR ...`);
+
+    try {
+      const harFileURL = this.getURLfromHAR(harJSON);
+      if (harFileURL !== url) {
+        this.log(`  ! Expected: ${url}`);
+        this.log(`  ! Actual: ${harFileURL}`);
+        throw `The HAR was recorded with a different URL than expected. Expected and Actual should match.`;
+      }
+    } catch (error) {
+      this.error(`  ✖ HAR file invalid. ${error}`);
+    }
+  }
+
+  public getURLfromHAR(harJSON: Archive): string {
+    try {
+      const url = harJSON.log.entries[0].request.url;
+      return url;
+    } catch (error) {
+      this.error(`\nCould not extract the URL from the HAR.\n${error}`);
+    }
   }
 }

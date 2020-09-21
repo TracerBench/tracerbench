@@ -110,7 +110,6 @@ describe("compare regression: fixture: A/B", () => {
         );
         // confirm with headless flag is logging the trace stream
         expect(ctx.stdout).to.contain(`duration phase estimated regression +`);
-        expect(ctx.stdout).to.contain(`ember phase no difference`);
         expect(ctx.stdout).to.contain(
           `    ! ALERT     Regression found exceeding the set regression threshold of ${regressionThreshold} ms`
         );
