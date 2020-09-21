@@ -80,7 +80,6 @@
     <div class="row">
       <div class="col">
         <h1>Sub Phases in Detail</h1>
-        <p>Sorted by phases that regressed with the most magnitude.</p>
         <hr>
       </div>
     </div>
@@ -131,35 +130,29 @@
   {{/each}}
 
   <script>
-    function randomValues(count, min, max) {
-      const delta = max - min;
-      return Array.from({ length: count }).map(() => Math.random() * delta + min);
-    }
-
-    const boxplotData = {
-      // define label tree
-      labels: {{{ cumulativeChartData.categories }}},
-    datasets: [{
-      label: '{{reportTitles.servers.[0].name}}',
-      borderColor: '#0A2D46',
-      backgroundColor: 'rgba(199, 241, 106, 0.50)',
-      borderWidth: 1,
-      itemBackgroundColor: '#1884E4',
-      data: {{ cumulativeChartData.controlData }}
-      }, {
-      label: '{{reportTitles.servers.[1].name}}',
-      borderColor: '#0A2D46',
-      backgroundColor: 'rgba(56, 210, 211, 0.50)',
-      borderWidth: 1,
-      itemBackgroundColor: '#1884E4',
-      data: {{ cumulativeChartData.experimentData }}
-      }]
-    };
-
     const ctx = document.getElementById("all-in-one-chart").getContext("2d");
     window.myBar = new Chart(ctx, {
       type: 'boxplot',
-      data: boxplotData,
+      data: {
+        labels: {{{stringify cumulativeData.categories}}},
+        datasets: [
+          {
+            label: '{{reportTitles.servers.[0].name}}',
+            borderColor: '#0A2D46',
+            backgroundColor: 'rgba(199, 241, 106, 0.50)',
+            borderWidth: 1,
+            itemBackgroundColor: '#1884E4',
+            data: {{{stringify cumulativeData.controlData}}}
+          },{
+            label: '{{reportTitles.servers.[1].name}}',
+            borderColor: '#0A2D46',
+            backgroundColor: 'rgba(56, 210, 211, 0.50)',
+            borderWidth: 1,
+            itemBackgroundColor: '#1884E4',
+            data: {{{stringify cumulativeData.experimentData}}}
+          }
+        ]
+      },
       options: {
         devicePixelRatio: 2.5,
         aspectRatio: 1.5,

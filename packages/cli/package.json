@@ -103,7 +103,7 @@
     "lint": "eslint -c .eslintrc.js --ext .ts .",
     "prepare": "yarn build",
     "prepack": "yarn build && yarn build:schema",
-    "test": "yarn lint && nyc --extension .ts mocha \"test/commands/**/*.test.ts\" \"test/helpers/**/*.test.ts\" \"test/command-config/**/*.test.ts\"",
+    "test": "yarn lint && nyc --extension .ts mocha \"test/commands/**/*.test.ts\" \"test/helpers/**/*.test.ts\" \"test/command-config/**/*.test.ts\" \"test/compare/**/*.test.ts\"",
     "oclif": "oclif-dev manifest && oclif-dev readme",
     "oclif:markdown": "./node_modules/.bin/oclif-dev readme --dir ./markdown --multi",
     "build": "rm -rf ./dist && tsc -b && yarn copystatic && yarn oclif && yarn lint",

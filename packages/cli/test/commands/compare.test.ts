@@ -2,7 +2,7 @@ import { test } from "@oclif/test";
 import { expect, assert } from "chai";
 import Compare from "../../src/commands/compare";
 import { FIXTURE_APP, TB_RESULTS_FOLDER } from "../test-helpers";
-import { ICompareJSONResults } from "../../src/helpers/log-compare-results";
+import { ICompareJSONResults } from "../../src/compare/compare-results";
 
 const fidelity = "test";
 const fidelityLow = "10";

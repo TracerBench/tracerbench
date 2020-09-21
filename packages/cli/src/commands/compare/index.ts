@@ -12,8 +12,13 @@ import {
 } from "@tracerbench/core";
 import type { ChromeSpawnOptions } from "@tracerbench/spawn-chrome";
 import Protocol from "devtools-protocol";
-import * as fs from "fs-extra";
-import * as path from "path";
+import {
+  createWriteStream,
+  mkdirpSync,
+  writeFileSync,
+  writeJSONSync,
+} from "fs-extra";
+import { join } from "path";
 
 import { getConfig, TBBaseCommand } from "../../command-config";
 import {
@@ -200,10 +205,10 @@ export default class Compare extends TBBaseCommand {
     }
     const resultJSONPath = `${this.parsedConfig.tbResultsFolder}/compare.json`;
 
-    fs.writeFileSync(resultJSONPath, JSON.stringify(results));
+    writeFileSync(resultJSONPath, JSON.stringify(results));
 
     const tracesDir = `${this.parsedConfig.tbResultsFolder}/traces`;
-    const zipOutput = fs.createWriteStream(
+    const zipOutput = createWriteStream(
       `${this.parsedConfig.tbResultsFolder}/traces.zip`
     );
     const archive = archiver("zip", {
@@ -219,6 +224,7 @@ export default class Compare extends TBBaseCommand {
 
     this.log(`\n${message}`);
 
+    // if the stdout analysis is not hidden show it
     if (!hideAnalysis) {
       this.analyzedJSONString = await CompareAnalyze.run([
         resultJSONPath,
@@ -230,7 +236,7 @@ export default class Compare extends TBBaseCommand {
         `${this.parsedConfig.isCIEnv}`,
       ]);
 
-      fs.writeFileSync(
+      writeJSONSync(
         `${this.parsedConfig.tbResultsFolder}/report.json`,
         this.analyzedJSONString
       );
@@ -251,17 +257,17 @@ export default class Compare extends TBBaseCommand {
     // with debug flag output three files
     // on config specifics
     if (this.parsedConfig.debug) {
-      fs.writeFileSync(
+      writeJSONSync(
         `${this.parsedConfig.tbResultsFolder}/server-control-settings.json`,
         JSON.stringify(Object.assign(controlSettings), null, 2)
       );
 
-      fs.writeFileSync(
+      writeJSONSync(
         `${this.parsedConfig.tbResultsFolder}/server-experiment-settings.json`,
         JSON.stringify(Object.assign(experimentSettings), null, 2)
       );
 
-      fs.writeFileSync(
+      writeJSONSync(
         `${this.parsedConfig.tbResultsFolder}/compare-flags-settings.json`,
         JSON.stringify(Object.assign(this.parsedConfig), null, 2)
       );
@@ -318,7 +324,7 @@ export default class Compare extends TBBaseCommand {
 
     // if the folder for the tracerbench results file
     // does not exist then create it
-    fs.mkdirpSync(path.join(tbResultsFolder, "traces"));
+    mkdirpSync(join(tbResultsFolder, "traces"));
   }
 
   /**

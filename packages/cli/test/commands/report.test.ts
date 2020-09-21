@@ -2,6 +2,7 @@ import { test } from "@oclif/test";
 import { expect, assert } from "chai";
 import { readJsonSync } from "fs-extra";
 
+import { IHARServer } from "../../src/command-config";
 import CompareReport from "../../src/commands/compare/report";
 import { Report } from "../../src/index";
 import {
@@ -87,4 +88,59 @@ describe("compare:report ci", () => {
         assert.exists(`${TB_RESULTS_FOLDER}/artifact-1.pdf`);
       }
     );
+});
+
+describe("compare:report", () => {
+  it(`resolveTitles()`, () => {
+    const browserVersion = "HeadlessChrome/80.0.3965.0";
+    const servers: [IHARServer, IHARServer] = [
+      {
+        name: "Hello World",
+        url: "",
+        dist: "",
+        socksPort: 0,
+        har: "",
+      },
+      { name: "Hello World 2", url: "", dist: "", socksPort: 0, har: "" },
+    ];
+    const resolved = CompareReport.resolveTitles(
+      {
+        servers,
+        plotTitle: "Override",
+      },
+      browserVersion
+    );
+    expect(resolved.servers[0].name).to.equal("Control: Hello World");
+    expect(resolved.servers[1].name).to.equal("Experiment: Hello World 2");
+    expect(resolved.plotTitle).to.equal("Override");
+    expect(resolved.browserVersion).to.equal(browserVersion);
+  });
+});
+
+describe("compare:report", () => {
+  it(`resolveTitles():flag-override`, () => {
+    const browserVersion = "HeadlessChrome/80.0.3965.0";
+    const servers: [IHARServer, IHARServer] = [
+      {
+        name: "Hello World",
+        url: "",
+        dist: "",
+        socksPort: 0,
+        har: "",
+      },
+      { name: "Hello World 2", url: "", dist: "", socksPort: 0, har: "" },
+    ];
+    const resolved = CompareReport.resolveTitles(
+      {
+        servers,
+        plotTitle: "Override",
+      },
+      browserVersion,
+      "Flag-Override"
+    );
+    expect(resolved.servers[0].name).to.equal("Control: Hello World");
+    expect(resolved.servers[1].name).to.equal("Experiment: Hello World 2");
+    expect(resolved.plotTitle).to.equal("Flag-Override");
+    expect(resolved.browserVersion).to.equal(browserVersion);
+  });
 });

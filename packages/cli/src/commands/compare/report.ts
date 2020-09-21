@@ -1,23 +1,59 @@
-/* eslint-disable @typescript-eslint/explicit-function-return-type */
 /* eslint-disable filenames/match-exported */
 
 import { IConfig } from "@oclif/config";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "fs-extra";
+import { existsSync, mkdirSync, writeFileSync } from "fs-extra";
+import * as Handlebars from "handlebars";
 import { join, resolve } from "path";
 
-import { getConfig, TBBaseCommand } from "../../command-config";
-import createConsumableHTML, {
+import {
+  defaultFlagArgs,
+  getConfig,
+  ITBConfig,
+  TBBaseCommand,
+} from "../../command-config";
+import {
+  GenerateStats,
   ITracerBenchTraceResult,
-} from "../../helpers/create-consumable-html";
+  ParsedTitleConfigs,
+} from "../../compare/generate-stats";
+import parseCompareResult from "../../compare/parse-compare-result";
+import printToPDF from "../../compare/print-to-pdf";
 import {
   config,
   isCIEnv,
   plotTitle,
   tbResultsFolder,
 } from "../../helpers/flags";
-import printToPDF from "../../helpers/print-to-pdf";
-import { chalkScheme } from "../../helpers/utils";
+import { chalkScheme, logHeading } from "../../helpers/utils";
+import {
+  PHASE_CHART_JS_TEMPLATE_RAW,
+  PHASE_DETAIL_TEMPLATE_RAW,
+  REPORT_TEMPLATE_RAW,
+} from "../../static";
 
+// HANDLEBARS HELPERS
+Handlebars.registerPartial("phaseChartJSSection", PHASE_CHART_JS_TEMPLATE_RAW);
+Handlebars.registerPartial("phaseDetailSection", PHASE_DETAIL_TEMPLATE_RAW);
+Handlebars.registerHelper("toCamel", (val) => {
+  return val.replace(/-([a-z])/g, (g: string) => g[1].toUpperCase());
+});
+Handlebars.registerHelper("isFaster", (analysis) => {
+  return analysis.hlDiff > 0;
+});
+Handlebars.registerHelper("abs", (num) => {
+  return Math.abs(num);
+});
+Handlebars.registerHelper("absSort", (num1, num2, position) => {
+  const sorted = [Math.abs(num1), Math.abs(num2)];
+  sorted.sort((a, b) => a - b);
+  return sorted[position];
+});
+Handlebars.registerHelper("stringify", (ctx) => {
+  return JSON.stringify(ctx);
+});
+Handlebars.registerHelper("logArr", (arr) => {
+  return JSON.stringify(arr);
+});
 const ARTIFACT_FILE_NAME = "artifact";
 
 export interface IReportFlags {
@@ -50,61 +86,55 @@ export default class CompareReport extends TBBaseCommand {
     const { flags } = this.parse(CompareReport);
     this.parsedConfig = getConfig(flags.config, flags, this.explicitFlags);
 
-    this.reportFlags = flags;
     await this.parseFlags();
   }
-  /**
-   * Ensure the input file is valid and call the helper function "createConsumableHTML"
-   * to generate the HTML string for the output file.
-   */
+
   public async run(): Promise<void> {
-    const tbResultsFolder = this.reportFlags.tbResultsFolder;
+    const { tbResultsFolder } = (this.parsedConfig as unknown) as IReportFlags;
     const inputFilePath = join(tbResultsFolder, "compare.json");
-    let inputData: ITracerBenchTraceResult[] = [];
-    // If the input file cannot be found, exit with an error
-    if (!existsSync(inputFilePath)) {
-      this.error(
-        `The compare.json file does not exist. Please make sure ${inputFilePath} exists`,
-        { exit: 1 }
-      );
+
+    const { controlData, experimentData } = parseCompareResult(inputFilePath);
+
+    const { absOutputPath, absPathToHTML } = await this.printPDF(
+      controlData,
+      experimentData,
+      tbResultsFolder
+    );
+
+    if (!this.parsedConfig.isCIEnv) {
+      this.logReportPaths(tbResultsFolder, absOutputPath, absPathToHTML);
     }
+  }
 
-    try {
-      inputData = JSON.parse(readFileSync(inputFilePath, "utf8"));
-    } catch (error) {
-      this.error(
-        `Had issues parsing the compare.json file. Please make sure ${inputFilePath} is valid JSON`,
-        { exit: 1 }
-      );
-    }
+  private logReportPaths(
+    tbResultsFolder: string,
+    absOutputPath: string,
+    absPathToHTML: string
+  ): void {
+    const chalkBlueBold = chalkScheme.tbBranding.blue.underline.bold;
 
-    const controlData = inputData.find((element) => {
-      return element.set === "control";
-    }) as ITracerBenchTraceResult;
+    logHeading("Benchmark Reports");
+    this.log(`\nJSON: ${chalkBlueBold(`${tbResultsFolder}/compare.json`)}`);
+    this.log(`\nPDF: ${chalkBlueBold(absOutputPath)}`);
+    this.log(`\nHTML: ${chalkBlueBold(absPathToHTML)}\n`);
+  }
 
-    const experimentData = inputData.find((element) => {
-      return element.set === "experiment";
-    }) as ITracerBenchTraceResult;
-
-    if (!controlData || !experimentData) {
-      this.error(`Missing control or experiment set in compare.json`, {
-        exit: 1,
-      });
-    }
-
-    const outputFileName = this.determineOutputFileName(tbResultsFolder);
-    const renderedHTML = createConsumableHTML(
+  private async printPDF(
+    controlData: ITracerBenchTraceResult,
+    experimentData: ITracerBenchTraceResult,
+    tbResultsFolder: string
+  ): Promise<{ absOutputPath: string; absPathToHTML: string }> {
+    const outputFileName = this.determineOutputFileNamePrefix(tbResultsFolder);
+    const renderedHTML = this.createConsumableHTML(
       controlData,
       experimentData,
       this.parsedConfig,
       this.reportFlags.plotTitle
     );
-    if (!existsSync(tbResultsFolder)) {
-      mkdirSync(tbResultsFolder, { recursive: true });
-    }
 
-    const htmlOutputPath = join(tbResultsFolder, `/${outputFileName}.html`);
-    const absPathToHTML = resolve(htmlOutputPath);
+    const absPathToHTML = resolve(
+      join(tbResultsFolder, `/${outputFileName}.html`)
+    );
 
     writeFileSync(absPathToHTML, renderedHTML);
 
@@ -114,24 +144,10 @@ export default class CompareReport extends TBBaseCommand {
 
     await printToPDF(`file://${absPathToHTML}`, absOutputPath);
 
-    if (!this.parsedConfig.isCIEnv) {
-      this.log(
-        `\n${chalkScheme.blackBgBlue(
-          `    ${chalkScheme.white("Benchmark Reports")}    `
-        )}`
-      );
-      this.log(
-        `\nJSON: ${chalkScheme.tbBranding.blue.underline.bold(
-          `${this.parsedConfig.tbResultsFolder}/compare.json`
-        )}`
-      );
-      this.log(
-        `\nPDF: ${chalkScheme.tbBranding.blue.underline.bold(absOutputPath)}`
-      );
-      this.log(
-        `\nHTML: ${chalkScheme.tbBranding.blue.underline.bold(absPathToHTML)}\n`
-      );
-    }
+    return {
+      absOutputPath,
+      absPathToHTML,
+    };
   }
 
   private async parseFlags(): Promise<void> {
@@ -139,12 +155,15 @@ export default class CompareReport extends TBBaseCommand {
 
     // if the folder for the tracerbench results file
     // does not exist then create it
-    if (!existsSync(tbResultsFolder)) {
-      mkdirSync(tbResultsFolder);
+    try {
+      mkdirSync(tbResultsFolder, { recursive: true });
+    } catch (e) {
+      // ignore
     }
   }
 
-  private determineOutputFileName(outputFolder: string): string {
+  // increment the report filename prefix by 1
+  private determineOutputFileNamePrefix(outputFolder: string): string {
     let count = 1;
     const running = true;
     while (running) {
@@ -162,5 +181,71 @@ export default class CompareReport extends TBBaseCommand {
       count += 1;
     }
     return `artifact-${count}`;
+  }
+
+  private createConsumableHTML(
+    controlData: ITracerBenchTraceResult,
+    experimentData: ITracerBenchTraceResult,
+    tbConfig: ITBConfig,
+    plotTitle?: string
+  ): string {
+    const reportTitles = CompareReport.resolveTitles(
+      tbConfig,
+      controlData.meta.browserVersion,
+      plotTitle
+    );
+
+    const stats = new GenerateStats(controlData, experimentData, reportTitles);
+    const { durationSection, subPhaseSections, cumulativeData } = stats;
+    const template = Handlebars.compile(REPORT_TEMPLATE_RAW);
+
+    return template({
+      cumulativeData,
+      durationSection,
+      reportTitles,
+      subPhaseSections,
+      configsSJSONString: JSON.stringify(tbConfig, null, 4),
+      sectionFormattedDataJson: JSON.stringify(subPhaseSections),
+    });
+  }
+
+  /**
+   * Override the default server and plot title attributes
+   *
+   * @param tbConfig - Concerned only about the "servers" and "plotTitle"
+   *   attribute
+   * @param version - Browser version
+   * @param plotTitle - Optional explicit title from cli flag
+   */
+  public static resolveTitles(
+    tbConfig: Partial<ITBConfig>,
+    version: string,
+    plotTitle?: string
+  ): ParsedTitleConfigs {
+    const reportTitles = {
+      servers: [{ name: "Control" }, { name: "Experiment" }],
+      plotTitle: tbConfig.plotTitle
+        ? tbConfig.plotTitle
+        : defaultFlagArgs.plotTitle,
+      browserVersion: version,
+    };
+
+    if (tbConfig.servers) {
+      reportTitles.servers = tbConfig.servers.map((titleConfig, idx) => {
+        if (idx === 0) {
+          return { name: `Control: ${titleConfig.name}` };
+        } else {
+          return { name: `Experiment: ${titleConfig.name}` };
+        }
+      });
+    }
+
+    // if passing an explicit plotTitle via cli flag this trumps
+    // the tbConfig.plotTitle and defaults
+    if (plotTitle) {
+      reportTitles.plotTitle = plotTitle;
+    }
+
+    return reportTitles;
   }
 }

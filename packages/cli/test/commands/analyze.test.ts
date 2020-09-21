@@ -27,10 +27,8 @@ describe("compare:analyze low fidelity, low threshold", () => {
       async (ctx) => {
         await CompareAnalyze.run([
           `${COMPARE_JSON}`,
-          "--fidelity",
-          "2",
-          "--regressionThreshold",
-          regressionThreshold,
+          "--fidelity=2",
+          `--regressionThreshold=${regressionThreshold}`,
         ]);
 
         expect(ctx.stdout).to.contain(
@@ -51,10 +49,8 @@ describe("compare:analyze low threshold", () => {
       async (ctx) => {
         await CompareAnalyze.run([
           `${COMPARE_JSON}`,
-          "--fidelity",
-          "10",
-          "--regressionThreshold",
-          regressionThreshold,
+          "--fidelity=10",
+          `--regressionThreshold=${regressionThreshold}`,
         ]);
 
         expect(ctx.stdout).to.contain(

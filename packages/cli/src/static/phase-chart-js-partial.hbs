@@ -12,7 +12,7 @@
         outlierColor: '#999999',
         itemRadius: 2,
         itemBackgroundColor: '#1884E4',
-        data: [{{{analysisForPhase.controlFormatedSamples}}}]
+        data: [{{{stringify analysisForPhase.controlFormatedSamples}}}]
       }, {
         label: '{{analysisForPhase.servers.[1].name}}',
         borderColor: '#0A2D46',
@@ -21,7 +21,7 @@
         outlierColor: '#999999',
         itemRadius: 2,
         itemBackgroundColor: '#1884E4',
-        data: [{{{analysisForPhase.experimentFormatedSamples}}}]
+        data: [{{{stringify analysisForPhase.experimentFormatedSamples}}}]
       }]
     },
     options: {

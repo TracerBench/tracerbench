@@ -1,6 +1,3 @@
-import createConsumableHTML, {
-  ITracerBenchTraceResult,
-} from "./create-consumable-html";
 import deviceSettings, {
   EmulateDeviceSetting,
   getEmulateDeviceSettingForKeyAndOrientation,
@@ -9,7 +6,5 @@ import deviceSettings, {
 export {
   deviceSettings,
   EmulateDeviceSetting,
-  createConsumableHTML,
-  ITracerBenchTraceResult,
   getEmulateDeviceSettingForKeyAndOrientation,
 };
