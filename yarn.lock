@@ -1403,6 +1403,30 @@
   dependencies:
     any-observable "^0.3.0"
 
+"@tracerbench/core@^4.2.0":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@tracerbench/core/-/core-4.1.1.tgz#af147c248199d7fae3558058421b55c89d4b587d"
+  integrity sha512-9a4piVFkYvwRDGBHc9PPej58+DSC5AvvFbh1ODxst34glsD/x2jxt9CD9EfAYNPC2GxkNVeJk8zEbWCaMUurEw==
+  dependencies:
+    "@tracerbench/har" "^4.0.1"
+    "@tracerbench/trace-event" "^4.1.1"
+    "@tracerbench/trace-model" "^4.1.1"
+    "@types/d3-hierarchy" "^1.1.6"
+    "@types/node" "*"
+    array-binsearch "^1.0.1"
+    chalk "^4.1.0"
+    chrome-debugging-client "^2.0.0"
+    d3-hierarchy "^2.0.0"
+    debug "^4.1.1"
+    devtools-protocol "^0.0.802093"
+    fs-extra "^9.0.1"
+    handlebars "^4.7.6"
+    lodash.clonedeep "^4.5.0"
+    race-cancellation "^0.4.1"
+    silent-error "^1.1.1"
+    tmp "^0.2.1"
+    tslib "^2.0.1"
+
 "@tracerbench/find-chrome@^2.0.0":
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/@tracerbench/find-chrome/-/find-chrome-2.0.0.tgz#fa0c7707d05c4c4296e55d474a4ebe049dd983e5"
@@ -1450,6 +1474,24 @@
     debug "^4.1.1"
     execa "^4.0.2"
     race-cancellation "^0.4.1"
+
+"@tracerbench/stats@^4.2.0":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@tracerbench/stats/-/stats-4.1.1.tgz#90c2f57d64f8093ec66a175ebe49e0e604848384"
+  integrity sha512-l+scQUuHcRAQjcqOH4WDv1u5QlhRQs4I+sEAB1nHvtyd25mMs/mFQPvtNDGa4JepvcKuZXA0i9lnOpRAUGCOSg==
+  dependencies:
+    d3-array "^2.7.1"
+    d3-scale "^3.2.2"
+    fs-extra "^9.0.1"
+    jstat "^1.9.3"
+    path "0.12.7"
+    tmp "^0.2.1"
+    tslib "^2.0.1"
+
+"@tracerbench/trace-event@^4.2.0":
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/@tracerbench/trace-event/-/trace-event-4.1.1.tgz#ba18fcf108c8d9b39277f446f143b1a92538d457"
+  integrity sha512-GjT8OYQ31YgUueP2EfDk9Oo90FZvqP+hqVpmjAxJeeO0IZNeffseG9PBj/8ekCjpT7ygM20LFPJrDmTndcIO1Q==
 
 "@tracerbench/websocket-message-transport@^2.0.0":
   version "2.0.0"
@@ -1602,6 +1644,11 @@
   version "14.0.27"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.0.27.tgz#a151873af5a5e851b51b3b065c9e63390a9e0eb1"
   integrity sha512-kVrqXhbclHNHGu9ztnAwSncIgJv/FaxmzXJvGXNdcCpV1b8u1/Mi6z6m0vwy0LzKeXFTPLH0NzwmoJ3fNCIq0g==
+
+"@types/node@^14.11.2":
+  version "14.11.2"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.11.2.tgz#2de1ed6670439387da1c9f549a2ade2b0a799256"
+  integrity sha512-jiE3QIxJ8JLNcb1Ps6rDbysDhN4xa8DJJvuC9prr6w+1tIh+QAbYyNF3tyiZNLDBIuBCf4KEcV2UvQm/V60xfA==
 
 "@types/node@^14.6.3":
   version "14.6.3"
@@ -3200,6 +3247,11 @@ cyclist@^1.0.1:
   resolved "https://registry.yarnpkg.com/d3-array/-/d3-array-2.5.0.tgz#d3f3043aabb75a17e2e78e3723aff4004ede3c5b"
   integrity sha512-U+CrYn19GmiKeI9qU1RLV1p5ZodBKXw64k9Z3Id6d11LLuZ4JdyCnMT6W/2b84bvqEMFU15zg/JC3/oRYTanVg==
 
+d3-array@^2.3.0, d3-array@^2.8.0:
+  version "2.8.0"
+  resolved "https://registry.yarnpkg.com/d3-array/-/d3-array-2.8.0.tgz#f76e10ad47f1f4f75f33db5fc322eb9ffde5ef23"
+  integrity sha512-6V272gsOeg7+9pTW1jSYOR1QE37g95I3my1hBmY+vOUNHRrk9yt4OTz/gK7PMkVAVDrYYq4mq3grTiZ8iJdNIw==
+
 d3-array@^2.7.1:
   version "2.7.1"
   resolved "https://registry.yarnpkg.com/d3-array/-/d3-array-2.7.1.tgz#b1f56065e9aba1ef6f0d0c8c9390b65421593352"
@@ -3233,6 +3285,17 @@ d3-scale@^3.2.2:
   integrity sha512-3Mvi5HfqPFq0nlyeFlkskGjeqrR/790pINMHc4RXKJ2E6FraTd3juaRIRZZHyMAbi3LjAMW0EH4FB1WgoGyeXg==
   dependencies:
     d3-array "1.2.0 - 2"
+    d3-format "1 - 2"
+    d3-interpolate "1.2.0 - 2"
+    d3-time "1 - 2"
+    d3-time-format "2 - 3"
+
+d3-scale@^3.2.3:
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/d3-scale/-/d3-scale-3.2.3.tgz#be380f57f1f61d4ff2e6cbb65a40593a51649cfd"
+  integrity sha512-8E37oWEmEzj57bHcnjPVOBS3n4jqakOeuv1EDdQSiSrYnMCBdMd3nc4HtKk7uia8DUHcY/CGuJ42xxgtEYrX0g==
+  dependencies:
+    d3-array "^2.3.0"
     d3-format "1 - 2"
     d3-interpolate "1.2.0 - 2"
     d3-time "1 - 2"
@@ -5549,6 +5612,11 @@ jstat@^1.9.3:
   version "1.9.3"
   resolved "https://registry.yarnpkg.com/jstat/-/jstat-1.9.3.tgz#6a0e60c3b87fd714b61e765b77fc6b035437ee34"
   integrity sha512-/2JL4Xv6xfhN2+AEKQGTYr1LZTmBCR/5fHxJVvb9zWNsmKZfKrl3wYYK8SD/Z8kXkf+ZSusfumLZ4wDTHrWujA==
+
+jstat@^1.9.4:
+  version "1.9.4"
+  resolved "https://registry.yarnpkg.com/jstat/-/jstat-1.9.4.tgz#5b787bcbc6353f54904307f2a4e6d4a4a1897f39"
+  integrity sha512-IiTPlI7pcrsq41EpDzrghlA1fhiC9GXxNqO4k5ogsjsM1XAWQ8zESH/bZsExLVgQsYpXE+7c11kEbbuxTLUpJQ==
 
 kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
   version "3.2.2"
