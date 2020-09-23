@@ -13,6 +13,7 @@ import {
   filename,
   headless,
   marker,
+  proxy,
   screenshots,
   url,
 } from "../../helpers/flags";
@@ -29,6 +30,7 @@ export default class RecordHAR extends TBBaseCommand {
     config: config(),
     headless,
     screenshots,
+    proxy: proxy(),
   };
   public async init(): Promise<void> {
     const { flags } = this.parse(RecordHAR);
@@ -37,7 +39,15 @@ export default class RecordHAR extends TBBaseCommand {
 
   public async run(): Promise<void> {
     const { flags } = this.parse(RecordHAR);
-    const { url, dest, cookiespath, filename, marker, screenshots } = flags;
+    const {
+      url,
+      dest,
+      cookiespath,
+      filename,
+      marker,
+      screenshots,
+      proxy,
+    } = flags;
     const { network, cpuThrottleRate, headless } = this.parsedConfig;
     let { browserArgs } = this.parsedConfig;
     const conditions: IConditions = {
@@ -65,6 +75,14 @@ export default class RecordHAR extends TBBaseCommand {
       browserArgs = Array.isArray(browserArgs)
         ? browserArgs.concat(headlessFlags)
         : headlessFlags;
+    }
+
+    // if using a proxy server include the chrome switch with proxy url
+    if (proxy) {
+      const proxyServer = [`--proxy-server=${proxy}`];
+      browserArgs = Array.isArray(browserArgs)
+        ? browserArgs.concat(proxyServer)
+        : proxyServer;
     }
 
     this.log(`Recording HAR ...`);

@@ -12,6 +12,7 @@ import {
   filename,
   headless,
   password,
+  proxy,
   screenshots,
   url,
   username,
@@ -26,6 +27,7 @@ type RecordHARAuthOptions = {
   headless: boolean;
   password: string;
   screenshots: boolean;
+  proxy?: string;
 };
 
 export default class RecordHARAuth extends TBBaseCommand {
@@ -40,6 +42,7 @@ export default class RecordHARAuth extends TBBaseCommand {
     config: config(),
     headless,
     screenshots,
+    proxy: proxy(),
   };
   public async init(): Promise<void> {
     const { flags } = this.parse(RecordHARAuth);
@@ -56,6 +59,7 @@ export default class RecordHARAuth extends TBBaseCommand {
       filename,
       dest,
       screenshots,
+      proxy,
     } = this.parsedConfig as RecordHARAuthOptions;
     let { browserArgs } = this.parsedConfig;
 
@@ -65,6 +69,15 @@ export default class RecordHARAuth extends TBBaseCommand {
         ? browserArgs.concat(headlessFlags)
         : headlessFlags;
     }
+
+    // if using a proxy server include the chrome switch with proxy url
+    if (proxy) {
+      const proxyServer = [`--proxy-server=${proxy}`];
+      browserArgs = Array.isArray(browserArgs)
+        ? browserArgs.concat(proxyServer)
+        : proxyServer;
+    }
+
     mkdirpSync(dest);
 
     this.log(`Retrieving cookies ...`);

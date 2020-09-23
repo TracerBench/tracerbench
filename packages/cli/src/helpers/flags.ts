@@ -262,3 +262,8 @@ export const screenshots = oclifFlags.boolean({
   description: `Include chrome screenshots from command execution`,
   default: false,
 });
+
+export const proxy = oclifFlags.build({
+  description: `Uses a specified proxy server, overrides system settings. Only affects HTTP and HTTPS requests.`,
+  required: false,
+});
