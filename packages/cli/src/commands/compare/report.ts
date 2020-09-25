@@ -195,8 +195,12 @@ export default class CompareReport extends TBBaseCommand {
       plotTitle
     );
 
-    const stats = new GenerateStats(controlData, experimentData, reportTitles);
-    const { durationSection, subPhaseSections, cumulativeData } = stats;
+    const {
+      durationSection,
+      subPhaseSections,
+      cumulativeData,
+    } = new GenerateStats(controlData, experimentData, reportTitles);
+
     const template = Handlebars.compile(REPORT_TEMPLATE_RAW);
 
     return template({
