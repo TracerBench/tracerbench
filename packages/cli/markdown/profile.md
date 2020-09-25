@@ -30,10 +30,10 @@ OPTIONS
       (required) [default: ./tracerbench-results] The output folder path for all tracerbench results
 
   --url=url
-      (required) URL to visit for record-har, timings & trace commands
+      (required) URL to visit for record-har, auth, timings & trace commands
 
 ALIASES
   $ tracerbench trace
 ```
 
-_See code: [dist/src/commands/profile.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.0.1/dist/src/commands/profile.ts)_
+_See code: [dist/src/commands/profile.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.2.1/dist/src/commands/profile.ts)_

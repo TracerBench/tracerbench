@@ -86,11 +86,11 @@ OPTIONS
       (required) [default: ./tracerbench-results] The output folder path for all tracerbench results
 ```
 
-_See code: [dist/src/commands/compare/index.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.0.1/dist/src/commands/compare/index.ts)_
+_See code: [dist/src/commands/compare/index.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.2.1/dist/src/commands/compare/index.ts)_
 
 ## `tracerbench compare:analyze RESULTSFILE`
 
-Generates stdout report from the "tracerbench compare" command output
+Generates stdout report from the "tracerbench compare" command output, 'compare.json'
 
 ```
 USAGE
@@ -110,7 +110,7 @@ OPTIONS
                                              in milliseconds. eg 50
 ```
 
-_See code: [dist/src/commands/compare/analyze.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.0.1/dist/src/commands/compare/analyze.ts)_
+_See code: [dist/src/commands/compare/analyze.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.2.1/dist/src/commands/compare/analyze.ts)_
 
 ## `tracerbench compare:report`
 
@@ -124,6 +124,9 @@ OPTIONS
   --config=config                    Specify an alternative directory rather than the project root for the
                                      tbconfig.json. This explicit config will overwrite all.
 
+  --isCIEnv=isCIEnv                  Provides a drastically slimmed down stdout report for CI workflows. However does
+                                     NOT hide analysis.
+
   --plotTitle=plotTitle              [default: TracerBench] Specify the title of the report pdf/html files.
 
   --tbResultsFolder=tbResultsFolder  (required) [default: ./tracerbench-results] The output folder path for all
@@ -133,4 +136,4 @@ ALIASES
   $ tracerbench report
 ```
 
-_See code: [dist/src/commands/compare/report.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.0.1/dist/src/commands/compare/report.ts)_
+_See code: [dist/src/commands/compare/report.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.2.1/dist/src/commands/compare/report.ts)_
