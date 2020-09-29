@@ -79,7 +79,7 @@ export default class RecordHAR extends TBBaseCommand {
 
     // if using a proxy server include the chrome switch with proxy url
     if (proxy) {
-      const proxyServer = [`--proxy-server=${proxy}`];
+      const proxyServer = [`--proxy-server=https=${proxy}`];
       browserArgs = Array.isArray(browserArgs)
         ? browserArgs.concat(proxyServer)
         : proxyServer;
