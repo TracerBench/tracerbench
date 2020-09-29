@@ -37,7 +37,7 @@ OPTIONS
   --url=url                  (required) URL to visit for record-har, auth, timings & trace commands
 ```
 
-_See code: [dist/src/commands/record-har/index.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.2.1/dist/src/commands/record-har/index.ts)_
+_See code: [dist/src/commands/record-har/index.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.2.2/dist/src/commands/record-har/index.ts)_
 
 ## `tracerbench record-har:auth`
 
@@ -68,4 +68,4 @@ OPTIONS
   --username=username  (required) The username to login to the form
 ```
 
-_See code: [dist/src/commands/record-har/auth.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.2.1/dist/src/commands/record-har/auth.ts)_
+_See code: [dist/src/commands/record-har/auth.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.2.2/dist/src/commands/record-har/auth.ts)_
