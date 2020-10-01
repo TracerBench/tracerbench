@@ -15,26 +15,28 @@ USAGE
   $ tracerbench record-har
 
 OPTIONS
-  --config=config            Specify an alternative directory rather than the project root for the tbconfig.json. This
-                             explicit config will overwrite all.
+  --config=config                    Specify an alternative directory rather than the project root for the
+                                     tbconfig.json. This explicit config will overwrite all.
 
-  --cookiespath=cookiespath  (required) The path to a JSON file containing cookies to authenticate against the
-                             correlated URL
+  --cookiespath=cookiespath          (required) The path to a JSON file containing cookies to authenticate against the
+                                     correlated URL
 
-  --dest=dest                (required) The destination path for the generated file. Default process.cwd()
+  --dest=dest                        (required) The destination path for the generated file. Default process.cwd()
 
-  --filename=filename        (required) [default: tracerbench] The filename for the generated file
+  --filename=filename                (required) [default: tracerbench] The filename for the generated file
 
-  --headless                 Run with headless chrome flags
+  --headless                         Run with headless chrome flags
 
-  --marker=marker            (required) [default: loadEventEnd] The last marker before ending a HAR recording
+  --marker=marker                    (required) [default: loadEventEnd] The last marker before ending a HAR recording
 
-  --proxy=proxy              Uses a specified proxy server, overrides system settings. Only affects HTTP and HTTPS
-                             requests.
+  --proxy=proxy                      Uses a specified proxy server, overrides system settings. Only affects HTTP and
+                                     HTTPS requests.
 
-  --screenshots              Include chrome screenshots from command execution
+  --screenshots                      Include chrome screenshots from command execution
 
-  --url=url                  (required) URL to visit for record-har, auth, timings & trace commands
+  --tbResultsFolder=tbResultsFolder  [default: ./tracerbench-results] The output folder path for all tracerbench results
+
+  --url=url                          (required) URL to visit for record-har, auth, timings & trace commands
 ```
 
 _See code: [dist/src/commands/record-har/index.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.2.2/dist/src/commands/record-har/index.ts)_

@@ -15,6 +15,7 @@ import {
   marker,
   proxy,
   screenshots,
+  tbResultsFolder,
   url,
 } from "../../helpers/flags";
 
@@ -31,6 +32,7 @@ export default class RecordHAR extends TBBaseCommand {
     headless,
     screenshots,
     proxy: proxy(),
+    tbResultsFolder: tbResultsFolder(),
   };
   public async init(): Promise<void> {
     const { flags } = this.parse(RecordHAR);
@@ -48,7 +50,14 @@ export default class RecordHAR extends TBBaseCommand {
       screenshots,
       proxy,
     } = flags;
-    const { network, cpuThrottleRate, headless } = this.parsedConfig;
+    const {
+      network,
+      cpuThrottleRate,
+      headless,
+      tbResultsFolder,
+    } = this.parsedConfig;
+    // getConfig will always return defaultFlagArgs
+    const resultsDir = tbResultsFolder as string;
     let { browserArgs } = this.parsedConfig;
     const conditions: IConditions = {
       network: network ? network : "none",
@@ -63,6 +72,9 @@ export default class RecordHAR extends TBBaseCommand {
       },
     ];
 
+    // results folder
+    mkdirpSync(resultsDir);
+    // har dest folder (usecase when not identical)
     mkdirpSync(dest);
 
     if (cookiespath.length) {
@@ -100,7 +112,7 @@ export default class RecordHAR extends TBBaseCommand {
     if (screenshots && harArchiveResponse.screenshotData) {
       harArchiveResponse.screenshotData.map((screenshot) => {
         const screenshotName = `record-har-${screenshot.name}-screenshot.png`;
-        const screenshotPath = resolve(join(dest, screenshotName));
+        const screenshotPath = resolve(join(resultsDir, screenshotName));
 
         writeFileSync(screenshotPath, screenshot.data, {
           encoding: "base64",
