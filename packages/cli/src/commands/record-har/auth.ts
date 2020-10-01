@@ -14,6 +14,7 @@ import {
   password,
   proxy,
   screenshots,
+  tbResultsFolder,
   url,
   username,
 } from "../../helpers/flags";
@@ -28,6 +29,7 @@ type RecordHARAuthOptions = {
   password: string;
   screenshots: boolean;
   proxy?: string;
+  tbResultsFolder?: string;
 };
 
 export default class RecordHARAuth extends TBBaseCommand {
@@ -43,6 +45,7 @@ export default class RecordHARAuth extends TBBaseCommand {
     headless,
     screenshots,
     proxy: proxy(),
+    tbResultsFolder: tbResultsFolder(),
   };
   public async init(): Promise<void> {
     const { flags } = this.parse(RecordHARAuth);
@@ -60,7 +63,10 @@ export default class RecordHARAuth extends TBBaseCommand {
       dest,
       screenshots,
       proxy,
+      tbResultsFolder,
     } = this.parsedConfig as RecordHARAuthOptions;
+    // getConfig will always return defaultFlagArgs
+    const resultsDir = tbResultsFolder as string;
     let { browserArgs } = this.parsedConfig;
 
     // if headless flag is true include the headless flags
@@ -78,6 +84,8 @@ export default class RecordHARAuth extends TBBaseCommand {
         : proxyServer;
     }
 
+    // results folder
+    mkdirpSync(resultsDir);
     mkdirpSync(dest);
 
     this.log(`Retrieving cookies ...`);
@@ -97,7 +105,7 @@ export default class RecordHARAuth extends TBBaseCommand {
     if (screenshots && authClientResponse.screenshotData) {
       authClientResponse.screenshotData.map((screenshot) => {
         const screenshotName = `record-har-auth-${screenshot.name}-screenshot.png`;
-        const screenshotPath = resolve(join(dest, screenshotName));
+        const screenshotPath = resolve(join(resultsDir, screenshotName));
 
         writeFileSync(screenshotPath, screenshot.data, {
           encoding: "base64",
