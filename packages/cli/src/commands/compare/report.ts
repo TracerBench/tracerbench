@@ -189,9 +189,14 @@ export default class CompareReport extends TBBaseCommand {
     tbConfig: ITBConfig,
     plotTitle?: string
   ): string {
+    const version =
+      controlData.meta.browserVersion ||
+      controlData.meta["product-version"] ||
+      "HeadlessChrome";
+
     const reportTitles = CompareReport.resolveTitles(
       tbConfig,
-      controlData.meta.browserVersion,
+      version,
       plotTitle
     );
 

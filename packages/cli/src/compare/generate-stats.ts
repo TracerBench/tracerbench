@@ -22,6 +22,7 @@ export interface ITracerBenchTraceResult {
   meta: {
     browserVersion: string;
     cpus: string[];
+    "product-version": string;
   };
   samples: Sample[];
   set: string;
