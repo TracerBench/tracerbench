@@ -86,7 +86,7 @@ OPTIONS
       (required) [default: ./tracerbench-results] The output folder path for all tracerbench results
 ```
 
-_See code: [dist/src/commands/compare/index.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.3.0/dist/src/commands/compare/index.ts)_
+_See code: [dist/src/commands/compare/index.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.3.1/dist/src/commands/compare/index.ts)_
 
 ## `tracerbench compare:analyze RESULTSFILE`
 
@@ -110,7 +110,7 @@ OPTIONS
                                              in milliseconds. eg 50
 ```
 
-_See code: [dist/src/commands/compare/analyze.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.3.0/dist/src/commands/compare/analyze.ts)_
+_See code: [dist/src/commands/compare/analyze.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.3.1/dist/src/commands/compare/analyze.ts)_
 
 ## `tracerbench compare:report`
 
@@ -136,4 +136,4 @@ ALIASES
   $ tracerbench report
 ```
 
-_See code: [dist/src/commands/compare/report.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.3.0/dist/src/commands/compare/report.ts)_
+_See code: [dist/src/commands/compare/report.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.3.1/dist/src/commands/compare/report.ts)_
