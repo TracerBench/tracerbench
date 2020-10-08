@@ -79,18 +79,25 @@ export async function authClient(
       name: 'value',
       value: password
     });
+    debugCallback('DOM.setAttributeValue %o', "send");
 
     await click('button[type=submit]', chrome);
+    debugCallback('click submit %o', "clicked");
+
     await chrome.until('Page.loadEventFired');
+    debugCallback('Page.loadEventFired %o', "fired");
     // let redirects settle
-    await wait(5000);
+    await wait(8000);
+    debugCallback('await 8000 ms %o', "done");
     // screenshot of the logged in application
     if (screenshots) {
       const appScreenshot = await chrome.send('Page.captureScreenshot');
+      debugCallback('Page.captureScreenshot %o', "app");
       screenshotData.push({ data: appScreenshot.data, name: 'app' });
     }
     // The list of URLs for which applicable cookies will be fetched
-    cookieResponse = await chrome.send('Network.getCookies', [url]);
+    cookieResponse = await chrome.send('Network.getCookies');
+    debugCallback('Network.getCookies %o');
 
     await Promise.all([
       chrome.send('Network.disable'),
