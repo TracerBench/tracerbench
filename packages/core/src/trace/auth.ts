@@ -79,20 +79,20 @@ export async function authClient(
       name: 'value',
       value: password
     });
-    debugCallback('DOM.setAttributeValue %o', "send");
+    debugCallback('DOM.setAttributeValue %o', 'send');
 
     await click('button[type=submit]', chrome);
-    debugCallback('click submit %o', "clicked");
+    debugCallback('click submit %o', 'clicked');
 
     await chrome.until('Page.loadEventFired');
-    debugCallback('Page.loadEventFired %o', "fired");
+    debugCallback('Page.loadEventFired %o', 'fired');
     // let redirects settle
     await wait(8000);
-    debugCallback('await 8000 ms %o', "done");
+    debugCallback('await 8000 ms %o', 'done');
     // screenshot of the logged in application
     if (screenshots) {
       const appScreenshot = await chrome.send('Page.captureScreenshot');
-      debugCallback('Page.captureScreenshot %o', "app");
+      debugCallback('Page.captureScreenshot %o', 'app');
       screenshotData.push({ data: appScreenshot.data, name: 'app' });
     }
     // The list of URLs for which applicable cookies will be fetched
