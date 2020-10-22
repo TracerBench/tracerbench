@@ -1,7 +1,9 @@
-import { ISevenFigureSummary } from "@tracerbench/stats";
+/* eslint-disable no-case-declarations */
+import { IConfidenceInterval, ISevenFigureSummary } from "@tracerbench/stats";
 import * as chalk from "chalk";
 
 import { fidelityLookup } from "../command-config";
+import type { RegressionThresholdStat } from "../command-config/tb-config";
 import { logHeading } from "../helpers/utils";
 import { GenerateStats, HTMLSectionRenderData } from "./generate-stats";
 import TBTable from "./tb-table";
@@ -43,13 +45,16 @@ export class CompareResults {
   isBelowRegressionThreshold = true;
   fidelity: number;
   regressionThreshold: number;
+  regressionThresholdStat: RegressionThresholdStat;
   constructor(
     generateStats: GenerateStats,
     fidelity: number,
-    regressionThreshold: number
+    regressionThreshold: number,
+    regressionThresholdStat: RegressionThresholdStat = "estimator"
   ) {
     this.fidelity = fidelity;
     this.regressionThreshold = regressionThreshold;
+    this.regressionThresholdStat = regressionThresholdStat;
     this.phaseResultsFormatted.push(generateStats.durationSection);
     this.benchmarkTable.display.push(generateStats.durationSection.stats);
 
@@ -61,19 +66,17 @@ export class CompareResults {
     this.benchmarkTableData = this.benchmarkTable.getData();
     this.phaseTableData = this.phaseTable.getData();
 
-    // check if any resul is significant
+    // check if any result is significant on all tables
     this.areResultsSignificant = this.anyResultsSignificant(
       this.benchmarkTable.isSigArray,
       this.phaseTable.isSigArray
     );
 
-    // if any result is significant then
-    // check if these are still below the set regression threshold
+    // if any result is significant and
+    // below the set regression threshold
+    // against the regressionThresholdStatistic
     if (this.areResultsSignificant) {
-      this.isBelowRegressionThreshold = this.allBelowRegressionThreshold(
-        this.benchmarkTable.estimatorDeltas,
-        this.phaseTable.estimatorDeltas
-      );
+      this.isBelowRegressionThreshold = this.allBelowRegressionThreshold();
     }
   }
 
@@ -102,9 +105,9 @@ export class CompareResults {
       const { phase, hlDiff, isSignificant, ciMin, ciMax } = phaseData;
       let msg = `${chalk.bold(phase)} phase `;
       // buffer is sig on the estimator at 5 ms
-      const hlDiffisSig = Math.abs(hlDiff) >= 5 ? true : false;
+      const estimatorISig = Math.abs(hlDiff) >= 5 ? true : false;
       // isSignificant comes from the confidence interval range NOT estimator
-      if (isSignificant && hlDiffisSig) {
+      if (isSignificant && estimatorISig) {
         let coloredDiff;
 
         msg += "estimated ";
@@ -146,22 +149,62 @@ export class CompareResults {
   }
 
   // if any phase of the experiment has regressed slower beyond the threshold limit returns false; otherwise true
-  public allBelowRegressionThreshold(
-    benchmarkTableEstimatorDeltas: number[],
-    phaseTableEstimatorDeltas: number[]
-  ): boolean {
+  public allBelowRegressionThreshold(): boolean {
     const regressionThreshold = this.regressionThreshold;
+    const confidenceIntervals: IConfidenceInterval[] = [];
+    this.benchmarkTable.display.map((stat) => {
+      confidenceIntervals.push(stat.confidenceInterval);
+    });
+    this.phaseTable.display.map((stat) => {
+      confidenceIntervals.push(stat.confidenceInterval);
+    });
+
+    // is below regressionThresholdStatistic
     function isBelowThreshold(n: number): boolean {
       const limit = regressionThreshold;
       // if the delta is a negative number and abs(delta) greater than threshold return false
+      // eg. -1000 && 1000 > 25 = false (over threshold)
+      // eg. 30 && 30 > 25 = true (under threshold)
+      // regressions are negative numbers only
+      // for comparison against the positive number threshold
+      // the sign must be removed Math.abs()
       return n < 0 && Math.abs(n) > limit ? false : true;
     }
-    // concat estimator deltas from all phases
-    const deltas: number[] = benchmarkTableEstimatorDeltas.concat(
-      phaseTableEstimatorDeltas
-    );
-    // if the experiment is slower beyond the threshold return false;
-    return deltas.every(isBelowThreshold);
+
+    switch (this.regressionThresholdStat) {
+      case "estimator":
+        // concat estimator deltas from all phases
+        const deltas: number[] = this.benchmarkTable.estimatorDeltas.concat(
+          this.phaseTable.estimatorDeltas
+        );
+        // if the experiment is slower beyond the threshold return false;
+        return deltas.every(isBelowThreshold);
+
+      case "ci-lower":
+        // confidence interval lower/min deltas from all phases
+        const ciLower: number[] = [];
+        confidenceIntervals.map((ci) => {
+          // because of sign inversion on the samples
+          // ci-lower = ci.max [max, min] [ci-lower, ci-upper]
+          ciLower.push(ci.max);
+        });
+        // if the experiment is slower beyond the threshold return false;
+        return ciLower.every(isBelowThreshold);
+
+      case "ci-upper":
+        // confidence interval upper/max deltas from all phases
+        const ciUpper: number[] = [];
+        confidenceIntervals.map((ci) => {
+          // because of sign inversion on the samples
+          // ci-upper = ci.min [max, min] [ci-lower, ci-upper]
+          ciUpper.push(ci.min);
+        });
+        // if the experiment is slower beyond the threshold return false;
+        return ciUpper.every(isBelowThreshold);
+
+      default:
+        throw new Error(`Cannot determine allBelowRegressionThreshold()`);
+    }
   }
 
   // return the trimmed compare results in JSON format

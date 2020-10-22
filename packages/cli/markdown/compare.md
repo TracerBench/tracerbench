@@ -70,6 +70,9 @@ OPTIONS
   --regressionThreshold=regressionThreshold
       [default: 50] The upper limit the experiment can regress slower in milliseconds. eg 50
 
+  --regressionThresholdStat=estimator|ci-lower|ci-upper
+      [default: estimator] The statistic which the regression threshold runs against.
+
   --report
       Generate a PDF report directly after running the compare command.
 
@@ -100,14 +103,18 @@ ARGUMENTS
   RESULTSFILE  The "tracerbench compare" command json output file
 
 OPTIONS
-  --fidelity=fidelity                        (required) [default: low] Directly correlates to the number of samples per
-                                             trace. eg. test,low,medium,high OR any number between 2-100
+  --fidelity=fidelity                                    (required) [default: low] Directly correlates to the number of
+                                                         samples per trace. eg. test,low,medium,high OR any number
+                                                         between 2-100
 
-  --isCIEnv=isCIEnv                          (required) Provides a drastically slimmed down stdout report for CI
-                                             workflows. However does NOT hide analysis.
+  --isCIEnv=isCIEnv                                      (required) Provides a drastically slimmed down stdout report
+                                                         for CI workflows. However does NOT hide analysis.
 
-  --regressionThreshold=regressionThreshold  (required) [default: 50] The upper limit the experiment can regress slower
-                                             in milliseconds. eg 50
+  --regressionThreshold=regressionThreshold              (required) [default: 50] The upper limit the experiment can
+                                                         regress slower in milliseconds. eg 50
+
+  --regressionThresholdStat=estimator|ci-lower|ci-upper  [default: estimator] The statistic which the regression
+                                                         threshold runs against.
 ```
 
 _See code: [dist/src/commands/compare/analyze.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v4.3.2/dist/src/commands/compare/analyze.ts)_

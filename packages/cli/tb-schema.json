@@ -55,6 +55,14 @@
                 }
             },
             "type": "object"
+        },
+        "RegressionThresholdStat": {
+            "enum": [
+                "ci-lower",
+                "ci-upper",
+                "estimator"
+            ],
+            "type": "string"
         }
     },
     "properties": {
@@ -216,6 +224,9 @@
                 "string",
                 "number"
             ]
+        },
+        "regressionThresholdStat": {
+            "$ref": "#/definitions/RegressionThresholdStat"
         },
         "report": {
             "type": "string"

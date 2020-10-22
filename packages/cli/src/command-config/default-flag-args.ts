@@ -43,6 +43,7 @@ export const defaultFlagArgs: ITBConfig = {
   cookiespath: "",
   url: "",
   sampleTimeout: 30,
+  regressionThresholdStat: "estimator",
 };
 
 // specify with --headless flag

@@ -5,6 +5,7 @@ import * as Parser from "@oclif/parser";
 
 import { TBBaseCommand } from "../../command-config";
 import { fidelityLookup } from "../../command-config/default-flag-args";
+import type { RegressionThresholdStat } from "../../command-config/tb-config";
 import { CompareResults } from "../../compare/compare-results";
 import {
   GenerateStats,
@@ -12,11 +13,17 @@ import {
 } from "../../compare/generate-stats";
 import parseCompareResult from "../../compare/parse-compare-result";
 import { resultsFile } from "../../helpers/args";
-import { fidelity, isCIEnv, regressionThreshold } from "../../helpers/flags";
+import {
+  fidelity,
+  isCIEnv,
+  regressionThreshold,
+  regressionThresholdStat,
+} from "../../helpers/flags";
 export interface CompareAnalyzeFlags {
   fidelity: number;
   regressionThreshold: number;
   isCIEnv: boolean;
+  regressionThresholdStat: RegressionThresholdStat;
 }
 
 export default class CompareAnalyze extends TBBaseCommand {
@@ -27,6 +34,7 @@ export default class CompareAnalyze extends TBBaseCommand {
     fidelity: fidelity({ required: true }),
     regressionThreshold: regressionThreshold({ required: true }),
     isCIEnv: isCIEnv({ required: true }),
+    regressionThresholdStat,
   };
   public typedFlags: CompareAnalyzeFlags;
   constructor(argv: string[], config: IConfig) {
@@ -36,7 +44,7 @@ export default class CompareAnalyze extends TBBaseCommand {
 
   private parseFlags(CompareAnalyze: Parser.Input<any>): CompareAnalyzeFlags {
     const { flags } = this.parse(CompareAnalyze);
-    const { isCIEnv } = flags;
+    const { isCIEnv, regressionThresholdStat } = flags;
     let { regressionThreshold, fidelity } = flags;
 
     if (typeof regressionThreshold === "string") {
@@ -58,6 +66,7 @@ export default class CompareAnalyze extends TBBaseCommand {
       fidelity,
       regressionThreshold,
       isCIEnv,
+      regressionThresholdStat,
     };
   }
 
@@ -76,7 +85,8 @@ export default class CompareAnalyze extends TBBaseCommand {
     const compareResults = new CompareResults(
       stats,
       this.typedFlags.fidelity,
-      this.typedFlags.regressionThreshold
+      this.typedFlags.regressionThreshold,
+      this.typedFlags.regressionThresholdStat
     );
 
     if (!this.typedFlags.isCIEnv) {

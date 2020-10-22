@@ -29,10 +29,28 @@ const tableDataObj = {
   controlSevenFigureSummary: [{}],
   experimentSevenFigureSummary: [{}],
 };
+
+/*
+SORTED AND IN MILLISECONDS
+CONTROL_DATA: [
+  305, 306, 307, 307, 308,
+  308, 309, 309, 309, 309,
+  309, 309, 310, 310, 310,
+  312, 312, 315, 338, 434
+]
+EXPERIMENT_DATA: [
+  1299, 1301, 1304, 1305,
+  1306, 1307, 1308, 1308,
+  1309, 1309, 1309, 1309,
+  1309, 1310, 1311, 1312,
+  1313, 1320, 1325, 1328
+]
+*/
+const DEFAULT_REGRESSION_THRESHOLD = 50;
 const CONTROL_DATA: ITracerBenchTraceResult = readJsonSync(COMPARE_JSON)[0];
 const EXPERIMENT_DATA: ITracerBenchTraceResult = readJsonSync(COMPARE_JSON)[1];
 const stats = new GenerateStats(CONTROL_DATA, EXPERIMENT_DATA, REPORT_TITLES);
-const compareResults = new CompareResults(stats, 20, 50);
+const compareResults = new CompareResults(stats, 20, DEFAULT_REGRESSION_THRESHOLD);
 
 describe("compare-results anyResultsSignificant()", () => {
   const truthyArr = [true, true, false];
@@ -65,30 +83,37 @@ describe("compare-results anyResultsSignificant()", () => {
 });
 
 describe("compare-results allBelowRegressionThreshold()", () => {
-  const improvementDeltas = [100, 50, 200];
-  const regressionDeltas = [-200, -300, -400];
-  it(`is below regression threshold`, () => {
-    compareResults.regressionThreshold = 100;
-    const isBelowThreshold = compareResults.allBelowRegressionThreshold(
-      improvementDeltas,
-      improvementDeltas
-    );
+  it(`regression is below threshold : default regressionThresholdStatistic : estimator`, () => {
+    compareResults.regressionThreshold = 1100;
+    const isBelowThreshold = compareResults.allBelowRegressionThreshold();
     expect(isBelowThreshold).to.be.true;
-    compareResults.regressionThreshold = 50;
+    compareResults.regressionThreshold = DEFAULT_REGRESSION_THRESHOLD;
   });
-  it(`is above regression threshold`, () => {
-    compareResults.regressionThreshold = 100;
-    const isBelowThresholdA = compareResults.allBelowRegressionThreshold(
-      improvementDeltas,
-      regressionDeltas
-    );
-    const isBelowThresholdB = compareResults.allBelowRegressionThreshold(
-      regressionDeltas,
-      improvementDeltas
-    );
-    expect(isBelowThresholdA).to.be.false;
-    expect(isBelowThresholdB).to.be.false;
+  it(`regression is above threshold : default regressionThresholdStatistic : estimator`, () => {
     compareResults.regressionThreshold = 50;
+    const isBelowThreshold = compareResults.allBelowRegressionThreshold();
+    expect(isBelowThreshold).to.be.false;
+    compareResults.regressionThreshold = DEFAULT_REGRESSION_THRESHOLD;
+  });
+  it(`regression is below threshold : regressionThresholdStatistic : ci-lower`, () => {
+    const compareResultsCILower = new CompareResults(stats, 20, 1002, "ci-lower");
+    const isBelowThresholdCILower = compareResultsCILower.allBelowRegressionThreshold();
+    expect(isBelowThresholdCILower).to.be.true;
+  });
+  it(`regression is above threshold : regressionThresholdStatistic : ci-lower`, () => {
+    const compareResultsCILower = new CompareResults(stats, 20, 995, "ci-lower");
+    const isBelowThresholdCILower = compareResultsCILower.allBelowRegressionThreshold();
+    expect(isBelowThresholdCILower).to.be.false;
+  });
+  it(`regression is below threshold : regressionThresholdStatistic : ci-upper`, () => {
+    const compareResultsCIUpper = new CompareResults(stats, 20, 1100, "ci-upper");
+    const isBelowThresholdCIUpper = compareResultsCIUpper.allBelowRegressionThreshold();
+    expect(isBelowThresholdCIUpper).to.be.true;
+  });
+  it(`regression is above threshold : regressionThresholdStatistic : ci-upper`, () => {
+    const compareResultsCIUpper = new CompareResults(stats, 20, 1000, "ci-upper");
+    const isBelowThresholdCIUpper = compareResultsCIUpper.allBelowRegressionThreshold();
+    expect(isBelowThresholdCIUpper).to.be.false;
   });
 });
 
@@ -106,10 +131,6 @@ describe("compare-results stringifyJSON()", () => {
     expect(benchmarkTableData.phaseName).to.eq("duration");
     expect(benchmarkTableData.estimatorDelta).to.eq("999ms");
     expect(phaseTableData[0].phaseName).to.eq("jquery");
-    // phaseTableData.map((table) => {
-    //   expect(table).to.have.all.keys(tableDataObj);
-    // });
-
     expect(compareJSONResults.areResultsSignificant).to.be.true;
     expect(compareJSONResults.isBelowRegressionThreshold).to.be.false;
   });
