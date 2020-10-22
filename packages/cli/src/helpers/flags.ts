@@ -267,3 +267,9 @@ export const proxy = oclifFlags.build({
   description: `Uses a specified proxy server, overrides system settings. Only affects HTTP and HTTPS requests.`,
   required: false,
 });
+
+export const regressionThresholdStat = oclifFlags.string({
+  description: `The statistic which the regression threshold runs against.`,
+  options: ["estimator", "ci-lower", "ci-upper"],
+  default: () => getDefaultValue("regressionThresholdStat"),
+});

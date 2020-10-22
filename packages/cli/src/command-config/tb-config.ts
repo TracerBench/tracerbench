@@ -44,6 +44,7 @@ export interface ITBConfig {
   cookiespath?: string;
   isCIEnv?: boolean | string;
   marker?: string;
+  regressionThresholdStat?: RegressionThresholdStat;
 }
 
 export interface IHARServer {
@@ -61,3 +62,5 @@ export interface IBenchmarkEnvironmentOverride {
   emulateDeviceOrientation?: string;
   [key: string]: any;
 }
+
+export type RegressionThresholdStat = "estimator" | "ci-lower" | "ci-upper";

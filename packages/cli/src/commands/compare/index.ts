@@ -26,6 +26,7 @@ import {
   fidelityLookup,
   headlessFlags,
 } from "../../command-config/default-flag-args";
+import type { RegressionThresholdStat } from "../../command-config/tb-config";
 import {
   CONTROL_ENV_OVERRIDE_ATTR,
   EXPERIMENT_ENV_OVERRIDE_ATTR,
@@ -47,6 +48,7 @@ import {
   markers,
   network,
   regressionThreshold,
+  regressionThresholdStat,
   report,
   runtimeStats,
   sampleTimeout,
@@ -63,6 +65,7 @@ import {
 } from "../../helpers/utils";
 import CompareAnalyze from "./analyze";
 import CompareReport from "./report";
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const archiver = require("archiver");
 export interface ICompareFlags {
@@ -86,6 +89,7 @@ export interface ICompareFlags {
   config?: string;
   report?: boolean;
   isCIEnv?: boolean;
+  regressionThresholdStat: RegressionThresholdStat;
 }
 
 export default class Compare extends TBBaseCommand {
@@ -115,6 +119,7 @@ export default class Compare extends TBBaseCommand {
     debug,
     headless,
     isCIEnv: isCIEnv(),
+    regressionThresholdStat,
   };
   public compareFlags: ICompareFlags;
   public parsedConfig: ITBConfig = defaultFlagArgs;
@@ -234,6 +239,8 @@ export default class Compare extends TBBaseCommand {
         `${this.parsedConfig.regressionThreshold}`,
         "--isCIEnv",
         `${this.parsedConfig.isCIEnv}`,
+        `--regressionThresholdStat`,
+        `${this.parsedConfig.regressionThresholdStat}`,
       ]);
 
       writeJSONSync(
