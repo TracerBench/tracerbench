@@ -67,6 +67,7 @@ export class CompareResults {
     this.phaseTableData = this.phaseTable.getData();
 
     // check if any result is significant on all tables
+    // this statistic is from the confidence interval
     this.areResultsSignificant = this.anyResultsSignificant(
       this.benchmarkTable.isSigArray,
       this.phaseTable.isSigArray
@@ -124,7 +125,9 @@ export class CompareResults {
           msg += `improvement ${coloredDiff}`;
         }
       } else {
-        msg += `${chalk.grey("no difference")}`;
+        msg += `${chalk.grey(
+          `no difference [${ciMax * -1}ms to ${ciMin * -1}ms]`
+        )}`;
       }
       console.log(msg);
     });
@@ -151,12 +154,17 @@ export class CompareResults {
   // if any phase of the experiment has regressed slower beyond the threshold limit returns false; otherwise true
   public allBelowRegressionThreshold(): boolean {
     const regressionThreshold = this.regressionThreshold;
-    const confidenceIntervals: IConfidenceInterval[] = [];
-    this.benchmarkTable.display.map((stat) => {
-      confidenceIntervals.push(stat.confidenceInterval);
-    });
-    this.phaseTable.display.map((stat) => {
-      confidenceIntervals.push(stat.confidenceInterval);
+    const sigConfidenceIntervals: IConfidenceInterval[] = [];
+    const sigDeltas: number[] = [];
+    // all stats
+    const stats = this.benchmarkTable.display.concat(this.phaseTable.display);
+
+    // only push statistics that are stat sig
+    stats.map((stat) => {
+      if (stat.confidenceInterval.isSig) {
+        sigConfidenceIntervals.push(stat.confidenceInterval);
+        sigDeltas.push(stat.estimator);
+      }
     });
 
     // is below regressionThresholdStatistic
@@ -173,17 +181,13 @@ export class CompareResults {
 
     switch (this.regressionThresholdStat) {
       case "estimator":
-        // concat estimator deltas from all phases
-        const deltas: number[] = this.benchmarkTable.estimatorDeltas.concat(
-          this.phaseTable.estimatorDeltas
-        );
         // if the experiment is slower beyond the threshold return false;
-        return deltas.every(isBelowThreshold);
+        return sigDeltas.every(isBelowThreshold);
 
       case "ci-lower":
         // confidence interval lower/min deltas from all phases
         const ciLower: number[] = [];
-        confidenceIntervals.map((ci) => {
+        sigConfidenceIntervals.map((ci) => {
           // because of sign inversion on the samples
           // ci-lower = ci.max [max, min] [ci-lower, ci-upper]
           ciLower.push(ci.max);
@@ -194,7 +198,7 @@ export class CompareResults {
       case "ci-upper":
         // confidence interval upper/max deltas from all phases
         const ciUpper: number[] = [];
-        confidenceIntervals.map((ci) => {
+        sigConfidenceIntervals.map((ci) => {
           // because of sign inversion on the samples
           // ci-upper = ci.min [max, min] [ci-lower, ci-upper]
           ciUpper.push(ci.min);

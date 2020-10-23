@@ -63,8 +63,12 @@ export default class TBTable {
       // setting the color for the Hodges–Lehmann estimated delta
       const estimatorForDisplay = stat.estimator * -1;
       let hlDeltaWithColor;
-
-      if (stat.confidenceInterval.isSig) {
+      // only flag delta stat sig over 2 ms
+      // prevent flagging on the fence sig eg.
+      // estimator of 1 ci of [0,1]
+      const estimatorISig = Math.abs(stat.estimator) >= 2 ? true : false;
+      const statSig = estimatorISig && stat.confidenceInterval.isSig;
+      if (statSig) {
         if (estimatorForDisplay > 0) {
           hlDeltaWithColor = chalk.red(`${estimatorForDisplay}ms`);
         } else if (!estimatorForDisplay) {
@@ -148,10 +152,7 @@ export default class TBTable {
           },
         ],
         [],
-        [
-          { content: "Is Significant:" },
-          { content: `${stat.confidenceInterval.isSig}` },
-        ],
+        [{ content: "Is Significant:" }, { content: `${statSig}` }],
         [],
         ["Control Sparkline", { content: `${stat.sparkLine.control}` }],
         [
