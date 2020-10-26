@@ -54,8 +54,11 @@ Handlebars.registerHelper("stringify", (ctx) => {
 Handlebars.registerHelper("logArr", (arr) => {
   return JSON.stringify(arr);
 });
+
+// CONSTANTS
 const ARTIFACT_FILE_NAME = "artifact";
 
+// TYPINGS
 export interface IReportFlags {
   tbResultsFolder: string;
   config?: string;

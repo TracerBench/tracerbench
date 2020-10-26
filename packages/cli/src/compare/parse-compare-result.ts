@@ -4,6 +4,9 @@ import { resolve } from "path";
 
 import type { ITracerBenchTraceResult } from "./generate-stats";
 
+/*
+  FILTERS OUT THE CONTROL AND EXPERIMENT SAMPLES FROM CONTROL.JSON
+*/
 export default function parseCompareResult(
   inputFilePath: string
 ): {
@@ -27,7 +30,9 @@ export default function parseCompareResult(
 
     // throw if either control or experiment samples not found
     if (!controlData || !experimentData) {
-      throw new Error(`Missing control or experiment set in compare.json`);
+      throw new Error(
+        `The compare.json file is missing the control or experiment data. Likely the benchmark did not run`
+      );
     }
 
     return {
@@ -36,7 +41,7 @@ export default function parseCompareResult(
     };
   } catch (error) {
     throw new Error(
-      `Cannot parse the compare.json file. Please make sure ${inputFilePath} is valid JSON`
+      `The compare.json cannot be parsed. Likely the benchmark did not run. Confirm ${inputFilePath} is valid JSON`
     );
   }
 }

@@ -2,6 +2,8 @@ import { spawnChrome } from "chrome-debugging-client";
 import { writeFileSync } from "fs-extra";
 import * as listr from "listr";
 
+import { sleep } from "../helpers/utils";
+
 /**
  * Spawn a chrome process and visit the given url. Wait until page load event is fired
  * and then create PDF.
@@ -46,6 +48,9 @@ async function chromePrintToPDF(
       page.until("Page.loadEventFired"),
       page.send("Page.navigate", { url }),
     ]);
+    // sleep required for chart.js to animate the graphs in
+    // we want this feature for the web view
+    await sleep(2000);
     const { data } = await page.send("Page.printToPDF", {});
 
     writeFileSync(outputPath, Buffer.from(data, "base64"));

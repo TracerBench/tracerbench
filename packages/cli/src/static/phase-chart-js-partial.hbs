@@ -1,5 +1,7 @@
 <script>
   const canvasFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}} = document.getElementById('{{analysisForPhase.identifierHash}}-chart').getContext('2d');
+  const canvasFor{{#toCamel analysisForPhase.frequencyHash}}{{/toCamel}} = document.getElementById('{{analysisForPhase.frequencyHash}}-chart').getContext('2d');
+  
   const optionFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}} = {
     type: 'boxplot',
     data: {
@@ -8,8 +10,8 @@
         label: '{{analysisForPhase.servers.[0].name}}',
         borderColor: '#0A2D46',
         backgroundColor: 'rgba(199, 241, 106, 0.50)',
-        borderWidth: 2,
-        outlierColor: '#999999',
+        borderWidth: 1,
+        outlierColor: '#0a2d46',
         itemRadius: 2,
         itemBackgroundColor: '#1884E4',
         data: [{{{stringify analysisForPhase.controlFormatedSamples}}}]
@@ -17,17 +19,17 @@
         label: '{{analysisForPhase.servers.[1].name}}',
         borderColor: '#0A2D46',
         backgroundColor: 'rgba(56, 210, 211, 0.50)',
-        borderWidth: 2,
-        outlierColor: '#999999',
+        borderWidth: 1,
+        outlierColor: '#0a2d46',
         itemRadius: 2,
         itemBackgroundColor: '#1884E4',
         data: [{{{stringify analysisForPhase.experimentFormatedSamples}}}]
       }]
     },
     options: {
-      devicePixelRatio: 2.5,
       aspectRatio: 3,
       maintainAspectRatio: false,
+      devicePixelRatio: 2.5,
       responsive: true,
       legend: {
         display: true,
@@ -65,7 +67,49 @@
         }]
       }
     }
+  }; 
+
+  const optionFor{{#toCamel analysisForPhase.frequencyHash}}{{/toCamel}} = {
+    type: 'bar',
+    data: {
+      labels: {{{stringify analysisForPhase.frequency.labels}}},
+      datasets: [{
+        label: "Control",
+        backgroundColor: 'rgba(199, 241, 106, 0.50)',
+        borderWidth: 1,
+        borderColor: '#0A2D46',
+        data: {{{stringify analysisForPhase.frequency.control}}}
+      },{
+        label: "Experiment",
+        backgroundColor: 'rgba(56, 210, 211, 0.50)',
+        borderWidth: 1,
+        borderColor: '#0A2D46',
+        data: {{{stringify analysisForPhase.frequency.experiment}}}
+      }]
+    },
+    options: {
+      aspectRatio: 3,
+      maintainAspectRatio: false,
+      devicePixelRatio: 2.5,
+      legend: {
+        display: true,
+        position: 'top'
+      },
+      tooltips: {
+        mode: "index",
+        intersect: false
+      },
+      scales: {
+        xAxes: [{
+          stacked: true
+        }],
+        yAxes: [{
+          stacked: true
+        }]
+      }
+    }
   };
 
   window['{{analysisForPhase.phase}}'] = new Chart(canvasFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}}, optionFor{{#toCamel analysisForPhase.identifierHash}}{{/toCamel}});
+  window['{{analysisForPhase.phase}}-frequency'] = new Chart(canvasFor{{#toCamel analysisForPhase.frequencyHash}}{{/toCamel}}, optionFor{{#toCamel analysisForPhase.frequencyHash}}{{/toCamel}});
 </script>
