@@ -142,4 +142,73 @@ describe('stats', () => {
     expect(experimentOutliersObj.upperOutlier).to.equal(1138);
     expect(experimentOutliersObj.outliers).length(0);
   });
+
+  it(`getBuckets()`, () => {
+    expect(stats.range.min).to.equal(49);
+    expect(stats.range.max).to.equal(1138);
+    expect(stats.buckets.length).to.equal(12);
+    expect(stats.buckets.length).to.equal(12);
+    expect(stats.buckets[0].min).to.be.lessThan(stats.range.min);
+    expect(stats.buckets[11].max).to.be.greaterThan(stats.range.max);
+    // 0
+    expect(stats.buckets[0].min).to.equal(48);
+    expect(stats.buckets[0].max).to.equal(138);
+    expect(stats.buckets[0].count.control).to.equal(25);
+    expect(stats.buckets[0].count.experiment).to.equal(0);
+    // 1
+    expect(stats.buckets[1].min).to.equal(138);
+    expect(stats.buckets[1].max).to.equal(229);
+    expect(stats.buckets[1].count.control).to.equal(0);
+    expect(stats.buckets[1].count.experiment).to.equal(0);
+    // 2
+    expect(stats.buckets[2].min).to.equal(229);
+    expect(stats.buckets[2].max).to.equal(320);
+    expect(stats.buckets[2].count.control).to.equal(0);
+    expect(stats.buckets[2].count.experiment).to.equal(0);
+    // 3
+    expect(stats.buckets[3].min).to.equal(320);
+    expect(stats.buckets[3].max).to.equal(411);
+    expect(stats.buckets[3].count.control).to.equal(0);
+    expect(stats.buckets[3].count.experiment).to.equal(0);
+    // 4
+    expect(stats.buckets[4].min).to.equal(411);
+    expect(stats.buckets[4].max).to.equal(502);
+    expect(stats.buckets[4].count.control).to.equal(0);
+    expect(stats.buckets[4].count.experiment).to.equal(0);
+    // 5
+    expect(stats.buckets[5].min).to.equal(502);
+    expect(stats.buckets[5].max).to.equal(593);
+    expect(stats.buckets[5].count.control).to.equal(0);
+    expect(stats.buckets[5].count.experiment).to.equal(0);
+    // 6
+    expect(stats.buckets[6].min).to.equal(593);
+    expect(stats.buckets[6].max).to.equal(684);
+    expect(stats.buckets[6].count.control).to.equal(0);
+    expect(stats.buckets[6].count.experiment).to.equal(0);
+    // 7
+    expect(stats.buckets[7].min).to.equal(684);
+    expect(stats.buckets[7].max).to.equal(775);
+    expect(stats.buckets[7].count.control).to.equal(0);
+    expect(stats.buckets[7].count.experiment).to.equal(0);
+    // 8
+    expect(stats.buckets[8].min).to.equal(775);
+    expect(stats.buckets[8].max).to.equal(866);
+    expect(stats.buckets[8].count.control).to.equal(0);
+    expect(stats.buckets[8].count.experiment).to.equal(0);
+    // 9
+    expect(stats.buckets[9].min).to.equal(866);
+    expect(stats.buckets[9].max).to.equal(957);
+    expect(stats.buckets[9].count.control).to.equal(0);
+    expect(stats.buckets[9].count.experiment).to.equal(0);
+    // 10
+    expect(stats.buckets[10].min).to.equal(957);
+    expect(stats.buckets[10].max).to.equal(1048);
+    expect(stats.buckets[10].count.control).to.equal(0);
+    expect(stats.buckets[10].count.experiment).to.equal(0);
+    // 11
+    expect(stats.buckets[11].min).to.equal(1048);
+    expect(stats.buckets[11].max).to.equal(1139);
+    expect(stats.buckets[11].count.control).to.equal(0);
+    expect(stats.buckets[11].count.experiment).to.equal(25);
+  });
 });
