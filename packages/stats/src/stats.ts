@@ -4,6 +4,15 @@ import { scaleLinear } from 'd3-scale';
 import { confidenceInterval } from './confidence-interval';
 import { convertMicrosecondsToMS } from './utils';
 
+export interface Bucket {
+  min: number;
+  max: number;
+  count: {
+    control: number;
+    experiment: number;
+  };
+}
+
 export interface ISevenFigureSummary {
   min: number;
   max: number;
@@ -54,7 +63,8 @@ export class Stats {
   public readonly controlMS: number[];
   public readonly experimentSortedMS: number[];
   public readonly controlSortedMS: number[];
-  private range: { min: number; max: number };
+  public readonly buckets: Bucket[];
+  public readonly range: { min: number; max: number };
   constructor(options: IStatsOptions) {
     const { name, control, experiment, confidenceLevel } = options;
     // explicitly for NOT sorted
@@ -149,6 +159,10 @@ export class Stats {
         this.sevenFigureSummary.experiment
       )
     };
+    this.buckets = this.getBuckets(
+      this.controlSortedMS,
+      this.experimentSortedMS
+    );
   }
 
   private getOutliers(
@@ -266,5 +280,47 @@ export class Stats {
     });
 
     return `${results.join('')}`;
+  }
+
+  private getBuckets(
+    controlSortedMS: number[],
+    experimentSortedMS: number[],
+    bucketCount = 12
+  ): Bucket[] {
+    const { min, max } = this.range;
+    const buffer = 1;
+    const minBuffer = min - buffer;
+    const maxBuffer = max + buffer;
+    const bucketIncrementor = (maxBuffer - minBuffer) / bucketCount;
+    const buckets = [];
+    let count = minBuffer;
+    while (count < maxBuffer) {
+      buckets.push({
+        min: Math.floor(count),
+        max: Math.floor(count + bucketIncrementor),
+        count: {
+          control: 0,
+          experiment: 0
+        }
+      });
+      count += bucketIncrementor;
+    }
+
+    // since we use a buffer all samples will be caught
+    // within each bucket regardless of comparator
+    buckets.map((bucket) => {
+      controlSortedMS.map((sample) => {
+        if (sample >= bucket.min && sample < bucket.max) {
+          bucket.count.control++;
+        }
+      });
+      experimentSortedMS.map((sample) => {
+        if (sample >= bucket.min && sample < bucket.max) {
+          bucket.count.experiment++;
+        }
+      });
+    });
+
+    return buckets;
   }
 }
