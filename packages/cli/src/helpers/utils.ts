@@ -313,3 +313,12 @@ export function secondsToTime(sec: number): string {
 export function md5sum(text: string): string {
   return createHash("md5").update(text).digest("hex");
 }
+
+/**
+ * Function to introduce a wait
+ *
+ * @param ms - How many milliseconds to wait
+ */
+export function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

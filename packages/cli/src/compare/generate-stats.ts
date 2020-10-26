@@ -38,6 +38,12 @@ type FormattedStatsSamples = {
   samplesMS: number[];
 };
 
+type Frequency = {
+  labels: string[];
+  control: number[];
+  experiment: number[];
+};
+
 export interface HTMLSectionRenderData {
   stats: Stats;
   isSignificant: boolean;
@@ -46,10 +52,12 @@ export interface HTMLSectionRenderData {
   hlDiff: number;
   phase: string;
   identifierHash: string;
+  frequencyHash: string;
   sampleCount: number;
   servers?: Array<{ name: string }>;
   controlFormatedSamples: FormattedStatsSamples;
   experimentFormatedSamples: FormattedStatsSamples;
+  frequency: Frequency;
 }
 
 type ValuesByPhase = {
@@ -186,17 +194,29 @@ export class GenerateStats {
     });
 
     const estimatorIsSig = Math.abs(stats.estimator) >= 1 ? true : false;
+    const frequency: Frequency = {
+      labels: [],
+      control: [],
+      experiment: [],
+    };
+    stats.buckets.map((bucket) => {
+      frequency.labels.push(`${bucket.min}-${bucket.max} ms`);
+      frequency.control.push(bucket.count.control);
+      frequency.experiment.push(bucket.count.experiment);
+    });
 
     return {
       stats,
       phase: phaseName,
       identifierHash: md5sum(phaseName),
+      frequencyHash: md5sum(`${phaseName}-frequency`),
       isSignificant: stats.confidenceInterval.isSig && estimatorIsSig,
       sampleCount: stats.sampleCount.control,
       ciMin: stats.confidenceInterval.min,
       ciMax: stats.confidenceInterval.max,
       hlDiff: stats.estimator,
       servers: undefined,
+      frequency,
       controlFormatedSamples: {
         min: stats.sevenFigureSummary.control.min,
         q1: stats.sevenFigureSummary.control[25],
