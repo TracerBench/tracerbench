@@ -20,7 +20,7 @@ import {
 } from "../../helpers/flags";
 
 export default class RecordHAR extends TBBaseCommand {
-  public static description = "Generates a HAR file from a URL.";
+  public static description = "Generates a HAR file from a URL";
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   public static flags: oclifFlags.Input<any> = {
     url: url({ required: true, default: undefined }),

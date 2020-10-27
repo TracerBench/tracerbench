@@ -1,14 +1,14 @@
 `tracerbench record-har`
 ========================
 
-Generates a HAR file from a URL.
+Generates a HAR file from a URL
 
 * [`tracerbench record-har`](#tracerbench-record-har)
 * [`tracerbench record-har:auth`](#tracerbench-record-harauth)
 
 ## `tracerbench record-har`
 
-Generates a HAR file from a URL.
+Generates a HAR file from a URL
 
 ```
 USAGE

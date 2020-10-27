@@ -1,13 +1,13 @@
 `tracerbench profile`
 =====================
 
-Parses a CPU profile with asset and marker timings.
+Parses a CPU profile with asset and marker timings
 
 * [`tracerbench profile HARPATH`](#tracerbench-profile-harpath)
 
 ## `tracerbench profile HARPATH`
 
-Parses a CPU profile with asset and marker timings.
+Parses a CPU profile with asset and marker timings
 
 ```
 USAGE

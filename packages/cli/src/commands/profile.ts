@@ -51,7 +51,7 @@ export default class Profile extends TBBaseCommand {
   // include backwards compat to trace cmd
   static aliases = ["trace"];
   public trace: TraceEvent[] = [];
-  public static description = `Parses a CPU profile with asset and marker timings.`;
+  public static description = `Parses a CPU profile with asset and marker timings`;
   public static args = [harpath];
   public static flags = {
     cpuThrottleRate: cpuThrottleRate({ required: true }),
