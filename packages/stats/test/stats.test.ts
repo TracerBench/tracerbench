@@ -1,69 +1,14 @@
 import { Stats } from '../src/stats';
 import { expect } from 'chai';
+import { REGRESSION_RESULTS, HIGH_VARIANCE_RESULTS } from "./fixtures";
 
-const control = [
-  54106,
-  51389,
-  51389,
-  51822,
-  48795,
-  48891,
-  48954,
-  51935,
-  52039,
-  52065,
-  52159,
-  52199,
-  52475,
-  52814,
-  52901,
-  52954,
-  54194,
-  54893,
-  49294,
-  49441,
-  49458,
-  50248,
-  50397,
-  50578,
-  51097
-];
-
-const experiment = [
-  1136150,
-  1130550,
-  1130841,
-  1130856,
-  1124565,
-  1125724,
-  1126078,
-  1126482,
-  1131473,
-  1131611,
-  1131770,
-  1132622,
-  1133104,
-  1133154,
-  1134401,
-  1138230,
-  1138314,
-  1128269,
-  1129836,
-  1131026,
-  1131376,
-  1131391,
-  1131411,
-  1131419,
-  1129367
-];
-
-const name = 'stats-test';
-const stats = new Stats({ control, experiment, name });
+const stats = new Stats({ control: REGRESSION_RESULTS.control, experiment: REGRESSION_RESULTS.experiment, name: 'stats-regression-test' });
+const statsHighVariance = new Stats({ control: HIGH_VARIANCE_RESULTS.control, experiment: HIGH_VARIANCE_RESULTS.experiment, name: 'stats-high-variance-test' });
 
 // stats testing a regression experiment
 describe('stats', () => {
   it(`name()`, () => {
-    expect(stats.name).to.equal('stats-test');
+    expect(stats.name).to.equal('stats-regression-test');
   });
 
   // samples converted to MS and sorted
@@ -210,5 +155,14 @@ describe('stats', () => {
     expect(stats.buckets[11].max).to.equal(1139);
     expect(stats.buckets[11].count.control).to.equal(0);
     expect(stats.buckets[11].count.experiment).to.equal(25);
+  });
+
+  it(`getPopulationVariance()`, () => {
+    // low variance
+    expect(stats.populationVariance.control).to.equal(3.03);
+    expect(stats.populationVariance.experiment).to.equal(10.83);
+    // high variance
+    expect(statsHighVariance.populationVariance.control).to.equal(82019.76);
+    expect(statsHighVariance.populationVariance.experiment).to.equal(207342.04);
   });
 });

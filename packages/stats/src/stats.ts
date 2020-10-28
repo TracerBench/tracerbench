@@ -1,8 +1,8 @@
-import { cross, histogram, quantile } from 'd3-array';
+import { cross, histogram, mean, quantile } from 'd3-array';
 import { scaleLinear } from 'd3-scale';
 
 import { confidenceInterval } from './confidence-interval';
-import { convertMicrosecondsToMS } from './utils';
+import { convertMicrosecondsToMS, toNearestHundreth } from './utils';
 
 export interface Bucket {
   min: number;
@@ -65,8 +65,13 @@ export class Stats {
   public readonly controlSortedMS: number[];
   public readonly buckets: Bucket[];
   public readonly range: { min: number; max: number };
+  public readonly populationVariance: { control: number; experiment: number };
+  public readonly control: number[];
+  public readonly experiment: number[];
   constructor(options: IStatsOptions) {
     const { name, control, experiment, confidenceLevel } = options;
+    this.control = control;
+    this.experiment = experiment;
     // explicitly for NOT sorted
     this.controlMS = control.map((x) => Math.round(convertMicrosecondsToMS(x)));
     this.experimentMS = experiment.map((x) =>
@@ -163,6 +168,10 @@ export class Stats {
       this.controlSortedMS,
       this.experimentSortedMS
     );
+    this.populationVariance = {
+      control: this.getPopulationVariance(this.controlSortedMS),
+      experiment: this.getPopulationVariance(this.experimentSortedMS)
+    };
   }
 
   private getOutliers(
@@ -308,6 +317,7 @@ export class Stats {
 
     // since we use a buffer all samples will be caught
     // within each bucket regardless of comparator
+    // and without overlap
     buckets.map((bucket) => {
       controlSortedMS.map((sample) => {
         if (sample >= bucket.min && sample < bucket.max) {
@@ -323,4 +333,21 @@ export class Stats {
 
     return buckets;
   }
+
+  private getPopulationVariance(a: number[]): number {
+    const _mean = mean(a);
+    let sum = 0;
+    if (_mean) {
+      a.map((n) => {
+        sum = sum + Math.pow(n - _mean, 2);
+      });
+    }
+    return toNearestHundreth(sum / a.length);
+  }
+
+  // private getPower(): number {
+  //   // increase sample size, increases power
+  //   // decrease variance, increases power
+
+  // }
 }
