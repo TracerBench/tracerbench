@@ -1498,9 +1498,9 @@
   integrity sha512-Q1y515GcOdTHgagaVFhHnIFQ38ygs/kmxdNpvpou+raI9UO3YZcHDngBSYKQklcKlvA7iuQlmIKbzvmxcOE9CQ==
 
 "@types/fs-extra@^9.0.1":
-  version "9.0.1"
-  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-9.0.1.tgz#91c8fc4c51f6d5dbe44c2ca9ab09310bd00c7918"
-  integrity sha512-B42Sxuaz09MhC3DDeW5kubRcQ5by4iuVQ0cRRWM2lggLzAa/KVom0Aft/208NgMvNQQZ86s5rVcqDdn/SH0/mg==
+  version "9.0.2"
+  resolved "https://registry.yarnpkg.com/@types/fs-extra/-/fs-extra-9.0.2.tgz#e1e1b578c48e8d08ae7fc36e552b94c6f4621609"
+  integrity sha512-jp0RI6xfZpi5JL8v7WQwpBEQTq63RqW2kxwTZt+m27LcJqQdPVU1yGnT1ZI4EtCDynQQJtIGyQahkiCGCS7e+A==
   dependencies:
     "@types/node" "*"
 
@@ -1598,20 +1598,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/node@*", "@types/node@>= 8":
-  version "14.0.27"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.0.27.tgz#a151873af5a5e851b51b3b065c9e63390a9e0eb1"
-  integrity sha512-kVrqXhbclHNHGu9ztnAwSncIgJv/FaxmzXJvGXNdcCpV1b8u1/Mi6z6m0vwy0LzKeXFTPLH0NzwmoJ3fNCIq0g==
-
-"@types/node@^14.11.2":
+"@types/node@*", "@types/node@>= 8", "@types/node@^14.11.2", "@types/node@^14.6.3":
   version "14.11.2"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.11.2.tgz#2de1ed6670439387da1c9f549a2ade2b0a799256"
   integrity sha512-jiE3QIxJ8JLNcb1Ps6rDbysDhN4xa8DJJvuC9prr6w+1tIh+QAbYyNF3tyiZNLDBIuBCf4KEcV2UvQm/V60xfA==
-
-"@types/node@^14.6.3":
-  version "14.6.3"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-14.6.3.tgz#cc4f979548ca4d8e7b90bc0180052ab99ee64224"
-  integrity sha512-pC/hkcREG6YfDfui1FBmj8e20jFU5Exjw4NYDm8kEdrW+mOh0T1Zve8DWKnS7ZIZvgncrctcNCXF4Q2I+loyww==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
