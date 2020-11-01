@@ -39,7 +39,7 @@
   "devDependencies": {
     "@types/chai": "^4.2.12",
     "@types/d3-array": "^2.0.0",
-    "@types/d3-scale": "^2.2.0",
+    "@types/d3-scale": "^3.2.0",
     "@types/fs-extra": "^9.0.1",
     "@types/node": "^14.11.2",
     "@types/tmp": "^0.2.0",
