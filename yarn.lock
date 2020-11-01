@@ -3430,15 +3430,10 @@ detect-indent@^6.0.0:
   resolved "https://registry.yarnpkg.com/detect-indent/-/detect-indent-6.0.0.tgz#0abd0f549f69fc6659a254fe96786186b6f528fd"
   integrity sha512-oSyFlqaTHCItVRGK5RmrmjB+CmaMOW7IaNA/kdxqhoa6d17j/5ce9O9eWXmV/KEdRwqpQA+Vqe8a8Bsybu4YnA==
 
-devtools-protocol@^0.0.802093:
-  version "0.0.802093"
-  resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.802093.tgz#f839c8132251af82d2a9253183bb45276a6cd291"
-  integrity sha512-if0PDdWnDlEA+kcjEDe/c+7Ts7YkB+N5GUgfDuxvAz7cBXF+/CPpjIHHn5vfqkLB3N1kRt5yE+ioM5g4B8t2tA==
-
-devtools-protocol@^0.0.809251:
-  version "0.0.809251"
-  resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.809251.tgz#300b3366be107d5c46114ecb85274173e3999518"
-  integrity sha512-pf+2OY6ghMDPjKkzSWxHMq+McD+9Ojmq5XVRYpv/kPd9sTMQxzEt21592a31API8qRjro0iYYOc3ag46qF/1FA==
+devtools-protocol@^0.0.822788:
+  version "0.0.822788"
+  resolved "https://registry.yarnpkg.com/devtools-protocol/-/devtools-protocol-0.0.822788.tgz#3b9410c5a4fe3b631f23a1c2e12688d6f01217ce"
+  integrity sha512-CJR70W7t4NnuhmdqkslD/WZyGbPE1vyI+9/VLGwnzE8Y0Q7Y4fAPTWuNEBjDJrtDiHCSATBjsz6cQRt7oO7tnw==
 
 dezalgo@^1.0.0:
   version "1.0.3"
