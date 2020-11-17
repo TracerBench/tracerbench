@@ -58,7 +58,11 @@ export async function authClient(
     // grab the document
     const document = await chrome.send('DOM.getDocument');
     // grab the username nodeId
-    const usernameNode = await waitForSelector(document.root.nodeId, '#username', chrome);
+    const usernameNode = await waitForSelector(
+      document.root.nodeId,
+      '#username',
+      chrome
+    );
     debugCallback('usernameNode %o', usernameNode);
 
     // set the value for the username
@@ -69,7 +73,11 @@ export async function authClient(
     });
 
     // grab the username nodeId
-    const passwordNode = await waitForSelector(document.root.nodeId, '#password', chrome);
+    const passwordNode = await waitForSelector(
+      document.root.nodeId,
+      '#password',
+      chrome
+    );
     debugCallback('passwordNode %o', passwordNode);
 
     // set the value for the username
