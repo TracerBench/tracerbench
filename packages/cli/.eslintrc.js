@@ -1,8 +1,12 @@
+/* eslint-disable simple-import-sort/sort */
+/* eslint-disable no-undef */
+/* eslint-disable filenames/match-regex */
+
 module.exports = {
   root: true,
   parser: "@typescript-eslint/parser",
   parserOptions: {
-    sourceType: "module"
+    sourceType: "module",
   },
   plugins: [
     "oclif",
@@ -10,7 +14,7 @@ module.exports = {
     "import",
     "simple-import-sort",
     "prettier",
-    "filenames"
+    "filenames",
   ],
   extends: [
     "eslint:recommended",
@@ -20,13 +24,13 @@ module.exports = {
     "prettier",
     "prettier/@typescript-eslint",
     "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
   ],
   rules: {
     "filenames/match-regex": [
       "error",
       "^(?:[a-z0-9\\-]+)*(?:\\.(?:test|d))?$",
-      true
+      true,
     ],
     "filenames/match-exported": ["error", "kebab"],
     "sort-imports": "off",
@@ -39,44 +43,45 @@ module.exports = {
     "@typescript-eslint/no-use-before-define": [
       "error",
       {
-        functions: false
-      }
+        functions: false,
+      },
     ],
-    "@typescript-eslint/interface-name-prefix": [
-      "off"
-    ],
+    "@typescript-eslint/interface-name-prefix": ["off"],
     "@typescript-eslint/explicit-function-return-type": [
       "error",
       {
         allowExpressions: true,
         allowTypedFunctionExpressions: true,
-        allowHigherOrderFunctions: true
-      }
-    ]
+        allowHigherOrderFunctions: true,
+      },
+    ],
   },
   ignorePatterns: ["dist/", "lib/", "node_modules/", "DEBUG/", "tmp/", "test/"],
-  overrides: [{
+  overrides: [
+    {
       files: ["srs/**/*.ts"],
       parserOptions: {
         project: "./tsconfig.json",
         tsconfigRootDir: __dirname,
-        sourceType: "module"
+        sourceType: "module",
       },
-      extends: ["plugin:@typescript-eslint/recommended-requiring-type-checking"]
+      extends: [
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+      ],
     },
     {
       files: ["test/**/*.ts"],
       parserOptions: {
         project: "./test/tsconfig.json",
         tsconfigRootDir: __dirname,
-        sourceType: "module"
+        sourceType: "module",
       },
       extends: [
-        "plugin:@typescript-eslint/recommended-requiring-type-checking"
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
       ],
       rules: {
-        "@typescript-eslint/no-non-null-assertion": "off"
-      }
-    }
-  ]
+        "@typescript-eslint/no-non-null-assertion": "off",
+      },
+    },
+  ],
 };
