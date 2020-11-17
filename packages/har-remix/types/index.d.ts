@@ -1,5 +1,5 @@
-import * as HAR from '@tracerbench/har';
-import { IncomingMessage, ServerResponse } from 'http';
+import type * as HAR from '@tracerbench/har';
+import type { IncomingMessage, ServerResponse } from 'http';
 
 export interface Response {
   statusCode: number;

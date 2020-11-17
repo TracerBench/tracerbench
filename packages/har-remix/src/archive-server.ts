@@ -1,11 +1,11 @@
-import * as HAR from '@tracerbench/har';
-import * as fs from 'fs';
-import * as http from 'http';
-import * as mimeTypes from 'mime-types';
-import * as zlib from 'zlib';
+import type { Archive, Entry } from '@tracerbench/har';
+import { readFileSync } from 'fs';
+import type { IncomingMessage, Server, ServerResponse } from 'http';
+import { createServer as httpCreateServer } from 'http';
+import { charset } from 'mime-types';
+import { gzipSync } from 'zlib';
 
-import { MapLike, Response, ServerDelegate } from '../types';
-export * from '../types';
+import type { MapLike, Response, ServerDelegate } from '../types';
 
 export default class ArchiveServer {
   private responses = createMap<Response>();
@@ -13,20 +13,20 @@ export default class ArchiveServer {
   constructor(private delegate: ServerDelegate) {}
 
   public loadArchive(path: string): void {
-    this.addArchive(JSON.parse(fs.readFileSync(path, 'utf8')));
+    this.addArchive(JSON.parse(readFileSync(path, 'utf8')));
   }
 
-  public addArchive(har: HAR.Archive): void {
+  public addArchive(har: Archive): void {
     this.addArchiveEntries(har.log.entries);
   }
 
-  public addArchiveEntries(entries: HAR.Entry[]): void {
+  public addArchiveEntries(entries: Entry[]): void {
     for (const entry of entries) {
       this.addArchiveEntry(entry);
     }
   }
 
-  public addArchiveEntry(entry: HAR.Entry): void {
+  public addArchiveEntry(entry: Entry): void {
     const key = this.delegate.keyForArchiveEntry(entry);
     if (!key) {
       return;
@@ -41,7 +41,7 @@ export default class ArchiveServer {
   }
 
   public buildResponseForArchiveEntry(
-    entry: HAR.Entry,
+    entry: Entry,
     key: string
   ): Response | undefined {
     const { status, content } = entry.response;
@@ -56,7 +56,7 @@ export default class ArchiveServer {
 
       if (text === undefined) {
         body = undefined;
-      } else if (mimeTypes.charset(mimeType) === 'UTF-8') {
+      } else if (charset(mimeType) === 'UTF-8') {
         text = new Buffer(text, encoding).toString();
 
         if (this.delegate.textFor) {
@@ -89,7 +89,7 @@ export default class ArchiveServer {
   ): Response {
     let headers: MapLike<string>;
     if (body && compress) {
-      body = zlib.gzipSync(body, {
+      body = gzipSync(body, {
         level: 9
       });
       headers = this.buildHeaders(mimeType, body, true);
@@ -131,8 +131,8 @@ export default class ArchiveServer {
   }
 
   public async handle(
-    request: http.IncomingMessage,
-    response: http.ServerResponse
+    request: IncomingMessage,
+    response: ServerResponse
   ): Promise<void> {
     const key = await Promise.resolve(
       this.delegate.keyForServerRequest(request)
@@ -163,8 +163,8 @@ export default class ArchiveServer {
     console.log(response.statusCode, request.method, request.url);
   }
 
-  public createServer(): http.Server {
-    return http.createServer((req, res) => this.handle(req, res));
+  public createServer(): Server {
+    return httpCreateServer((req, res) => this.handle(req, res));
   }
 }
 
