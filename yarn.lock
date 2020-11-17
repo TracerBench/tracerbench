@@ -7059,6 +7059,11 @@ race-cancellation@^0.4.1:
   resolved "https://registry.yarnpkg.com/race-cancellation/-/race-cancellation-0.4.1.tgz#bd1c69bf5b836b56645a4b5b78fb9b973c46eb45"
   integrity sha512-TF1vf4q/a5mwER9DoIuniE/qNIRM3Begyoe+21VUKgsyQAT4iIfSqlK7aG4Of1J1wzeATqVwbDP0dwX9GhaGcw==
 
+race-cancellation@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/race-cancellation/-/race-cancellation-0.5.0.tgz#e1add8463bd6bad7c8fc8e5b2cb9441fc24c6c9b"
+  integrity sha512-6cIisN4SC3CQMSxtCqP1HKfCwmwNmaYQspsiSNJx9/6hGZ2IdpxOj8nkO3fixW5tNLPbyJVyTnj+ApgwkKjBUQ==
+
 randombytes@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/randombytes/-/randombytes-2.1.0.tgz#df6f84372f0270dc65cdf6291349ab7a473d4f2a"
