@@ -1512,10 +1512,10 @@
   resolved "https://registry.yarnpkg.com/@types/d3-hierarchy/-/d3-hierarchy-2.0.0.tgz#92079d9dbcec1dfe2736fb050a8bf916e5850a1c"
   integrity sha512-YxdskUvwzqggpnSnDQj4KVkicgjpkgXn/g/9M9iGsiToLS3nG6Ytjo1FoYhYVAAElV/fJBGVL3cQ9Hb7tcv+lw==
 
-"@types/d3-scale@^2.2.0":
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/@types/d3-scale/-/d3-scale-2.2.0.tgz#e5987a2857365823eb26ed5eb21bc566c4dcf1c0"
-  integrity sha512-oQFanN0/PiR2oySHfj+zAAkK1/p4LD32Nt1TMVmzk+bYHk7vgIg/iTXQWitp1cIkDw4LMdcgvO63wL+mNs47YA==
+"@types/d3-scale@^3.2.1":
+  version "3.2.1"
+  resolved "https://registry.yarnpkg.com/@types/d3-scale/-/d3-scale-3.2.1.tgz#b37578c8c7edb6f040e46e7757783aafd2d50e4e"
+  integrity sha512-j+FryQSVk3GHLqjOX/RsHwGHg4XByJ0xIO1ASBTgzhE9o1tgeV4kEWLOzMzJRembKalflk5F03lEkM+4V6LDrQ==
   dependencies:
     "@types/d3-time" "*"
 
