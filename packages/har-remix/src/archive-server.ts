@@ -5,7 +5,7 @@ import { createServer as httpCreateServer } from 'http';
 import { charset } from 'mime-types';
 import { gzipSync } from 'zlib';
 
-import type { MapLike, Response, ServerDelegate } from '../types';
+import type { MapLike, Response, ServerDelegate } from './interfaces';
 
 export default class ArchiveServer {
   private responses = createMap<Response>();

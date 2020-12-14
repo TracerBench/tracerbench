@@ -1,3 +1,4 @@
 import ArchiveServer from './archive-server';
+
 export { ArchiveServer };
-export * from '../types';
+export type { Response, MapLike, ServerDelegate } from './interfaces';

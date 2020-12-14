@@ -1,14 +1,19 @@
 {
+  "$schema": "http://json.schemastore.org/tsconfig",
   "compilerOptions": {
-    "target": "es2015",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "outDir": "dist",
-    "rootDir": "src",
+    "composite": true,
     "declaration": true,
-    "strict": true,
+    "declarationMap": true,
     "sourceMap": true,
-    "newLine": "LF"
-  },
-  "files": ["src/index.ts", "types/index.d.ts"]
+    "baseUrl": ".",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "newLine": "LF",
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "resolveJsonModule": true,
+    "target": "es2017",
+    "outDir": "./dist"
+  }
 }
