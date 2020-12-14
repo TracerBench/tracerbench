@@ -1,3 +1,4 @@
+import { median } from 'd3-array';
 import * as jStat from 'jstat';
 
 /**
@@ -10,7 +11,7 @@ function _defaultModifier(x: number, y: number): number {
 }
 
 /**
- * Apply the passed "_func" to the permutations of the items in listOne and listTwo
+ * Apply the passed "func" to the permutations of the items in listOne and listTwo
  *
  * @param listOne - Array of numbers
  * @param listTwo - Array of numbers
@@ -39,26 +40,61 @@ export function cartesianProduct(
  * @param interval - Float between 0 and 1
  */
 export function confidenceInterval(
-  distributionOne: number[],
-  distributionTwo: number[],
-  interval: number
-): [number, number] {
-  const distributionOneLength = distributionOne.length;
-  const distributionTwoLength = distributionTwo.length;
+  a: number[],
+  b: number[],
+  confidence: number
+): {
+  lower: number;
+  median: number;
+  upper: number;
+  U: number;
+  zScore: number;
+  pValue: number;
+} {
+  const aLength = a.length;
+  const bLength = b.length;
+  const maxU = aLength * bLength;
+  const meanU = maxU / 2;
 
-  const lengthsMultiplied = distributionOneLength * distributionTwoLength;
-  const sqrtOfSomething = Math.sqrt(
-    (lengthsMultiplied * (distributionOneLength + distributionTwoLength + 1)) /
-      12
+  const deltas = a
+    .map((a) => b.map((b) => a - b))
+    .flat()
+    .sort((a, b) => a - b);
+
+  const U = deltas.reduce(
+    (accum, value) => accum + (value < 0 ? 1 : value == 0 ? 0.5 : 0),
+    0
   );
-  const other =
-    jStat.normal.inv(1 - (1 - interval) / 2, 0, 1) * sqrtOfSomething;
-  const ca = Math.floor(
-    (distributionOneLength * distributionTwoLength) / 2 - other
+
+  const lowerTail = U <= meanU;
+
+  const standadDeviationU = Math.sqrt((maxU * (aLength + bLength + 1)) / 12);
+
+  // we are estimating a discrete distribution so bias the mean depending on which tail
+  // we are computing the pValue for
+  const continuityCorrection = lowerTail ? 0.5 : -0.5;
+
+  const zScore = (U - meanU + continuityCorrection) / standadDeviationU;
+
+  // z is symmetrical, so use lower tail and double the cumulative for each tail
+  // since this is a two tailed test
+  const pValue = jStat.normal.cdf(-Math.abs(zScore), 0, 1) * 2;
+
+  const alpha = 1 - confidence;
+
+  const lowerU = Math.round(
+    jStat.normal.inv(alpha / 2, meanU + 0.5, standadDeviationU)
   );
-  const diffs = cartesianProduct(distributionOne, distributionTwo);
-  return [
-    diffs[ca - 1],
-    diffs[distributionOneLength * distributionTwoLength - ca]
-  ];
+  const upperU = Math.round(
+    jStat.normal.inv(1 - alpha / 2, meanU + 0.5, standadDeviationU)
+  );
+
+  return {
+    lower: deltas[lowerU],
+    median: median(deltas) ?? 0,
+    upper: deltas[upperU],
+    zScore,
+    pValue,
+    U
+  };
 }

@@ -16,7 +16,7 @@
     "moduleResolution": "node",
     "module": "commonjs",
     "resolveJsonModule": true,
-    "target": "es2017",
+    "target": "es2019",
     "outDir": "./dist"
   },
   "include": ["src"],
