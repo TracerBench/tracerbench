@@ -71,12 +71,14 @@ export default class Profile extends TBBaseCommand {
       url,
     } = flags;
     const { harpath } = args;
+    // default if no cookies are passed as chrome will check for a truthy value
     const cookies = [
       {
-        name: "",
-        value: "",
-        domain: "",
-        path: "",
+        key: "tb",
+        name: "tb",
+        value: "tb",
+        domain: "tb",
+        path: "/",
       },
     ];
     const conditions: IConditions = {

@@ -49,9 +49,9 @@ describe("profile: marker-timings", () => {
   test
     .stdout()
     .it(
-      `runs profile ${HAR_PATH} --tbResultsFolder ${TB_RESULTS_FOLDER}`,
+      `runs profile ${HAR_PATH} --tbResultsFolder ${TB_RESULTS_FOLDER} --cookiespath ${COOKIES}`,
       async (ctx) => {
-        await Profile.run([HAR_PATH, "--tbResultsFolder", TB_RESULTS_FOLDER]);
+        await Profile.run([HAR_PATH, "--tbResultsFolder", TB_RESULTS_FOLDER, "--cookiespath", COOKIES]);
         expect(ctx.stdout).to.contain(`JS Evaluation :: Total Duration`);
         expect(ctx.stdout).to.contain(`CSS Evaluation :: Total Duration`);
         expect(ctx.stdout).to.contain(`Marker Timings :: Total Duration`);
