@@ -43,10 +43,10 @@ describe("generate-stats", () => {
     expect(durationSection.stats.sampleCount.control).to.eql(20);
     expect(durationSection.stats.sampleCount.experiment).to.eql(20);
     // duration 95% confidence-interval
-    expect(durationSection.stats.confidenceInterval.min).to.eql(-1002);
+    expect(durationSection.stats.confidenceInterval.min).to.eql(-1001);
     expect(durationSection.stats.confidenceInterval.max).to.eql(-997);
     expect(durationSection.stats.confidenceInterval.isSig).to.be.true;
-    expect(durationSection.stats.confidenceIntervals[95].min).to.eql(-1002);
+    expect(durationSection.stats.confidenceIntervals[95].min).to.eql(-1001);
     expect(durationSection.stats.confidenceIntervals[95].max).to.eql(-997);
     expect(durationSection.stats.confidenceIntervals[95].isSig).to.be.true;
     // duration 99% confidence-interval
@@ -77,7 +77,7 @@ describe("generate-stats", () => {
     // duration sample count
     expect(durationSection.sampleCount).to.eq(20);
     // duration confidence interval min
-    expect(durationSection.ciMin).to.eq(-1002);
+    expect(durationSection.ciMin).to.eq(-1001);
     // duration confidence interval max
     expect(durationSection.ciMax).to.eq(-997);
     // duration estimator
