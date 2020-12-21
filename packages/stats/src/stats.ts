@@ -215,14 +215,14 @@ export class Stats {
   ): IConfidenceInterval {
     const ci = confidenceInterval(control, experiment, confidenceLevel);
     const isSig =
-      (ci[0] < 0 && 0 < ci[1]) ||
-      (ci[0] > 0 && 0 > ci[1]) ||
-      (ci[0] === 0 && ci[1] === 0)
+      (ci.lower < 0 && 0 < ci.upper) ||
+      (ci.lower > 0 && 0 > ci.upper) ||
+      (ci.lower === 0 && ci.upper === 0)
         ? false
         : true;
     return {
-      min: Math.round(Math.ceil(ci[0] * 100) / 100),
-      max: Math.round(Math.ceil(ci[1] * 100) / 100),
+      min: Math.round(Math.ceil(ci.lower * 100) / 100),
+      max: Math.round(Math.ceil(ci.upper * 100) / 100),
       isSig
     };
   }
