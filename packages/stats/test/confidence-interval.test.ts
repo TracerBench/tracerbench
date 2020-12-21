@@ -51,9 +51,11 @@ const experiment = [
 ];
 
 describe('confidence-interval test', () => {
+  // lower -17.598544903204015
   it(`confidenceInterval()`, () => {
-    expect(confidenceInterval(control, experiment, 0.95)).to.eqls([
-      -17.598544903204015,
+    const ci = confidenceInterval(control, experiment, 0.95);
+    expect([ci.lower, ci.upper]).to.eqls([
+      -16.645916059851004,
       50.779366826444004
     ]);
   });
