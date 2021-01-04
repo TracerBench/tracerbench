@@ -19,10 +19,10 @@
   },
   "devDependencies": {
     "lerna": "^3.22.1",
-    "husky": "^4.2.5",
-    "conventional-changelog-cli": "^2.1.0",
-    "@commitlint/config-conventional": "^9.1.2",
-    "@commitlint/cli": "^9.1.2"
+    "husky": "^4.3.6",
+    "conventional-changelog-cli": "^2.1.1",
+    "@commitlint/config-conventional": "^11.0.0",
+    "@commitlint/cli": "^11.0.0"
   },
   "repository": {
     "type": "git",
