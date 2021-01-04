@@ -16,7 +16,7 @@ export function getResponse(url: string) {
 }
 
 export function waitForFinish(readable: NodeJS.ReadableStream, writable: NodeJS.WritableStream) {
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     pipeline(readable, writable, (err) => {
       if (err) reject(err);
       else resolve();
