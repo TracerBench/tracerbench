@@ -41,6 +41,10 @@ export interface IConfidenceInterval {
   min: number;
   max: number;
   isSig: boolean;
+  median: number;
+  zScore: number;
+  pValue: number;
+  U: number;
 }
 
 // ! all stats assume microseconds from tracerbench and round to milliseconds
@@ -223,7 +227,11 @@ export class Stats {
     return {
       min: Math.round(Math.ceil(ci.lower * 100) / 100),
       max: Math.round(Math.ceil(ci.upper * 100) / 100),
-      isSig
+      isSig,
+      median: ci.median,
+      zScore: ci.zScore,
+      pValue: ci.pValue,
+      U: ci.U
     };
   }
 
