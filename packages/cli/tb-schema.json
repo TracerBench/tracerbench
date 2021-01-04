@@ -238,16 +238,6 @@
             "type": "number"
         },
         "servers": {
-            "additionalItems": {
-                "anyOf": [
-                    {
-                        "$ref": "#/definitions/IHARServer"
-                    },
-                    {
-                        "$ref": "#/definitions/IHARServer"
-                    }
-                ]
-            },
             "items": [
                 {
                     "$ref": "#/definitions/IHARServer"
@@ -256,20 +246,11 @@
                     "$ref": "#/definitions/IHARServer"
                 }
             ],
+            "maxItems": 2,
             "minItems": 2,
             "type": "array"
         },
         "socksPorts": {
-            "additionalItems": {
-                "anyOf": [
-                    {
-                        "type": "number"
-                    },
-                    {
-                        "type": "number"
-                    }
-                ]
-            },
             "items": [
                 {
                     "type": "number"
@@ -278,6 +259,7 @@
                     "type": "number"
                 }
             ],
+            "maxItems": 2,
             "minItems": 2,
             "type": "array"
         },
