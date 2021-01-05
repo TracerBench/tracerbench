@@ -47,6 +47,7 @@ export interface IConfidenceInterval {
   U: number;
 }
 
+// TODO implement BREAKING CHANGE to remove the ms rounding
 // ! all stats assume microseconds from tracerbench and round to milliseconds
 export class Stats {
   public readonly name: string;

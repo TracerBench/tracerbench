@@ -68,33 +68,35 @@ export function confidenceInterval(
 
   const lowerTail = U <= meanU;
 
-  const standadDeviationU = Math.sqrt((maxU * (aLength + bLength + 1)) / 12);
+  const standardDeviationU = Math.sqrt((maxU * (aLength + bLength + 1)) / 12);
 
   // we are estimating a discrete distribution so bias the mean depending on which tail
-  // we are computing the pValue for
+  // we are computing the pValue for. literally just +/- 0.5
   const continuityCorrection = lowerTail ? 0.5 : -0.5;
 
-  const zScore = (U - meanU + continuityCorrection) / standadDeviationU;
+  // the number of standard deviations from the mean in both directions
+  const zScore = (U - meanU + continuityCorrection) / standardDeviationU;
 
   // z is symmetrical, so use lower tail and double the cumulative for each tail
   // since this is a two tailed test
+  // normal cumulative distribution function
   const pValue = jStat.normal.cdf(-Math.abs(zScore), 0, 1) * 2;
 
   const alpha = 1 - confidence;
 
   const lowerU = Math.round(
-    jStat.normal.inv(alpha / 2, meanU + 0.5, standadDeviationU)
+    jStat.normal.inv(alpha / 2, meanU + 0.5, standardDeviationU)
   );
   const upperU = Math.round(
-    jStat.normal.inv(1 - alpha / 2, meanU + 0.5, standadDeviationU)
+    jStat.normal.inv(1 - alpha / 2, meanU + 0.5, standardDeviationU)
   );
 
   return {
     lower: deltas[lowerU],
     median: median(deltas) ?? 0,
     upper: deltas[upperU],
-    zScore,
-    pValue,
+    zScore: +zScore.toPrecision(4),
+    pValue: +pValue.toPrecision(4),
     U
   };
 }

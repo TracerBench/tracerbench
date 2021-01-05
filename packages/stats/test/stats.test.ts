@@ -32,8 +32,8 @@ describe('stats', () => {
     expect(stats.confidenceInterval.max).to.equal(-1078);
     expect(stats.confidenceInterval.isSig).to.equal(true);
     expect(stats.confidenceInterval.median).to.equal(-1080);
-    expect(stats.confidenceInterval.zScore).to.equal(6.053689200906871);
-    expect(stats.confidenceInterval.pValue).to.equal(1.4156562588851784e-9);
+    expect(stats.confidenceInterval.zScore).to.equal(6.054);
+    expect(stats.confidenceInterval.pValue).to.equal(1.416e-9);
     expect(stats.confidenceInterval.U).to.equal(625);
   });
 
