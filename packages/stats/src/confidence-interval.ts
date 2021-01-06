@@ -56,11 +56,13 @@ export function confidenceInterval(
   const maxU = aLength * bLength;
   const meanU = maxU / 2;
 
+  // subtract every control data point to every experiment data point
   const deltas = a
     .map((a) => b.map((b) => a - b))
     .flat()
     .sort((a, b) => a - b);
 
+  // count the number of "wins" a > b and 0.5 for a tie if a == b
   const U = deltas.reduce(
     (accum, value) => accum + (value < 0 ? 1 : value == 0 ? 0.5 : 0),
     0
@@ -74,12 +76,11 @@ export function confidenceInterval(
   // we are computing the pValue for. literally just +/- 0.5
   const continuityCorrection = lowerTail ? 0.5 : -0.5;
 
-  // the number of standard deviations from the mean in both directions
+  // how many standard deviations the result is given the null hypothesis is true
   const zScore = (U - meanU + continuityCorrection) / standardDeviationU;
 
-  // z is symmetrical, so use lower tail and double the cumulative for each tail
-  // since this is a two tailed test
-  // normal cumulative distribution function
+  // z is symmetrical, so use lower tail and double the cumulative of U for each tail
+  // since this is a two tailed test. normal cumulative distribution function
   const pValue = jStat.normal.cdf(-Math.abs(zScore), 0, 1) * 2;
 
   const alpha = 1 - confidence;

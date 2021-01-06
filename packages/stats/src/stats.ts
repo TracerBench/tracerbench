@@ -2,7 +2,7 @@ import { cross, histogram, mean, quantile } from 'd3-array';
 import { scaleLinear } from 'd3-scale';
 
 import { confidenceInterval } from './confidence-interval';
-import { convertMicrosecondsToMS, toNearestHundreth } from './utils';
+import { toNearestHundreth } from './utils';
 
 export interface Bucket {
   min: number;
@@ -46,9 +46,6 @@ export interface IConfidenceInterval {
   pValue: number;
   U: number;
 }
-
-// TODO implement BREAKING CHANGE to remove the ms rounding
-// ! all stats assume microseconds from tracerbench and round to milliseconds
 export class Stats {
   public readonly name: string;
   public readonly estimator: number;
@@ -64,10 +61,8 @@ export class Stats {
     experiment: IOutliers;
   };
   public readonly sampleCount: { control: number; experiment: number };
-  public readonly experimentMS: number[];
-  public readonly controlMS: number[];
-  public readonly experimentSortedMS: number[];
-  public readonly controlSortedMS: number[];
+  public readonly experimentSorted: number[];
+  public readonly controlSorted: number[];
   public readonly buckets: Bucket[];
   public readonly range: { min: number; max: number };
   public readonly populationVariance: { control: number; experiment: number };
@@ -75,107 +70,92 @@ export class Stats {
   public readonly experiment: number[];
   constructor(options: IStatsOptions) {
     const { name, control, experiment, confidenceLevel } = options;
+
     this.control = control;
     this.experiment = experiment;
-    // explicitly for NOT sorted
-    this.controlMS = control.map((x) => Math.round(convertMicrosecondsToMS(x)));
-    this.experimentMS = experiment.map((x) =>
-      Math.round(convertMicrosecondsToMS(x))
-    );
 
-    // explicitly for sortedMS
-    const controlSortedMS = control.map((x) =>
-      Math.round(convertMicrosecondsToMS(x))
-    );
-    const experimentSortedMS = experiment.map((x) =>
-      Math.round(convertMicrosecondsToMS(x))
-    );
-    this.controlSortedMS = controlSortedMS.sort((a, b) => a - b);
-    this.experimentSortedMS = experimentSortedMS.sort((a, b) => a - b);
+    const controlSorted = control;
+    const experimentSorted = experiment;
+    this.controlSorted = controlSorted.sort((a, b) => a - b);
+    this.experimentSorted = experimentSorted.sort((a, b) => a - b);
 
     this.name = name;
     this.sampleCount = {
-      control: this.controlSortedMS.length,
-      experiment: this.experimentSortedMS.length
+      control: this.controlSorted.length,
+      experiment: this.experimentSorted.length
     };
-    this.range = this.getRange(this.controlSortedMS, this.experimentSortedMS);
+    this.range = this.getRange(this.controlSorted, this.experimentSorted);
     this.sparkLine = {
       control: this.getSparkline(
-        this.getHistogram(this.range, this.controlSortedMS)
+        this.getHistogram(this.range, this.controlSorted)
       ),
       experiment: this.getSparkline(
-        this.getHistogram(this.range, this.experimentSortedMS)
+        this.getHistogram(this.range, this.experimentSorted)
       )
     };
     this.confidenceIntervals = {
       80: this.getConfidenceInterval(
-        this.controlSortedMS,
-        this.experimentSortedMS,
+        this.controlSorted,
+        this.experimentSorted,
         0.8
       ),
       85: this.getConfidenceInterval(
-        this.controlSortedMS,
-        this.experimentSortedMS,
+        this.controlSorted,
+        this.experimentSorted,
         0.85
       ),
       90: this.getConfidenceInterval(
-        this.controlSortedMS,
-        this.experimentSortedMS,
+        this.controlSorted,
+        this.experimentSorted,
         0.9
       ),
       95: this.getConfidenceInterval(
-        this.controlSortedMS,
-        this.experimentSortedMS,
+        this.controlSorted,
+        this.experimentSorted,
         0.95
       ),
       99: this.getConfidenceInterval(
-        this.controlSortedMS,
-        this.experimentSortedMS,
+        this.controlSorted,
+        this.experimentSorted,
         0.99
       ),
       995: this.getConfidenceInterval(
-        this.controlSortedMS,
-        this.experimentSortedMS,
+        this.controlSorted,
+        this.experimentSorted,
         0.995
       ),
       999: this.getConfidenceInterval(
-        this.controlSortedMS,
-        this.experimentSortedMS,
+        this.controlSorted,
+        this.experimentSorted,
         0.999
       )
     };
     this.confidenceInterval = this.getConfidenceInterval(
-      this.controlSortedMS,
-      this.experimentSortedMS,
+      this.controlSorted,
+      this.experimentSorted,
       confidenceLevel
     );
     this.estimator = Math.round(
-      this.getHodgesLehmann(
-        this.controlSortedMS,
-        this.experimentSortedMS
-      ) as number
+      this.getHodgesLehmann(this.controlSorted, this.experimentSorted) as number
     );
     this.sevenFigureSummary = {
-      control: this.getSevenFigureSummary(this.controlSortedMS),
-      experiment: this.getSevenFigureSummary(this.experimentSortedMS)
+      control: this.getSevenFigureSummary(this.controlSorted),
+      experiment: this.getSevenFigureSummary(this.experimentSorted)
     };
     this.outliers = {
       control: this.getOutliers(
-        this.controlSortedMS,
+        this.controlSorted,
         this.sevenFigureSummary.control
       ),
       experiment: this.getOutliers(
-        this.experimentSortedMS,
+        this.experimentSorted,
         this.sevenFigureSummary.experiment
       )
     };
-    this.buckets = this.getBuckets(
-      this.controlSortedMS,
-      this.experimentSortedMS
-    );
+    this.buckets = this.getBuckets(this.controlSorted, this.experimentSorted);
     this.populationVariance = {
-      control: this.getPopulationVariance(this.controlSortedMS),
-      experiment: this.getPopulationVariance(this.experimentSortedMS)
+      control: this.getPopulationVariance(this.controlSorted),
+      experiment: this.getPopulationVariance(this.experimentSorted)
     };
   }
 
@@ -301,8 +281,8 @@ export class Stats {
   }
 
   private getBuckets(
-    controlSortedMS: number[],
-    experimentSortedMS: number[],
+    controlSorted: number[],
+    experimentSorted: number[],
     bucketCount = 12
   ): Bucket[] {
     const { min, max } = this.range;
@@ -328,12 +308,12 @@ export class Stats {
     // within each bucket regardless of comparator
     // and without overlap
     buckets.map((bucket) => {
-      controlSortedMS.map((sample) => {
+      controlSorted.map((sample) => {
         if (sample >= bucket.min && sample < bucket.max) {
           bucket.count.control++;
         }
       });
-      experimentSortedMS.map((sample) => {
+      experimentSorted.map((sample) => {
         if (sample >= bucket.min && sample < bucket.max) {
           bucket.count.experiment++;
         }
