@@ -1,9 +1,11 @@
 import { Stats } from '../src/stats';
 import { expect } from 'chai';
 import { REGRESSION_RESULTS, HIGH_VARIANCE_RESULTS } from "./fixtures";
+import {roundTenthsAndConvertMicrosecondsToMS} from "../src/utils";
 
 const stats = new Stats({ control: REGRESSION_RESULTS.control, experiment: REGRESSION_RESULTS.experiment, name: 'stats-regression-test' });
-const statsHighVariance = new Stats({ control: HIGH_VARIANCE_RESULTS.control, experiment: HIGH_VARIANCE_RESULTS.experiment, name: 'stats-high-variance-test' });
+// high variance with unit converter to MS
+const statsHighVarianceMS = new Stats({ control: HIGH_VARIANCE_RESULTS.control, experiment: HIGH_VARIANCE_RESULTS.experiment, name: 'stats-high-variance-test' }, roundTenthsAndConvertMicrosecondsToMS);
 
 // stats testing a regression experiment
 describe('stats', () => {
@@ -17,6 +19,12 @@ describe('stats', () => {
     expect(stats.controlSorted[24]).to.equal(54893);
     expect(stats.experimentSorted[0]).to.equal(1124565);
     expect(stats.experimentSorted[24]).to.equal(1138314);
+
+    // MS
+    expect(statsHighVarianceMS.controlSorted[0]).to.equal(2241);
+    expect(statsHighVarianceMS.controlSorted[10]).to.equal(2374);
+    expect(statsHighVarianceMS.experimentSorted[0]).to.equal(2241);
+    expect(statsHighVarianceMS.experimentSorted[10]).to.equal(2364);
   });
 
   // samples NOT sorted
@@ -25,6 +33,11 @@ describe('stats', () => {
     expect(stats.control[24]).to.equal(54893);
     expect(stats.experiment[0]).to.equal(1124565);
     expect(stats.experiment[24]).to.equal(1138314);
+
+    // MS
+    expect(statsHighVarianceMS.control[0]).to.equal(2241);
+    expect(statsHighVarianceMS.control[24]).to.equal(2517);
+    expect(statsHighVarianceMS.experiment[0]).to.equal(2241);
   });
 
   // results should show strong evidence to reject H0 for H1
@@ -37,6 +50,12 @@ describe('stats', () => {
     // 0.000000001416
     expect(stats.confidenceInterval.pValue).to.equal(1.416e-9);
     expect(stats.confidenceInterval.U).to.equal(625);
+
+    // MS
+    expect(statsHighVarianceMS.confidenceInterval.min).to.equal(-95);
+    expect(statsHighVarianceMS.confidenceInterval.max).to.equal(84);
+    expect(statsHighVarianceMS.confidenceInterval.median).to.equal(-2);
+    expect(statsHighVarianceMS.confidenceInterval.pValue).to.equal(0.967);
   });
 
   it(`sevenFigureSummary()`, () => {
@@ -54,6 +73,10 @@ describe('stats', () => {
     expect(experimentQuantiles.max).to.equal(1138314);
     expect(experimentQuantiles[10]).to.equal(1126240);
     expect(experimentQuantiles[90]).to.equal(1135450);
+
+    // MS
+    expect(statsHighVarianceMS.sevenFigureSummary.control.min).to.equal(2241);
+    expect(statsHighVarianceMS.sevenFigureSummary.experiment.max).to.equal(5284);
   });
 
   it(`getHodgesLehmann()`, () => {
@@ -167,7 +190,7 @@ describe('stats', () => {
     expect(stats.populationVariance.control).to.equal(2872116.01);
     expect(stats.populationVariance.experiment).to.equal(11279513.36);
     // high variance
-    expect(statsHighVariance.populationVariance.control).to.equal(82019760000);
-    expect(statsHighVariance.populationVariance.experiment).to.equal(207342043600);
+    expect(statsHighVarianceMS.populationVariance.control).to.equal(82019760);
+    expect(statsHighVarianceMS.populationVariance.experiment).to.equal(207342043.6);
   });
 });

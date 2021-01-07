@@ -1,4 +1,8 @@
-import { convertMicrosecondsToMS, Stats } from "@tracerbench/stats";
+import {
+  convertMicrosecondsToMS,
+  roundTenthsAndConvertMicrosecondsToMS,
+  Stats,
+} from "@tracerbench/stats";
 
 import { md5sum } from "../helpers/utils";
 
@@ -187,11 +191,15 @@ export class GenerateStats {
     experimentValues: number[],
     phaseName: string
   ): HTMLSectionRenderData {
-    const stats = new Stats({
-      control: controlValues,
-      experiment: experimentValues,
-      name: phaseName,
-    });
+    // all stats will be converted to milliseconds and rounded to tenths
+    const stats = new Stats(
+      {
+        control: controlValues,
+        experiment: experimentValues,
+        name: phaseName,
+      },
+      roundTenthsAndConvertMicrosecondsToMS
+    );
 
     const estimatorIsSig = Math.abs(stats.estimator) >= 1 ? true : false;
     const frequency: Frequency = {
@@ -224,7 +232,7 @@ export class GenerateStats {
         q3: stats.sevenFigureSummary.control[75],
         max: stats.sevenFigureSummary.control.max,
         outliers: stats.outliers.control.outliers,
-        samplesMS: stats.controlMS,
+        samplesMS: stats.control,
       },
       experimentFormatedSamples: {
         min: stats.sevenFigureSummary.experiment.min,
@@ -233,7 +241,7 @@ export class GenerateStats {
         q3: stats.sevenFigureSummary.experiment[75],
         max: stats.sevenFigureSummary.experiment.max,
         outliers: stats.outliers.experiment.outliers,
-        samplesMS: stats.experimentMS,
+        samplesMS: stats.experiment,
       },
     };
   }

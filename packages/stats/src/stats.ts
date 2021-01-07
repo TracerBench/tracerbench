@@ -13,7 +13,9 @@ export interface Bucket {
   };
 }
 
-export interface ISevenFigureSummary {
+export type ISevenFigureSummary = {
+  [key in string | number]: number;
+} & {
   min: number;
   max: number;
   10: number;
@@ -21,7 +23,7 @@ export interface ISevenFigureSummary {
   50: number;
   75: number;
   90: number;
-}
+};
 
 export interface IOutliers {
   IQR: number;
@@ -37,7 +39,9 @@ export interface IStatsOptions {
   confidenceLevel?: 0.8 | 0.85 | 0.9 | 0.95 | 0.99 | 0.995 | 0.999;
 }
 
-export interface IConfidenceInterval {
+export type IConfidenceInterval = {
+  [key in string]: number | boolean;
+} & {
   min: number;
   max: number;
   isSig: boolean;
@@ -45,30 +49,30 @@ export interface IConfidenceInterval {
   zScore: number;
   pValue: number;
   U: number;
-}
+};
 export class Stats {
   public readonly name: string;
-  public readonly estimator: number;
+  public estimator: number;
   public readonly sparkLine: { control: string; experiment: string };
-  public readonly confidenceIntervals: { [key: number]: IConfidenceInterval };
-  public readonly confidenceInterval: IConfidenceInterval;
-  public readonly sevenFigureSummary: {
+  public confidenceIntervals: { [key: number]: IConfidenceInterval };
+  public confidenceInterval: IConfidenceInterval;
+  public sevenFigureSummary: {
     control: ISevenFigureSummary;
     experiment: ISevenFigureSummary;
   };
-  public readonly outliers: {
+  public outliers: {
     control: IOutliers;
     experiment: IOutliers;
   };
   public readonly sampleCount: { control: number; experiment: number };
-  public readonly experimentSorted: number[];
-  public readonly controlSorted: number[];
-  public readonly buckets: Bucket[];
-  public readonly range: { min: number; max: number };
-  public readonly populationVariance: { control: number; experiment: number };
-  public readonly control: number[];
-  public readonly experiment: number[];
-  constructor(options: IStatsOptions) {
+  public experimentSorted: number[];
+  public controlSorted: number[];
+  public buckets: Bucket[];
+  public range: { min: number; max: number };
+  public populationVariance: { control: number; experiment: number };
+  public control: number[];
+  public experiment: number[];
+  constructor(options: IStatsOptions, unitConverterFn?: (n: number) => number) {
     const { name, control, experiment, confidenceLevel } = options;
 
     this.control = control;
@@ -157,6 +161,98 @@ export class Stats {
       control: this.getPopulationVariance(this.controlSorted),
       experiment: this.getPopulationVariance(this.experimentSorted)
     };
+
+    // when passed will convert all units **after** statistical computation
+    // its critical this happens after computation since we need to correctly handle ties
+    if (unitConverterFn) {
+      this.convertAllUnits(unitConverterFn);
+    }
+  }
+
+  private convertAllUnits(unitConverterFn: (n: number) => number): void {
+    this.estimator = unitConverterFn(this.estimator);
+    this.experiment = this.experiment.map((n) => {
+      return unitConverterFn(n);
+    });
+    this.experimentSorted = this.experimentSorted.map((n) => {
+      return unitConverterFn(n);
+    });
+    this.control = this.control.map((n) => {
+      return unitConverterFn(n);
+    });
+    this.controlSorted = this.controlSorted.map((n) => {
+      return unitConverterFn(n);
+    });
+    this.range.min = unitConverterFn(this.range.min);
+    this.range.max = unitConverterFn(this.range.max);
+    this.populationVariance.control = unitConverterFn(
+      this.populationVariance.control
+    );
+    this.populationVariance.experiment = unitConverterFn(
+      this.populationVariance.experiment
+    );
+
+    this.outliers.control.IQR = unitConverterFn(this.outliers.control.IQR);
+    this.outliers.control.lowerOutlier = unitConverterFn(
+      this.outliers.control.lowerOutlier
+    );
+    this.outliers.control.upperOutlier = unitConverterFn(
+      this.outliers.control.upperOutlier
+    );
+    this.outliers.control.outliers = this.outliers.control.outliers.map((n) => {
+      return unitConverterFn(n);
+    });
+
+    this.outliers.experiment.IQR = unitConverterFn(
+      this.outliers.experiment.IQR
+    );
+    this.outliers.experiment.lowerOutlier = unitConverterFn(
+      this.outliers.experiment.lowerOutlier
+    );
+    this.outliers.experiment.upperOutlier = unitConverterFn(
+      this.outliers.experiment.upperOutlier
+    );
+    this.outliers.experiment.outliers = this.outliers.experiment.outliers.map(
+      (n) => {
+        return unitConverterFn(n);
+      }
+    );
+
+    for (const k in this.confidenceInterval) {
+      if (k === 'min' || k === 'max' || k === 'median') {
+        this.confidenceInterval[k] = unitConverterFn(
+          this.confidenceInterval[k]
+        );
+      }
+    }
+
+    for (const k in this.sevenFigureSummary.control) {
+      this.sevenFigureSummary.control[k] = unitConverterFn(
+        this.sevenFigureSummary.control[k]
+      );
+    }
+
+    for (const k in this.sevenFigureSummary.experiment) {
+      this.sevenFigureSummary.experiment[k] = unitConverterFn(
+        this.sevenFigureSummary.experiment[k]
+      );
+    }
+
+    for (const k in this.confidenceIntervals) {
+      for (const kk in this.confidenceIntervals[k]) {
+        if (kk === 'min' || kk === 'max' || kk === 'median') {
+          this.confidenceIntervals[k][kk] = unitConverterFn(
+            this.confidenceIntervals[k][kk]
+          );
+        }
+      }
+    }
+
+    this.buckets = this.buckets.map((o) => {
+      o.min = unitConverterFn(o.min);
+      o.max = unitConverterFn(o.max);
+      return o;
+    });
   }
 
   private getOutliers(
@@ -333,10 +429,4 @@ export class Stats {
     }
     return toNearestHundreth(sum / a.length);
   }
-
-  // private getPower(): number {
-  //   // increase sample size, increases power
-  //   // decrease variance, increases power
-
-  // }
 }

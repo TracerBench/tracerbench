@@ -12,6 +12,14 @@ export function toNearestHundreth(n: number): number {
   return Math.round(n * 100) / 100;
 }
 
+export function roundTenthsAndConvertMicrosecondsToMS(
+  ms: string | number
+): number {
+  ms = typeof ms === 'string' ? parseInt(ms, 10) : ms;
+  ms = Math.floor(ms * 100) / 100000;
+  return Math.round(ms * 10) / 10;
+}
+
 export function fillArray(arrLngth: number, incr = 1, strt = 0): number[] {
   const a = [];
   while (a.length < arrLngth) {
