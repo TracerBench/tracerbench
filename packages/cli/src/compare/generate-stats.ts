@@ -1,6 +1,6 @@
 import {
   convertMicrosecondsToMS,
-  roundTenthsAndConvertMicrosecondsToMS,
+  roundFloatAndConvertMicrosecondsToMS,
   Stats,
 } from "@tracerbench/stats";
 
@@ -198,7 +198,7 @@ export class GenerateStats {
         experiment: experimentValues,
         name: phaseName,
       },
-      roundTenthsAndConvertMicrosecondsToMS
+      roundFloatAndConvertMicrosecondsToMS
     );
 
     const estimatorIsSig = Math.abs(stats.estimator) >= 1 ? true : false;

@@ -9,7 +9,7 @@ import {
 import {
   convertMicrosecondsToMS,
   convertMSToMicroseconds,
-  roundTenthsAndConvertMicrosecondsToMS,
+  roundFloatAndConvertMicrosecondsToMS,
   toNearestHundreth
 } from './utils';
 import { getWilcoxonRankSumTest } from './wilcoxon-rank-sum';
@@ -28,5 +28,5 @@ export {
   IOutliers,
   IStatsOptions,
   IConfidenceInterval,
-  roundTenthsAndConvertMicrosecondsToMS
+  roundFloatAndConvertMicrosecondsToMS
 };
