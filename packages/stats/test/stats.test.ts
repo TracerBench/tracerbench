@@ -1,11 +1,11 @@
 import { Stats } from '../src/stats';
 import { expect } from 'chai';
 import { REGRESSION_RESULTS, HIGH_VARIANCE_RESULTS } from "./fixtures";
-import {roundTenthsAndConvertMicrosecondsToMS} from "../src/utils";
+import { roundFloatAndConvertMicrosecondsToMS } from "../src/utils";
 
 const stats = new Stats({ control: REGRESSION_RESULTS.control, experiment: REGRESSION_RESULTS.experiment, name: 'stats-regression-test' });
 // high variance with unit converter to MS
-const statsHighVarianceMS = new Stats({ control: HIGH_VARIANCE_RESULTS.control, experiment: HIGH_VARIANCE_RESULTS.experiment, name: 'stats-high-variance-test' }, roundTenthsAndConvertMicrosecondsToMS);
+const statsHighVarianceMS = new Stats({ control: HIGH_VARIANCE_RESULTS.control, experiment: HIGH_VARIANCE_RESULTS.experiment, name: 'stats-high-variance-test' }, roundFloatAndConvertMicrosecondsToMS);
 
 // stats testing a regression experiment
 describe('stats', () => {
@@ -191,6 +191,6 @@ describe('stats', () => {
     expect(stats.populationVariance.experiment).to.equal(11279513.36);
     // high variance
     expect(statsHighVarianceMS.populationVariance.control).to.equal(82019760);
-    expect(statsHighVarianceMS.populationVariance.experiment).to.equal(207342043.6);
+    expect(statsHighVarianceMS.populationVariance.experiment).to.equal(207342044);
   });
 });
