@@ -1,6 +1,6 @@
 {
   "name": "har-remix",
-  "version": "4.5.5",
+  "version": "5.0.0",
   "description": "Server HAR archive with loose matching and hooks to alter responses.",
   "keywords": [
     "benchmarking",
@@ -24,7 +24,7 @@
     "test": "echo \"TODO add tests for har-remix\""
   },
   "dependencies": {
-    "@tracerbench/har": "^4.0.1",
+    "@tracerbench/har": "^5.0.0",
     "mime-types": "^2.1.27"
   },
   "devDependencies": {

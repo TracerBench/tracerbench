@@ -1,6 +1,6 @@
 {
   "name": "@tracerbench/trace-event",
-  "version": "4.5.5",
+  "version": "5.0.0",
   "description": "Chrome Trace Events interfaces",
   "keywords": [
     "chrome",
