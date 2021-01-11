@@ -1,6 +1,6 @@
 {
   "name": "@tracerbench/core",
-  "version": "4.5.5",
+  "version": "5.0.0",
   "description": "Benchmark runner for trace metrics",
   "keywords": [
     "chrome",
@@ -36,9 +36,9 @@
     "watch": "tsc -b -w"
   },
   "dependencies": {
-    "@tracerbench/har": "^4.0.1",
-    "@tracerbench/trace-event": "^4.5.5",
-    "@tracerbench/trace-model": "^4.5.5",
+    "@tracerbench/har": "^5.0.0",
+    "@tracerbench/trace-event": "^5.0.0",
+    "@tracerbench/trace-model": "^5.0.0",
     "@types/d3-hierarchy": "^2.0.0",
     "@types/node": "*",
     "array-binsearch": "^1.0.1",
