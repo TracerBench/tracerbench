@@ -1,4 +1,4 @@
-import { Stats } from "@tracerbench/stats";
+import type { Stats } from "@tracerbench/stats";
 import * as chalk from "chalk";
 import * as Table from "cli-table3";
 

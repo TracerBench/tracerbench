@@ -26,17 +26,17 @@ describe("generate-stats", () => {
     } = durationSection;
     // STATS
     // duration control in ms and not sorted
-    expect(durationSection.stats.controlMS[0]).to.eql(434);
-    expect(durationSection.stats.controlMS[19]).to.eql(305);
+    expect(durationSection.stats.control[0]).to.eql(305);
+    expect(durationSection.stats.control[19]).to.eql(434);
     // duration experiment in ms and not sorted
-    expect(durationSection.stats.experimentMS[0]).to.eql(1309);
-    expect(durationSection.stats.experimentMS[19]).to.eql(1309);
+    expect(durationSection.stats.experiment[0]).to.eql(1299);
+    expect(durationSection.stats.experiment[19]).to.eql(1328);
     // duration control in ms and sorted
-    expect(durationSection.stats.controlSortedMS[0]).to.eql(305);
-    expect(durationSection.stats.controlSortedMS[19]).to.eql(434);
+    expect(durationSection.stats.controlSorted[0]).to.eql(305);
+    expect(durationSection.stats.controlSorted[19]).to.eql(434);
     // duration experiment in ms and sorted
-    expect(durationSection.stats.experimentSortedMS[0]).to.eql(1299);
-    expect(durationSection.stats.experimentSortedMS[19]).to.eql(1328);
+    expect(durationSection.stats.experimentSorted[0]).to.eql(1299);
+    expect(durationSection.stats.experimentSorted[19]).to.eql(1328);
     // duration name
     expect(durationSection.stats.name).to.eql("duration");
     // sample count
@@ -44,10 +44,10 @@ describe("generate-stats", () => {
     expect(durationSection.stats.sampleCount.experiment).to.eql(20);
     // duration 95% confidence-interval
     expect(durationSection.stats.confidenceInterval.min).to.eql(-1001);
-    expect(durationSection.stats.confidenceInterval.max).to.eql(-997);
+    expect(durationSection.stats.confidenceInterval.max).to.eql(-996);
     expect(durationSection.stats.confidenceInterval.isSig).to.be.true;
     expect(durationSection.stats.confidenceIntervals[95].min).to.eql(-1001);
-    expect(durationSection.stats.confidenceIntervals[95].max).to.eql(-997);
+    expect(durationSection.stats.confidenceIntervals[95].max).to.eql(-996);
     expect(durationSection.stats.confidenceIntervals[95].isSig).to.be.true;
     // duration 99% confidence-interval
     expect(durationSection.stats.confidenceIntervals[99].min).to.eql(-1002);
@@ -56,21 +56,21 @@ describe("generate-stats", () => {
     // duration estimator
     expect(durationSection.stats.estimator).to.eql(-999);
     // duration control outliers
-    expect(durationSection.stats.outliers.control.outliers.length).to.eq(2);
-    expect(durationSection.stats.outliers.control.outliers[0]).to.eq(338);
-    expect(durationSection.stats.outliers.control.outliers[1]).to.eq(434);
-    expect(durationSection.stats.outliers.control.lowerOutlier).to.eq(303);
-    expect(durationSection.stats.outliers.control.upperOutlier).to.eq(316);
+    expect(durationSection.stats.outliers.control.outliers.length).to.eq(3);
+    expect(durationSection.stats.outliers.control.outliers[0]).to.eq(315);
+    expect(durationSection.stats.outliers.control.outliers[1]).to.eq(338);
+    expect(durationSection.stats.outliers.control.lowerOutlier).to.eq(304);
+    expect(durationSection.stats.outliers.control.upperOutlier).to.eq(314);
     // duration experiment outliers
     expect(durationSection.stats.outliers.experiment.outliers.length).to.eq(4);
     expect(durationSection.stats.outliers.experiment.outliers[0]).to.eq(1299);
     expect(durationSection.stats.outliers.experiment.outliers[1]).to.eq(1320);
     expect(durationSection.stats.outliers.experiment.outliers[2]).to.eq(1325);
     expect(durationSection.stats.outliers.experiment.outliers[3]).to.eq(1328);
-    expect(durationSection.stats.outliers.experiment.lowerOutlier).to.eq(1301);
-    expect(durationSection.stats.outliers.experiment.upperOutlier).to.eq(1317);
+    expect(durationSection.stats.outliers.experiment.lowerOutlier).to.eq(1300);
+    expect(durationSection.stats.outliers.experiment.upperOutlier).to.eq(1318);
     // duration interquartile range
-    expect(durationSection.stats.outliers.control.IQR).to.eq(3);
+    expect(durationSection.stats.outliers.control.IQR).to.eq(2);
     expect(durationSection.stats.outliers.experiment.IQR).to.eq(4);
     // duration is significant
     expect(durationSection.isSignificant).to.be.true;
@@ -79,7 +79,7 @@ describe("generate-stats", () => {
     // duration confidence interval min
     expect(durationSection.ciMin).to.eq(-1001);
     // duration confidence interval max
-    expect(durationSection.ciMax).to.eq(-997);
+    expect(durationSection.ciMax).to.eq(-996);
     // duration estimator
     expect(durationSection.hlDiff).to.eq(-999);
     // duration control formatted samples
@@ -88,11 +88,11 @@ describe("generate-stats", () => {
     expect(controlFormatedSamples.median).to.eq(309);
     expect(controlFormatedSamples.q3).to.eq(311);
     expect(controlFormatedSamples.max).to.eq(434);
-    expect(controlFormatedSamples.outliers.length).to.eq(2);
-    expect(controlFormatedSamples.outliers[0]).to.eq(338);
-    expect(controlFormatedSamples.outliers[1]).to.eq(434);
-    expect(controlFormatedSamples.samplesMS[0]).to.eq(434);
-    expect(controlFormatedSamples.samplesMS[19]).to.eq(305);
+    expect(controlFormatedSamples.outliers.length).to.eq(3);
+    expect(controlFormatedSamples.outliers[0]).to.eq(315);
+    expect(controlFormatedSamples.outliers[1]).to.eq(338);
+    expect(controlFormatedSamples.samplesMS[0]).to.eq(305);
+    expect(controlFormatedSamples.samplesMS[19]).to.eq(434);
     // duration experiment formatted samples
     expect(experimentFormatedSamples.min).to.eq(1299);
     expect(experimentFormatedSamples.q1).to.eq(1307);
@@ -104,9 +104,9 @@ describe("generate-stats", () => {
     expect(experimentFormatedSamples.outliers[1]).to.eq(1320);
     expect(experimentFormatedSamples.outliers[2]).to.eq(1325);
     expect(experimentFormatedSamples.outliers[3]).to.eq(1328);
-    expect(experimentFormatedSamples.samplesMS[0]).to.eq(1309);
-    expect(experimentFormatedSamples.samplesMS[3]).to.eq(1304);
-    expect(experimentFormatedSamples.samplesMS[19]).to.eq(1309);
+    expect(experimentFormatedSamples.samplesMS[0]).to.eq(1299);
+    expect(experimentFormatedSamples.samplesMS[3]).to.eq(1305);
+    expect(experimentFormatedSamples.samplesMS[19]).to.eq(1328);
   });
 
   it(`generateData() subPhaseSections`, () => {
@@ -117,17 +117,17 @@ describe("generate-stats", () => {
     // subphase
     expect(subPhaseSections.length).to.eql(7);
     // render control in ms and not sorted
-    expect(renderPhase.stats.controlMS[0]).to.eql(20);
-    expect(renderPhase.stats.controlMS[19]).to.eql(20);
+    expect(renderPhase.stats.control[0]).to.eql(20);
+    expect(renderPhase.stats.control[19]).to.eql(29);
     // render experiment in ms and not sorted
-    expect(renderPhase.stats.experimentMS[0]).to.eql(20);
-    expect(renderPhase.stats.experimentMS[19]).to.eql(21);
+    expect(renderPhase.stats.experiment[0]).to.eql(20);
+    expect(renderPhase.stats.experiment[19]).to.eql(23);
     // render control in ms and sorted
-    expect(renderPhase.stats.controlSortedMS[0]).to.eql(20);
-    expect(renderPhase.stats.controlSortedMS[19]).to.eql(29);
+    expect(renderPhase.stats.controlSorted[0]).to.eql(20);
+    expect(renderPhase.stats.controlSorted[19]).to.eql(29);
     // render experiment in ms and sorted
-    expect(renderPhase.stats.experimentSortedMS[0]).to.eql(20);
-    expect(renderPhase.stats.experimentSortedMS[19]).to.eql(23);
+    expect(renderPhase.stats.experimentSorted[0]).to.eql(20);
+    expect(renderPhase.stats.experimentSorted[19]).to.eql(23);
     // render estimator
     expect(renderPhase.stats.estimator).to.eql(0);
     // phase name
@@ -148,20 +148,20 @@ describe("generate-stats", () => {
     expect(controlFormatedSamples.median).to.eq(20);
     expect(controlFormatedSamples.q3).to.eq(21);
     expect(controlFormatedSamples.max).to.eq(29);
-    expect(controlFormatedSamples.outliers.length).to.eq(1);
-    expect(controlFormatedSamples.outliers[0]).to.eq(29);
+    expect(controlFormatedSamples.outliers.length).to.eq(2);
+    expect(controlFormatedSamples.outliers[0]).to.eq(23);
     expect(controlFormatedSamples.samplesMS[0]).to.eq(20);
-    expect(controlFormatedSamples.samplesMS[19]).to.eq(20);
+    expect(controlFormatedSamples.samplesMS[19]).to.eq(29);
     // render experiment formatted samples
     expect(experimentFormatedSamples.min).to.eq(20);
     expect(experimentFormatedSamples.q1).to.eq(20);
     expect(experimentFormatedSamples.median).to.eq(20);
     expect(experimentFormatedSamples.q3).to.eq(21);
     expect(experimentFormatedSamples.max).to.eq(23);
-    expect(experimentFormatedSamples.outliers.length).to.eq(0);
+    expect(experimentFormatedSamples.outliers.length).to.eq(2);
     expect(experimentFormatedSamples.samplesMS[0]).to.eq(20);
-    expect(experimentFormatedSamples.samplesMS[12]).to.eq(23);
-    expect(experimentFormatedSamples.samplesMS[19]).to.eq(21);
+    expect(experimentFormatedSamples.samplesMS[12]).to.eq(20);
+    expect(experimentFormatedSamples.samplesMS[19]).to.eq(23);
   });
 
   it(`bucketCumulative() cumulativeData`, () => {
