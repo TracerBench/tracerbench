@@ -153,6 +153,10 @@ export default class TBTable {
         ],
         [],
         [{ content: "Is Significant:" }, { content: `${statSig}` }],
+        [
+          { content: "P-Value:" },
+          { content: `${stat.confidenceInterval.pValue}` },
+        ],
         [],
         ["Control Sparkline", { content: `${stat.sparkLine.control}` }],
         [
