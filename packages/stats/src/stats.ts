@@ -295,12 +295,14 @@ export class Stats {
     confidenceLevel: 0.8 | 0.85 | 0.9 | 0.95 | 0.99 | 0.995 | 0.999 = 0.95
   ): IConfidenceInterval {
     const ci = confidenceInterval(control, experiment, confidenceLevel);
-    const isSig =
+    const isCISig =
       (ci.lower < 0 && 0 < ci.upper) ||
       (ci.lower > 0 && 0 > ci.upper) ||
       (ci.lower === 0 && ci.upper === 0)
         ? false
         : true;
+    // ci sign must match on lower and upper bounds and pValue < 5%
+    const isSig = isCISig && ci.pValue < 0.05;
     return {
       min: Math.round(Math.ceil(ci.lower * 100) / 100),
       max: Math.round(Math.ceil(ci.upper * 100) / 100),
