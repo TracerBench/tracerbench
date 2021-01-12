@@ -105,8 +105,7 @@ export class CompareResults {
     this.phaseResultsFormatted.forEach((phaseData) => {
       const { phase, hlDiff, isSignificant, ciMin, ciMax } = phaseData;
       let msg = `${chalk.bold(phase)} phase `;
-      // buffer is sig on the estimator at 5 ms
-      const estimatorISig = Math.abs(hlDiff) >= 5 ? true : false;
+      const estimatorISig = Math.abs(hlDiff) >= 1 ? true : false;
       // isSignificant comes from the confidence interval range and pValue NOT estimator
       if (isSignificant && estimatorISig) {
         let coloredDiff;

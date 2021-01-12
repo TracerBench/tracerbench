@@ -40,6 +40,9 @@ Handlebars.registerHelper("toCamel", (val) => {
 Handlebars.registerHelper("isFaster", (analysis) => {
   return analysis.hlDiff > 0;
 });
+Handlebars.registerHelper("getQuality", (pVal, threshold) => {
+  return pVal < threshold;
+});
 Handlebars.registerHelper("abs", (num) => {
   return Math.abs(num);
 });
