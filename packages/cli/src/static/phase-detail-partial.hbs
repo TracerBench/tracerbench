@@ -1,29 +1,33 @@
-<div class="avoid-page-break"> 
+<div class="avoid-page-break">
   <div class="row">
     <div class="col">
-      <h2>{{analysisForPhase.phase}}
+      <h2 class="phase">{{analysisForPhase.phase}}
         <small class="h5">
           {{#if analysisForPhase.isSignificant}}
-          {{#if (isFaster analysisForPhase)}}
-          <span class="text-success font-weight-bolder">({{abs analysisForPhase.hlDiff}} ms faster)</span>
+            {{#if (isFaster analysisForPhase)}}
+              <span class="text-success font-weight-bolder">({{abs analysisForPhase.hlDiff}} ms faster)</span>
+            {{else}}
+              <span class="text-danger font-weight-bolder">({{abs analysisForPhase.hlDiff}} ms slower)</span>
+            {{/if}}
           {{else}}
-          <span class="text-danger font-weight-bolder">({{abs analysisForPhase.hlDiff}} ms slower)</span>
-          {{/if}}
-          {{else}}
-          <span class="text-muted">(No Difference)</span>
+            <span class="text-muted">(No/Borderline Difference)</span>
           {{/if}}
         </small>
       </h2>
       <p>
-        A statistical analysis test was used <i>
-          <small>(<a href="https://en.wikipedia.org/wiki/Mann%E2%80%93Whitney_U_test" target="_blank">Wilcoxon Rank-Sum
-              Test</a>)
-          </small>
-        </i> to determine that
+        Based on the P-value of this benchmark the evidence for a metric shift is {{#if (getQuality analysisForPhase.pValue 0.1)}}
+            {{#if (getQuality analysisForPhase.pValue 0.05)}}
+              <strong>very strong.</strong>
+            {{else}}
+              <strong>strong.</strong>
+            {{/if}}
+          {{else}}
+              <strong>weak.</strong>
+          {{/if}} TracerBench has determined the
         {{#if analysisForPhase.isSignificant}}
-        the results are significant meaning they are worth looking at.
+        results are <strong>significant</strong> meaning they are worth looking at.
         {{else}}
-        results are not significant.
+        results are <strong>not significant</strong>.
         {{/if}}
         {{#if analysisForPhase.isSignificant}}
         A statistics estimator <i>

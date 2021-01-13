@@ -62,6 +62,7 @@ export interface HTMLSectionRenderData {
   controlFormatedSamples: FormattedStatsSamples;
   experimentFormatedSamples: FormattedStatsSamples;
   frequency: Frequency;
+  pValue: number;
 }
 
 type ValuesByPhase = {
@@ -222,6 +223,7 @@ export class GenerateStats {
       sampleCount: stats.sampleCount.control,
       ciMin: stats.confidenceInterval.min,
       ciMax: stats.confidenceInterval.max,
+      pValue: stats.confidenceInterval.pValue,
       hlDiff: stats.estimator,
       servers: undefined,
       frequency,
