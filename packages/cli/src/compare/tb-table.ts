@@ -34,6 +34,7 @@ export default class TBTable {
         heading: this.heading,
         phaseName: stat.name,
         isSignificant: stat.confidenceInterval.isSig,
+        pValue: stat.confidenceInterval.pValue,
         estimatorDelta: `${stat.estimator * -1}ms`,
         controlSampleCount: stat.sampleCount.control,
         experimentSampleCount: stat.sampleCount.experiment,

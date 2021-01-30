@@ -110,6 +110,8 @@ OPTIONS
   --isCIEnv=isCIEnv                                      (required) Provides a drastically slimmed down stdout report
                                                          for CI workflows. However does NOT hide analysis.
 
+  --jsonReport                                           Include a JSON file from the stdout report
+
   --regressionThreshold=regressionThreshold              (required) [default: 50] The upper limit the experiment can
                                                          regress slower in milliseconds. eg 50
 

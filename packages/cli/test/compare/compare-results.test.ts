@@ -24,6 +24,7 @@ const tableDataObj = {
   isSignificant: true,
   estimatorDelta: "",
   controlSampleCount: 1,
+  pValue: 1,
   experimentSampleCount: 1,
   confidenceInterval: [[]],
   controlSevenFigureSummary: [{}],
