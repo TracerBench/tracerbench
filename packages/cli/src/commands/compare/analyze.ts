@@ -2,6 +2,8 @@
 /* eslint-disable filenames/match-exported */
 import { IConfig } from "@oclif/config";
 import * as Parser from "@oclif/parser";
+import { writeFileSync } from "fs-extra";
+import { dirname, join } from "path";
 
 import { TBBaseCommand } from "../../command-config";
 import { fidelityLookup } from "../../command-config/default-flag-args";
@@ -16,6 +18,7 @@ import { resultsFile } from "../../helpers/args";
 import {
   fidelity,
   isCIEnv,
+  jsonReport,
   regressionThreshold,
   regressionThresholdStat,
 } from "../../helpers/flags";
@@ -24,6 +27,7 @@ export interface CompareAnalyzeFlags {
   regressionThreshold: number;
   isCIEnv: boolean;
   regressionThresholdStat: RegressionThresholdStat;
+  jsonReport: boolean;
 }
 
 export default class CompareAnalyze extends TBBaseCommand {
@@ -35,6 +39,7 @@ export default class CompareAnalyze extends TBBaseCommand {
     regressionThreshold: regressionThreshold({ required: true }),
     isCIEnv: isCIEnv({ required: true }),
     regressionThresholdStat,
+    jsonReport,
   };
   public typedFlags: CompareAnalyzeFlags;
   constructor(argv: string[], config: IConfig) {
@@ -44,7 +49,7 @@ export default class CompareAnalyze extends TBBaseCommand {
 
   private parseFlags(CompareAnalyze: Parser.Input<any>): CompareAnalyzeFlags {
     const { flags } = this.parse(CompareAnalyze);
-    const { isCIEnv, regressionThresholdStat } = flags;
+    const { isCIEnv, regressionThresholdStat, jsonReport } = flags;
     let { regressionThreshold, fidelity } = flags;
 
     if (typeof regressionThreshold === "string") {
@@ -67,6 +72,7 @@ export default class CompareAnalyze extends TBBaseCommand {
       regressionThreshold,
       isCIEnv,
       regressionThresholdStat,
+      jsonReport,
     };
   }
 
@@ -95,6 +101,15 @@ export default class CompareAnalyze extends TBBaseCommand {
     }
 
     compareResults.logSummary();
+
+    // optionally generate a JSON file from the stdout report
+    if (jsonReport) {
+      const resultFileDir = dirname(args.resultsFile);
+      writeFileSync(
+        join(resultFileDir, "report.json"),
+        compareResults.stringifyJSON()
+      );
+    }
 
     // return the Stringified<ICompareJSONResults> stat summary report
     return compareResults.stringifyJSON();

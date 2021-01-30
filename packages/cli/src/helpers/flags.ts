@@ -273,3 +273,8 @@ export const regressionThresholdStat = oclifFlags.string({
   options: ["estimator", "ci-lower", "ci-upper"],
   default: () => getDefaultValue("regressionThresholdStat"),
 });
+
+export const jsonReport = oclifFlags.boolean({
+  description: `Include a JSON file from the stdout report`,
+  default: false,
+});

@@ -13,6 +13,7 @@ export interface ICompareJSONResult {
   phaseName: string;
   isSignificant: boolean;
   estimatorDelta: string;
+  pValue: number;
   controlSampleCount: number;
   experimentSampleCount: number;
   confidenceInterval: string[];
@@ -30,7 +31,7 @@ export interface ICompareJSONResults {
 type PhaseResultsFormatted = Array<
   Pick<
     HTMLSectionRenderData,
-    "phase" | "hlDiff" | "isSignificant" | "ciMin" | "ciMax"
+    "phase" | "hlDiff" | "isSignificant" | "ciMin" | "ciMax" | "pValue"
   >
 >;
 

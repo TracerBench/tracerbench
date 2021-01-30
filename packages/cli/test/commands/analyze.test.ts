@@ -1,5 +1,6 @@
 import { test } from "@oclif/test";
-import { expect } from "chai";
+import { expect, assert } from "chai";
+import { dirname, join } from "path";
 
 import CompareAnalyze from "../../src/commands/compare/analyze";
 import { COMPARE_JSON } from "../test-helpers";
@@ -41,21 +42,23 @@ describe("compare:analyze low fidelity, low threshold", () => {
     );
 });
 
-describe("compare:analyze low threshold", () => {
+describe("compare:analyze low threshold with jsonReport", () => {
   test
     .stdout()
     .it(
-      `runs compare:analyze COMPARE --fidelity=10 --regressionThreshold=10`,
+      `runs compare:analyze COMPARE --fidelity=10 --regressionThreshold=10 --jsonReport`,
       async (ctx) => {
         await CompareAnalyze.run([
           `${COMPARE_JSON}`,
           "--fidelity=10",
           `--regressionThreshold=${regressionThreshold}`,
+          "--jsonReport"
         ]);
 
         expect(ctx.stdout).to.contain(
           `    ! ALERT     Regression found exceeding the set regression threshold of ${regressionThreshold} ms`
         );
+        assert.exists(join(dirname(COMPARE_JSON), "report.json"));
       }
     );
 });
