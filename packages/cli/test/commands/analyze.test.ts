@@ -3,7 +3,7 @@ import { expect, assert } from "chai";
 import { dirname, join } from "path";
 
 import CompareAnalyze from "../../src/commands/compare/analyze";
-import { COMPARE_JSON } from "../test-helpers";
+import { COMPARE_JSON, TB_RESULTS_FOLDER } from "../test-helpers";
 
 const regressionThreshold = "10";
 
