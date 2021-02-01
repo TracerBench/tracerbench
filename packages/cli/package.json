@@ -71,7 +71,7 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-oclif": "^0.1.0",
     "eslint-plugin-prettier": "^3.3.0",
-    "eslint-plugin-simple-import-sort": "5.0.3",
+    "eslint-plugin-simple-import-sort": "7.0.0",
     "mocha": "^8.2.1",
     "mock-fs": "^4.13.0",
     "nyc": "^15.1.0",

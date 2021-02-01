@@ -71,7 +71,7 @@
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-oclif": "^0.1.0",
     "eslint-plugin-prettier": "^3.3.0",
-    "eslint-plugin-simple-import-sort": "5.0.3",
+    "eslint-plugin-simple-import-sort": "7.0.0",
     "find-up": "^5.0.0",
     "jquery": "^3.5.1",
     "mkdirp": "^1.0.4",
