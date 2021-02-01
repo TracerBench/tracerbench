@@ -1479,9 +1479,9 @@
   integrity sha512-rr+OQyAjxze7GgWrSaJwydHStIhHq2lvY3BOC2Mj7KnzI7XK0Uw1TOOdI9lDoajEbSWLiYgoo4f1R51erQfhPQ==
 
 "@types/d3-array@^2.8.0":
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/@types/d3-array/-/d3-array-2.8.0.tgz#4b70ccb0c6d2ef28dac1e7e653b3ecd1f4b1d1ee"
-  integrity sha512-Q0ubcGHAmCRPh90/hoYB4eKWhxYKUxphwSeQrlz2tiabQ8S9zqhaE2CZJtCaLH2cjqKcjr52WPvmOA7ha0O4ZA==
+  version "2.9.0"
+  resolved "https://registry.yarnpkg.com/@types/d3-array/-/d3-array-2.9.0.tgz#fb6c3d7d7640259e68771cd90cc5db5ac1a1a012"
+  integrity sha512-sdBMGfNvLUkBypPMEhOcKcblTQfgHbqbYrUqRE31jOwdDHBJBxz4co2MDAq93S4Cp++phk4UiwoEg/1hK3xXAQ==
 
 "@types/d3-hierarchy@^2.0.0":
   version "2.0.0"
