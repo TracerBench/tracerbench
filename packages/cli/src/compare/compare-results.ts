@@ -26,6 +26,7 @@ export interface ICompareJSONResults {
   phaseTableData: ICompareJSONResult[];
   areResultsSignificant: boolean;
   isBelowRegressionThreshold: boolean;
+  regressionThresholdStat: string;
 }
 
 type PhaseResultsFormatted = Array<
@@ -218,11 +219,13 @@ export class CompareResults {
     const phaseTableData = this.phaseTableData;
     const areResultsSignificant = this.areResultsSignificant;
     const isBelowRegressionThreshold = this.isBelowRegressionThreshold;
+    const regressionThresholdStat = this.regressionThresholdStat;
     const jsonResults: ICompareJSONResults = {
       benchmarkTableData,
       phaseTableData,
       areResultsSignificant,
       isBelowRegressionThreshold,
+      regressionThresholdStat,
     };
     return JSON.stringify(jsonResults);
   }

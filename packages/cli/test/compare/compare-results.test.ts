@@ -28,7 +28,7 @@ const tableDataObj = {
   experimentSampleCount: 1,
   confidenceInterval: [[]],
   controlSevenFigureSummary: [{}],
-  experimentSevenFigureSummary: [{}],
+  experimentSevenFigureSummary: [{}]
 };
 
 /*
@@ -134,5 +134,6 @@ describe("compare-results stringifyJSON()", () => {
     expect(phaseTableData[0].phaseName).to.eq("jquery");
     expect(compareJSONResults.areResultsSignificant).to.be.true;
     expect(compareJSONResults.isBelowRegressionThreshold).to.be.false;
+    expect(compareJSONResults.regressionThresholdStat).to.eq("estimator");
   });
 });
