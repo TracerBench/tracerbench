@@ -6,6 +6,8 @@ import { roundFloatAndConvertMicrosecondsToMS } from "../src/utils";
 const stats = new Stats({ control: REGRESSION_RESULTS.control, experiment: REGRESSION_RESULTS.experiment, name: 'stats-regression-test' });
 // high variance with unit converter to MS
 const statsHighVarianceMS = new Stats({ control: HIGH_VARIANCE_RESULTS.control, experiment: HIGH_VARIANCE_RESULTS.experiment, name: 'stats-high-variance-test' }, roundFloatAndConvertMicrosecondsToMS);
+const statsHighVariance = new Stats({ control: HIGH_VARIANCE_RESULTS.control, experiment: HIGH_VARIANCE_RESULTS.experiment, name: 'stats-high-variance-test' });
+const statsMS = new Stats({ control: REGRESSION_RESULTS.control, experiment: REGRESSION_RESULTS.experiment, name: 'stats-regression-test' }, roundFloatAndConvertMicrosecondsToMS);
 
 // stats testing a regression experiment
 describe('stats', () => {
@@ -50,12 +52,28 @@ describe('stats', () => {
     // 0.000000001416
     expect(stats.confidenceInterval.pValue).to.equal(1.416e-9);
     expect(stats.confidenceInterval.U).to.equal(625);
+    expect(stats.confidenceInterval.asPercent.percentMin).to.equal(-2086);
+    expect(stats.confidenceInterval.asPercent.percentMedian).to.equal(-2083);
+    expect(stats.confidenceInterval.asPercent.percentMax).to.equal(-2081);
 
     // MS
+    expect(statsMS.confidenceInterval.asPercent.percentMin).to.equal(-2086);
+    expect(statsMS.confidenceInterval.asPercent.percentMedian).to.equal(-2083);
+    expect(statsMS.confidenceInterval.asPercent.percentMax).to.equal(-2081);
+
+    // HIGH VARIANCE MS
     expect(statsHighVarianceMS.confidenceInterval.min).to.equal(-95);
     expect(statsHighVarianceMS.confidenceInterval.max).to.equal(84);
     expect(statsHighVarianceMS.confidenceInterval.median).to.equal(-2);
     expect(statsHighVarianceMS.confidenceInterval.pValue).to.equal(0.967);
+    expect(statsHighVarianceMS.confidenceInterval.asPercent.percentMin).to.equal(-3.768);
+    expect(statsHighVarianceMS.confidenceInterval.asPercent.percentMedian).to.equal(-0.07933);
+    expect(statsHighVarianceMS.confidenceInterval.asPercent.percentMax).to.equal(3.332);
+
+    // HIGH VARIANCE
+    expect(statsHighVariance.confidenceInterval.asPercent.percentMin).to.equal(-3.768);
+    expect(statsHighVariance.confidenceInterval.asPercent.percentMedian).to.equal(-0.07933);
+    expect(statsHighVariance.confidenceInterval.asPercent.percentMax).to.equal(3.332);
   });
 
   it(`sevenFigureSummary()`, () => {

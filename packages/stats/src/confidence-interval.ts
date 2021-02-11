@@ -1,6 +1,7 @@
 import { median } from 'd3-array';
 import * as jStat from 'jstat';
 
+import type { IConfidenceInterval } from './stats';
 /**
  * Difference of x and y
  *
@@ -43,14 +44,7 @@ export function confidenceInterval(
   a: number[],
   b: number[],
   confidence: number
-): {
-  lower: number;
-  median: number;
-  upper: number;
-  U: number;
-  zScore: number;
-  pValue: number;
-} {
+): Omit<IConfidenceInterval, 'isSig'> {
   const aLength = a.length;
   const bLength = b.length;
   const maxU = aLength * bLength;
@@ -92,12 +86,21 @@ export function confidenceInterval(
     jStat.normal.inv(1 - alpha / 2, meanU + 0.5, standardDeviationU)
   );
 
+  // set percentage delta from control median
+  const aMedian = median(a) as number;
+  const medianDeltas = median(deltas) as number;
+
   return {
-    lower: deltas[lowerU],
-    median: median(deltas) ?? 0,
-    upper: deltas[upperU],
+    min: deltas[lowerU],
+    median: medianDeltas ?? 0,
+    max: deltas[upperU],
     zScore: +zScore.toPrecision(4),
     pValue: +pValue.toPrecision(4),
-    U
+    U,
+    asPercent: {
+      percentMin: +((deltas[lowerU] / aMedian) * 100).toPrecision(4),
+      percentMedian: +((medianDeltas / aMedian) * 100).toPrecision(4) ?? 0,
+      percentMax: +((deltas[upperU] / aMedian) * 100).toPrecision(4)
+    }
   };
 }
