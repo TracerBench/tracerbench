@@ -39,16 +39,21 @@ export interface IStatsOptions {
   confidenceLevel?: 0.8 | 0.85 | 0.9 | 0.95 | 0.99 | 0.995 | 0.999;
 }
 
+type IAsPercentage = {
+  percentMin: number;
+  percentMedian: number;
+  percentMax: number;
+};
+
 export type IConfidenceInterval = {
-  [key in string]: number | boolean;
-} & {
   min: number;
-  max: number;
-  isSig: boolean;
   median: number;
+  max: number;
   zScore: number;
+  isSig: boolean;
   pValue: number;
   U: number;
+  asPercent: IAsPercentage;
 };
 export class Stats {
   public readonly name: string;
@@ -161,7 +166,6 @@ export class Stats {
       control: this.getPopulationVariance(this.controlSorted),
       experiment: this.getPopulationVariance(this.experimentSorted)
     };
-
     // when passed will convert all units **after** statistical computation
     // its critical this happens after computation since we need to correctly handle ties
     if (unitConverterFn) {
@@ -296,21 +300,22 @@ export class Stats {
   ): IConfidenceInterval {
     const ci = confidenceInterval(control, experiment, confidenceLevel);
     const isCISig =
-      (ci.lower < 0 && 0 < ci.upper) ||
-      (ci.lower > 0 && 0 > ci.upper) ||
-      (ci.lower === 0 && ci.upper === 0)
+      (ci.min < 0 && 0 < ci.max) ||
+      (ci.min > 0 && 0 > ci.max) ||
+      (ci.min === 0 && ci.max === 0)
         ? false
         : true;
     // ci sign must match on lower and upper bounds and pValue < 5%
     const isSig = isCISig && ci.pValue < 0.05;
     return {
-      min: Math.round(Math.ceil(ci.lower * 100) / 100),
-      max: Math.round(Math.ceil(ci.upper * 100) / 100),
+      min: Math.round(Math.ceil(ci.min * 100) / 100),
+      max: Math.round(Math.ceil(ci.max * 100) / 100),
       isSig,
       median: ci.median,
       zScore: ci.zScore,
       pValue: ci.pValue,
-      U: ci.U
+      U: ci.U,
+      asPercent: ci.asPercent
     };
   }
 

@@ -54,7 +54,7 @@ describe('confidence-interval test', () => {
   // lower -17.598544903204015
   it(`confidenceInterval()`, () => {
     const ci = confidenceInterval(control, experiment, 0.95);
-    expect([ci.lower, ci.upper]).to.eqls([
+    expect([ci.min, ci.max]).to.eqls([
       -16.645916059851004,
       50.779366826444004
     ]);
