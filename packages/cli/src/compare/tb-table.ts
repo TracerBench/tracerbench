@@ -44,6 +44,7 @@ export default class TBTable {
         ],
         controlSevenFigureSummary: stat.sevenFigureSummary.control,
         experimentSevenFigureSummary: stat.sevenFigureSummary.experiment,
+        asPercent: stat.confidenceInterval.asPercent,
       });
 
       this.isSigArray.push(stat.confidenceInterval.isSig);

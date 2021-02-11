@@ -241,12 +241,8 @@ export default class Compare extends TBBaseCommand {
         `${this.parsedConfig.isCIEnv}`,
         `--regressionThresholdStat`,
         `${this.parsedConfig.regressionThresholdStat}`,
+        `--jsonReport`,
       ]);
-
-      writeJSONSync(
-        `${this.parsedConfig.tbResultsFolder}/report.json`,
-        this.analyzedJSONString
-      );
     }
 
     // if we want to run the CompareReport without calling a separate command

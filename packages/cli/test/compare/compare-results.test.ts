@@ -28,7 +28,8 @@ const tableDataObj = {
   experimentSampleCount: 1,
   confidenceInterval: [[]],
   controlSevenFigureSummary: [{}],
-  experimentSevenFigureSummary: [{}]
+  experimentSevenFigureSummary: [{}],
+  asPercent: {}
 };
 
 /*

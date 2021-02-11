@@ -1,3 +1,4 @@
+import type { IConfidenceInterval } from "@tracerbench/stats";
 import {
   convertMicrosecondsToMS,
   roundFloatAndConvertMicrosecondsToMS,
@@ -5,7 +6,6 @@ import {
 } from "@tracerbench/stats";
 
 import { md5sum } from "../helpers/utils";
-
 export interface ParsedTitleConfigs {
   servers: Array<{ name: string }>;
   plotTitle: string | undefined;
@@ -63,6 +63,7 @@ export interface HTMLSectionRenderData {
   experimentFormatedSamples: FormattedStatsSamples;
   frequency: Frequency;
   pValue: number;
+  asPercent: IConfidenceInterval["asPercent"];
 }
 
 type ValuesByPhase = {
@@ -226,6 +227,7 @@ export class GenerateStats {
       pValue: stats.confidenceInterval.pValue,
       hlDiff: stats.estimator,
       servers: undefined,
+      asPercent: stats.confidenceInterval.asPercent,
       frequency,
       controlFormatedSamples: {
         min: stats.sevenFigureSummary.control.min,

@@ -1,5 +1,8 @@
 /* eslint-disable no-case-declarations */
-import { IConfidenceInterval, ISevenFigureSummary } from "@tracerbench/stats";
+import type {
+  IConfidenceInterval,
+  ISevenFigureSummary,
+} from "@tracerbench/stats";
 import * as chalk from "chalk";
 
 import { fidelityLookup } from "../command-config";
@@ -19,6 +22,7 @@ export interface ICompareJSONResult {
   confidenceInterval: string[];
   controlSevenFigureSummary: ISevenFigureSummary;
   experimentSevenFigureSummary: ISevenFigureSummary;
+  asPercent: IConfidenceInterval["asPercent"];
 }
 
 export interface ICompareJSONResults {
@@ -32,7 +36,13 @@ export interface ICompareJSONResults {
 type PhaseResultsFormatted = Array<
   Pick<
     HTMLSectionRenderData,
-    "phase" | "hlDiff" | "isSignificant" | "ciMin" | "ciMax" | "pValue"
+    | "phase"
+    | "hlDiff"
+    | "isSignificant"
+    | "ciMin"
+    | "ciMax"
+    | "pValue"
+    | "asPercent"
   >
 >;
 
@@ -105,7 +115,15 @@ export class CompareResults {
     logHeading("Benchmark Results Summary", "log");
 
     this.phaseResultsFormatted.forEach((phaseData) => {
-      const { phase, hlDiff, isSignificant, ciMin, ciMax } = phaseData;
+      const {
+        phase,
+        hlDiff,
+        isSignificant,
+        ciMin,
+        ciMax,
+        asPercent,
+      } = phaseData;
+      const { percentMedian, percentMax, percentMin } = asPercent;
       let msg = `${chalk.bold(phase)} phase `;
       const estimatorISig = Math.abs(hlDiff) >= 1 ? true : false;
       // isSignificant comes from the confidence interval range and pValue NOT estimator
@@ -116,12 +134,20 @@ export class CompareResults {
 
         if (hlDiff < 0) {
           coloredDiff = chalk.red(
-            `+${Math.abs(hlDiff)}ms [${ciMax * -1}ms to ${ciMin * -1}ms]`
+            `+${Math.abs(hlDiff)}ms [${ciMax * -1}ms to ${
+              ciMin * -1
+            }ms] OR +${Math.abs(percentMedian)}% [${percentMax * -1}% to ${
+              percentMin * -1
+            }%]`
           );
           msg += `regression ${coloredDiff}`;
         } else {
           coloredDiff = chalk.green(
-            `-${Math.abs(hlDiff)}ms [${ciMax * -1}ms to ${ciMin * -1}ms]`
+            `-${Math.abs(hlDiff)}ms [${ciMax * -1}ms to ${
+              ciMin * -1
+            }ms] OR -${Math.abs(percentMedian)}% [${percentMax * -1}% to ${
+              percentMin * -1
+            }%]`
           );
           msg += `improvement ${coloredDiff}`;
         }
