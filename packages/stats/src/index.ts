@@ -1,5 +1,6 @@
 import { cartesianProduct, confidenceInterval } from './confidence-interval';
 import {
+  IAsPercentage,
   IConfidenceInterval,
   IOutliers,
   ISevenFigureSummary,
@@ -28,5 +29,6 @@ export {
   IOutliers,
   IStatsOptions,
   IConfidenceInterval,
-  roundFloatAndConvertMicrosecondsToMS
+  roundFloatAndConvertMicrosecondsToMS,
+  IAsPercentage
 };

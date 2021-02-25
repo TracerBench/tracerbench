@@ -39,7 +39,7 @@ export interface IStatsOptions {
   confidenceLevel?: 0.8 | 0.85 | 0.9 | 0.95 | 0.99 | 0.995 | 0.999;
 }
 
-type IAsPercentage = {
+export type IAsPercentage = {
   percentMin: number;
   percentMedian: number;
   percentMax: number;

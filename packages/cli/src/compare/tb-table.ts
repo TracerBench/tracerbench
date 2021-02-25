@@ -30,6 +30,21 @@ export default class TBTable {
   public getData(): ICompareJSONResult[] {
     const a: ICompareJSONResult[] = [];
     this.display.forEach((stat) => {
+      // flip min/max when negative number
+      // eg [max: 100, med: 80, min: 60]
+      // eg [max: -60, med: -40, min: -20]
+      const asPercent = {
+        percentMin:
+          stat.estimator * -1 < 0
+            ? stat.confidenceInterval.asPercent.percentMin * -1
+            : stat.confidenceInterval.asPercent.percentMax * -1,
+        percentMedian: stat.confidenceInterval.asPercent.percentMedian * -1,
+        percentMax:
+          stat.estimator * -1 < 0
+            ? stat.confidenceInterval.asPercent.percentMax * -1
+            : stat.confidenceInterval.asPercent.percentMin * -1,
+      };
+
       a.push({
         heading: this.heading,
         phaseName: stat.name,
@@ -44,7 +59,7 @@ export default class TBTable {
         ],
         controlSevenFigureSummary: stat.sevenFigureSummary.control,
         experimentSevenFigureSummary: stat.sevenFigureSummary.experiment,
-        asPercent: stat.confidenceInterval.asPercent,
+        asPercent,
       });
 
       this.isSigArray.push(stat.confidenceInterval.isSig);

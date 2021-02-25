@@ -1,5 +1,6 @@
 /* eslint-disable no-case-declarations */
 import type {
+  IAsPercentage,
   IConfidenceInterval,
   ISevenFigureSummary,
 } from "@tracerbench/stats";
@@ -22,7 +23,7 @@ export interface ICompareJSONResult {
   confidenceInterval: string[];
   controlSevenFigureSummary: ISevenFigureSummary;
   experimentSevenFigureSummary: ISevenFigureSummary;
-  asPercent: IConfidenceInterval["asPercent"];
+  asPercent: IAsPercentage;
 }
 
 export interface ICompareJSONResults {

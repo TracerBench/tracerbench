@@ -133,8 +133,12 @@ describe("compare-results stringifyJSON()", () => {
     expect(benchmarkTableData.phaseName).to.eq("duration");
     expect(benchmarkTableData.estimatorDelta).to.eq("999ms");
     expect(phaseTableData[0].phaseName).to.eq("jquery");
+
     expect(compareJSONResults.areResultsSignificant).to.be.true;
     expect(compareJSONResults.isBelowRegressionThreshold).to.be.false;
     expect(compareJSONResults.regressionThresholdStat).to.eq("estimator");
+    expect(compareJSONResults.benchmarkTableData[0].asPercent.percentMin).to.eq(322.8);
+    expect(compareJSONResults.benchmarkTableData[0].asPercent.percentMedian).to.eq(323.7);
+    expect(compareJSONResults.benchmarkTableData[0].asPercent.percentMax).to.eq(324.4);
   });
 });
