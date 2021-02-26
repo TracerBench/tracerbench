@@ -52,7 +52,6 @@ export async function recordHARClient(
     }
   };
   const screenshotData: Screenshot[] = [];
-
   const browserArgs = getBrowserArgs(altBrowserArgs);
   const browser = await createBrowser(browserArgs, headless);
   try {
@@ -96,7 +95,12 @@ export async function recordHARClient(
 
     // set cookies
     await setCookies(chrome, cookies);
+
+    // navigate to the url
+    await chrome.send('Page.navigate', { url });
     // add performance observer script to eval
+    // custom marker to extend past loadEventFired
+    // window.performance.getEntries()
     await chrome.send('Page.addScriptToEvaluateOnNewDocument', {
       source: `
         self.__TBMarkerPromise = new Promise(resolve => {
@@ -108,9 +112,8 @@ export async function recordHARClient(
         observer.observe({ entryTypes: ["mark", "navigation"] });
         });`
     });
-
-    // navigate to the url
-    await chrome.send('Page.navigate', { url });
+    // default is loadEventFired
+    await chrome.until('Page.loadEventFired');
 
     // eval
     const evalPromise = chrome.send('Runtime.evaluate', {
@@ -130,7 +133,6 @@ export async function recordHARClient(
       if (timeoutId) {
         clearTimeout(timeoutId);
       }
-      debugCallback('evalPromise resolved with marker %o', marker);
     });
 
     // screenshot app
@@ -138,7 +140,6 @@ export async function recordHARClient(
       const appScreenshot = await chrome.send('Page.captureScreenshot');
       screenshotData.push({ data: appScreenshot.data, name: 'app' });
     }
-
     archive.log.entries = await processEntriesLoop(chrome);
 
     await Promise.all([
