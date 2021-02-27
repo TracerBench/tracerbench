@@ -9,6 +9,7 @@ export type {
   SaveTraceAsFn
 } from './create-trace-benchmark';
 export { default as createTraceNavigationBenchmark } from './create-trace-navigation-benchmark';
+export { default as createLighthouseBenchmark } from './create-lighthouse-benchmark';
 export type {
   Marker,
   NavigationBenchmarkOptions

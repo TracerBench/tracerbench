@@ -49,6 +49,7 @@
     "devtools-protocol": "^0.0.839267",
     "fs-extra": "^9.0.1",
     "handlebars": "^4.7.6",
+    "lighthouse": "^7.2.0",
     "lodash.clonedeep": "^4.5.0",
     "race-cancellation": "^0.4.1",
     "silent-error": "^1.1.1",
