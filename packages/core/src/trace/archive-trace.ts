@@ -140,7 +140,8 @@ export async function recordHARClient(
       const appScreenshot = await chrome.send('Page.captureScreenshot');
       screenshotData.push({ data: appScreenshot.data, name: 'app' });
     }
-    archive.log.entries = await processEntriesLoop(chrome);
+
+    archive.log.entries = await processEntriesLoop(chrome, url);
 
     await Promise.all([
       chrome.send('Network.disable'),
@@ -168,7 +169,8 @@ export async function recordHARClient(
 }
 
 export async function processEntriesLoop(
-  chrome: SessionConnection
+  chrome: SessionConnection,
+  entryURL: string
 ): Promise<Entry[]> {
   debugCallback(
     'processEntriesLoop() %o',
@@ -180,7 +182,11 @@ export async function processEntriesLoop(
   networkRequestStacks.stackA = [];
 
   // process B and empty
-  networkEntries = await processEntries(networkRequestStacks.stackB, chrome);
+  networkEntries = await processEntries(
+    networkRequestStacks.stackB,
+    chrome,
+    entryURL
+  );
   networkRequestStacks.stackB = [];
 
   // check A for new entries
@@ -191,7 +197,9 @@ export async function processEntriesLoop(
       `${networkRequestStacks.stackA.length} entries`
     );
 
-    networkEntries = networkEntries.concat(await processEntriesLoop(chrome));
+    networkEntries = networkEntries.concat(
+      await processEntriesLoop(chrome, entryURL)
+    );
   }
 
   return networkEntries;
@@ -199,10 +207,12 @@ export async function processEntriesLoop(
 
 export async function processEntries(
   networkRequests: Protocol.Network.ResponseReceivedEvent[],
-  chrome: SessionConnection
+  chrome: SessionConnection,
+  entryURL: string
 ): Promise<Entry[]> {
   debugCallback('processEntries()');
-  const entries = [];
+  let entries = [];
+
   for (let i = 0; i < networkRequests.length; i++) {
     debugCallback('processEntries.entry %o', networkRequests[i].response.url);
     const { requestId, response } = networkRequests[i];
@@ -216,6 +226,7 @@ export async function processEntries(
       mimeType,
       protocol
     } = response;
+
     const entry: Entry = {
       time: 0,
       cache: {},
@@ -242,7 +253,8 @@ export async function processEntries(
         httpVersion: protocol || '',
         cookies: [],
         headers: handleHeaders(headers),
-        redirectURL: '',
+        redirectURL:
+          url.split('?', 1)[0] === entryURL.split('?', 1)[0] ? entryURL : '',
         headersSize: 0,
         bodySize: 0,
         content: {
@@ -255,6 +267,36 @@ export async function processEntries(
 
     entries.push(entry);
   }
+
+  entries = handleRedirectContent(entries, entryURL);
+
+  return entries;
+}
+
+// handles usecase when a seperate har entry from a redirect contains the html
+function handleRedirectContent(entries: Entry[], entryURL: string): Entry[] {
+  let counter = 0;
+  let redirectContent;
+
+  entries.forEach((entry, i) => {
+    // grab entry if its the same the the HAR url and the content text is empty
+    if (entry.request.url === entryURL && !entry.response.content.text) {
+      counter = i;
+    }
+
+    // grab the redirect content
+    if (
+      entry.response.redirectURL.length > 0 &&
+      entry.request.url !== entryURL
+    ) {
+      redirectContent = entry.response.content;
+    }
+  });
+
+  // if there isn't redirect content then keep the content as is otherwise set
+  entries[counter].response.content = !redirectContent
+    ? entries[counter].response.content
+    : redirectContent;
 
   return entries;
 }
