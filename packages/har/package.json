@@ -1,6 +1,6 @@
 {
   "name": "@tracerbench/har",
-  "version": "5.3.3",
+  "version": "5.3.4",
   "description": "HAR json typescript interfaces",
   "keywords": [
     "har",
