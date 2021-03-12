@@ -109,7 +109,7 @@ export class CompareResults {
     }
   }
 
-  // generate the summary section for the results
+  // generate the summary section for the results in the terminal
   // for each phase, color the significance appropriately by the HL estimated difference.
   // red for regression, green for improvement. Color with monotone if not significant.
   private logStatSummaryReport(): void {

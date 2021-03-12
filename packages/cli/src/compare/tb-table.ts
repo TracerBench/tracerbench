@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 import type { Stats } from "@tracerbench/stats";
 import * as chalk from "chalk";
 import * as Table from "cli-table3";
@@ -10,7 +11,7 @@ export default class TBTable {
   public display: Stats[];
   public estimatorDeltas: number[];
   public isSigArray: boolean[];
-  private heading: string;
+  public heading: string;
 
   constructor(heading: string) {
     this.heading = heading;
@@ -30,20 +31,11 @@ export default class TBTable {
   public getData(): ICompareJSONResult[] {
     const a: ICompareJSONResult[] = [];
     this.display.forEach((stat) => {
-      // flip min/max when negative number
-      // eg [max: 100, med: 80, min: 60]
-      // eg [max: -60, med: -40, min: -20]
-      const asPercent = {
-        percentMin:
-          stat.estimator * -1 < 0
-            ? stat.confidenceInterval.asPercent.percentMin * -1
-            : stat.confidenceInterval.asPercent.percentMax * -1,
-        percentMedian: stat.confidenceInterval.asPercent.percentMedian * -1,
-        percentMax:
-          stat.estimator * -1 < 0
-            ? stat.confidenceInterval.asPercent.percentMax * -1
-            : stat.confidenceInterval.asPercent.percentMin * -1,
-      };
+      // flip signs in view as regression is pos (slower) and improvement is neg (faster)
+      let [percentMin, percentMedian, percentMax] = Array.from(
+        Object.values(stat.confidenceInterval.asPercent),
+        (stat) => stat * -1
+      );
 
       a.push({
         heading: this.heading,
@@ -59,7 +51,11 @@ export default class TBTable {
         ],
         controlSevenFigureSummary: stat.sevenFigureSummary.control,
         experimentSevenFigureSummary: stat.sevenFigureSummary.experiment,
-        asPercent,
+        asPercent: {
+          percentMin: percentMax,
+          percentMedian,
+          percentMax: percentMin,
+        },
       });
 
       this.isSigArray.push(stat.confidenceInterval.isSig);

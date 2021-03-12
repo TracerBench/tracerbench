@@ -127,6 +127,7 @@ describe("compare-results stringifyJSON()", () => {
 
     const benchmarkTableData = compareJSONResults.benchmarkTableData[0];
     const phaseTableData = compareJSONResults.phaseTableData;
+
     // benchmark table data
     expect(benchmarkTableData).to.have.all.keys(tableDataObj);
     expect(benchmarkTableData.isSignificant).to.be.true;
@@ -137,8 +138,11 @@ describe("compare-results stringifyJSON()", () => {
     expect(compareJSONResults.areResultsSignificant).to.be.true;
     expect(compareJSONResults.isBelowRegressionThreshold).to.be.false;
     expect(compareJSONResults.regressionThresholdStat).to.eq("estimator");
+    // lower eg -5 | 2 | 0
     expect(compareJSONResults.benchmarkTableData[0].asPercent.percentMin).to.eq(322.8);
+    // middle eg -3 | 5 | 2
     expect(compareJSONResults.benchmarkTableData[0].asPercent.percentMedian).to.eq(323.7);
+    // upper eg 2 | 10 | 3
     expect(compareJSONResults.benchmarkTableData[0].asPercent.percentMax).to.eq(324.4);
   });
 });
