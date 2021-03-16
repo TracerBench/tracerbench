@@ -36,4 +36,4 @@ ALIASES
   $ tracerbench trace
 ```
 
-_See code: [dist/src/commands/profile.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v5.3.5/dist/src/commands/profile.ts)_
+_See code: [dist/src/commands/profile.ts](https://github.com/TracerBench/tracerbench/tree/master/packages/cli/blob/v5.3.6/dist/src/commands/profile.ts)_
