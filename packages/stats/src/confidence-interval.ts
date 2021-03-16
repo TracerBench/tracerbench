@@ -2,6 +2,7 @@ import { median } from 'd3-array';
 import * as jStat from 'jstat';
 
 import type { IConfidenceInterval } from './stats';
+import { toNearestHundreth } from './utils';
 /**
  * Difference of x and y
  *
@@ -98,9 +99,9 @@ export function confidenceInterval(
     pValue: +pValue.toPrecision(4),
     U,
     asPercent: {
-      percentMin: +((deltas[lowerU] / aMedian) * 100).toPrecision(4),
-      percentMedian: +((medianDeltas / aMedian) * 100).toPrecision(4) ?? 0,
-      percentMax: +((deltas[upperU] / aMedian) * 100).toPrecision(4)
+      percentMin: toNearestHundreth((deltas[lowerU] / aMedian) * 100),
+      percentMedian: toNearestHundreth((medianDeltas / aMedian) * 100) ?? 0,
+      percentMax: toNearestHundreth((deltas[upperU] / aMedian) * 100)
     }
   };
 }

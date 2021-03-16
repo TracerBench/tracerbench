@@ -144,7 +144,7 @@ export class Stats {
       this.experimentSorted,
       confidenceLevel
     );
-    this.estimator = Math.round(
+    this.estimator = toNearestHundreth(
       this.getHodgesLehmann(this.controlSorted, this.experimentSorted) as number
     );
     this.sevenFigureSummary = {
