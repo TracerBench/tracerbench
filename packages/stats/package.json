@@ -21,7 +21,7 @@
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "scripts": {
-    "lint": "eslint -c .eslintrc.js --ext .ts .",
+    "lint": "eslint -c .eslintrc.js --fix --ext .ts .",
     "test": "yarn lint && nyc --extension .ts mocha \"test/*.test.ts\"",
     "build": "rm -rf ./dist && tsc -b && yarn lint",
     "watch": "tsc -b -w",

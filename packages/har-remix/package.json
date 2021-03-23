@@ -19,7 +19,7 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "lint": "eslint -c .eslintrc.js --ext .ts .",
+    "lint": "eslint -c .eslintrc.js --fix --ext .ts .",
     "prepare": "tsc",
     "test": "echo \"TODO add tests for har-remix\""
   },
