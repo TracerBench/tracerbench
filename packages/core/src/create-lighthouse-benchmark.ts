@@ -2,7 +2,6 @@ import { Marker, NavigationBenchmarkOptions } from "./create-trace-navigation-be
 import { NavigationSample, PhaseSample } from "./metrics/extract-navigation-sample";
 import { Benchmark, BenchmarkSampler } from "./run";
 import lighthouse from "lighthouse";
-import { writeFileSync } from "fs";
 
 import { launch, LaunchedChrome } from "chrome-launcher";
 import { RaceCancellation } from "race-cancellation";
@@ -35,12 +34,9 @@ class LighthouseSampler implements BenchmarkSampler<NavigationSample> {
         _isTrial: boolean,
         _raceCancellation: RaceCancellation
     ): Promise<NavigationSample> {
-        const runnerResult = await lighthouse(this.url, { formFactor: 'desktop', screenEmulation: { mobile: false }, logLevel: 'error', output: 'html', onlyCategories: ['performance'], port: this.chrome.port });
+        const runnerResult = await lighthouse(this.url, { formFactor: 'desktop', screenEmulation: { mobile: false, width: 1366, height: 768 }, logLevel: 'error', output: 'html', onlyCategories: ['performance'], port: this.chrome.port });
 
         runnerResult.lhr.categories
-
-        const reportHtml = runnerResult.report;
-        writeFileSync('lhreport.html', reportHtml);
 
         const phases: PhaseSample[] = [
             "first-contentful-paint",
