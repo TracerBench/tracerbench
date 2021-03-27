@@ -1,4 +1,7 @@
 {
+  "compilerOptions": {
+    "types": [],
+  },
   "files": [], // container only
   "references": [
     {

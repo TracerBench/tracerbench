@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "types": [],
     "composite": true,
     "declaration": true,
     "declarationMap": true,

@@ -9,6 +9,7 @@
     "paths": {
       "*": ["types/*"]
     },
+    "types": [],
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
