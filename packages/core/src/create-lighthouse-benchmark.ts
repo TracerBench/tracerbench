@@ -1,4 +1,5 @@
 import { launch, LaunchedChrome } from 'chrome-launcher';
+import { writeFileSync } from 'fs';
 import lighthouse from 'lighthouse';
 import { RaceCancellation } from 'race-cancellation';
 
@@ -26,7 +27,12 @@ class LighthouseSampler implements BenchmarkSampler<NavigationSample> {
   ): Promise<NavigationSample> {
     const runnerResult = await lighthouse(this.url, {
       formFactor: 'desktop',
-      screenEmulation: { mobile: false, width: 1366, height: 768 },
+      screenEmulation: {
+        mobile: false,
+        width: 1366,
+        height: 768,
+        deviceScaleFactor: 1
+      },
       logLevel: 'error',
       output: 'html',
       onlyCategories: ['performance'],
@@ -34,6 +40,16 @@ class LighthouseSampler implements BenchmarkSampler<NavigationSample> {
     });
 
     runnerResult.lhr.categories;
+
+    const namePrefix = `tracerbench-results/${new URL(this.url).host.replace(
+      ':',
+      '_'
+    )}`;
+    writeFileSync(`${namePrefix}_lighthouse_report.html`, runnerResult.report);
+    writeFileSync(
+      `${namePrefix}_performance_profile.json`,
+      JSON.stringify(runnerResult.artifacts)
+    );
 
     const phases: PhaseSample[] = [
       'first-contentful-paint',
