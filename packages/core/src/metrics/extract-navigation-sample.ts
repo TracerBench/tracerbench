@@ -2,6 +2,7 @@ import { TraceEventArgs, TraceMetadata } from '@tracerbench/trace-event';
 import {
   CompleteEventModel,
   EventModel,
+  InstantEventModel,
   MarkEventModel,
   TraceModel
 } from '@tracerbench/trace-model';
@@ -40,15 +41,17 @@ interface NavigationStartArgs
     UserTimingMarkArgs {}
 
 function findPhases(events: EventModel[], markers: Marker[]): PhaseSample[] {
-  const phaseEvents: MarkEventModel[] = [];
+  const phaseEvents: MarkEventModel[] | InstantEventModel[] = [];
   let eventIdx = 0;
   let navigationStartArgs: NavigationStartArgs | undefined;
   // for each marker scan forward in the events to find it
   for (const marker of markers) {
-    let markEvent: MarkEventModel | undefined;
+    let markEvent: MarkEventModel | InstantEventModel | undefined;
+    // let markEvent: MarkEventModel | InstantEventModel | undefined;
     for (; eventIdx < events.length; eventIdx++) {
       const event = events[eventIdx];
-      if (event.isMark()) {
+      // Chrome 90 change of phase event from R to I for navigationStart
+      if (event.isMark() || event.isInstant()) {
         if (navigationStartArgs === undefined) {
           if (event.name === 'navigationStart') {
             if (event.args === undefined) {

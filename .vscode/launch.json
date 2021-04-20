@@ -1,6 +1,7 @@
 {
   "version": "0.2.0",
-  "configurations": [{
+  "configurations": [
+    {
       "name": "Test PP",
       "type": "node",
       "request": "launch",
@@ -38,7 +39,7 @@
       "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
       "args": [
         "--no-timeout",
-        "${workspaceFolder}/packages/cli/test/commands/**/*.test.ts",
+        "${workspaceFolder}/packages/cli/test/commands/**/*.test.ts"
       ],
       "sourceMaps": true,
       "cwd": "${workspaceFolder}/packages/cli",
@@ -54,7 +55,7 @@
       "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
       "args": [
         "--no-timeout",
-        "${workspaceFolder}/packages/cli/test/helpers/**/*.test.ts",
+        "${workspaceFolder}/packages/cli/test/helpers/**/*.test.ts"
       ],
       "sourceMaps": true,
       "cwd": "${workspaceFolder}/packages/cli",
@@ -123,6 +124,19 @@
       "env": {
         "TS_NODE_IGNORE": "false"
       }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Core",
+      "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+      "runtimeArgs": ["--nolazy", "-r", "ts-node/register"],
+      "args": ["--no-timeout", "${workspaceFolder}/packages/core/test/test.ts"],
+      "sourceMaps": true,
+      "cwd": "${workspaceFolder}/packages/core",
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen",
+      "protocol": "inspector"
     }
   ]
 }
