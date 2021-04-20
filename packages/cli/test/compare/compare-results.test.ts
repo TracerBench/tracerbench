@@ -3,11 +3,11 @@ import { readJsonSync } from "fs-extra";
 import {
   GenerateStats,
   ITracerBenchTraceResult,
-  ParsedTitleConfigs,
+  ParsedTitleConfigs
 } from "../../src/compare/generate-stats";
 import {
   CompareResults,
-  ICompareJSONResults,
+  ICompareJSONResults
 } from "../../src/compare/compare-results";
 
 import { COMPARE_JSON } from "../test-helpers";
@@ -15,7 +15,7 @@ import { COMPARE_JSON } from "../test-helpers";
 const REPORT_TITLES: ParsedTitleConfigs = {
   servers: [],
   plotTitle: "Foo Title",
-  browserVersion: "1.2.3",
+  browserVersion: "1.2.3"
 };
 
 const tableDataObj = {
@@ -52,7 +52,11 @@ const DEFAULT_REGRESSION_THRESHOLD = 50;
 const CONTROL_DATA: ITracerBenchTraceResult = readJsonSync(COMPARE_JSON)[0];
 const EXPERIMENT_DATA: ITracerBenchTraceResult = readJsonSync(COMPARE_JSON)[1];
 const stats = new GenerateStats(CONTROL_DATA, EXPERIMENT_DATA, REPORT_TITLES);
-const compareResults = new CompareResults(stats, 20, DEFAULT_REGRESSION_THRESHOLD);
+const compareResults = new CompareResults(
+  stats,
+  20,
+  DEFAULT_REGRESSION_THRESHOLD
+);
 
 describe("compare-results anyResultsSignificant()", () => {
   const truthyArr = [true, true, false];
@@ -98,22 +102,42 @@ describe("compare-results allBelowRegressionThreshold()", () => {
     compareResults.regressionThreshold = DEFAULT_REGRESSION_THRESHOLD;
   });
   it(`regression is below threshold : regressionThresholdStatistic : ci-lower`, () => {
-    const compareResultsCILower = new CompareResults(stats, 20, 1002, "ci-lower");
+    const compareResultsCILower = new CompareResults(
+      stats,
+      20,
+      1002,
+      "ci-lower"
+    );
     const isBelowThresholdCILower = compareResultsCILower.allBelowRegressionThreshold();
     expect(isBelowThresholdCILower).to.be.true;
   });
   it(`regression is above threshold : regressionThresholdStatistic : ci-lower`, () => {
-    const compareResultsCILower = new CompareResults(stats, 20, 995, "ci-lower");
+    const compareResultsCILower = new CompareResults(
+      stats,
+      20,
+      995,
+      "ci-lower"
+    );
     const isBelowThresholdCILower = compareResultsCILower.allBelowRegressionThreshold();
     expect(isBelowThresholdCILower).to.be.false;
   });
   it(`regression is below threshold : regressionThresholdStatistic : ci-upper`, () => {
-    const compareResultsCIUpper = new CompareResults(stats, 20, 1100, "ci-upper");
+    const compareResultsCIUpper = new CompareResults(
+      stats,
+      20,
+      1100,
+      "ci-upper"
+    );
     const isBelowThresholdCIUpper = compareResultsCIUpper.allBelowRegressionThreshold();
     expect(isBelowThresholdCIUpper).to.be.true;
   });
   it(`regression is above threshold : regressionThresholdStatistic : ci-upper`, () => {
-    const compareResultsCIUpper = new CompareResults(stats, 20, 1000, "ci-upper");
+    const compareResultsCIUpper = new CompareResults(
+      stats,
+      20,
+      1000,
+      "ci-upper"
+    );
     const isBelowThresholdCIUpper = compareResultsCIUpper.allBelowRegressionThreshold();
     expect(isBelowThresholdCIUpper).to.be.false;
   });
@@ -139,10 +163,16 @@ describe("compare-results stringifyJSON()", () => {
     expect(compareJSONResults.isBelowRegressionThreshold).to.be.false;
     expect(compareJSONResults.regressionThresholdStat).to.eq("estimator");
     // lower eg -5 | 2 | 0
-    expect(compareJSONResults.benchmarkTableData[0].asPercent.percentMin).to.eq(322.8);
+    expect(compareJSONResults.benchmarkTableData[0].asPercent.percentMin).to.eq(
+      322.77
+    );
     // middle eg -3 | 5 | 2
-    expect(compareJSONResults.benchmarkTableData[0].asPercent.percentMedian).to.eq(323.7);
+    expect(
+      compareJSONResults.benchmarkTableData[0].asPercent.percentMedian
+    ).to.eq(323.68);
     // upper eg 2 | 10 | 3
-    expect(compareJSONResults.benchmarkTableData[0].asPercent.percentMax).to.eq(324.4);
+    expect(compareJSONResults.benchmarkTableData[0].asPercent.percentMax).to.eq(
+      324.38
+    );
   });
 });

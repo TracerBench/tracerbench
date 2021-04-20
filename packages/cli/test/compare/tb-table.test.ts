@@ -68,9 +68,9 @@ describe("tb-table", () => {
     expect(tableData.length).to.equal(4);
     // not a regression
     expect(tableData[0].phaseName).to.equal("stats-high-variance-ms-test");
-    expect(tableData[0].asPercent.percentMin).to.equal(-3.332);
-    expect(tableData[0].asPercent.percentMedian).to.equal(0.07933);
-    expect(tableData[0].asPercent.percentMax).to.equal(3.768);
+    expect(tableData[0].asPercent.percentMin).to.equal(-3.33);
+    expect(tableData[0].asPercent.percentMedian).to.equal(0.08);
+    expect(tableData[0].asPercent.percentMax).to.equal(3.77);
     expect(tableData[0].estimatorDelta).to.equal("2ms");
     expect(tableData[0].pValue).to.equal(0.967);
     expect(tableData[0].confidenceInterval[0]).to.equal("-84ms");
@@ -78,7 +78,7 @@ describe("tb-table", () => {
     expect(tableData[0].isSignificant).to.be.false;
     // regression
     expect(tableData[1].phaseName).to.equal("stats-regression-ms-test");
-    expect(tableData[1].asPercent.percentMin).to.equal(2081);
+    expect(tableData[1].asPercent.percentMin).to.equal(2081.14);
     expect(tableData[1].asPercent.percentMedian).to.equal(2083);
     expect(tableData[1].asPercent.percentMax).to.equal(2086);
     expect(tableData[1].estimatorDelta).to.equal("1080ms");

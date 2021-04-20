@@ -76,14 +76,14 @@ describe('stats', () => {
     expect(stats.confidenceInterval.U).to.equal(625);
     expect(stats.confidenceInterval.asPercent.percentMin).to.equal(-2086.2);
     expect(stats.confidenceInterval.asPercent.percentMedian).to.equal(-2083.26);
-    expect(stats.confidenceInterval.asPercent.percentMax).to.equal(-2081.14);
+    expect(stats.confidenceInterval.asPercent.percentMax).to.equal(-2081);
 
     // MS
     expect(statsMS.confidenceInterval.asPercent.percentMin).to.equal(-2086.2);
     expect(statsMS.confidenceInterval.asPercent.percentMedian).to.equal(
       -2083.26
     );
-    expect(statsMS.confidenceInterval.asPercent.percentMax).to.equal(-2081.14);
+    expect(statsMS.confidenceInterval.asPercent.percentMax).to.equal(-2081);
 
     // HIGH VARIANCE MS
     expect(statsHighVarianceMS.confidenceInterval.min).to.equal(-95);
