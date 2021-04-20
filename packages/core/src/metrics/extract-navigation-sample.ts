@@ -47,7 +47,6 @@ function findPhases(events: EventModel[], markers: Marker[]): PhaseSample[] {
   // for each marker scan forward in the events to find it
   for (const marker of markers) {
     let markEvent: MarkEventModel | InstantEventModel | undefined;
-    // let markEvent: MarkEventModel | InstantEventModel | undefined;
     for (; eventIdx < events.length; eventIdx++) {
       const event = events[eventIdx];
       // Chrome 90 change of phase event from R to I for navigationStart
