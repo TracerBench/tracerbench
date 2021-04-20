@@ -79,8 +79,8 @@ describe("tb-table", () => {
     // regression
     expect(tableData[1].phaseName).to.equal("stats-regression-ms-test");
     expect(tableData[1].asPercent.percentMin).to.equal(2081.14);
-    expect(tableData[1].asPercent.percentMedian).to.equal(2083);
-    expect(tableData[1].asPercent.percentMax).to.equal(2086);
+    expect(tableData[1].asPercent.percentMedian).to.equal(2083.26);
+    expect(tableData[1].asPercent.percentMax).to.equal(2086.2);
     expect(tableData[1].estimatorDelta).to.equal("1080ms");
     expect(tableData[1].pValue).to.equal(1.416e-9);
     expect(tableData[1].confidenceInterval[0]).to.equal("1078ms");
@@ -88,9 +88,9 @@ describe("tb-table", () => {
     expect(tableData[1].isSignificant).to.be.true;
     // on-the-line
     expect(tableData[2].phaseName).to.equal("stats-on-line-ms-test");
-    expect(tableData[2].asPercent.percentMin).to.equal(-1.149);
-    expect(tableData[2].asPercent.percentMedian).to.equal(-0.2712);
-    expect(tableData[2].asPercent.percentMax).to.equal(0.586);
+    expect(tableData[2].asPercent.percentMin).to.equal(-1.15);
+    expect(tableData[2].asPercent.percentMedian).to.equal(-0.27);
+    expect(tableData[2].asPercent.percentMax).to.equal(0.59);
     expect(tableData[2].estimatorDelta).to.equal("-7ms");
     expect(tableData[2].pValue).to.equal(0.4778);
     expect(tableData[2].confidenceInterval[0]).to.equal("-29ms");
@@ -98,9 +98,9 @@ describe("tb-table", () => {
     expect(tableData[2].isSignificant).to.be.false;
     // improvement
     expect(tableData[3].phaseName).to.equal("stats-improvement-ms-test");
-    expect(tableData[3].asPercent.percentMin).to.equal(-4.138);
-    expect(tableData[3].asPercent.percentMedian).to.equal(-3.144);
-    expect(tableData[3].asPercent.percentMax).to.equal(-1.868);
+    expect(tableData[3].asPercent.percentMin).to.equal(-4.14);
+    expect(tableData[3].asPercent.percentMedian).to.equal(-3.14);
+    expect(tableData[3].asPercent.percentMax).to.equal(-1.87);
     expect(tableData[3].estimatorDelta).to.equal("-90ms");
     expect(tableData[3].pValue).to.equal(0.00000177);
     expect(tableData[3].confidenceInterval[0]).to.equal("-118ms");
