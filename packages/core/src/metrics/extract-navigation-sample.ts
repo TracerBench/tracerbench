@@ -41,7 +41,7 @@ interface NavigationStartArgs
     UserTimingMarkArgs {}
 
 function findPhases(events: EventModel[], markers: Marker[]): PhaseSample[] {
-  const phaseEvents: MarkEventModel[] | InstantEventModel[] = [];
+  const phaseEvents: Array<MarkEventModel | InstantEventModel> = [];
   let eventIdx = 0;
   let navigationStartArgs: NavigationStartArgs | undefined;
   // for each marker scan forward in the events to find it
