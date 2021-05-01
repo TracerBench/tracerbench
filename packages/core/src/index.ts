@@ -21,7 +21,14 @@ export type {
   PhaseSample
 } from './metrics/extract-navigation-sample';
 export type { PageSetupOptions } from './util/setup-page';
+export { default as setupPage } from './util/setup-page';
+export { default as injectMarkObserver } from './util/inject-mark-observer';
+export { default as navigate } from './util/navigate';
+export type { UsingTracingCallback } from './util/run-trace';
+export { default as runTrace } from './util/run-trace';
+export { default as gc } from './util/gc';
 export { default as run } from './run';
+
 export type {
   Benchmark,
   BenchmarkSampler,
