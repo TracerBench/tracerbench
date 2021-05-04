@@ -30,7 +30,6 @@ export type {
   RunOptions
 } from './run';
 export {
-  liveTrace,
   networkConditions,
   getBrowserArgs,
   IConditions,
