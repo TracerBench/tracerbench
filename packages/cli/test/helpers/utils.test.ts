@@ -1,55 +1,14 @@
 import {
-  findFrame,
-  isCommitLoad,
-  isFrameNavigationStart,
   convertMSToMicroseconds,
   mergeLeft,
   parseMarkers,
-  secondsToTime,
+  secondsToTime
 } from "../../src/helpers/utils";
 import { expect } from "chai";
-import {
-  TraceEvent,
-  Constants,
-  CompleteTraceEvent,
-} from "@tracerbench/trace-event";
 
-const event: CompleteTraceEvent = {
-  ph: Constants.TRACE_EVENT_PHASE_COMPLETE,
-  name: "CommitLoad",
-  pid: 0,
-  tid: 0,
-  ts: 0,
-  dur: 0,
-  cat: "",
-  args: {
-    data: {
-      frame: "FRAME",
-      url: "https://www.tracerbench.com",
-      isMainFrame: true,
-    },
-  },
-};
-const events: TraceEvent[] = [event];
-const url = "https://www.tracerbench.com";
-const frame = findFrame(events, url);
-const isLoad = isCommitLoad(event);
-const isFrameMark = isFrameNavigationStart(frame, event, url);
 const micro = convertMSToMicroseconds(`-100ms`);
 
 describe("utils", () => {
-  it(`findFrame()`, () => {
-    expect(frame).to.equal("FRAME");
-  });
-
-  it(`isCommitLoad()`, () => {
-    expect(isLoad).to.equal(true);
-  });
-
-  it(`isFrameNavigationStart()`, () => {
-    expect(isFrameMark).to.equal(false);
-  });
-
   it(`convertMSToMicroseconds()`, () => {
     expect(micro).to.equal(-100000);
   });
@@ -58,12 +17,12 @@ describe("utils", () => {
     expect(parseMarkers("navigationStart,domComplete")).to.deep.equal([
       {
         start: "navigationStart",
-        label: "domComplete",
+        label: "domComplete"
       },
       {
         start: "domComplete",
-        label: "paint",
-      },
+        label: "paint"
+      }
     ]);
   });
 });
@@ -78,8 +37,8 @@ describe("mergeLeft", () => {
       shouldStaySame: "same",
       shouldBeNullAfter: "not null",
       objectMerge: {
-        value: 0,
-      },
+        value: 0
+      }
     };
     const toMerge = {
       list: [5],
@@ -89,8 +48,8 @@ describe("mergeLeft", () => {
       shouldBeNullAfter: null,
       objectMerge: {
         value: 2,
-        newValue: 1,
-      },
+        newValue: 1
+      }
     };
     const result = mergeLeft(destination, toMerge);
 
@@ -101,7 +60,7 @@ describe("mergeLeft", () => {
     expect(result.shouldBeNullAfter).to.equal(null);
     expect(result.objectMerge).to.eql({
       value: 2,
-      newValue: 1,
+      newValue: 1
     });
   });
 });

@@ -3,12 +3,6 @@
 /* eslint:disable:no-console*/
 
 import { Marker } from "@tracerbench/core";
-import {
-  Constants,
-  MarkTraceEvent,
-  TraceEvent,
-  TraceStreamJson,
-} from "@tracerbench/trace-event";
 import * as chalk from "chalk";
 import { createHash } from "crypto";
 import * as logSymbols from "log-symbols";
@@ -90,79 +84,6 @@ export function convertMSToMicroseconds(ms: string | number): number {
   return Math.floor(ms * 1000);
 }
 
-export function setTraceEvents(
-  file: TraceEvent[] | TraceStreamJson
-): TraceEvent[] {
-  return !Array.isArray(file) ? file.traceEvents : file;
-}
-
-export function formatToDuration(ts: number, start: number): number {
-  return toNearestHundreth((ts - start) / 1000);
-}
-
-export function isMark(event: TraceEvent): event is MarkTraceEvent {
-  return event.ph === Constants.TRACE_EVENT_PHASE_MARK;
-}
-
-export function isFrameMark(
-  frame: string,
-  event: TraceEvent
-): event is MarkTraceEvent {
-  return (
-    event.ph === Constants.TRACE_EVENT_PHASE_MARK &&
-    event.args !== Constants.STRIPPED &&
-    event.args.frame === frame
-  );
-}
-
-export function isDocLoaderURL(event: MarkTraceEvent, url: string): boolean {
-  try {
-    if (event.args === Constants.STRIPPED) return false;
-    if ((event.args.data as any).documentLoaderURL === url) {
-      return true;
-    }
-    return false;
-  } catch (e) {
-    return false;
-  }
-}
-
-export function isFrameNavigationStart(
-  frame: string,
-  event: TraceEvent,
-  url: string
-): boolean {
-  return (
-    isFrameMark(frame, event) &&
-    event.name === "navigationStart" &&
-    isDocLoaderURL(event, url)
-  );
-}
-
-export function isCommitLoad(event: TraceEvent): boolean {
-  return (
-    event.ph === Constants.TRACE_EVENT_PHASE_COMPLETE &&
-    event.name === "CommitLoad" &&
-    event.args !== Constants.STRIPPED &&
-    event.args.data !== undefined &&
-    (event.args.data as any).isMainFrame
-  );
-}
-
-export function byTime(a: { ts: number }, b: { ts: number }): number {
-  return a.ts - b.ts;
-}
-
-export function findFrame(events: TraceEvent[], url: string): string {
-  const event = events
-    .filter(isCommitLoad)
-    .find((e: any) => e.args.data.url.startsWith(url));
-  if (event) {
-    return (event.args as any).data.frame;
-  }
-  return "";
-}
-
 export function parseMarkers(m: string | string[]): Marker[] {
   const a: Marker[] = [];
   if (typeof m === "string") {
@@ -181,18 +102,6 @@ export function parseMarkers(m: string | string[]): Marker[] {
     label: "paint",
   });
 
-  return a;
-}
-
-export function fillArray(arrLngth: number, incr = 1, strt = 0): number[] {
-  const a = [];
-  while (a.length < arrLngth) {
-    if (a.length < 1) {
-      a.push(strt);
-    }
-    a.push(strt + incr);
-    strt = strt + incr;
-  }
   return a;
 }
 
@@ -238,11 +147,6 @@ export const chalkScheme = {
   },
 };
 
-export function convertToSentCase(str: string): string {
-  const result = str.replace(/([A-Z])/g, " $1");
-  return result.charAt(0).toUpperCase() + result.slice(1);
-}
-
 export function logHeading(
   heading: string,
   headingType: "log" | "warn" | "alert" = "log"
@@ -270,25 +174,6 @@ export function logHeading(
       );
       break;
   }
-}
-
-export type logBarOptions = {
-  totalDuration: number;
-  duration: number;
-  title: string;
-};
-
-export function logBar(ops: logBarOptions): string {
-  const maxBarLength = 60;
-  const barTick = "■";
-  const barSegment = ops.totalDuration / maxBarLength;
-  const fullSegments = ops.duration / barSegment;
-  const emptySegments = maxBarLength - fullSegments;
-  const bar = `${chalkScheme.tbBranding.blue(
-    barTick.repeat(fullSegments)
-  )}${chalkScheme.tbBranding.grey(barTick.repeat(emptySegments))}`;
-
-  return `${ops.title}\n${bar} ${ops.duration} ms\n`;
 }
 
 export function timestamp(): number {
