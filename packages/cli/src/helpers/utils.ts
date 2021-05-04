@@ -5,9 +5,8 @@
 import { Marker } from "@tracerbench/core";
 import {
   Constants,
-  MarkTraceEvent,
+  InstantTraceEvent,
   TraceEvent,
-  TraceStreamJson,
 } from "@tracerbench/trace-event";
 import * as chalk from "chalk";
 import { createHash } from "crypto";
@@ -90,32 +89,14 @@ export function convertMSToMicroseconds(ms: string | number): number {
   return Math.floor(ms * 1000);
 }
 
-export function setTraceEvents(
-  file: TraceEvent[] | TraceStreamJson
-): TraceEvent[] {
-  return !Array.isArray(file) ? file.traceEvents : file;
-}
-
-export function formatToDuration(ts: number, start: number): number {
-  return toNearestHundreth((ts - start) / 1000);
-}
-
-export function isMark(event: TraceEvent): event is MarkTraceEvent {
-  return event.ph === Constants.TRACE_EVENT_PHASE_MARK;
-}
-
-export function isFrameMark(
-  frame: string,
-  event: TraceEvent
-): event is MarkTraceEvent {
+export function isEventInstant(event: TraceEvent): event is InstantTraceEvent {
   return (
-    event.ph === Constants.TRACE_EVENT_PHASE_MARK &&
-    event.args !== Constants.STRIPPED &&
-    event.args.frame === frame
+    event.ph === Constants.TRACE_EVENT_PHASE_INSTANT &&
+    event.args !== Constants.STRIPPED
   );
 }
 
-export function isDocLoaderURL(event: MarkTraceEvent, url: string): boolean {
+export function isDocLoaderURL(event: TraceEvent, url: string): boolean {
   try {
     if (event.args === Constants.STRIPPED) return false;
     if ((event.args.data as any).documentLoaderURL === url) {
@@ -125,42 +106,6 @@ export function isDocLoaderURL(event: MarkTraceEvent, url: string): boolean {
   } catch (e) {
     return false;
   }
-}
-
-export function isFrameNavigationStart(
-  frame: string,
-  event: TraceEvent,
-  url: string
-): boolean {
-  return (
-    isFrameMark(frame, event) &&
-    event.name === "navigationStart" &&
-    isDocLoaderURL(event, url)
-  );
-}
-
-export function isCommitLoad(event: TraceEvent): boolean {
-  return (
-    event.ph === Constants.TRACE_EVENT_PHASE_COMPLETE &&
-    event.name === "CommitLoad" &&
-    event.args !== Constants.STRIPPED &&
-    event.args.data !== undefined &&
-    (event.args.data as any).isMainFrame
-  );
-}
-
-export function byTime(a: { ts: number }, b: { ts: number }): number {
-  return a.ts - b.ts;
-}
-
-export function findFrame(events: TraceEvent[], url: string): string {
-  const event = events
-    .filter(isCommitLoad)
-    .find((e: any) => e.args.data.url.startsWith(url));
-  if (event) {
-    return (event.args as any).data.frame;
-  }
-  return "";
 }
 
 export function parseMarkers(m: string | string[]): Marker[] {
@@ -238,11 +183,6 @@ export const chalkScheme = {
   },
 };
 
-export function convertToSentCase(str: string): string {
-  const result = str.replace(/([A-Z])/g, " $1");
-  return result.charAt(0).toUpperCase() + result.slice(1);
-}
-
 export function logHeading(
   heading: string,
   headingType: "log" | "warn" | "alert" = "log"
@@ -270,25 +210,6 @@ export function logHeading(
       );
       break;
   }
-}
-
-export type logBarOptions = {
-  totalDuration: number;
-  duration: number;
-  title: string;
-};
-
-export function logBar(ops: logBarOptions): string {
-  const maxBarLength = 60;
-  const barTick = "■";
-  const barSegment = ops.totalDuration / maxBarLength;
-  const fullSegments = ops.duration / barSegment;
-  const emptySegments = maxBarLength - fullSegments;
-  const bar = `${chalkScheme.tbBranding.blue(
-    barTick.repeat(fullSegments)
-  )}${chalkScheme.tbBranding.grey(barTick.repeat(emptySegments))}`;
-
-  return `${ops.title}\n${bar} ${ops.duration} ms\n`;
 }
 
 export function timestamp(): number {
