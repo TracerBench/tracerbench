@@ -3,11 +3,6 @@
 /* eslint:disable:no-console*/
 
 import { Marker } from "@tracerbench/core";
-import {
-  Constants,
-  InstantTraceEvent,
-  TraceEvent,
-} from "@tracerbench/trace-event";
 import * as chalk from "chalk";
 import { createHash } from "crypto";
 import * as logSymbols from "log-symbols";
@@ -89,25 +84,6 @@ export function convertMSToMicroseconds(ms: string | number): number {
   return Math.floor(ms * 1000);
 }
 
-export function isEventInstant(event: TraceEvent): event is InstantTraceEvent {
-  return (
-    event.ph === Constants.TRACE_EVENT_PHASE_INSTANT &&
-    event.args !== Constants.STRIPPED
-  );
-}
-
-export function isDocLoaderURL(event: TraceEvent, url: string): boolean {
-  try {
-    if (event.args === Constants.STRIPPED) return false;
-    if ((event.args.data as any).documentLoaderURL === url) {
-      return true;
-    }
-    return false;
-  } catch (e) {
-    return false;
-  }
-}
-
 export function parseMarkers(m: string | string[]): Marker[] {
   const a: Marker[] = [];
   if (typeof m === "string") {
@@ -126,18 +102,6 @@ export function parseMarkers(m: string | string[]): Marker[] {
     label: "paint",
   });
 
-  return a;
-}
-
-export function fillArray(arrLngth: number, incr = 1, strt = 0): number[] {
-  const a = [];
-  while (a.length < arrLngth) {
-    if (a.length < 1) {
-      a.push(strt);
-    }
-    a.push(strt + incr);
-    strt = strt + incr;
-  }
   return a;
 }
 
