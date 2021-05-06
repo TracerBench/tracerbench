@@ -5,7 +5,6 @@
 import { Marker } from "@tracerbench/core";
 import * as chalk from "chalk";
 import { createHash } from "crypto";
-import * as logSymbols from "log-symbols";
 
 import {
   IBenchmarkEnvironmentOverride,
@@ -133,7 +132,7 @@ export const chalkScheme = {
   imprv: chalk.rgb(135, 197, 113),
   phase: chalk.rgb(225, 225, 225),
   faint: chalk.rgb(80, 80, 80),
-  checkmark: chalk.rgb(133, 153, 36)(`${logSymbols.success}`),
+  checkmark: chalk.rgb(133, 153, 36)(`✔`),
   blackBgGreen: chalk.green.bgGreen,
   blackBgRed: chalk.rgb(239, 100, 107).bgRed,
   blackBgBlue: chalk.rgb(24, 132, 228).bgRgb(24, 132, 228),

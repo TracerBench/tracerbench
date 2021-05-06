@@ -35,7 +35,6 @@ module.exports = {
     'import/no-unassigned-import': 'error',
     'import/no-duplicates': 'error',
     'import/no-unresolved': 'off',
-    'simple-import-sort/sort': 'error',
     '@typescript-eslint/no-use-before-define': [
       'error',
       {

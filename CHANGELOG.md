@@ -1,3 +1,14 @@
+##  (2021-05-06)
+
+* refactor(cli, core): removes live-trace, profile command (#316) ([e35d734](https://github.com/tracerbench/tracerbench/commit/e35d734)), closes [#316](https://github.com/tracerbench/tracerbench/issues/316)
+* test(cli, stats): update failing tests from rounding change ([2695fce](https://github.com/tracerbench/tracerbench/commit/2695fce))
+* test(cli, stats): update failing tests from rounding change ([e070b4b](https://github.com/tracerbench/tracerbench/commit/e070b4b))
+* v5.3.6 ([a70ad29](https://github.com/tracerbench/tracerbench/commit/a70ad29))
+* v5.3.7 ([bccc274](https://github.com/tracerbench/tracerbench/commit/bccc274))
+* fix(core): fixes issue with chrome 90 navigationStart event phase change (#304) ([ea9a960](https://github.com/tracerbench/tracerbench/commit/ea9a960)), closes [#304](https://github.com/tracerbench/tracerbench/issues/304)
+
+
+
 ## (2019-10-29)
 
 - feat(cli, core): save addt requests ([09db45a](https://github.com/tracerbench/tracerbench/commit/09db45a))

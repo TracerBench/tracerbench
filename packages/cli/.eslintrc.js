@@ -1,4 +1,3 @@
-/* eslint-disable simple-import-sort/sort */
 /* eslint-disable no-undef */
 /* eslint-disable filenames/match-regex */
 
@@ -22,7 +21,6 @@ module.exports = {
     "plugin:import/warnings",
     "plugin:prettier/recommended",
     "prettier",
-    "prettier/@typescript-eslint",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
   ],
@@ -39,7 +37,6 @@ module.exports = {
     "import/no-unassigned-import": "error",
     "import/no-duplicates": "error",
     "import/no-unresolved": "off",
-    "simple-import-sort/sort": "error",
     "@typescript-eslint/no-use-before-define": [
       "error",
       {
