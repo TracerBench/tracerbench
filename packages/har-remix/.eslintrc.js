@@ -1,52 +1,48 @@
 module.exports = {
   root: true,
-  parser: "@typescript-eslint/parser",
+  parser: '@typescript-eslint/parser',
   parserOptions: {
-    sourceType: "module"
+    sourceType: 'module'
   },
   plugins: [
-    "oclif",
-    "@typescript-eslint",
-    "import",
-    "simple-import-sort",
-    "prettier",
-    "filenames"
+    'oclif',
+    '@typescript-eslint',
+    'import',
+    'simple-import-sort',
+    'prettier',
+    'filenames'
   ],
   extends: [
-    "eslint:recommended",
-    "plugin:import/errors",
-    "plugin:import/warnings",
-    "plugin:prettier/recommended",
-    "prettier",
-    "prettier/@typescript-eslint",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended"
+    'eslint:recommended',
+    'plugin:import/errors',
+    'plugin:import/warnings',
+    'plugin:prettier/recommended',
+    'prettier',
+    'plugin:@typescript-eslint/eslint-recommended',
+    'plugin:@typescript-eslint/recommended'
   ],
   rules: {
-    "filenames/match-regex": [
-      "error",
-      "^(?:[a-z0-9\\-]+)*(?:\\.(?:test|d))?$",
+    'filenames/match-regex': [
+      'error',
+      '^(?:[a-z0-9\\-]+)*(?:\\.(?:test|d))?$',
       true
     ],
-    "filenames/match-exported": ["error", "kebab"],
-    "sort-imports": "off",
-    "import/order": "off",
-    "import/no-extraneous-dependencies": "error",
-    "import/no-unassigned-import": "error",
-    "import/no-duplicates": "error",
-    "import/no-unresolved": "off",
-    "simple-import-sort/sort": "error",
-    "@typescript-eslint/no-use-before-define": [
-      "error",
+    'filenames/match-exported': ['error', 'kebab'],
+    'sort-imports': 'off',
+    'import/order': 'off',
+    'import/no-extraneous-dependencies': 'error',
+    'import/no-unassigned-import': 'error',
+    'import/no-duplicates': 'error',
+    'import/no-unresolved': 'off',
+    '@typescript-eslint/no-use-before-define': [
+      'error',
       {
         functions: false
       }
     ],
-    "@typescript-eslint/interface-name-prefix": [
-      "off"
-    ],
-    "@typescript-eslint/explicit-function-return-type": [
-      "error",
+    '@typescript-eslint/interface-name-prefix': ['off'],
+    '@typescript-eslint/explicit-function-return-type': [
+      'error',
       {
         allowExpressions: true,
         allowTypedFunctionExpressions: true,
@@ -54,28 +50,29 @@ module.exports = {
       }
     ]
   },
-  ignorePatterns: ["dist/", "lib/", "node_modules/", "DEBUG/", "tmp/", "test/"],
-  overrides: [{
-      files: ["srs/**/*.ts"],
+  ignorePatterns: ['dist/', 'lib/', 'node_modules/', 'DEBUG/', 'tmp/', 'test/'],
+  overrides: [
+    {
+      files: ['srs/**/*.ts'],
       parserOptions: {
-        project: "./tsconfig.json",
+        project: './tsconfig.json',
         tsconfigRootDir: __dirname,
-        sourceType: "module"
+        sourceType: 'module'
       },
-      extends: ["plugin:@typescript-eslint/recommended-requiring-type-checking"]
+      extends: ['plugin:@typescript-eslint/recommended-requiring-type-checking']
     },
     {
-      files: ["test/**/*.ts"],
+      files: ['test/**/*.ts'],
       parserOptions: {
-        project: "./test/tsconfig.json",
+        project: './test/tsconfig.json',
         tsconfigRootDir: __dirname,
-        sourceType: "module"
+        sourceType: 'module'
       },
       extends: [
-        "plugin:@typescript-eslint/recommended-requiring-type-checking"
+        'plugin:@typescript-eslint/recommended-requiring-type-checking'
       ],
       rules: {
-        "@typescript-eslint/no-non-null-assertion": "off"
+        '@typescript-eslint/no-non-null-assertion': 'off'
       }
     }
   ]
