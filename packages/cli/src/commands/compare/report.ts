@@ -4,7 +4,7 @@ import { IConfig } from "@oclif/config";
 import { existsSync, mkdirSync, writeFileSync } from "fs-extra";
 import * as Handlebars from "handlebars";
 import { join, resolve } from "path";
-
+import { minify } from "html-minifier-terser";
 import {
   defaultFlagArgs,
   getConfig,
@@ -138,11 +138,18 @@ export default class CompareReport extends TBBaseCommand {
       this.reportFlags.plotTitle
     );
 
+    const minifiedHTML = minify(renderedHTML, {
+      collapseWhitespace: true,
+      removeComments: true,
+      minifyCSS: true,
+      minifyJS: true,
+    });
+
     const absPathToHTML = resolve(
       join(tbResultsFolder, `/${outputFileName}.html`)
     );
 
-    writeFileSync(absPathToHTML, renderedHTML);
+    writeFileSync(absPathToHTML, minifiedHTML);
 
     const absOutputPath = resolve(
       join(tbResultsFolder + `/${outputFileName}.pdf`)
