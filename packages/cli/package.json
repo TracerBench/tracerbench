@@ -1,6 +1,6 @@
 {
   "name": "tracerbench",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "description": "CLI for TracerBench",
   "keywords": [
     "oclif"
@@ -29,9 +29,9 @@
     "@oclif/parser": "^3.8.5",
     "@oclif/plugin-help": "^3.2.2",
     "@oclif/plugin-warn-if-update-available": "^1.7.0",
-    "@tracerbench/core": "^6.0.0",
-    "@tracerbench/stats": "^6.0.0",
-    "@tracerbench/trace-event": "^6.0.0",
+    "@tracerbench/core": "^6.1.0",
+    "@tracerbench/stats": "^6.1.0",
+    "@tracerbench/trace-event": "^6.1.0",
     "archiver": "^5.3.0",
     "chalk": "^4.1.1",
     "chrome-debugging-client": "^2.0.0",
