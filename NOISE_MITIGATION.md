@@ -21,6 +21,12 @@ Then kill the process in question by finding the process-id from the previous co
 kill -2 <PROCESS-ID>
 ```
 
+## SSH (If you have multiple PCs)
+The most effective way of mitigating the noise is running tests on a separate machine with Linux server.
+Visual Studio Code has great SSH capabilities. 
+It's possible to run code editor, browser, and stuff on the primary machine, and have tracerbench and the site running on the Linux server.
+This way you'll be able to use your browser while tests are running.
+
 ## OSX
 ### Disable Spotlight
 In more recent versions of OSX you cannot disable spotlight without first disabling system integrity protection. This operation comes with risks, please read-up before continuing.
