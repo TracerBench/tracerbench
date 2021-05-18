@@ -1,0 +1,28 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: monthly
+  open-pull-requests-limit: 10
+  versioning-strategy: increase-if-necessary
+  ignore:
+  - dependency-name: "@types/node"
+    versions:
+    - 14.14.22
+    - 14.14.25
+    - 14.14.26
+    - 14.14.31
+    - 14.14.34
+  - dependency-name: mime-types
+    versions:
+    - 2.1.28
+  - dependency-name: eslint-config-prettier
+    versions:
+    - 7.2.0
+  - dependency-name: eslint
+    versions:
+    - 7.19.0
+  - dependency-name: typescript-json-schema
+    versions:
+    - 0.48.0
