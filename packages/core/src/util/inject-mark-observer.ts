@@ -47,13 +47,19 @@ var ${variable} =
 
 function navigationObserver(variable: string): string {
   return `"use strict";
+  ${enforcePaintEventFn}
 var ${variable} =
   self === top &&
   opener === null &&
   new Promise((resolve) =>
     new PerformanceObserver((records, observer) => {
       if (records.getEntries().length > 0) {
-        resolve();
+        requestAnimationFrame(() => {
+          enforcePaintEvent();
+          requestIdleCallback(() => {
+            resolve();
+          });
+        });
         observer.disconnect();
       }
     }).observe({ type: "navigation" })
