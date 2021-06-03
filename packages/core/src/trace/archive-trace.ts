@@ -216,7 +216,10 @@ export async function processEntries(
   for (let i = 0; i < networkRequests.length; i++) {
     debugCallback('processEntries.entry %o', networkRequests[i].response.url);
     const { requestId, response } = networkRequests[i];
-    const body = await getResponseBody(requestId, chrome);
+    const [body, postData] = await Promise.all([
+      getResponseBody(requestId, chrome),
+      getRequestPostData(requestId, chrome)
+    ]);
     const {
       url,
       requestHeaders,
@@ -226,6 +229,11 @@ export async function processEntries(
       mimeType,
       protocol
     } = response;
+
+    let requestMethod = handleHeaders(requestHeaders)[0].value || '';
+    if (requestMethod === 'GET' && postData.length > 0) {
+      requestMethod = 'POST';
+    }
 
     const entry: Entry = {
       time: 0,
@@ -239,7 +247,7 @@ export async function processEntries(
       startedDateTime: new Date().toISOString(),
       request: {
         url,
-        method: handleHeaders(requestHeaders)[0].value || '',
+        method: requestMethod,
         httpVersion: protocol || '',
         cookies: [],
         headers: handleHeaders(requestHeaders),
@@ -310,6 +318,21 @@ export async function getResponseBody(
       requestId
     });
     return body;
+  } catch (error) {
+    return '';
+  }
+}
+
+async function getRequestPostData(
+  requestId: string,
+  chrome: SessionConnection
+): Promise<string> {
+  try {
+    const { postData } = await chrome.send('Network.getRequestPostData', {
+      requestId
+    });
+
+    return postData;
   } catch (error) {
     return '';
   }
