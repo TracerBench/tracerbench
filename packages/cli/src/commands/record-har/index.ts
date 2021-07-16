@@ -74,7 +74,16 @@ export default class RecordHAR extends TBBaseCommand {
     if (cookiespath.length) {
       // grab the auth cookies
       const resolvedPath = resolve(cookiespath);
-      cookies = await readJson(resolvedPath);
+      const rawCookies:
+        | Protocol.Network.CookieParam[]
+        | { cookies: Protocol.Network.CookieParam[] } = await readJson(
+        resolvedPath
+      );
+      if (rawCookies && "cookies" in rawCookies) {
+        cookies = rawCookies.cookies as Protocol.Network.CookieParam[];
+      } else {
+        cookies = rawCookies as Protocol.Network.CookieParam[];
+      }
       if (!Array.isArray(cookies)) {
         throw `Incorrect cookie file format (${resolvedPath}), should be [ {name: "foo", value: "boo" } ]`;
       }
