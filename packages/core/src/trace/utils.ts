@@ -212,7 +212,7 @@ export const enforcePaintEventFn = `
 function enforcePaintEvent() {
 
   const docElem = document.documentElement;
-  const refNode = docElem.firstElementChild || docElem.firstChild;
+  const refNode = docElem.firstElementChild;
   const fakeBody = document.createElement('body');
   const div = document.createElement('div');
 
