@@ -116,14 +116,8 @@ export class CompareResults {
     logHeading("Benchmark Results Summary", "log");
 
     this.phaseResultsFormatted.forEach((phaseData) => {
-      const {
-        phase,
-        hlDiff,
-        isSignificant,
-        ciMin,
-        ciMax,
-        asPercent,
-      } = phaseData;
+      const { phase, hlDiff, isSignificant, ciMin, ciMax, asPercent } =
+        phaseData;
       const { percentMedian, percentMax, percentMin } = asPercent;
       let msg = `${chalk.bold(phase)} phase `;
       const estimatorISig = Math.abs(hlDiff) >= 1 ? true : false;

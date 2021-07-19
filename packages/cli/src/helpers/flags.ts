@@ -68,15 +68,14 @@ export const debug = oclifFlags.boolean({
   default: false,
 });
 
-export const regressionThreshold: oclifFlags.Definition<
-  string | number
-> = oclifFlags.build({
-  default: () => getDefaultValue("regressionThreshold"),
-  description: `The upper limit the experiment can regress slower in milliseconds. eg 50`,
-  parse: (ms): number => {
-    return parseInt(ms, 10);
-  },
-});
+export const regressionThreshold: oclifFlags.Definition<string | number> =
+  oclifFlags.build({
+    default: () => getDefaultValue("regressionThreshold"),
+    description: `The upper limit the experiment can regress slower in milliseconds. eg 50`,
+    parse: (ms): number => {
+      return parseInt(ms, 10);
+    },
+  });
 
 export const sampleTimeout: oclifFlags.Definition<number> = oclifFlags.build({
   default: () => getDefaultValue("sampleTimeout"),

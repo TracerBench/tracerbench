@@ -144,10 +144,8 @@ export default class Compare extends TBBaseCommand {
 
   public async run(): Promise<string> {
     const { hideAnalysis } = this.compareFlags;
-    const [
-      controlSettings,
-      experimentSettings,
-    ] = this.generateControlExperimentServerConfig();
+    const [controlSettings, experimentSettings] =
+      this.generateControlExperimentServerConfig();
 
     // this should be directly above the instantiation of the InitialRenderBenchmarks
     if (this.parsedConfig.debug) {
@@ -288,7 +286,7 @@ export default class Compare extends TBBaseCommand {
       headless,
       controlURL,
       experimentURL,
-    } = (this.parsedConfig as unknown) as ICompareFlags;
+    } = this.parsedConfig as unknown as ICompareFlags;
 
     // modifies properties of flags that were not set
     // during flag.parse(). these are intentionally
@@ -320,9 +318,8 @@ export default class Compare extends TBBaseCommand {
 
     // if headless flag is true include the headless flags
     if (headless) {
-      this.parsedConfig.browserArgs = this.compareFlags.browserArgs.concat(
-        headlessFlags
-      );
+      this.parsedConfig.browserArgs =
+        this.compareFlags.browserArgs.concat(headlessFlags);
     }
 
     // if the folder for the tracerbench results file
@@ -358,14 +355,16 @@ export default class Compare extends TBBaseCommand {
     // config for the browsers to leverage socks proxy
     if (this.parsedConfig.socksPorts) {
       if (controlBrowser.additionalArguments) {
-        controlBrowser.additionalArguments = controlBrowser.additionalArguments.concat(
-          [`--proxy-server=socks5://0.0.0.0:${this.parsedConfig.socksPorts[0]}`]
-        );
+        controlBrowser.additionalArguments =
+          controlBrowser.additionalArguments.concat([
+            `--proxy-server=socks5://0.0.0.0:${this.parsedConfig.socksPorts[0]}`,
+          ]);
       }
       if (experimentBrowser.additionalArguments) {
-        experimentBrowser.additionalArguments = experimentBrowser.additionalArguments.concat(
-          [`--proxy-server=socks5://0.0.0.0:${this.parsedConfig.socksPorts[1]}`]
-        );
+        experimentBrowser.additionalArguments =
+          experimentBrowser.additionalArguments.concat([
+            `--proxy-server=socks5://0.0.0.0:${this.parsedConfig.socksPorts[1]}`,
+          ]);
       }
     }
     const controlNetwork: string = checkEnvironmentSpecificOverride(
