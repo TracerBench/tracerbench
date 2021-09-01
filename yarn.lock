@@ -1539,9 +1539,9 @@
   integrity sha512-h4lTMgMJctJybDp8CQrxTUiiYmedihHWkjnF/8Pxseu2S6Nlfcy8kwboQ8yejh456rP2yWoEVm1sS/FVsfM48w==
 
 "@types/json-query@^2.2.0":
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/@types/json-query/-/json-query-2.2.1.tgz#6f845c21d3469b848f108bb0a33f91cffb0ca49e"
-  integrity sha512-rlPzxVtktP27TfnZAcuqJft9tI27ApltlRnPg8p3DNHcxdtlL5xvZrs0LcMxBGdn1vkt6fvEdSDwP5rvXXSPkQ==
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@types/json-query/-/json-query-2.2.2.tgz#1914ec2a2c863e36a52c12098085ee03fdfa9c07"
+  integrity sha512-zgyGNCdZD6mJsIrZD5qHGGvm7OT1yvMgpdR4rdr/OAW9bBv2Zkf8bPoihAqNZQ7R3QYLjgcfSGbl+0lJQ7vNtw==
 
 "@types/json-schema@^7.0.3", "@types/json-schema@^7.0.6", "@types/json-schema@^7.0.7":
   version "7.0.8"
