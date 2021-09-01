@@ -16,7 +16,7 @@
     "husky": "^7.0.1",
     "conventional-changelog-cli": "^2.1.1",
     "@commitlint/config-conventional": "^12.1.4",
-    "@commitlint/cli": "^12.1.4"
+    "@commitlint/cli": "^13.1.0"
   },
   "repository": {
     "type": "git",
