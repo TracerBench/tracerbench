@@ -25,7 +25,8 @@
     "test": "yarn lint && yarn nyc --extension .ts mocha \"test/*.test.ts\"",
     "build": "rm -rf ./dist && yarn tsc -b && yarn lint",
     "watch": "yarn tsc -b -w",
-    "prepare": "yarn build"
+    "prepare": "yarn build",
+    "api-docs": "yarn build && rm -rf ./etc && mkdir ./etc && yarn api-extractor run --local --verbose && yarn api-documenter markdown -i temp"
   },
   "dependencies": {
     "d3-array": "2.12.1",

@@ -67,8 +67,14 @@ export function getSampleUStat(rankSum: number, N: number): number {
   return rankSum - (N * (N + 1)) / 2;
 }
 
-// independent test 2 groups tested once
-// un-paired two-tailed test alpha 0.05 critical values
+/**
+ * Wilcoxon Rank Sum Test
+ * independent test of 2 groups tested once
+ * un-paired two-tailed test alpha 0.05 critical values
+ *
+ * @param control - Control as array of numbers
+ * @param experiment - Experiment as array of numbers
+ */
 export function getWilcoxonRankSumTest(
   control: number[],
   experiment: number[]
