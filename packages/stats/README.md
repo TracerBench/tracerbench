@@ -59,3 +59,5 @@ stats.outliers; // => {
 https://www.tracerbench.com/docs/guide/stats-primer
 
 # Stats API
+
+https://github.com/TracerBench/tracerbench/blob/master/packages/stats/markdown/stats.md
