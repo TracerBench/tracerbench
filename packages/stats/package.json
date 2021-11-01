@@ -41,7 +41,7 @@
     "@types/chai": "^4.2.21",
     "@types/fs-extra": "^9.0.12",
     "@types/d3-array": "^2.9.0",
-    "@types/d3-scale": "^3.2.2",
+    "@types/d3-scale": "^4.0.2",
     "@types/node": "^16.3.3",
     "@types/tmp": "^0.2.1",
     "@typescript-eslint/eslint-plugin": "^4.28.3",
