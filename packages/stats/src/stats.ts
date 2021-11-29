@@ -313,8 +313,9 @@ export class Stats {
       (ci.min === 0 && ci.max === 0)
         ? false
         : true;
+    const sigLevel: number = 1 - confidenceLevel;
     // ci sign must match on lower and upper bounds and pValue < 5%
-    const isSig = isCISig && ci.pValue < 0.05;
+    const isSig = isCISig && ci.pValue < sigLevel;
 
     return {
       min: Math.round(Math.ceil(ci.min * 100) / 100),
