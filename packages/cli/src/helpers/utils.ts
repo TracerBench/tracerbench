@@ -31,9 +31,9 @@ export function checkEnvironmentSpecificOverride(
   if (!tbConfig || !tbConfig[overrideObjectName]) {
     return flags[attributeName];
   }
-  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+
   const environmentSpecificConfigs: IBenchmarkEnvironmentOverride =
-    tbConfig[overrideObjectName]!;
+    tbConfig[overrideObjectName]!; //eslint-disable-line @typescript-eslint/no-non-null-assertion
 
   if (!environmentSpecificConfigs[attributeName]) {
     return flags[attributeName];
