@@ -110,5 +110,6 @@
     "build": "rm -rf ./dist && tsc -b && yarn copystatic && yarn oclif && yarn lint",
     "build:schema": "typescript-json-schema \"src/command-config/tb-config.ts\" ITBConfig --out ./tb-schema.json",
     "copystatic": "cp -a ./src/static ./dist/src"
-  }
+  },
+  "gitHead": "50d101586cc9170c51c751d64e5992fd53ca423a"
 }
