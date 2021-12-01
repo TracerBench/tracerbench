@@ -86,6 +86,5 @@
   "mocha": {
     "spec": "test/test.ts",
     "require": "ts-node/register"
-  },
-  "gitHead": "50d101586cc9170c51c751d64e5992fd53ca423a"
+  }
 }

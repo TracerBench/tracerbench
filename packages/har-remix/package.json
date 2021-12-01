@@ -42,6 +42,5 @@
     "json-schema-to-typescript": "^10.1.4",
     "prettier": "^2.2.1",
     "typescript": "^4.2.4"
-  },
-  "gitHead": "50d101586cc9170c51c751d64e5992fd53ca423a"
+  }
 }
