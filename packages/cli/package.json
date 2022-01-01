@@ -28,7 +28,7 @@
     "@oclif/errors": "^1.3.5",
     "@oclif/parser": "^3.8.5",
     "@oclif/plugin-help": "^3.2.3",
-    "@oclif/plugin-warn-if-update-available": "^1.7.0",
+    "@oclif/plugin-warn-if-update-available": "^2.0.3",
     "@tracerbench/core": "^6.1.1",
     "@tracerbench/stats": "^6.1.1",
     "@tracerbench/trace-event": "^6.1.1",
