@@ -1,4 +1,4 @@
-import type * as HAR from '@tracerbench/har';
+import type { Entry } from '@tracerbench/har';
 import type { IncomingMessage, ServerResponse } from 'http';
 
 export interface Response {
@@ -21,7 +21,7 @@ export interface ServerDelegate {
    *
    * Return undefined if you do not want to serve this request.
    */
-  keyForArchiveEntry(entry: HAR.Entry): string | undefined;
+  keyForArchiveEntry(entry: Entry): string | undefined;
 
   /**
    * Create a key from the request to match against the archived requests.
@@ -35,7 +35,7 @@ export interface ServerDelegate {
    *
    * Not called if entry.response.content.encoding == "base64"
    */
-  textFor?(entry: HAR.Entry, key: string, text: string): string;
+  textFor?(entry: Entry, key: string, text: string): string;
 
   /**
    * By default, only 2xx requests with content are responded to.
@@ -43,7 +43,7 @@ export interface ServerDelegate {
    * To be more specific "with content" means the HAR was recorded with content.
    * 204 requests still have a content entry with the mimeType but no text key.
    */
-  responseFor?(entry: HAR.Entry, key: string): Response | undefined;
+  responseFor?(entry: Entry, key: string): Response | undefined;
 
   /**
    * Finalize the response before adding it, by default no headers are copied.
@@ -51,8 +51,9 @@ export interface ServerDelegate {
    * This hook allows you to set headers (like cache-control, authorization, set-cookie),
    * or return a different Response.
    */
+  // eslint-disable-next-line prettier/prettier
   finalizeResponse?(
-    entry: HAR.Entry,
+    entry: Entry,
     key: string,
     response: Response
   ): Response;
