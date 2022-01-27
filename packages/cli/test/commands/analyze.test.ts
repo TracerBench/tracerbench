@@ -1,6 +1,7 @@
 import { test } from "@oclif/test";
 import { expect, assert } from "chai";
 import { dirname, join } from "path";
+import { describe } from "mocha";
 
 import CompareAnalyze from "../../src/commands/compare/analyze";
 import { COMPARE_JSON } from "../test-helpers";
@@ -29,7 +30,7 @@ describe("compare:analyze low fidelity, low threshold", () => {
         await CompareAnalyze.run([
           `${COMPARE_JSON}`,
           "--fidelity=2",
-          `--regressionThreshold=${regressionThreshold}`,
+          `--regressionThreshold=${regressionThreshold}`
         ]);
 
         expect(ctx.stdout).to.contain(

@@ -1,4 +1,4 @@
-import { cross, histogram, mean, quantile } from 'd3-array';
+import { mean, cross, histogram, quantile } from 'd3-array';
 import { scaleLinear } from 'd3-scale';
 
 import { confidenceInterval } from './confidence-interval';

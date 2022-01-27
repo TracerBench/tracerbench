@@ -1,9 +1,7 @@
 {
   "extends": "../tsconfig",
   "compilerOptions": {
-    "noEmit": true
+    "outDir": "../dist/test/"
   },
-  "references": [{
-    "path": ".."
-  }]
+  "references": [{ "path": ".." }]
 }

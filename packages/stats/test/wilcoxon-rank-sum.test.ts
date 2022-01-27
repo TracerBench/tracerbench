@@ -1,3 +1,6 @@
+import { expect } from 'chai';
+import { describe } from 'mocha';
+
 import {
   wilcoxonRankSumTable,
   getMergedSortedSamples,
@@ -7,8 +10,6 @@ import {
   getSampleUStat,
   getWilcoxonRankSumTest
 } from '../src/wilcoxon-rank-sum';
-
-import { expect } from 'chai';
 
 const data = {
   significant: {

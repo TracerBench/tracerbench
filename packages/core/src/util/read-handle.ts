@@ -1,6 +1,6 @@
 import { ProtocolConnection } from 'chrome-debugging-client';
 import Protocol from 'devtools-protocol';
-import { RaceCancellation } from 'race-cancellation';
+import type { RaceCancellation } from 'race-cancellation';
 
 export default async function readHandle(
   conn: ProtocolConnection,

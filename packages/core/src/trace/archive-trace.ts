@@ -154,7 +154,7 @@ export async function recordHARClient(
     await chrome.send('Page.close');
     debugCallback('Page.close');
   } catch (e) {
-    throw new Error(e);
+    throw new Error(`${e}`);
   } finally {
     if (browser) {
       await browser.dispose();

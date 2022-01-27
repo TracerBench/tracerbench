@@ -1,5 +1,6 @@
 import { getEmulateDeviceSettingForKeyAndOrientation } from "../../src/helpers/device-settings";
 import { expect } from "chai";
+import { describe } from "mocha";
 
 describe("simulate-device-options", () => {
   it(`getEmulateDeviceSettingForKeyAndOrientation() with non-existent device`, () => {
@@ -7,9 +8,11 @@ describe("simulate-device-options", () => {
     try {
       getEmulateDeviceSettingForKeyAndOrientation(device);
     } catch (error) {
-      expect(error.message).to.equal(
-        `Device emulation settings not found for device ${device}`
-      );
+      if (error instanceof Error) {
+        expect(error.message).to.equal(
+          `Device emulation settings not found for device ${device}`
+        );
+      }
     }
   });
 

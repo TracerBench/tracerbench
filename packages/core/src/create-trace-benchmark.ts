@@ -1,6 +1,6 @@
 import { TraceStreamJson } from '@tracerbench/trace-event';
 import type { ProtocolConnection, SpawnOptions } from 'chrome-debugging-client';
-import { RaceCancellation } from 'race-cancellation';
+import type { RaceCancellation } from 'race-cancellation';
 
 import createIsolatedPageBenchmark from './create-isolated-page-benchmark';
 import type { Benchmark } from './run';

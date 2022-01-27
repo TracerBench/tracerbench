@@ -1,5 +1,7 @@
-import { Stats } from '../src/stats';
 import { expect } from 'chai';
+import { describe } from 'mocha';
+
+import { Stats } from '../src/stats';
 import { REGRESSION_RESULTS, HIGH_VARIANCE_RESULTS } from './fixtures';
 import { roundFloatAndConvertMicrosecondsToMS } from '../src/utils';
 

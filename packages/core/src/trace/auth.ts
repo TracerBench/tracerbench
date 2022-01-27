@@ -114,7 +114,7 @@ export async function authClient(
 
     await chrome.send('Page.close');
   } catch (e) {
-    throw new Error(e);
+    throw new Error(`${e}`);
   } finally {
     if (browser) {
       await browser.dispose();
