@@ -1,6 +1,6 @@
 {
   "name": "@tracerbench/trace-model",
-  "version": "6.1.1",
+  "version": "6.1.2",
   "description": "Minimal model of Chrome TraceEvents",
   "keywords": [
     "chrome",
