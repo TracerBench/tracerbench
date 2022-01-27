@@ -1,6 +1,6 @@
 import { ProtocolConnection } from 'chrome-debugging-client';
 import Protocol from 'devtools-protocol';
-import { RaceCancellation } from 'race-cancellation';
+import type { RaceCancellation } from 'race-cancellation';
 
 import isNavigationTimingMark from './is-navigation-timing-mark';
 
@@ -70,12 +70,17 @@ async function waitForMark(
       },
       raceCancelation
     );
+
+    const { exceptionDetails } = result;
+    if (exceptionDetails !== undefined) {
+      throw waitForMarkError(mark, { exceptionDetails });
+    }
   } catch (original) {
-    throw waitForMarkError(mark, { original });
-  }
-  const { exceptionDetails } = result;
-  if (exceptionDetails !== undefined) {
-    throw waitForMarkError(mark, { exceptionDetails });
+    if (original instanceof Error) {
+      throw waitForMarkError(mark, { original });
+    } else {
+      throw original;
+    }
   }
 }
 

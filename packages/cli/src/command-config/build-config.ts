@@ -44,7 +44,7 @@ export function readConfig(fileOrDir = "tbconfig.json"): ITBConfig | undefined {
     [configDir, configFile] = resolveConfigFile(fileOrDir);
     config = JSON5.parse(fs.readFileSync(configFile, "utf8"));
   } catch (e) {
-    if (e.code === "ENOENT") {
+    if (e instanceof Error && e.message.includes("ENOENT")) {
       return;
     }
     throw e;

@@ -58,43 +58,47 @@ describe('Benchmark', function () {
         { start: 'didTransition', label: 'render' },
         { start: 'renderEnd', label: 'afterRender' }
       ];
-      const benchmarks = tests.map(
-        ({ name, url }) =>
-          createTraceNavigationBenchmark(name, url, markers, {
-            spawnOptions: browserOpts,
-            pageSetupOptions: {
-              cpuThrottlingRate: 4,
-            },
-            traceOptions: {
-              saveTraceAs: (group, i) => join(resultDir, `trace-${group}-${i}.json`)
-            },
-          })
+      const benchmarks = tests.map(({ name, url }) =>
+        createTraceNavigationBenchmark(name, url, markers, {
+          spawnOptions: browserOpts,
+          pageSetupOptions: {
+            cpuThrottlingRate: 4
+          },
+          traceOptions: {
+            saveTraceAs: (group, i) =>
+              join(resultDir, `trace-${group}-${i}.json`)
+          }
+        })
       );
       const start = Date.now();
-      const results = await run(benchmarks, 4, (elasped, completed, remaining, group, iteration) => {
-        if (completed > 0) {
-          const average = elasped / completed;
-          const remainingSecs = Math.round(remaining * average / 1000);
-          console.log(
-            "%s %s %s seconds remaining",
-            group.padStart(15),
-            iteration.toString().padStart(3),
-            `about ${remainingSecs}`.padStart(10)
-          );
-        } else {
-          console.log(
-            "%s %s",
-            group.padStart(15),
-            iteration.toString().padStart(3)
-          );
+      const results = await run(
+        benchmarks,
+        4,
+        (elasped, completed, remaining, group, iteration) => {
+          if (completed > 0) {
+            const average = elasped / completed;
+            const remainingSecs = Math.round((remaining * average) / 1000);
+            console.log(
+              '%s %s %s seconds remaining',
+              group.padStart(15),
+              iteration.toString().padStart(3),
+              `about ${remainingSecs}`.padStart(10)
+            );
+          } else {
+            console.log(
+              '%s %s',
+              group.padStart(15),
+              iteration.toString().padStart(3)
+            );
+          }
         }
-      });
-      console.log("completed in %d seconds", Math.round((Date.now() - start) / 1000 ));
-
-      writeFileSync(
-        join(resultDir, 'results.json'),
-        JSON.stringify(results)
       );
+      console.log(
+        'completed in %d seconds',
+        Math.round((Date.now() - start) / 1000)
+      );
+
+      writeFileSync(join(resultDir, 'results.json'), JSON.stringify(results));
     });
   });
 });

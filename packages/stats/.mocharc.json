@@ -5,6 +5,5 @@
   "recursive": true,
   "forbid-only": true,
   "reporter": "spec",
-  "timeout": 3000,
-  "file": ["test/setup.ts"]
+  "timeout": 30000
 }

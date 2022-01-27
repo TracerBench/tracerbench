@@ -1,6 +1,8 @@
 import { test } from "@oclif/test";
 import { Archive } from "@tracerbench/har";
 import { expect, assert } from "chai";
+import { describe } from "mocha";
+
 import { readJSONSync } from "fs-extra";
 import { join } from "path";
 import RecordHAR from "../../src/commands/record-har";
@@ -24,7 +26,7 @@ describe("record-har headless", () => {
           "--filename",
           FILENAME,
           "--headless",
-          "--screenshots",
+          "--screenshots"
         ]);
 
         const harFile = join(TB_RESULTS_FOLDER, `${FILENAME}.har`);

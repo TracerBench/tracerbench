@@ -1,5 +1,7 @@
 import { test } from "@oclif/test";
 import { expect, assert } from "chai";
+import { describe } from "mocha";
+
 import { readJsonSync } from "fs-extra";
 
 import { IHARServer } from "../../src/command-config";
@@ -9,11 +11,11 @@ import {
   TB_CONFIG_FILE,
   TB_RESULTS_FOLDER,
   COMPARE_JSON,
-  generateFileStructure,
+  generateFileStructure
 } from "../test-helpers";
 
 const COMPARE = {
-  "compare.json": JSON.stringify(readJsonSync(COMPARE_JSON)),
+  "compare.json": JSON.stringify(readJsonSync(COMPARE_JSON))
 };
 
 describe("compare:report", () => {
@@ -27,7 +29,7 @@ describe("compare:report", () => {
           "--tbResultsFolder",
           `${TB_RESULTS_FOLDER}`,
           "--config",
-          `${TB_CONFIG_FILE}`,
+          `${TB_CONFIG_FILE}`
         ]);
 
         expect(ctx.stdout).to.contain(`JSON:`);
@@ -51,7 +53,7 @@ describe("report - backwards compat test", () => {
           "--tbResultsFolder",
           `${TB_RESULTS_FOLDER}`,
           "--config",
-          `${TB_CONFIG_FILE}`,
+          `${TB_CONFIG_FILE}`
         ]);
 
         expect(ctx.stdout).to.contain(`JSON:`);
@@ -77,7 +79,7 @@ describe("compare:report ci", () => {
           "--config",
           `${TB_CONFIG_FILE}`,
           "--isCIEnv",
-          `${true}`,
+          `${true}`
         ]);
 
         expect(ctx.stdout).to.not.contain(`JSON:`);
@@ -99,14 +101,14 @@ describe("compare:report", () => {
         url: "",
         dist: "",
         socksPort: 0,
-        har: "",
+        har: ""
       },
-      { name: "Hello World 2", url: "", dist: "", socksPort: 0, har: "" },
+      { name: "Hello World 2", url: "", dist: "", socksPort: 0, har: "" }
     ];
     const resolved = CompareReport.resolveTitles(
       {
         servers,
-        plotTitle: "Override",
+        plotTitle: "Override"
       },
       browserVersion
     );
@@ -126,14 +128,14 @@ describe("compare:report", () => {
         url: "",
         dist: "",
         socksPort: 0,
-        har: "",
+        har: ""
       },
-      { name: "Hello World 2", url: "", dist: "", socksPort: 0, har: "" },
+      { name: "Hello World 2", url: "", dist: "", socksPort: 0, har: "" }
     ];
     const resolved = CompareReport.resolveTitles(
       {
         servers,
-        plotTitle: "Override",
+        plotTitle: "Override"
       },
       browserVersion,
       "Flag-Override"

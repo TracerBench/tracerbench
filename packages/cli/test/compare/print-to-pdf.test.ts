@@ -1,4 +1,6 @@
 import { assert } from "chai";
+import { describe } from "mocha";
+
 import { join } from "path";
 import { pathToFileURL } from "url";
 

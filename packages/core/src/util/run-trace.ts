@@ -6,11 +6,12 @@ import {
   combineRaceCancellation,
   newRaceCancellation,
   oneshot,
-  RaceCancellation,
   throwIfCancelled
 } from 'race-cancellation';
 
 import readHandle from './read-handle';
+
+import type { RaceCancellation } from 'race-cancellation';
 
 export type UsingTracingCallback = (
   raceCancellation: RaceCancellation

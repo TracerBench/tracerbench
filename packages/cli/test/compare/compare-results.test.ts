@@ -1,4 +1,6 @@
 import { expect } from "chai";
+import { describe } from "mocha";
+
 import { readJsonSync } from "fs-extra";
 import {
   GenerateStats,
@@ -108,7 +110,8 @@ describe("compare-results allBelowRegressionThreshold()", () => {
       1002,
       "ci-lower"
     );
-    const isBelowThresholdCILower = compareResultsCILower.allBelowRegressionThreshold();
+    const isBelowThresholdCILower =
+      compareResultsCILower.allBelowRegressionThreshold();
     expect(isBelowThresholdCILower).to.be.true;
   });
   it(`regression is above threshold : regressionThresholdStatistic : ci-lower`, () => {
@@ -118,7 +121,8 @@ describe("compare-results allBelowRegressionThreshold()", () => {
       995,
       "ci-lower"
     );
-    const isBelowThresholdCILower = compareResultsCILower.allBelowRegressionThreshold();
+    const isBelowThresholdCILower =
+      compareResultsCILower.allBelowRegressionThreshold();
     expect(isBelowThresholdCILower).to.be.false;
   });
   it(`regression is below threshold : regressionThresholdStatistic : ci-upper`, () => {
@@ -128,7 +132,8 @@ describe("compare-results allBelowRegressionThreshold()", () => {
       1100,
       "ci-upper"
     );
-    const isBelowThresholdCIUpper = compareResultsCIUpper.allBelowRegressionThreshold();
+    const isBelowThresholdCIUpper =
+      compareResultsCIUpper.allBelowRegressionThreshold();
     expect(isBelowThresholdCIUpper).to.be.true;
   });
   it(`regression is above threshold : regressionThresholdStatistic : ci-upper`, () => {
@@ -138,7 +143,8 @@ describe("compare-results allBelowRegressionThreshold()", () => {
       1000,
       "ci-upper"
     );
-    const isBelowThresholdCIUpper = compareResultsCIUpper.allBelowRegressionThreshold();
+    const isBelowThresholdCIUpper =
+      compareResultsCIUpper.allBelowRegressionThreshold();
     expect(isBelowThresholdCIUpper).to.be.false;
   });
 });

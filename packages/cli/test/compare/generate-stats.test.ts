@@ -1,16 +1,18 @@
 import { expect } from "chai";
+import { describe } from "mocha";
+
 import { readJsonSync } from "fs-extra";
 import {
   GenerateStats,
   ITracerBenchTraceResult,
-  ParsedTitleConfigs,
+  ParsedTitleConfigs
 } from "../../src/compare/generate-stats";
 import { COMPARE_JSON } from "../test-helpers";
 
 const REPORT_TITLES: ParsedTitleConfigs = {
   servers: [],
   plotTitle: "Foo Title",
-  browserVersion: "1.2.3",
+  browserVersion: "1.2.3"
 };
 
 const CONTROL_DATA: ITracerBenchTraceResult = readJsonSync(COMPARE_JSON)[0];
@@ -20,10 +22,8 @@ const stats = new GenerateStats(CONTROL_DATA, EXPERIMENT_DATA, REPORT_TITLES);
 describe("generate-stats", () => {
   it(`generateData() durationSection`, () => {
     const { durationSection } = stats;
-    const {
-      controlFormatedSamples,
-      experimentFormatedSamples,
-    } = durationSection;
+    const { controlFormatedSamples, experimentFormatedSamples } =
+      durationSection;
     // STATS
     // duration control in ms and not sorted
     expect(durationSection.stats.control[0]).to.eql(305);

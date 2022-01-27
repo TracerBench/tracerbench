@@ -5,6 +5,7 @@ import {
   secondsToTime
 } from "../../src/helpers/utils";
 import { expect } from "chai";
+import { describe } from "mocha";
 
 const micro = convertMSToMicroseconds(`-100ms`);
 

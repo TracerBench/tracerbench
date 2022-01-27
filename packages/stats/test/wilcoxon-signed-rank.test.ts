@@ -1,3 +1,6 @@
+import { expect } from 'chai';
+import { describe } from 'mocha';
+
 import {
   getSamples,
   sortSamples,
@@ -6,8 +9,6 @@ import {
   getTPlusVal,
   getWilcoxonSignedRankTest
 } from '../src/wilcoxon-signed-rank';
-
-import { expect } from 'chai';
 
 // prettier-ignore
 const control = [18.3,13.3,16.5,12.6,9.5,13.6,8.1,8.9,10.0,8.3,7.9,8.1,13.4];
