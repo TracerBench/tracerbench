@@ -138,7 +138,7 @@ export default class CompareReport extends TBBaseCommand {
       this.reportFlags.plotTitle
     );
 
-    const minifiedHTML = minify(renderedHTML, {
+    const minifiedHTML = await minify(renderedHTML, {
       collapseWhitespace: true,
       removeComments: true,
       minifyCSS: true,

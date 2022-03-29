@@ -36,6 +36,7 @@ var ${variable} =
         requestAnimationFrame(() => {
           enforcePaintEvent();
           requestIdleCallback(() => {
+            performance.mark("endTrace");
             resolve();
           });
         });
@@ -57,6 +58,7 @@ var ${variable} =
         requestAnimationFrame(() => {
           enforcePaintEvent();
           requestIdleCallback(() => {
+            performance.mark("endTrace");
             resolve();
           });
         });

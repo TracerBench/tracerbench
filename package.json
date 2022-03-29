@@ -23,5 +23,8 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/tracerbench/tracerbench.git"
+  },
+  "dependencies": {
+    "minimist": "^1.2.6"
   }
 }
