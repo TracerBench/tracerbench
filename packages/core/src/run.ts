@@ -1,10 +1,8 @@
-import {
-  RaceCancellation,
-  throwIfCancelled,
-  withRaceTimeout
-} from 'race-cancellation';
+import { throwIfCancelled, withRaceTimeout } from 'race-cancellation';
 
 import gc from './util/gc';
+
+import type { RaceCancellation } from 'race-cancellation';
 
 const SETUP_TIMEOUT = 5000;
 const SAMPLE_TIMEOUT = 30 * 1000;

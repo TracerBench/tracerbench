@@ -1,8 +1,9 @@
+import jStat = require('jstat');
 import { median } from 'd3-array';
-import * as jStat from 'jstat';
 
 import type { IConfidenceInterval } from './stats';
 import { toNearestHundreth } from './utils';
+
 /**
  * Difference of x and y
  *

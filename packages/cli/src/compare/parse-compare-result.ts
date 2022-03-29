@@ -7,9 +7,7 @@ import type { ITracerBenchTraceResult } from "./generate-stats";
 /*
   FILTERS OUT THE CONTROL AND EXPERIMENT SAMPLES FROM CONTROL.JSON
 */
-export default function parseCompareResult(
-  inputFilePath: string
-): {
+export default function parseCompareResult(inputFilePath: string): {
   controlData: ITracerBenchTraceResult;
   experimentData: ITracerBenchTraceResult;
 } {

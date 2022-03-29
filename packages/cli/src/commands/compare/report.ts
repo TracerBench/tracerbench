@@ -96,7 +96,7 @@ export default class CompareReport extends TBBaseCommand {
   }
 
   public async run(): Promise<void> {
-    const { tbResultsFolder } = (this.parsedConfig as unknown) as IReportFlags;
+    const { tbResultsFolder } = this.parsedConfig as unknown as IReportFlags;
     const inputFilePath = join(tbResultsFolder, "compare.json");
 
     const { controlData, experimentData } = parseCompareResult(inputFilePath);
@@ -164,7 +164,7 @@ export default class CompareReport extends TBBaseCommand {
   }
 
   private async parseFlags(): Promise<void> {
-    const { tbResultsFolder } = (this.parsedConfig as unknown) as IReportFlags;
+    const { tbResultsFolder } = this.parsedConfig as unknown as IReportFlags;
 
     // if the folder for the tracerbench results file
     // does not exist then create it
@@ -213,11 +213,8 @@ export default class CompareReport extends TBBaseCommand {
       plotTitle
     );
 
-    const {
-      durationSection,
-      subPhaseSections,
-      cumulativeData,
-    } = new GenerateStats(controlData, experimentData, reportTitles);
+    const { durationSection, subPhaseSections, cumulativeData } =
+      new GenerateStats(controlData, experimentData, reportTitles);
 
     const template = Handlebars.compile(REPORT_TEMPLATE_RAW);
 

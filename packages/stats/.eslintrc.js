@@ -1,33 +1,21 @@
+/* eslint-disable no-undef */
+/* eslint-disable filenames/match-regex */
+
 module.exports = {
   root: true,
   parser: '@typescript-eslint/parser',
   parserOptions: {
     sourceType: 'module'
   },
-  plugins: [
-    'oclif',
-    '@typescript-eslint',
-    'import',
-    'simple-import-sort',
-    'prettier',
-    'filenames'
-  ],
+  plugins: ['@typescript-eslint', 'import', 'prettier', 'filenames'],
   extends: [
     'eslint:recommended',
-    'plugin:import/errors',
-    'plugin:import/warnings',
     'plugin:prettier/recommended',
     'prettier',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended'
   ],
   rules: {
-    'filenames/match-regex': [
-      'error',
-      '^(?:[a-z0-9\\-]+)*(?:\\.(?:test|d))?$',
-      true
-    ],
-    'filenames/match-exported': ['error', 'kebab'],
     'sort-imports': 'off',
     'import/order': 'off',
     'import/no-extraneous-dependencies': 'error',
@@ -48,9 +36,19 @@ module.exports = {
         allowTypedFunctionExpressions: true,
         allowHigherOrderFunctions: true
       }
-    ]
+    ],
+    '@typescript-eslint/no-non-null-assertion': ['off'],
+    '@typescript-eslint/no-explicit-any': ['off']
   },
-  ignorePatterns: ['dist/', 'lib/', 'node_modules/', 'DEBUG/', 'tmp/', 'test/'],
+  ignorePatterns: [
+    'lib/',
+    'node_modules/',
+    'DEBUG/',
+    'tmp/',
+    'test/',
+    'scripts/',
+    'dist/'
+  ],
   overrides: [
     {
       files: ['srs/**/*.ts'],
@@ -68,12 +66,7 @@ module.exports = {
         tsconfigRootDir: __dirname,
         sourceType: 'module'
       },
-      extends: [
-        'plugin:@typescript-eslint/recommended-requiring-type-checking'
-      ],
-      rules: {
-        '@typescript-eslint/no-non-null-assertion': 'off'
-      }
+      extends: ['plugin:@typescript-eslint/recommended-requiring-type-checking']
     }
   ]
 };

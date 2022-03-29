@@ -1,6 +1,6 @@
 {
   "name": "@tracerbench/core",
-  "version": "6.1.0",
+  "version": "6.1.2",
   "description": "Benchmark runner for trace metrics",
   "keywords": [
     "chrome",
@@ -36,17 +36,17 @@
     "watch": "tsc -b -w"
   },
   "dependencies": {
-    "@tracerbench/har": "^6.1.0",
-    "@tracerbench/trace-event": "^6.1.0",
-    "@tracerbench/trace-model": "^6.1.0",
+    "@tracerbench/har": "^6.1.1",
+    "@tracerbench/trace-event": "^6.1.1",
+    "@tracerbench/trace-model": "^6.1.2",
     "@types/d3-hierarchy": "^2.0.0",
     "@types/node": "*",
     "array-binsearch": "^1.0.1",
     "chalk": "^4.1.1",
     "chrome-debugging-client": "^2.0.0",
-    "d3-hierarchy": "^2.0.0",
+    "d3-hierarchy": "^3.0.1",
     "debug": "^4.3.1",
-    "devtools-protocol": "^0.0.878340",
+    "devtools-protocol": "^0.0.936174",
     "fs-extra": "^10.0.0",
     "handlebars": "^4.7.7",
     "lodash.clonedeep": "^4.5.0",
@@ -57,10 +57,10 @@
   },
   "devDependencies": {
     "@types/chai": "^4.2.17",
-    "@types/debug": "^4.1.5",
+    "@types/debug": "^4.1.7",
     "@types/glob": "^7.1.3",
     "@types/mkdirp": "^1.0.1",
-    "@types/mocha": "^8.2.2",
+    "@types/mocha": "^9.0.0",
     "@types/tar": "^4.0.4",
     "@typescript-eslint/eslint-plugin": "^4.22.1",
     "@typescript-eslint/parser": "^4.22.1",
@@ -79,7 +79,7 @@
     "nyc": "^15.1.0",
     "prettier": "^2.2.1",
     "tar": "^6.1.0",
-    "ts-node": "^9.1.1",
+    "ts-node": "^10.1.0",
     "typescript": "^4.2.4"
   },
   "engine": "node >= 8",

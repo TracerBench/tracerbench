@@ -1,6 +1,6 @@
 {
   "name": "@tracerbench/trace-model",
-  "version": "6.1.0",
+  "version": "6.1.2",
   "description": "Minimal model of Chrome TraceEvents",
   "keywords": [
     "chrome",
@@ -26,20 +26,20 @@
     "test": "yarn mocha"
   },
   "dependencies": {
-    "@tracerbench/trace-event": "^6.1.0",
-    "debug": "^4.3.1"
+    "@tracerbench/trace-event": "^6.1.1",
+    "debug": "^4.3.3"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.22.1",
-    "@typescript-eslint/parser": "^4.22.1",
-    "eslint": "^7.25.0",
+    "@typescript-eslint/eslint-plugin": "^5.10.1",
+    "@typescript-eslint/parser": "^5.10.1",
+    "eslint": "^8.7.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-filenames": "^1.3.2",
-    "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-simple-import-sort": "7.0.0",
-    "mocha": "^8.3.2",
-    "typescript": "^4.2.4"
+    "mocha": "^9.2.0",
+    "typescript": "4.2.4"
   },
   "mocha": {
     "spec": "test/test.js"

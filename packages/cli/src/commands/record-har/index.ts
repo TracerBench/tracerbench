@@ -41,21 +41,10 @@ export default class RecordHAR extends TBBaseCommand {
 
   public async run(): Promise<void> {
     const { flags } = this.parse(RecordHAR);
-    const {
-      url,
-      dest,
-      cookiespath,
-      filename,
-      marker,
-      screenshots,
-      proxy,
-    } = flags;
-    const {
-      network,
-      cpuThrottleRate,
-      headless,
-      tbResultsFolder,
-    } = this.parsedConfig;
+    const { url, dest, cookiespath, filename, marker, screenshots, proxy } =
+      flags;
+    const { network, cpuThrottleRate, headless, tbResultsFolder } =
+      this.parsedConfig;
     // getConfig will always return defaultFlagArgs
     const resultsDir = tbResultsFolder as string;
     let { browserArgs } = this.parsedConfig;

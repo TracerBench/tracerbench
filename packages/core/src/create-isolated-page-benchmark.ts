@@ -5,14 +5,14 @@ import {
   SpawnOptions
 } from 'chrome-debugging-client';
 
+import type { RaceCancellation } from 'race-cancellation';
+
 export type SamplePageFn<TSample> = (
   page: SessionConnection,
   iteration: number,
   isTrial: boolean,
   raceCancel: RaceCancellation
 ) => Promise<TSample>;
-
-import { RaceCancellation } from 'race-cancellation';
 
 import { Benchmark, BenchmarkSampler } from './run';
 

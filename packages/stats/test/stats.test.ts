@@ -1,5 +1,7 @@
-import { Stats } from '../src/stats';
 import { expect } from 'chai';
+import { describe } from 'mocha';
+
+import { Stats } from '../src/stats';
 import { REGRESSION_RESULTS, HIGH_VARIANCE_RESULTS } from './fixtures';
 import { roundFloatAndConvertMicrosecondsToMS } from '../src/utils';
 
@@ -31,6 +33,15 @@ const statsMS = new Stats(
   roundFloatAndConvertMicrosecondsToMS
 );
 
+const statsHighConf = new Stats(
+  {
+    control: REGRESSION_RESULTS.control,
+    experiment: REGRESSION_RESULTS.experiment,
+    name: 'stats-regression-test',
+    confidenceLevel: 0.99
+  },
+  roundFloatAndConvertMicrosecondsToMS
+);
 // stats testing a regression experiment
 describe('stats', () => {
   it(`name()`, () => {
@@ -84,6 +95,18 @@ describe('stats', () => {
       -2083.26
     );
     expect(statsMS.confidenceInterval.asPercent.percentMax).to.equal(-2081.14);
+
+    //confidence level at 0.99
+    // MS
+    expect(statsHighConf.confidenceInterval.min).to.equal(-1082);
+    expect(statsHighConf.confidenceInterval.max).to.equal(-1078);
+    expect(statsHighConf.confidenceInterval.median).to.equal(-1080);
+    expect(statsHighConf.confidenceInterval.pValue).to.equal(1.416e-9);
+    expect(statsHighConf.confidenceInterval.asPercent.percentMin).to.equal(-2087.14);
+    expect(statsHighConf.confidenceInterval.asPercent.percentMedian).to.equal(
+      -2083.26
+    );
+    expect(statsHighConf.confidenceInterval.asPercent.percentMax).to.equal(-2079.95);
 
     // HIGH VARIANCE MS
     expect(statsHighVarianceMS.confidenceInterval.min).to.equal(-95);

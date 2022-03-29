@@ -1,4 +1,4 @@
-import { cross, histogram, mean, quantile } from 'd3-array';
+import { mean, cross, histogram, quantile } from 'd3-array';
 import { scaleLinear } from 'd3-scale';
 
 import { confidenceInterval } from './confidence-interval';
@@ -55,6 +55,14 @@ export type IConfidenceInterval = {
   U: number;
   asPercent: IAsPercentage;
 };
+
+/**
+ * Statistics class which powers the TracerBench statistical reporter
+ *
+ *
+ * @param options - IStatsOptions
+ * @param unitConverterFn - Optional unit converter function which takes a number and returns a number
+ */
 export class Stats {
   public readonly name: string;
   public estimator: number;
@@ -296,7 +304,7 @@ export class Stats {
   private getConfidenceInterval(
     control: number[],
     experiment: number[],
-    confidenceLevel: 0.8 | 0.85 | 0.9 | 0.95 | 0.99 | 0.995 | 0.999 = 0.95
+    confidenceLevel: IStatsOptions['confidenceLevel'] = 0.95
   ): IConfidenceInterval {
     const ci = confidenceInterval(control, experiment, confidenceLevel);
     const isCISig =
@@ -305,8 +313,10 @@ export class Stats {
       (ci.min === 0 && ci.max === 0)
         ? false
         : true;
+    const sigLevel: number = 1 - confidenceLevel;
     // ci sign must match on lower and upper bounds and pValue < 5%
-    const isSig = isCISig && ci.pValue < 0.05;
+    const isSig = isCISig && ci.pValue < sigLevel;
+
     return {
       min: Math.round(Math.ceil(ci.min * 100) / 100),
       max: Math.round(Math.ceil(ci.max * 100) / 100),

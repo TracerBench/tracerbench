@@ -1,4 +1,6 @@
 import { expect } from "chai";
+import { describe } from "mocha";
+
 import { test } from "@oclif/test";
 
 import parseCompareResult from "../../src/compare/parse-compare-result";
@@ -7,10 +9,10 @@ import { COMPARE_JSON } from "../test-helpers";
 const jsonResults = {
   meta: {
     browserVersion: "",
-    cpus: "",
+    cpus: ""
   },
   samples: [{}],
-  set: "",
+  set: ""
 };
 
 const sample = {

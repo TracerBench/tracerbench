@@ -1,9 +1,11 @@
+import { expect } from 'chai';
+import { describe } from 'mocha';
+
 import {
   convertMicrosecondsToMS,
   convertMSToMicroseconds,
   toNearestHundreth
 } from '../src/utils';
-import { expect } from 'chai';
 
 describe('utils test', () => {
   it(`convertMicrosecondsToMS()`, () => {

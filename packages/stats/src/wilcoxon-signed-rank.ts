@@ -61,7 +61,13 @@ export function getTPlusVal(rankedSamples: ISample[]): number {
   }, 0);
 }
 
-// paired two-tailed test alpha 0.05 critical values
+/**
+ * Wilcoxon Signed Rank Test
+ * paired two-tailed test alpha 0.05 critical values
+ *
+ * @param control - Control as array of numbers
+ * @param listTwo - Experiment as array of numbers
+ */
 export function getWilcoxonSignedRankTest(
   control: number[],
   experiment: number[]

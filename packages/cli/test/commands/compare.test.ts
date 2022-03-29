@@ -1,5 +1,7 @@
 import { test } from "@oclif/test";
 import { expect, assert } from "chai";
+import { describe } from "mocha";
+
 import Compare from "../../src/commands/compare";
 import { FIXTURE_APP, TB_RESULTS_FOLDER } from "../test-helpers";
 import { ICompareJSONResults } from "../../src/compare/compare-results";
@@ -31,7 +33,7 @@ describe("compare fixture: A/A", () => {
           "--cpuThrottleRate=1",
           "--headless",
           "--debug",
-          "--report",
+          "--report"
         ]);
         const resultsJSON: ICompareJSONResults = await JSON.parse(results);
         assert.exists(`${TB_RESULTS_FOLDER}/server-control-settings.json`);
@@ -67,7 +69,7 @@ describe("compare fixture: A/A CI", () => {
           FIXTURE_APP.controlConfig,
           "--cpuThrottleRate=1",
           "--headless",
-          "--isCIEnv=true",
+          "--isCIEnv=true"
         ]);
 
         expect(ctx.stdout).to.contain(`SUCCESS`);
@@ -101,7 +103,7 @@ describe("compare regression: fixture: A/B", () => {
           "--regressionThreshold",
           regressionThreshold,
           "--cpuThrottleRate=1",
-          "--headless",
+          "--headless"
         ]);
 
         const resultsJSON: ICompareJSONResults = await JSON.parse(results);
@@ -153,7 +155,7 @@ describe("compare mobile horizontal: fixture: A/A", () => {
           "--emulateDeviceOrientation",
           "horizontal",
           "--cpuThrottleRate=6",
-          "--headless",
+          "--headless"
         ]);
 
         expect(ctx.stdout).to.contain(`SUCCESS`);

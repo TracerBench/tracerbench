@@ -1,5 +1,6 @@
 import { test } from "@oclif/test";
 import { expect } from "chai";
+import { describe } from "mocha";
 
 import RecordHARAuth from "../../src/commands/record-har/auth";
 

@@ -6,11 +6,12 @@ import {
   combineRaceCancellation,
   newRaceCancellation,
   oneshot,
-  RaceCancellation,
   throwIfCancelled
 } from 'race-cancellation';
 
 import readHandle from './read-handle';
+
+import type { RaceCancellation } from 'race-cancellation';
 
 export type UsingTracingCallback = (
   raceCancellation: RaceCancellation
@@ -23,10 +24,8 @@ export default async function runTrace(
   usingTracing: UsingTracingCallback,
   path?: string
 ): Promise<TraceStreamJson> {
-  const [
-    completed,
-    complete
-  ] = oneshot<Protocol.Tracing.TracingCompleteEvent>();
+  const [completed, complete] =
+    oneshot<Protocol.Tracing.TracingCompleteEvent>();
   const raceEarlyComplete = newRaceCancellation(
     completed,
     'tracing completed earlier than expected'
