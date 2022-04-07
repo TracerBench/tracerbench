@@ -15,7 +15,7 @@ describe("compare fixture: A/A", () => {
   test
     .stdout()
     .it(
-      `runs compare --controlURL ${FIXTURE_APP.control} --experimentURL ${FIXTURE_APP.control} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER} --cpuThrottleRate=1 --config ${FIXTURE_APP.controlConfig} --network ${network} --headless --debug --report`,
+      `runs compare --controlURL ${FIXTURE_APP.control} --experimentURL ${FIXTURE_APP.control} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER}  --config ${FIXTURE_APP.controlConfig} --network ${network} --headless --debug --report`,
       async (ctx) => {
         const results = await Compare.run([
           "--controlURL",
@@ -30,7 +30,6 @@ describe("compare fixture: A/A", () => {
           FIXTURE_APP.controlConfig,
           "--network",
           network,
-          "--cpuThrottleRate=1",
           "--headless",
           "--debug",
           "--report"
@@ -54,7 +53,7 @@ describe("compare fixture: A/A CI", () => {
   test
     .stdout()
     .it(
-      `runs compare --controlURL ${FIXTURE_APP.control} --experimentURL ${FIXTURE_APP.control} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER} --cpuThrottleRate=1 --config ${FIXTURE_APP.controlConfig} --headless --isCIEnv=true`,
+      `runs compare --controlURL ${FIXTURE_APP.control} --experimentURL ${FIXTURE_APP.control} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER}  --config ${FIXTURE_APP.controlConfig} --headless --isCIEnv=true`,
       async (ctx) => {
         await Compare.run([
           "--controlURL",
@@ -67,7 +66,6 @@ describe("compare fixture: A/A CI", () => {
           TB_RESULTS_FOLDER,
           "--config",
           FIXTURE_APP.controlConfig,
-          "--cpuThrottleRate=1",
           "--headless",
           "--isCIEnv=true"
         ]);
@@ -87,7 +85,7 @@ describe("compare regression: fixture: A/B", () => {
   test
     .stdout()
     .it(
-      `runs compare --controlURL ${FIXTURE_APP.control} --experimentURL ${FIXTURE_APP.regression} --fidelity ${fidelityLow} --tbResultsFolder ${TB_RESULTS_FOLDER} --config ${FIXTURE_APP.regressionConfig} --regressionThreshold ${regressionThreshold} --cpuThrottleRate=1 --headless`,
+      `runs compare --controlURL ${FIXTURE_APP.control} --experimentURL ${FIXTURE_APP.regression} --fidelity ${fidelityLow} --tbResultsFolder ${TB_RESULTS_FOLDER} --config ${FIXTURE_APP.regressionConfig} --regressionThreshold ${regressionThreshold} --headless`,
       async (ctx) => {
         const results = await Compare.run([
           "--controlURL",
@@ -102,7 +100,6 @@ describe("compare regression: fixture: A/B", () => {
           FIXTURE_APP.regressionConfig,
           "--regressionThreshold",
           regressionThreshold,
-          "--cpuThrottleRate=1",
           "--headless"
         ]);
 
@@ -139,7 +136,7 @@ describe("compare mobile horizontal: fixture: A/A", () => {
   test
     .stdout()
     .it(
-      `runs compare --controlURL ${FIXTURE_APP.control} --experimentURL ${FIXTURE_APP.experiment} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER} --emulateDevice ${emulateDevice} --emulateDeviceOrientation horizontal --cpuThrottleRate=6 --headless`,
+      `runs compare --controlURL ${FIXTURE_APP.control} --experimentURL ${FIXTURE_APP.experiment} --fidelity ${fidelity} --tbResultsFolder ${TB_RESULTS_FOLDER} --emulateDevice ${emulateDevice} --emulateDeviceOrientation horizontal --headless`,
       async (ctx) => {
         await Compare.run([
           "--controlURL",
@@ -154,7 +151,6 @@ describe("compare mobile horizontal: fixture: A/A", () => {
           emulateDevice,
           "--emulateDeviceOrientation",
           "horizontal",
-          "--cpuThrottleRate=6",
           "--headless"
         ]);
 

@@ -1,18 +1,20 @@
 import { writeFileSync, existsSync } from 'fs';
 import mkdirp = require('mkdirp');
 import { resolve, dirname, join } from 'path';
-import { pathToFileURL } from 'url';
 import { createTraceNavigationBenchmark, run } from '@tracerbench/core';
 import findUp = require('find-up');
 import build from './build/index';
+import * as execa from 'execa';
 import type { ChromeSpawnOptions } from 'chrome-debugging-client';
 
 const channels = ['alpha', 'beta', 'release'];
 const browserOpts: Partial<ChromeSpawnOptions> = {
   headless: true,
-  stdio: 'ignore'
+  stdio: 'ignore',
 };
 
+const [ NODE_PATH ] = process.argv;
+let packageRoot: string;
 describe('Benchmark', function () {
   describe('smoke test', function () {
     this.timeout('10m');
@@ -22,32 +24,64 @@ describe('Benchmark', function () {
       name: string;
       url: string;
     }[];
-
     before(async () => {
       const packageJson = await findUp('package.json');
       if (packageJson === undefined) {
         throw new Error(`failed to find-up package.json from ${__dirname}`);
       }
-      const packageRoot = dirname(packageJson);
+      packageRoot = dirname(packageJson);
 
       const needsBuild: string[] = [];
-
+      const port = 3000;
+      const BASE_URL = `http://localhost:${port}/`;
       tests = channels.map((name) => {
         const path = resolve(packageRoot, `dist/test/${name}/index.html`);
         if (!existsSync(path)) {
           needsBuild.push(name);
         }
-        const url = pathToFileURL(path).toString();
+        const url = `${BASE_URL}${name}/index.html`;
         return { name, url };
       });
 
+      const staticAssetFolder: string = resolve(packageRoot, 'dist/test');
       await build(needsBuild, packageRoot);
+      const serverPath = resolve(packageRoot, 'dist/test/test-server');
+      const serverArgs = [
+        serverPath,
+        '--port',
+        '3000',
+        '--staticAssetFolder',
+        staticAssetFolder,
+        '&'
+      ];
+    
+      try {
+        await execa(NODE_PATH, serverArgs, { shell: true, stdio: "ignore"});
+        console.log(`Ready to serve test pages at http://localhost:${port}`);
+      } catch(err) {
+        if (err && err instanceof Error) {
+          console.warn(`Failed to start test server ${err.message}`);
+        }
+      }
 
       resultDir = resolve(packageRoot, 'test/results');
 
       mkdirp.sync(resultDir);
     });
 
+    after(async() => {
+      try {
+        await execa(resolve(packageRoot, './test/killTestServer.sh'), {
+          shell:true
+        });
+        console.log('Stopped test server');
+      } catch(err) {
+        if (err && err instanceof Error) {
+          console.warn(`Failed to terminate test server, need to stop it manually. ${err.message}`);
+        }
+      }
+    });
+  
     it('should work', async function () {
       const markers = [
         { start: 'fetchStart', label: 'jquery' },
@@ -61,9 +95,7 @@ describe('Benchmark', function () {
       const benchmarks = tests.map(({ name, url }) =>
         createTraceNavigationBenchmark(name, url, markers, {
           spawnOptions: browserOpts,
-          pageSetupOptions: {
-            cpuThrottlingRate: 4
-          },
+          pageSetupOptions: {},
           traceOptions: {
             saveTraceAs: (group, i) =>
               join(resultDir, `trace-${group}-${i}.json`)

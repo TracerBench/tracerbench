@@ -50,7 +50,7 @@ export default class RecordHAR extends TBBaseCommand {
     let { browserArgs } = this.parsedConfig;
     const conditions: IConditions = {
       network: network ? network : "none",
-      cpu: cpuThrottleRate ? parseInt(cpuThrottleRate as string, 10) : 1,
+      cpu: cpuThrottleRate ? parseInt(cpuThrottleRate as string, 10) : 0,
     };
     let cookies = [
       {

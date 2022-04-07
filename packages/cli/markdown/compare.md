@@ -30,7 +30,7 @@ OPTIONS
       Control URL to visit for compare command
 
   --cpuThrottleRate=cpuThrottleRate
-      (required) [default: 2] CPU throttle multiplier
+      (required) [default: 0] CPU throttle multiplier
 
   --debug
       Debug flag per command. Will output noisy command
