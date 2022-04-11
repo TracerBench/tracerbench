@@ -15,7 +15,7 @@ export type PerformanceTimingMark = keyof PerformanceNavigationTiming;
 // chrome-debugging-client#defaultFlags.ts
 export const defaultFlagArgs: ITBConfig = {
   plotTitle: "TracerBench",
-  cpuThrottleRate: 2,
+  cpuThrottleRate: 0,
   fidelity: "low",
   markers: "domComplete",
   marker: "loadEventEnd",

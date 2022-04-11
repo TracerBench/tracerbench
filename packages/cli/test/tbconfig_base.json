@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/TracerBench/tracerbench/master/packages/cli/tb-schema.json",
   // the title of the report pdf file
   "plotTitle": "tbconfig_base file",
-  "cpuThrottleRate": 2,
+  "cpuThrottleRate": 0,
   "tbResultsFolder": "../tracerbench-results",
   "controlURL": "https://www.tracerbench.com/",
   "experimentURL": "https://www.tracerbench.com/",
