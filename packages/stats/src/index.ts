@@ -5,7 +5,8 @@ import {
   IOutliers,
   ISevenFigureSummary,
   IStatsOptions,
-  Stats
+  Stats,
+  Bucket
 } from './stats';
 import {
   convertMicrosecondsToMS,
@@ -17,6 +18,7 @@ import { getWilcoxonRankSumTest } from './wilcoxon-rank-sum';
 import { getWilcoxonSignedRankTest } from './wilcoxon-signed-rank';
 
 export {
+  Bucket,
   cartesianProduct,
   confidenceInterval,
   Stats,
