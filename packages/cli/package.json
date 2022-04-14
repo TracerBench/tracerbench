@@ -54,7 +54,7 @@
     "@oclif/test": "^1.2.8",
     "@types/chai": "^4.2.17",
     "@types/fs-extra": "^9.0.11",
-    "@types/html-minifier-terser": "^5.1.1",
+    "@types/html-minifier-terser": "^6.1.0",
     "@types/json-query": "^2.2.0",
     "@types/json5": "^2.2.0",
     "@types/listr": "^0.14.3",

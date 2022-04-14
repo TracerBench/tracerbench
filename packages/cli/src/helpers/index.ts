@@ -2,11 +2,11 @@ import deviceSettings, {
   EmulateDeviceSetting,
   getEmulateDeviceSettingForKeyAndOrientation,
 } from "./device-settings";
-import { parseMarkers } from "./utils";
+import { parseMarkers, md5sum } from "./utils";
 
 export {
   deviceSettings,
   EmulateDeviceSetting,
   getEmulateDeviceSettingForKeyAndOrientation,
 };
-export { parseMarkers };
+export { parseMarkers, md5sum };
