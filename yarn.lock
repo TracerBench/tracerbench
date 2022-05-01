@@ -1866,10 +1866,10 @@
   resolved "https://registry.yarnpkg.com/@types/d3-array/-/d3-array-2.0.0.tgz#a0d63a296a2d8435a9ec59393dcac746c6174a96"
   integrity sha512-rGqfPVowNDTszSFvwoZIXvrPG7s/qKzm9piCRIH6xwTTRu7pPZ3ootULFnPkTt74B6i5lN0FpLQL24qGOw1uZA==
 
-"@types/d3-hierarchy@^2.0.0":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@types/d3-hierarchy/-/d3-hierarchy-2.0.2.tgz#afd09d509c36e8cd4907333556f8b591f23589e9"
-  integrity sha512-6PlBRwbjUPPt0ZFq/HTUyOAdOF3p73EUYots74lHMUyAVtdFSOS/hAeNXtEIM9i7qRDntuIblXxHGUMb9MuNRA==
+"@types/d3-hierarchy@^3.0.2":
+  version "3.0.2"
+  resolved "https://registry.yarnpkg.com/@types/d3-hierarchy/-/d3-hierarchy-3.0.2.tgz#ca63f2f4da15b8f129c5b7dffd71d904cba6aca2"
+  integrity sha512-+krnrWOZ+aQB6v+E+jEkmkAx9HvsNAD+1LCD0vlBY3t+HwjKnsBFbpVLx6WWzDzCIuiTWdAxXMEnGnVXpB09qQ==
 
 "@types/d3-scale@~3.0.0":
   version "3.0.0"

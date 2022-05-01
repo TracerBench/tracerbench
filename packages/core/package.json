@@ -39,7 +39,7 @@
     "@tracerbench/har": "^7.0.0",
     "@tracerbench/trace-event": "^7.0.0",
     "@tracerbench/trace-model": "^7.0.0",
-    "@types/d3-hierarchy": "^2.0.0",
+    "@types/d3-hierarchy": "^3.0.2",
     "@types/node": "*",
     "array-binsearch": "^1.0.1",
     "chalk": "^4.1.1",
