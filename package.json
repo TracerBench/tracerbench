@@ -13,7 +13,7 @@
   },
   "devDependencies": {
     "@commitlint/cli": "^13.1.0",
-    "@commitlint/config-conventional": "^12.1.4",
+    "@commitlint/config-conventional": "^17.0.3",
     "@microsoft/api-documenter": "^7.13.54",
     "@microsoft/api-extractor": "^7.18.11",
     "conventional-changelog-cli": "^2.1.1",
