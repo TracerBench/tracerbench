@@ -54,6 +54,8 @@ import {
   sampleTimeout,
   socksPorts,
   tbResultsFolder,
+  traceEndAtLcp,
+  lcpRegex,
 } from "../../helpers/flags";
 import {
   chalkScheme,
@@ -90,6 +92,8 @@ export interface ICompareFlags {
   report?: boolean;
   isCIEnv?: boolean;
   regressionThresholdStat: RegressionThresholdStat;
+  traceEndAtLcp?: boolean;
+  lcpRegex?: string;
 }
 
 export default class Compare extends TBBaseCommand {
@@ -120,6 +124,8 @@ export default class Compare extends TBBaseCommand {
     headless,
     isCIEnv: isCIEnv(),
     regressionThresholdStat,
+    traceEndAtLcp,
+    lcpRegex: lcpRegex(),
   };
   public compareFlags: ICompareFlags;
   public parsedConfig: ITBConfig = defaultFlagArgs;
@@ -440,6 +446,8 @@ export default class Compare extends TBBaseCommand {
           captureV8RuntimeStats: this.compareFlags.runtimeStats,
           saveTraceAs: (group, i) =>
             `${this.compareFlags.tbResultsFolder}/traces/${group}${i}.json`,
+          traceEndAtLcp: this.compareFlags.traceEndAtLcp,
+          lcpRegex: this.compareFlags.lcpRegex,
         },
       },
     ];
@@ -480,6 +488,8 @@ export default class Compare extends TBBaseCommand {
           captureV8RuntimeStats: this.compareFlags.runtimeStats,
           saveTraceAs: (group, i) =>
             `${this.compareFlags.tbResultsFolder}/traces/${group}${i}.json`,
+          traceEndAtLcp: this.compareFlags.traceEndAtLcp,
+          lcpRegex: this.compareFlags.lcpRegex,
         },
       },
     ];

@@ -60,6 +60,9 @@ OPTIONS
   --isCIEnv=isCIEnv
       Provides a drastically slimmed down stdout report for CI workflows. However does NOT hide analysis.
 
+  --lcpRegex=lcpRegex
+      The regex pattern to identify the LCP candidate, if undefined, we use the first LCP candidate
+
   --markers=markers
       (required) [default: domComplete] User Timing Markers
 
@@ -86,6 +89,9 @@ OPTIONS
 
   --tbResultsFolder=tbResultsFolder
       (required) [default: ./tracerbench-results] The output folder path for all tracerbench results
+
+  --traceEndAtLcp
+      Overrides the default loadEventEnd as trace end or the last marker in markers array as tracerbench
 ```
 
 _See code: [dist/src/commands/compare/index.ts](https://github.com/TracerBench/tracerbench/blob/v6.1.2/dist/src/commands/compare/index.ts)_

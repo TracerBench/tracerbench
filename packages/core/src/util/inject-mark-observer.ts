@@ -6,12 +6,15 @@ import type { RaceCancellation } from 'race-cancellation';
 import isNavigationTimingMark from './is-navigation-timing-mark';
 
 export type WaitForMark = (raceCancellation: RaceCancellation) => Promise<void>;
+export type WaitForLCP = (raceCancellation: RaceCancellation) => Promise<void>;
+
+const LCP_EVENT = 'largest-contentful-paint event';
 
 export default async function injectMarkObserver(
   page: ProtocolConnection,
   mark: string,
   variable = '__tracerbench'
-): Promise<(raceCancelation: RaceCancellation) => Promise<void>> {
+): Promise<WaitForMark> {
   const scriptSource = isNavigationTimingMark(mark)
     ? navigationObserver(variable)
     : markObserver(mark, variable);
@@ -24,26 +27,69 @@ export default async function injectMarkObserver(
     waitForMark(page, variable, mark, raceCancelation);
 }
 
+export async function injectLCPObserver(
+  page: ProtocolConnection,
+  elementPattern?: string,
+  variable = '__tracerbenchLCP'
+): Promise<WaitForLCP> {
+  const scriptSource = lcpObserver(variable, elementPattern);
+
+  await page.send('Page.addScriptToEvaluateOnLoad', {
+    scriptSource
+  });
+
+  return (raceCancelation: RaceCancellation) =>
+    waitForLCP(page, variable, raceCancelation);
+}
+
+function lcpObserver(variable: string, elementPattern?: string): string {
+  return `"use strict";
+    var ${variable} =
+      self === top &&
+      opener === null &&
+      new Promise((resolve) =>
+        new PerformanceObserver((entryList, observer) => {
+          var entries = entryList.getEntries();
+          var pattern = '${elementPattern}';
+          for (var i = 0; i < entries.length; i++) {
+            if ( pattern !== 'undefined') {
+              var elm = entries[i].element.outerHTML;;
+              var regex = new RegExp(pattern);
+              if (regex.test(elm)){
+                requestAnimationFrame(() => {
+                  resolve();
+                });
+              }
+            } else {
+              requestAnimationFrame(() => {
+                resolve();
+              });
+              break;
+            }
+          }
+          observer.disconnect();
+        }).observe({type: 'largest-contentful-paint', buffered: true})
+      );`;
+}
 function markObserver(mark: string, variable: string): string {
   return `"use strict";
-  ${enforcePaintEventFn}
-var ${variable} =
-  self === top &&
-  opener === null &&
-  new Promise((resolve) =>
-    new PerformanceObserver((records, observer) => {
-      if (records.getEntriesByName(${JSON.stringify(mark)}).length > 0) {
-        requestAnimationFrame(() => {
-          enforcePaintEvent();
-          requestIdleCallback(() => {
-            performance.mark("endTrace");
-            resolve();
-          });
-        });
-        observer.disconnect();
-      }
-    }).observe({ type: "mark" })
-  );`;
+      ${enforcePaintEventFn}
+    var ${variable} =
+      self === top &&
+      opener === null &&
+      new Promise((resolve) =>
+        new PerformanceObserver((records, observer) => {
+          if (records.getEntriesByName(${JSON.stringify(mark)}).length > 0) {
+            requestAnimationFrame(() => {
+              enforcePaintEvent();
+              requestIdleCallback(() => {
+                resolve();
+              });
+            });
+            observer.disconnect();
+          }
+        }).observe({ type: "mark" })
+      );`;
 }
 
 function navigationObserver(variable: string): string {
@@ -58,7 +104,6 @@ var ${variable} =
         requestAnimationFrame(() => {
           enforcePaintEvent();
           requestIdleCallback(() => {
-            performance.mark("endTrace");
             resolve();
           });
         });
@@ -66,6 +111,36 @@ var ${variable} =
       }
     }).observe({ type: "navigation" })
   );`;
+}
+
+async function waitForLCP(
+  page: ProtocolConnection,
+  expression: string,
+  raceCancelation: RaceCancellation
+): Promise<void> {
+  let result: Protocol.Runtime.EvaluateResponse;
+  try {
+    result = await page.send(
+      'Runtime.evaluate',
+      {
+        expression,
+        awaitPromise: true,
+        returnByValue: true
+      },
+      raceCancelation
+    );
+
+    const { exceptionDetails } = result;
+    if (exceptionDetails !== undefined) {
+      throw waitForMarkOrEventError(LCP_EVENT, { exceptionDetails });
+    }
+  } catch (original) {
+    if (original instanceof Error) {
+      throw waitForMarkOrEventError(LCP_EVENT, { original });
+    } else {
+      throw original;
+    }
+  }
 }
 
 async function waitForMark(
@@ -88,11 +163,11 @@ async function waitForMark(
 
     const { exceptionDetails } = result;
     if (exceptionDetails !== undefined) {
-      throw waitForMarkError(mark, { exceptionDetails });
+      throw waitForMarkOrEventError(mark, { exceptionDetails });
     }
   } catch (original) {
     if (original instanceof Error) {
-      throw waitForMarkError(mark, { original });
+      throw waitForMarkOrEventError(mark, { original });
     } else {
       throw original;
     }
@@ -104,11 +179,11 @@ interface ErrorDetail {
   original?: Error;
 }
 
-function waitForMarkError(
-  mark: string,
+function waitForMarkOrEventError(
+  target: string,
   { original, exceptionDetails }: ErrorDetail
 ): Error {
-  let message = `errored while waiting for ${mark}`;
+  let message = `errored while waiting for ${target}`;
   if (exceptionDetails) {
     message += `: ${exceptionDetails.text}`;
   }

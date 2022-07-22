@@ -111,7 +111,6 @@ export async function recordHARClient(
               requestAnimationFrame(() => {
                 enforcePaintEvent();
                 requestIdleCallback(() => {
-                  performance.mark("endTrace");
                   resolve();
                 });
               });

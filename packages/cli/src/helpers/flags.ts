@@ -277,3 +277,13 @@ export const jsonReport = oclifFlags.boolean({
   description: `Include a JSON file from the stdout report`,
   default: false,
 });
+
+export const traceEndAtLcp = oclifFlags.boolean({
+  description: `Overrides the default loadEventEnd as trace end or the last marker in markers array as tracerbench`,
+  default: false,
+});
+
+export const lcpRegex = oclifFlags.build({
+  description: `The regex pattern to identify the LCP candidate, if undefined, we use the first LCP candidate`,
+  required: false,
+});

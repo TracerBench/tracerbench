@@ -45,6 +45,10 @@ export interface ITBConfig {
   isCIEnv?: boolean | string;
   marker?: string;
   regressionThresholdStat?: RegressionThresholdStat;
+  //overrides the default loadEventEnd as trace end or the last marker in markers array as tracerbench
+  traceEndAtLcp?: boolean;
+  //the regex pattern to identify the LCP candidate, if undefined, we use the first LCP candidate
+  lcpRegex?: string;
 }
 
 export interface IHARServer {

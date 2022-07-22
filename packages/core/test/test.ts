@@ -10,7 +10,7 @@ import type { ChromeSpawnOptions } from 'chrome-debugging-client';
 const channels = ['alpha', 'beta', 'release'];
 const browserOpts: Partial<ChromeSpawnOptions> = {
   headless: true,
-  stdio: 'ignore',
+  stdio: 'inherit',
 };
 
 const [ NODE_PATH ] = process.argv;
@@ -24,7 +24,7 @@ describe('Benchmark', function () {
       name: string;
       url: string;
     }[];
-    before(async () => {
+    this.beforeEach(async () => {
       const packageJson = await findUp('package.json');
       if (packageJson === undefined) {
         throw new Error(`failed to find-up package.json from ${__dirname}`);
@@ -54,7 +54,7 @@ describe('Benchmark', function () {
         staticAssetFolder,
         '&'
       ];
-    
+
       try {
         await execa(NODE_PATH, serverArgs, { shell: true, stdio: "ignore"});
         console.log(`Ready to serve test pages at http://localhost:${port}`);
@@ -69,7 +69,7 @@ describe('Benchmark', function () {
       mkdirp.sync(resultDir);
     });
 
-    after(async() => {
+    this.afterEach(async() => {
       try {
         await execa(resolve(packageRoot, './test/killTestServer.sh'), {
           shell:true
@@ -81,7 +81,7 @@ describe('Benchmark', function () {
         }
       }
     });
-  
+
     it('should work', async function () {
       const markers = [
         { start: 'fetchStart', label: 'jquery' },
@@ -99,6 +99,58 @@ describe('Benchmark', function () {
           traceOptions: {
             saveTraceAs: (group, i) =>
               join(resultDir, `trace-${group}-${i}.json`)
+          }
+        })
+      );
+      const start = Date.now();
+      const results = await run(
+        benchmarks,
+        4,
+        (elasped, completed, remaining, group, iteration) => {
+          if (completed > 0) {
+            const average = elasped / completed;
+            const remainingSecs = Math.round((remaining * average) / 1000);
+            console.log(
+              '%s %s %s seconds remaining',
+              group.padStart(15),
+              iteration.toString().padStart(3),
+              `about ${remainingSecs}`.padStart(10)
+            );
+          } else {
+            console.log(
+              '%s %s',
+              group.padStart(15),
+              iteration.toString().padStart(3)
+            );
+          }
+        }
+      );
+      console.log(
+        'completed in %d seconds',
+        Math.round((Date.now() - start) / 1000)
+      );
+
+      writeFileSync(join(resultDir, 'results.json'), JSON.stringify(results));
+    });
+
+    it('should end trace at LCP', async function () {
+      const markers = [
+        { start: 'fetchStart', label: 'jquery' },
+        { start: 'jqueryLoaded', label: 'ember' },
+        { start: 'emberLoaded', label: 'application' },
+        { start: 'startRouting', label: 'routing' },
+        { start: 'willTransition', label: 'transition' },
+        { start: 'didTransition', label: 'render' }
+      ];
+      const benchmarks = tests.map(({ name, url }) =>
+        createTraceNavigationBenchmark(name, url, markers, {
+          spawnOptions: browserOpts,
+          pageSetupOptions: {},
+          traceOptions: {
+            saveTraceAs: (group, i) =>
+              join(resultDir, `trace-${group}-${i}.json`),
+            traceEndAtLcp: true,
+            lcpRegex: 'h1'
           }
         })
       );

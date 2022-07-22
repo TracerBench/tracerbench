@@ -6,7 +6,10 @@ import extractNavigationSample, {
   NavigationSample
 } from './metrics/extract-navigation-sample';
 import type { Benchmark } from './run';
-import injectMarkObserver from './util/inject-mark-observer';
+import type { WaitForLCP, WaitForMark } from './util/inject-mark-observer';
+import injectMarkObserver, {
+  injectLCPObserver
+} from './util/inject-mark-observer';
 import navigate from './util/navigate';
 import type { PageSetupOptions } from './util/setup-page';
 import setupPage from './util/setup-page';
@@ -42,14 +45,32 @@ export default function createTraceNavigationBenchmark(
     group,
     async (page, _i, _isTrial, raceCancel, trace) => {
       setupPage(page, raceCancel, options.pageSetupOptions);
+
+      let traceEndAtLcp = false;
+      let lcpRegex: string | undefined;
+      if (options.traceOptions) {
+        traceEndAtLcp = options.traceOptions.traceEndAtLcp ?? false;
+        lcpRegex = options.traceOptions.lcpRegex;
+      }
+
+      let waitForLcp: WaitForLCP;
+      let waitForMark: WaitForMark;
       const { start: mark } = markers[markers.length - 1];
-      const waitForMark = await injectMarkObserver(page, mark);
+      if (traceEndAtLcp) {
+        waitForLcp = await injectLCPObserver(page, lcpRegex);
+      } else {
+        waitForMark = await injectMarkObserver(page, mark);
+      }
       return extractNavigationSample(
         buildModel(
           await trace(async (raceCancel) => {
             // do navigation
             await navigate(page, url, raceCancel);
-            await waitForMark(raceCancel);
+            if (traceEndAtLcp) {
+              await waitForLcp(raceCancel);
+            } else {
+              await waitForMark(raceCancel);
+            }
           })
         ),
         markers

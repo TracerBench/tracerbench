@@ -11,6 +11,7 @@ const fidelityLow = "10";
 const emulateDevice = "iphone-4";
 const regressionThreshold = "50";
 const network = "FIOS";
+const lcpRegexPattern = "h1";
 describe("compare fixture: A/A", () => {
   test
     .stdout()
@@ -77,6 +78,112 @@ describe("compare fixture: A/A CI", () => {
         expect(ctx.stdout).to.not.contain("Seven Figure Summary");
         expect(ctx.stdout).to.not.contain("Hodges–Lehmann estimated delta");
         expect(ctx.stdout).to.not.contain("Sparkline");
+      }
+    );
+});
+
+describe("compare regression: fixture: A/B trace end at specific LCP candidate", () => {
+  test
+    .stdout()
+    .it(
+      `runs compare --controlURL ${FIXTURE_APP.control} --experimentURL ${FIXTURE_APP.regression} --fidelity ${fidelityLow} --tbResultsFolder ${TB_RESULTS_FOLDER} --config ${FIXTURE_APP.regressionConfig} --regressionThreshold ${regressionThreshold} --headless --traceEndAtLcp --lcpRegex ${lcpRegexPattern}`,
+      async (ctx) => {
+        const results = await Compare.run([
+          "--controlURL",
+          FIXTURE_APP.control,
+          "--experimentURL",
+          FIXTURE_APP.regression,
+          "--fidelity",
+          fidelityLow,
+          "--tbResultsFolder",
+          TB_RESULTS_FOLDER,
+          "--config",
+          FIXTURE_APP.regressionConfig,
+          "--regressionThreshold",
+          regressionThreshold,
+          "--lcpRegex",
+          lcpRegexPattern,
+          "--headless",
+          "--traceEndAtLcp",
+        ]);
+
+        const resultsJSON: ICompareJSONResults = await JSON.parse(results);
+        expect(ctx.stdout).to.contain(
+          `    SUCCESS     ${fidelityLow} test samples took`
+        );
+        // confirm with headless flag is logging the trace stream
+        expect(ctx.stdout).to.contain(`duration phase estimated regression +`);
+        expect(ctx.stdout).to.contain(
+          `    ! ALERT     Regression found exceeding the set regression threshold of ${regressionThreshold} ms`
+        );
+        assert.isAbove(
+          parseInt(resultsJSON.benchmarkTableData[0].estimatorDelta, 10),
+          500
+        );
+        assert.isAbove(
+          parseInt(resultsJSON.benchmarkTableData[0].confidenceInterval[0], 10),
+          500
+        );
+        assert.isAbove(
+          parseInt(resultsJSON.benchmarkTableData[0].confidenceInterval[1], 10),
+          500
+        );
+        // results are json and are significant
+        assert.isTrue(resultsJSON.areResultsSignificant);
+        // regression is over the threshold
+        assert.isFalse(resultsJSON.isBelowRegressionThreshold);
+      }
+    );
+});
+
+describe("compare regression: fixture: A/B trace end at first LCP candidate", () => {
+  test
+    .stdout()
+    .it(
+      `runs compare --controlURL ${FIXTURE_APP.control} --experimentURL ${FIXTURE_APP.regression} --fidelity ${fidelityLow} --tbResultsFolder ${TB_RESULTS_FOLDER} --config ${FIXTURE_APP.regressionConfig} --regressionThreshold ${regressionThreshold} --headless --traceEndAtLcp`,
+      async (ctx) => {
+        const results = await Compare.run([
+          "--controlURL",
+          FIXTURE_APP.control,
+          "--experimentURL",
+          FIXTURE_APP.regression,
+          "--fidelity",
+          fidelityLow,
+          "--tbResultsFolder",
+          TB_RESULTS_FOLDER,
+          "--config",
+          FIXTURE_APP.regressionConfig,
+          "--regressionThreshold",
+          regressionThreshold,
+          "--headless",
+          "--traceEndAtLcp",
+        ]);
+
+        const resultsJSON: ICompareJSONResults = await JSON.parse(results);
+        expect(ctx.stdout).to.contain(
+          `    SUCCESS     ${fidelityLow} test samples took`
+        );
+        // confirm with headless flag is logging the trace stream
+        expect(ctx.stdout).to.contain(`duration phase estimated regression +`);
+        expect(ctx.stdout).to.contain(
+          `    ! ALERT     Regression found exceeding the set regression threshold of ${regressionThreshold} ms`
+        );
+        assert.isAbove(
+          parseInt(resultsJSON.benchmarkTableData[0].estimatorDelta, 10),
+          500
+        );
+        assert.isAbove(
+          parseInt(resultsJSON.benchmarkTableData[0].confidenceInterval[0], 10),
+          500
+        );
+        assert.isAbove(
+          parseInt(resultsJSON.benchmarkTableData[0].confidenceInterval[1], 10),
+          500
+        );
+        // results are json and are significant
+        assert.isTrue(resultsJSON.areResultsSignificant);
+        // regression is over the threshold
+        assert.isFalse(resultsJSON.isBelowRegressionThreshold);
       }
     );
 });

@@ -24,8 +24,14 @@ export default async function setupPage(
   } = options;
   await Promise.all([
     page.send('Page.enable', undefined, raceCancel),
-    page.send('Performance.enable', undefined, raceCancel)
+    page.send('Performance.enable', undefined, raceCancel),
+    page.send(
+      'PerformanceTimeline.enable',
+      { eventTypes: ['largest-contentful-paint'] },
+      raceCancel
+    )
   ]);
+
   if (cookies !== undefined) {
     await page.send('Network.setCookies', { cookies }, raceCancel);
   }
