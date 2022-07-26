@@ -1,4 +1,5 @@
 import printToPDF from "./print-to-pdf";
+
 export {
   ITracerBenchTraceResult,
   GenerateStats,

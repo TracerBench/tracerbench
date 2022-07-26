@@ -10,7 +10,7 @@ import type { ChromeSpawnOptions } from 'chrome-debugging-client';
 const channels = ['alpha', 'beta', 'release'];
 const browserOpts: Partial<ChromeSpawnOptions> = {
   headless: true,
-  stdio: 'inherit',
+  stdio: 'ignore',
 };
 
 const [ NODE_PATH ] = process.argv;
@@ -134,13 +134,13 @@ describe('Benchmark', function () {
     });
 
     it('should end trace at LCP', async function () {
+      //no need to add markers in render phase, we can still extract paint event
       const markers = [
         { start: 'fetchStart', label: 'jquery' },
         { start: 'jqueryLoaded', label: 'ember' },
         { start: 'emberLoaded', label: 'application' },
         { start: 'startRouting', label: 'routing' },
-        { start: 'willTransition', label: 'transition' },
-        { start: 'didTransition', label: 'render' }
+        { start: 'willTransition', label: 'transition' }
       ];
       const benchmarks = tests.map(({ name, url }) =>
         createTraceNavigationBenchmark(name, url, markers, {

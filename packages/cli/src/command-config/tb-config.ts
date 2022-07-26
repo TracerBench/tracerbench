@@ -45,9 +45,10 @@ export interface ITBConfig {
   isCIEnv?: boolean | string;
   marker?: string;
   regressionThresholdStat?: RegressionThresholdStat;
-  //overrides the default loadEventEnd as trace end or the last marker in markers array as tracerbench
+  //default to false, if it's true
+  //it overrides the default loadEventEnd or the last marker in markers array as trace end
   traceEndAtLcp?: boolean;
-  //the regex pattern to identify the LCP candidate, if undefined, we use the first LCP candidate
+  //the regex pattern to the LCP candidate element user want to measure, if undefined, we use the first LCP candidate
   lcpRegex?: string;
 }
 
