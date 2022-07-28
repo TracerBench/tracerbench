@@ -2,6 +2,7 @@ import { writeFileSync, existsSync } from 'fs';
 import mkdirp = require('mkdirp');
 import { resolve, dirname, join } from 'path';
 import { createTraceNavigationBenchmark, run } from '@tracerbench/core';
+import { Marker } from '@tracerbench/core';
 import findUp = require('find-up');
 import build from './build/index';
 import * as execa from 'execa';
@@ -82,7 +83,7 @@ describe('Benchmark', function () {
       }
     });
 
-    it('should work', async function () {
+    it('should work when last marker triggers a paint event', async function () {
       const markers = [
         { start: 'fetchStart', label: 'jquery' },
         { start: 'jqueryLoaded', label: 'ember' },
@@ -133,14 +134,15 @@ describe('Benchmark', function () {
       writeFileSync(join(resultDir, 'results.json'), JSON.stringify(results));
     });
 
-    it('should end trace at LCP', async function () {
+    it('should end trace at LCP if in markers list', async function () {
       //no need to add markers in render phase, we can still extract paint event
       const markers = [
         { start: 'fetchStart', label: 'jquery' },
         { start: 'jqueryLoaded', label: 'ember' },
         { start: 'emberLoaded', label: 'application' },
         { start: 'startRouting', label: 'routing' },
-        { start: 'willTransition', label: 'transition' }
+        { start: 'willTransition', label: 'transition' },
+        { start: 'largestContentfulPaint::Candidate', label: 'paint' },
       ];
       const benchmarks = tests.map(({ name, url }) =>
         createTraceNavigationBenchmark(name, url, markers, {
@@ -149,8 +151,50 @@ describe('Benchmark', function () {
           traceOptions: {
             saveTraceAs: (group, i) =>
               join(resultDir, `trace-${group}-${i}.json`),
-            traceEndAtLcp: true,
-            lcpRegex: 'h1'
+          }
+        })
+      );
+      const start = Date.now();
+      const results = await run(
+        benchmarks,
+        4,
+        (elasped, completed, remaining, group, iteration) => {
+          if (completed > 0) {
+            const average = elasped / completed;
+            const remainingSecs = Math.round((remaining * average) / 1000);
+            console.log(
+              '%s %s %s seconds remaining',
+              group.padStart(15),
+              iteration.toString().padStart(3),
+              `about ${remainingSecs}`.padStart(10)
+            );
+          } else {
+            console.log(
+              '%s %s',
+              group.padStart(15),
+              iteration.toString().padStart(3)
+            );
+          }
+        }
+      );
+      console.log(
+        'completed in %d seconds',
+        Math.round((Date.now() - start) / 1000)
+      );
+
+      writeFileSync(join(resultDir, 'results.json'), JSON.stringify(results));
+    });
+
+    it('should end trace at LCP by default if no markers configured', async function () {
+      //no need to add markers in render phase, we can still extract paint event
+      const markers: Marker[] = [];
+      const benchmarks = tests.map(({ name, url }) =>
+        createTraceNavigationBenchmark(name, url, markers, {
+          spawnOptions: browserOpts,
+          pageSetupOptions: {},
+          traceOptions: {
+            saveTraceAs: (group, i) =>
+              join(resultDir, `trace-${group}-${i}.json`),
           }
         })
       );

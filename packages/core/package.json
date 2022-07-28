@@ -32,7 +32,7 @@
     "lint": "eslint -c .eslintrc.js --ext .ts .",
     "prepare": "yarn build",
     "report": "Rscript bin/report.R test/results/results.json",
-    "test": "yarn lint && yarn mocha",
+    "test": "yarn lint && yarn mocha \"test/test.ts\" \"test/trace/*.ts\"",
     "watch": "tsc -b -w"
   },
   "dependencies": {

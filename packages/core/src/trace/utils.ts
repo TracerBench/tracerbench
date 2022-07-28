@@ -8,6 +8,7 @@ import type { Protocol } from 'devtools-protocol';
 import { dirSync } from 'tmp';
 
 import { IConditions, networkConditions } from './conditions';
+import { Marker } from '../create-trace-navigation-benchmark';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -232,3 +233,55 @@ function enforcePaintEvent() {
 
 }
 `;
+
+export const LCP_EVENT_NAME = 'largestContentfulPaint::Candidate';
+export const LCP_EVENT_NAME_ALIAS = 'largestContentfulPaint';
+
+/**
+ * check if the last marker.start is largestContentfulPaint:Candidate
+ * That means user want trace to end at LCP
+ * @param markers - markers array
+ * @returns true if markers end at LCP event
+ */
+export function isTraceEndAtLCP(markers: Marker[]): boolean {
+  if (markers.length > 0) {
+    const { start: marker } = markers[markers.length - 1];
+    return marker === LCP_EVENT_NAME;
+  } else {
+    return false;
+  }
+}
+
+/**
+ * if the config or commandline has marker name as largestContentfulPaint
+ * convert it to the actual event name largestContentfulPaint:Candidate
+ * return a new marker list, Keep input markers immutable.
+ * @param markers - marker array
+ * @returns renamed marker array
+ */
+export function uniformLCPEventName(markers: Marker[]): Marker[] {
+  const renamedMarkers: Marker[] = [];
+  let renamedMarker: Marker;
+  markers.forEach((marker: Marker) => {
+    if (marker.start === LCP_EVENT_NAME_ALIAS) {
+      renamedMarker = {
+        start: LCP_EVENT_NAME,
+        label: marker.label
+      };
+    } else {
+      renamedMarker = marker;
+    }
+    renamedMarkers.push(renamedMarker);
+  });
+
+  return renamedMarkers;
+}
+
+/**
+ * check if an event name is largestContentfulPaint:Candidate
+ * @param marker - event name
+ * @returns - true or false
+ */
+export function isLCPEvent(marker: string): boolean {
+  return marker === LCP_EVENT_NAME;
+}

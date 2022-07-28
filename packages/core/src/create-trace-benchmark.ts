@@ -67,8 +67,6 @@ export interface TraceOptions {
   additionalCategories: string[];
   additionalTrialCategories: string[];
   saveTraceAs: SaveTraceAsFn;
-  traceEndAtLcp?: boolean;
-  lcpRegex?: string;
 }
 
 export type TraceFn = (

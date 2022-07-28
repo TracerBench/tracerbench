@@ -88,7 +88,7 @@ export function parseMarkers(m: string | string[]): Marker[] {
     m = m.split(",");
   }
 
-  for (let i = 1; i < m.length; i++) {
+  for (let i = 1; i < m.length; i += 2) {
     a.push({
       start: m[i - 1],
       label: m[i],
