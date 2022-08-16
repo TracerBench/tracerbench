@@ -25,3 +25,6 @@ https://www.tracerbench.com/docs/guide/stats-primer
 ### TracerBench Stats Class Module
 https://www.npmjs.com/package/@tracerbench/stats
 https://github.com/TracerBench/tracerbench/tree/master/packages/stats
+
+### RFC List
+[Enable ability to end trace and end har recording at LCP](https://github.com/TracerBench/rfcs/blob/33d3574ddb3042dec8283ecd24d3946be2c1f5ff/text/1-trace-end-at-lcp.md)
