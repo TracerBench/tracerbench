@@ -10,6 +10,7 @@ import deviceSettings, {
   EmulateDeviceSettingCliOption,
 } from "./device-settings";
 import { parseMarkers } from "./utils";
+import { LCP_EVENT_NAME, LCP_EVENT_NAME_ALIAS } from "@tracerbench/core";
 /*
 ! oclif oclifFlags.build#parse will only execute when the flag:string is passed directly
 ! from the cli. thus when passed via the tbconfig.json or the defaultFlagArgs
@@ -245,6 +246,12 @@ export const filename = oclifFlags.build({
 export const marker = oclifFlags.build({
   description: `The last marker before ending a HAR recording`,
   default: "loadEventEnd",
+  parse: (mark: string): string => {
+    if (mark === LCP_EVENT_NAME_ALIAS) {
+      mark = LCP_EVENT_NAME;
+    }
+    return mark;
+  },
 });
 
 export const username = oclifFlags.build({

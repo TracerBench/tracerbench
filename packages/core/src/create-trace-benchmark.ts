@@ -16,7 +16,8 @@ const defaultCategories = [
   'v8.execute',
   'blink.user_timing',
   'loading',
-  'latencyInfo'
+  'latencyInfo',
+  'performancetimeline'
 ];
 
 const captureAllDevtoolsTimelineCategories = [

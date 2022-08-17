@@ -1,6 +1,6 @@
 import Compare from "./commands/compare";
 import CompareAnalyze from "./commands/compare/analyze";
-import CompareReport from "./commands/compare/report";
+import CompareReport, { IReportFlags } from "./commands/compare/report";
 import RecordHAR from "./commands/record-har";
 import RecordHARAuth from "./commands/record-har/auth";
 
@@ -23,3 +23,4 @@ export { RecordHAR, CompareReport, Compare, CompareAnalyze, RecordHARAuth };
 
 // API backwards compat exports
 export { CompareReport as Report };
+export { IReportFlags };

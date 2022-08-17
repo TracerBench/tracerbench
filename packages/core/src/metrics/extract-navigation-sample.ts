@@ -8,6 +8,7 @@ import {
 } from '@tracerbench/trace-model';
 
 import { Marker } from '../create-trace-navigation-benchmark';
+import { LCP_EVENT_NAME, isTraceEndAtLCP, isLCPEvent } from '../trace/utils';
 
 export default function extractNavigationSample(
   trace: TraceModel,
@@ -44,6 +45,8 @@ function findPhases(events: EventModel[], markers: Marker[]): PhaseSample[] {
   const phaseEvents: Array<MarkEventModel | InstantEventModel> = [];
   let eventIdx = 0;
   let navigationStartArgs: NavigationStartArgs | undefined;
+  const traceEndAtLcp = isTraceEndAtLCP(markers);
+
   // for each marker scan forward in the events to find it
   for (const marker of markers) {
     let markEvent: MarkEventModel | InstantEventModel | undefined;
@@ -94,28 +97,46 @@ function findPhases(events: EventModel[], markers: Marker[]): PhaseSample[] {
       phaseEvents.push(markEvent);
     }
   }
-  let paintEvent: CompleteEventModel | undefined;
+  let paintEvent: CompleteEventModel | MarkEventModel | undefined;
   for (; eventIdx < events.length; eventIdx++) {
     const event = events[eventIdx];
-    if (event.isComplete() && event.name === 'Paint') {
+    if (
+      (event.isComplete() && event.name === 'Paint') ||
+      (event.isMark() && event.name === LCP_EVENT_NAME && traceEndAtLcp)
+    ) {
       paintEvent = event;
       break;
     }
   }
   if (!paintEvent) {
     throw new Error(
-      `Could not find Paint event in trace after last mark "${
+      `Could not find Paint event or ${LCP_EVENT_NAME} in trace after last mark "${
         markers[markers.length - 1].start
-      }"`
+      }. The last marker should trigger a paint event."`
     );
   }
   const phases: PhaseSample[] = [];
   const start = phaseEvents[0].start;
+  let end = phaseEvents[0].end;
+
   for (let i = 0; i < phaseEvents.length; i++) {
     const marker = markers[i];
     const markEvent = phaseEvents[i];
-    const end =
-      i + 1 < phaseEvents.length ? phaseEvents[i + 1].start : paintEvent.end;
+
+    if (i + 1 < phaseEvents.length) {
+      //skip LCP if user configure the LCP in the middle of marker list
+      if (isLCPEvent(markEvent.name)) {
+        continue;
+      }
+      end = phaseEvents[i + 1].start;
+    } else {
+      //skip if paint event is LCP event, do not double count the phases
+      if (isLCPEvent(paintEvent.name)) {
+        continue;
+      }
+      end = paintEvent.end;
+    }
+
     phases.push({
       phase: marker.label,
       start: markEvent.start - start,

@@ -6,10 +6,18 @@ import extractNavigationSample, {
   NavigationSample
 } from './metrics/extract-navigation-sample';
 import type { Benchmark } from './run';
-import injectMarkObserver from './util/inject-mark-observer';
+import type { WaitForMarkOrLCP } from './util/inject-mark-observer';
+import injectMarkObserver, {
+  injectLCPObserver
+} from './util/inject-mark-observer';
 import navigate from './util/navigate';
 import type { PageSetupOptions } from './util/setup-page';
 import setupPage from './util/setup-page';
+import {
+  LCP_EVENT_NAME,
+  uniformLCPEventName,
+  isTraceEndAtLCP
+} from './trace/utils';
 
 export interface Marker {
   start: string;
@@ -33,7 +41,7 @@ export default function createTraceNavigationBenchmark(
         label: 'load'
       },
       {
-        start: 'loadEventEnd',
+        start: LCP_EVENT_NAME,
         label: 'paint'
       }
     );
@@ -42,17 +50,33 @@ export default function createTraceNavigationBenchmark(
     group,
     async (page, _i, _isTrial, raceCancel, trace) => {
       setupPage(page, raceCancel, options.pageSetupOptions);
-      const { start: mark } = markers[markers.length - 1];
-      const waitForMark = await injectMarkObserver(page, mark);
+
+      const markerList = uniformLCPEventName(markers);
+      const mLength = markerList.length;
+
+      const { start: lastMarker } = markerList[mLength - 1];
+      const traceEndAtLcp = isTraceEndAtLCP(markerList);
+      let priorMarker = 'navigationStart';
+      if (traceEndAtLcp && mLength >= 2) {
+        priorMarker = markerList[mLength - 2].start;
+      }
+
+      let waitTraceEnd: WaitForMarkOrLCP;
+
+      if (traceEndAtLcp) {
+        waitTraceEnd = await injectLCPObserver(page, priorMarker);
+      } else {
+        waitTraceEnd = await injectMarkObserver(page, lastMarker);
+      }
       return extractNavigationSample(
         buildModel(
           await trace(async (raceCancel) => {
             // do navigation
             await navigate(page, url, raceCancel);
-            await waitForMark(raceCancel);
+            await waitTraceEnd(raceCancel);
           })
         ),
-        markers
+        markerList
       );
     },
     options

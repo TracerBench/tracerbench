@@ -7,10 +7,10 @@ import { IConditions } from './conditions';
 import {
   createBrowser,
   emulate,
-  enforcePaintEventFn,
   getBrowserArgs,
   getTab,
-  setCookies
+  setCookies,
+  isLCPEvent
 } from './utils';
 import debug = require('debug');
 
@@ -53,6 +53,7 @@ export async function recordHARClient(
     }
   };
   const screenshotData: Screenshot[] = [];
+  const endAtLcp = isLCPEvent(marker);
   const browserArgs = getBrowserArgs(altBrowserArgs);
   const browser = await createBrowser(browserArgs, headless);
   try {
@@ -104,29 +105,41 @@ export async function recordHARClient(
     // window.performance.getEntries()
     await chrome.send('Page.addScriptToEvaluateOnNewDocument', {
       source: `
-        ${enforcePaintEventFn}
-        self.__TBMarkerPromise = new Promise(resolve => {
-          const observer = new PerformanceObserver((list) => {
-            if (list.getEntriesByName(${JSON.stringify(marker)}).length > 0) {
-              requestAnimationFrame(() => {
-                enforcePaintEvent();
-                requestIdleCallback(() => {
-                  performance.mark("endTrace");
+        if (${endAtLcp}) {
+          self.__TBLcpPromise = new Promise((resolve) =>
+            const observer = new PerformanceObserver((entryList) => {
+              var lcpEntries = entryList.getEntriesByType('largest-contentful-paint');
+              if (lcpEntries.length > 0) {
+                requestAnimationFrame(() => {
                   resolve();
                 });
-              });
+              }
               observer.disconnect();
-            }
-        });
-        observer.observe({ entryTypes: ["mark", "navigation"] });
-      });`
+            });
+            observer.observe({ type: 'largest-contentful-paint', buffered: true });
+          )};
+        } else {
+          self.__TBMarkerPromise = new Promise(resolve => {
+            const observer = new PerformanceObserver((list) => {
+              if (list.getEntriesByName(${JSON.stringify(marker)}).length > 0) {
+                requestAnimationFrame(() => {
+                  requestAnimationFrame(() => {
+                    resolve();
+                  });
+                });
+                observer.disconnect();
+              }
+            });
+            observer.observe({ entryTypes: ["mark", "navigation"] });
+          });
+        }`
     });
     // default is loadEventFired
     await chrome.until('Page.loadEventFired');
 
     // eval
     const evalPromise = chrome.send('Runtime.evaluate', {
-      expression: `__TBMarkerPromise`,
+      expression: endAtLcp ? `__TBLcpPromise` : `__TBMarkerPromise`,
       awaitPromise: true
     });
 

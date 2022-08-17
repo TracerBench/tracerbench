@@ -45,5 +45,10 @@ export {
   authClient,
   getNewTab,
   createBrowser,
-  getTab
+  getTab,
+  LCP_EVENT_NAME,
+  LCP_EVENT_NAME_ALIAS,
+  isLCPEvent,
+  isTraceEndAtLCP,
+  uniformLCPEventName
 } from './trace';
