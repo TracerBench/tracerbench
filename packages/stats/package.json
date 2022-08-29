@@ -34,7 +34,7 @@
     ]
   },
   "dependencies": {
-    "d3-array": "~2.12.1",
+    "d3-array": "~3.2.0",
     "d3-scale": "~3.3.0",
     "fs-extra": "^10.0.0",
     "jstat": "^1.9.5",
@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@types/chai": "^4.3.0",
-    "@types/d3-array": "~2.0.0",
+    "@types/d3-array": "~3.0.3",
     "@types/d3-scale": "~3.0.0",
     "@types/fs-extra": "^9.0.13",
     "@types/mocha": "^9.0.0",
