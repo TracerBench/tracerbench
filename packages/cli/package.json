@@ -50,6 +50,8 @@
     "tslib": "^2.2.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.1.2",
+    "@commitlint/config-conventional": "^17.0.3",
     "@oclif/dev-cli": "^1.26.0",
     "@oclif/test": "^1.2.8",
     "@types/chai": "^4.2.17",
