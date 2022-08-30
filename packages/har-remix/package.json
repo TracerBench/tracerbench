@@ -1,6 +1,6 @@
 {
   "name": "har-remix",
-  "version": "7.0.0",
+  "version": "8.0.0",
   "description": "Server HAR archive with loose matching and hooks to alter responses.",
   "keywords": [
     "benchmarking",
@@ -27,7 +27,7 @@
     "@commitlint/cli": "^16.1.0",
     "@microsoft/api-documenter": "^7.15.1",
     "@microsoft/api-extractor": "^7.19.4",
-    "@tracerbench/har": "^7.0.0",
+    "@tracerbench/har": "^8.0.0",
     "conventional-changelog-cli": "^2.2.2",
     "mime-types": "^2.1.34"
   },

@@ -1,6 +1,6 @@
 {
   "name": "@tracerbench/trace-model",
-  "version": "7.0.0",
+  "version": "8.0.0",
   "description": "Minimal model of Chrome TraceEvents",
   "keywords": [
     "chrome",
@@ -26,7 +26,7 @@
     "test": "yarn mocha"
   },
   "dependencies": {
-    "@tracerbench/trace-event": "^7.0.0",
+    "@tracerbench/trace-event": "^8.0.0",
     "debug": "^4.3.3"
   },
   "devDependencies": {
