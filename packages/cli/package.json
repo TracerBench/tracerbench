@@ -36,11 +36,12 @@
     "chalk": "^4.1.1",
     "chrome-debugging-client": "^2.0.0",
     "cli-table3": "^0.6.0",
+    "d3-array": "~3.2.0",
     "devtools-protocol": "^0.0.975963",
     "execa": "^6.1.0",
     "fs-extra": "^10.0.0",
     "handlebars": "^4.7.7",
-    "html-minifier-terser": "^6.1.0",
+    "html-minifier-terser": "^7.0.0",
     "json-query": "^2.2.2",
     "json5": "^2.2.0",
     "listr": "^0.14.3",
@@ -50,14 +51,17 @@
     "tslib": "^2.2.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^17.1.2",
+    "@commitlint/config-conventional": "^17.0.3",
     "@oclif/dev-cli": "^1.26.0",
     "@oclif/test": "^1.2.8",
     "@types/chai": "^4.2.17",
+    "@types/d3-array": "~3.0.3",
     "@types/fs-extra": "^9.0.11",
-    "@types/html-minifier-terser": "^6.1.0",
+    "@types/html-minifier-terser": "^7.0.0",
     "@types/json-query": "^2.2.0",
     "@types/json5": "^2.2.0",
-    "@types/listr": "^0.14.3",
+    "@types/listr": "^0.14.4",
     "@types/log-symbols": "^3.0.0",
     "@types/mock-fs": "4.13.1",
     "@types/node": "^15.0.2",
@@ -82,7 +86,7 @@
     "typescript-json-schema": "^0.52.0"
   },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=16.0.0"
   },
   "oclif": {
     "commands": "./dist/src/commands",
