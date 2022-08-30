@@ -1,3 +1,85 @@
+##  (2022-08-30)
+
+* Upgrade dependencies and node engine to 16.x (#434) ([d557588](https://github.com/tracerbench/tracerbench/commit/d557588)), closes [#434](https://github.com/tracerbench/tracerbench/issues/434)
+* chore(deps): bump cli-table3 from 0.6.0 to 0.6.2 ([ebbbee0](https://github.com/tracerbench/tracerbench/commit/ebbbee0))
+* chore(deps): bump debug from 4.3.3 to 4.3.4 ([84dabed](https://github.com/tracerbench/tracerbench/commit/84dabed))
+* chore(deps): bump ejs from 3.1.6 to 3.1.8 ([47202d4](https://github.com/tracerbench/tracerbench/commit/47202d4))
+* chore(deps): bump json5 from 2.2.0 to 2.2.1 ([0194ef2](https://github.com/tracerbench/tracerbench/commit/0194ef2))
+* chore(deps): bump parse-url from 6.0.0 to 6.0.5 ([50a3c55](https://github.com/tracerbench/tracerbench/commit/50a3c55))
+* feat: add documentation link in cli readme ([0cbf116](https://github.com/tracerbench/tracerbench/commit/0cbf116))
+* feat: end recording trace at LCP if marker specifies ([7e1ca9a](https://github.com/tracerbench/tracerbench/commit/7e1ca9a))
+* feat: export cli apis ([7f645b7](https://github.com/tracerbench/tracerbench/commit/7f645b7))
+* feat: trace end at lcp ([091aab5](https://github.com/tracerbench/tracerbench/commit/091aab5))
+* feat: use markers config to decide if end at lcp ([3602a59](https://github.com/tracerbench/tracerbench/commit/3602a59))
+
+
+
+## 7.0.0 (2022-04-14)
+
+* chore(deps-dev) : update dev dependencies ([bd68343](https://github.com/tracerbench/tracerbench/commit/bd68343))
+* enforce paint event after mark ([891994d](https://github.com/tracerbench/tracerbench/commit/891994d))
+* simplify code ([98b8968](https://github.com/tracerbench/tracerbench/commit/98b8968))
+* v7.0.0 ([e2510b3](https://github.com/tracerbench/tracerbench/commit/e2510b3))
+* wait for paint for navigation event too ([b5da6c9](https://github.com/tracerbench/tracerbench/commit/b5da6c9))
+* feat: export APIs for rich report generation ([139ad46](https://github.com/tracerbench/tracerbench/commit/139ad46))
+* fix: smoke tests, change default cpu throttle to 0 ([83dfade](https://github.com/tracerbench/tracerbench/commit/83dfade))
+* chore: update dependencies ([1949bc4](https://github.com/tracerbench/tracerbench/commit/1949bc4))
+
+
+
+## <small>6.1.2 (2022-01-27)</small>
+
+* v6.1.1 remove githubHead from package.json ([1227ed0](https://github.com/tracerbench/tracerbench/commit/1227ed0))
+* v6.1.1 update markdowns ([68794da](https://github.com/tracerbench/tracerbench/commit/68794da))
+* v6.1.2 ([df9a00b](https://github.com/tracerbench/tracerbench/commit/df9a00b))
+* chore: dep bump and required code changes ([cf2bb0e](https://github.com/tracerbench/tracerbench/commit/cf2bb0e))
+
+
+
+## <small>6.1.1 (2021-11-30)</small>
+
+* chore(cli,stats): bump deps ([8b6b69a](https://github.com/tracerbench/tracerbench/commit/8b6b69a))
+* handle incorrect request method in case of we have post data ([94a8584](https://github.com/tracerbench/tracerbench/commit/94a8584))
+* Mention SSH in noise mitigation instructions (#301) ([3a87f40](https://github.com/tracerbench/tracerbench/commit/3a87f40)), closes [#301](https://github.com/tracerbench/tracerbench/issues/301)
+* refactor(cli, core): removes live-trace, profile command (#316) ([e35d734](https://github.com/tracerbench/tracerbench/commit/e35d734)), closes [#316](https://github.com/tracerbench/tracerbench/issues/316)
+* test(cli, stats): update failing tests from rounding change ([2695fce](https://github.com/tracerbench/tracerbench/commit/2695fce))
+* test(cli, stats): update failing tests from rounding change ([e070b4b](https://github.com/tracerbench/tracerbench/commit/e070b4b))
+* Update README.md ([2d6b3ab](https://github.com/tracerbench/tracerbench/commit/2d6b3ab))
+* Upgrade to GitHub-native Dependabot (#306) ([d71f51a](https://github.com/tracerbench/tracerbench/commit/d71f51a)), closes [#306](https://github.com/tracerbench/tracerbench/issues/306)
+* v5.3.6 ([a70ad29](https://github.com/tracerbench/tracerbench/commit/a70ad29))
+* v5.3.7 ([bccc274](https://github.com/tracerbench/tracerbench/commit/bccc274))
+* v6.0.0 ([e52e3ce](https://github.com/tracerbench/tracerbench/commit/e52e3ce))
+* v6.1.0 ([5090c18](https://github.com/tracerbench/tracerbench/commit/5090c18))
+* v6.1.1 ([50d1015](https://github.com/tracerbench/tracerbench/commit/50d1015))
+* fix: should use dynamic confidence level to calculate significance ([73f0c7c](https://github.com/tracerbench/tracerbench/commit/73f0c7c))
+* fix(core): fixes issue with chrome 90 navigationStart event phase change (#304) ([ea9a960](https://github.com/tracerbench/tracerbench/commit/ea9a960)), closes [#304](https://github.com/tracerbench/tracerbench/issues/304)
+* chore: bump deps to latest ([f8ce9ec](https://github.com/tracerbench/tracerbench/commit/f8ce9ec))
+* chore: bump deps to latest ([bfb2106](https://github.com/tracerbench/tracerbench/commit/bfb2106))
+* chore(all): bump deps ([f798bcc](https://github.com/tracerbench/tracerbench/commit/f798bcc))
+* chore(deps-dev): bump @commitlint/cli from 12.1.1 to 12.1.4 (#329) ([71ee28d](https://github.com/tracerbench/tracerbench/commit/71ee28d)), closes [#329](https://github.com/tracerbench/tracerbench/issues/329)
+* chore(deps-dev): bump @commitlint/cli from 12.1.4 to 13.1.0 ([878f1b8](https://github.com/tracerbench/tracerbench/commit/878f1b8))
+* chore(deps-dev): bump @commitlint/config-conventional (#327) ([f6249c7](https://github.com/tracerbench/tracerbench/commit/f6249c7)), closes [#327](https://github.com/tracerbench/tracerbench/issues/327)
+* chore(deps-dev): bump @types/chai from 4.2.17 to 4.2.19 (#344) ([71a43c8](https://github.com/tracerbench/tracerbench/commit/71a43c8)), closes [#344](https://github.com/tracerbench/tracerbench/issues/344)
+* chore(deps-dev): bump @types/mocha from 8.2.3 to 9.0.0 ([8cced8f](https://github.com/tracerbench/tracerbench/commit/8cced8f))
+* chore(deps-dev): bump @types/tar from 4.0.4 to 4.0.5 ([84b4294](https://github.com/tracerbench/tracerbench/commit/84b4294))
+* chore(deps-dev): bump @typescript-eslint/eslint-plugin (#346) ([2c8e43e](https://github.com/tracerbench/tracerbench/commit/2c8e43e)), closes [#346](https://github.com/tracerbench/tracerbench/issues/346)
+* chore(deps-dev): bump @typescript-eslint/parser from 4.22.1 to 4.28.1 (#342) ([bc069c6](https://github.com/tracerbench/tracerbench/commit/bc069c6)), closes [#342](https://github.com/tracerbench/tracerbench/issues/342)
+* chore(deps-dev): bump tar from 6.1.0 to 6.1.11 ([ada5d8f](https://github.com/tracerbench/tracerbench/commit/ada5d8f))
+* chore(deps-dev): bump ts-node from 9.1.1 to 10.1.0 ([1aba641](https://github.com/tracerbench/tracerbench/commit/1aba641))
+* chore(deps): [security] bump hosted-git-info from 2.8.8 to 2.8.9 (#318) ([e927c46](https://github.com/tracerbench/tracerbench/commit/e927c46)), closes [#318](https://github.com/tracerbench/tracerbench/issues/318)
+* chore(deps): [security] bump y18n from 4.0.0 to 4.0.3 (#307) ([137a7db](https://github.com/tracerbench/tracerbench/commit/137a7db)), closes [#307](https://github.com/tracerbench/tracerbench/issues/307)
+* chore(deps): bump d3-hierarchy from 2.0.0 to 3.0.1 ([0429d0a](https://github.com/tracerbench/tracerbench/commit/0429d0a))
+* chore(deps): bump devtools-protocol from 0.0.878340 to 0.0.901419 ([6e5e117](https://github.com/tracerbench/tracerbench/commit/6e5e117))
+* chore(deps): bump devtools-protocol from 0.0.901419 to 0.0.915197 ([c3da55d](https://github.com/tracerbench/tracerbench/commit/c3da55d))
+* chore(deps): bump glob-parent from 5.1.1 to 5.1.2 ([c6bc9b7](https://github.com/tracerbench/tracerbench/commit/c6bc9b7))
+* chore(deps): bump ws from 7.3.1 to 7.4.6 (#330) ([563de51](https://github.com/tracerbench/tracerbench/commit/563de51)), closes [#330](https://github.com/tracerbench/tracerbench/issues/330)
+* docs(cli): updating link to stats primer in report ([b1789f8](https://github.com/tracerbench/tracerbench/commit/b1789f8))
+* docs(stats): ts api extractor ([d40fd21](https://github.com/tracerbench/tracerbench/commit/d40fd21))
+* feat(cli): compress html report ([cdd4ad2](https://github.com/tracerbench/tracerbench/commit/cdd4ad2))
+* feat(core): expose utility APIs for upstream to create custom measurement commands (#319) ([a6b2760](https://github.com/tracerbench/tracerbench/commit/a6b2760)), closes [#319](https://github.com/tracerbench/tracerbench/issues/319)
+
+
+
 ##  (2021-05-06)
 
 * refactor(cli, core): removes live-trace, profile command (#316) ([e35d734](https://github.com/tracerbench/tracerbench/commit/e35d734)), closes [#316](https://github.com/tracerbench/tracerbench/issues/316)
