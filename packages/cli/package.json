@@ -86,7 +86,7 @@
     "typescript-json-schema": "^0.52.0"
   },
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=14.0.0"
   },
   "oclif": {
     "commands": "./dist/src/commands",
