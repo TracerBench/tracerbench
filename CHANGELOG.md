@@ -1,4 +1,10 @@
-##  (2022-08-30)
+##  (2022-09-07)
+
+* fix: downgrade node to 14.x to satisfy app depends on tracerbench ([a1c4ea7](https://github.com/tracerbench/tracerbench/commit/a1c4ea7))
+
+
+
+##  8.0.0 (2022-08-30)
 
 * Upgrade dependencies and node engine to 16.x (#434) ([d557588](https://github.com/tracerbench/tracerbench/commit/d557588)), closes [#434](https://github.com/tracerbench/tracerbench/issues/434)
 * chore(deps): bump cli-table3 from 0.6.0 to 0.6.2 ([ebbbee0](https://github.com/tracerbench/tracerbench/commit/ebbbee0))
