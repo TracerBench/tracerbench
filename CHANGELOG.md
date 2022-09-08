@@ -1,4 +1,4 @@
-##  (2022-09-07)
+##  8.0.1 (2022-09-07)
 
 * fix: downgrade node to 14.x to satisfy app depends on tracerbench ([a1c4ea7](https://github.com/tracerbench/tracerbench/commit/a1c4ea7))
 
