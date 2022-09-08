@@ -1,6 +1,6 @@
 {
   "name": "tracerbench",
-  "version": "8.0.0",
+  "version": "8.0.1",
   "description": "CLI for TracerBench",
   "keywords": [
     "oclif"
@@ -29,8 +29,8 @@
     "@oclif/parser": "^3.8.5",
     "@oclif/plugin-help": "^5.1.11",
     "@oclif/plugin-warn-if-update-available": "^2.0.4",
-    "@tracerbench/core": "^8.0.0",
-    "@tracerbench/stats": "^8.0.0",
+    "@tracerbench/core": "^8.0.1",
+    "@tracerbench/stats": "^8.0.1",
     "@tracerbench/trace-event": "^8.0.0",
     "archiver": "^5.3.0",
     "chalk": "^4.1.1",
